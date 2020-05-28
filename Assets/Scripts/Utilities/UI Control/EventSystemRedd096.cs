@@ -3,7 +3,7 @@
     using UnityEngine;
     using UnityEngine.EventSystems;
 
-    [AddComponentMenu("redd096/Event System redd096")]
+    [AddComponentMenu("redd096/UI Control/Event System redd096")]
     public class EventSystemRedd096 : EventSystem
     {
         #region variables

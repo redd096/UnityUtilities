@@ -1,0 +1,23 @@
+- Editor/LoadCSV.cs -> ToUsable()
+° serve rimpiazzare punti?
+° RemovePercentage non dovrebbe essere dentro a FirstIsQuote, che tra l'altro dovrebbe chiamarsi GetFloat, ma dovrebbero essere funzioni sommabili a cui tra l'altro potrebbero aggiungersene altre in futuro
+° dovrebbe esserci la possibilità di scegliere tramite booleani cosa si preferisce fare (trova solo i float, rimuovi anche %, ecc..)
+
+- Editor/LoadCsv.cs
+° dovrebbe avere un LoadAndUpdateOrCreate, come avviene in capsize
+° la funzione di lettura del csv dovrebbe chiamarsi CsvParse
+
+- Editor/LoadSomething.cs 
+° non mi piace la cosa dei numeri. Usare la prima riga (value[0]) per determinare quale valore sia in base al nome, indifferentemente dal numero della colonna
+° dalla classe che viene riempita bisognerebbe creare scriptable object da inserire in game?
+
+- Utility/Raycasts.cs
+° è fatto unicamente per gravity project, andrebbe riadattato
+
+- Pooling.cs
+° metterlo anche come MonoBehaviour? Ha senso?
+
+- Managers/SceneLoader.cs
+° non è un manager e non credo di averne bisogno in scena.
+° rimuoverlo dal singleton e lasciarlo MonoBehaviour solo per poterlo usare come prefab (per onClick dei pulsanti UI settati da inspector)
+° vedere se quando gli onClick si settano da script è possibile utilizzare le funzioni statiche di SceneLoader

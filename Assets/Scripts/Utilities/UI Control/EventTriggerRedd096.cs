@@ -3,7 +3,7 @@
     using UnityEngine;
     using UnityEngine.EventSystems;
 
-    [AddComponentMenu("redd096/Event Trigger redd096")]
+    [AddComponentMenu("redd096/UI Control/Event Trigger redd096")]
     public class EventTriggerRedd096 : EventTrigger
     {
         /// <summary>

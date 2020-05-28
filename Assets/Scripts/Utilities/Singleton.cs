@@ -21,7 +21,7 @@
             else
             {
                 //else, set this as unique instance and set don't destroy on load
-                instance = this as T;
+                instance = (T)this;
                 DontDestroyOnLoad(this);
             }
 

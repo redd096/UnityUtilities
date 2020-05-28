@@ -3,6 +3,7 @@
     using UnityEngine;
     using UnityEngine.SceneManagement;
 
+    [AddComponentMenu("redd096/Scene Loader")]
     public class SceneLoader : Singleton<SceneLoader>
     {
         /// <summary>
