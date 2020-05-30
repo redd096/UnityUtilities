@@ -9,6 +9,8 @@
 
 - Editor/LoadSomething.cs 
 ° non mi piace la cosa dei numeri. Usare la prima riga (value[0]) per determinare quale valore sia in base al nome, indifferentemente dal numero della colonna
+° si potrebbe fare che una volta trovati float, rimosse percentuali, ecc... si prendono i value[0] e si copiano in tutti gli altri.
+Poi quando si riempie si fa un foreach(if contains("NOMEVALORE: ") replace ("NOMEVALORE: ", "") e parse in valore)
 ° dalla classe che viene riempita bisognerebbe creare scriptable object da inserire in game?
 
 - Utility/Raycasts.cs

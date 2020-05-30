@@ -1,19 +1,12 @@
 ﻿namespace redd096
 {
     using UnityEngine;
+    using UnityEngine.UI;
     using UnityEngine.EventSystems;
 
     [AddComponentMenu("redd096/UI Control/Event Trigger redd096")]
     public class EventTriggerRedd096 : EventTrigger
     {
-        /// <summary>
-        /// Set transform.localScale
-        /// </summary>
-        public void SetScale(float scale)
-        {
-            transform.localScale = new Vector3(scale, scale, scale);
-        }
-
         /// <summary>
         /// Set UI Selected
         /// </summary>
@@ -34,5 +27,29 @@
             if(gameObject == currentSelected)
                 EventSystem.current.SetSelectedGameObject(null);
         }
+
+        /// <summary>
+        /// Set transform.localScale
+        /// </summary>
+        public void SetScale(float scale)
+        {
+            transform.localScale = new Vector3(scale, scale, scale);
+        }
+
+        /// <summary>
+        /// Set Color for Image UI
+        /// </summary>
+        public void SetImageColor(ColorValue colorValue)
+        {
+            GetComponent<Image>().color = colorValue.Color;
+        }
+    }
+
+    [CreateAssetMenu(fileName = "Color", menuName = "redd096/Color")]
+    public class ColorValue : ScriptableObject
+    {
+        [SerializeField] Color color = Color.red;
+
+        public Color Color { get { return color; } }
     }
 }
