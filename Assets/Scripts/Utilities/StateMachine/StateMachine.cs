@@ -16,9 +16,12 @@
             if (state != null)
                 StartCoroutine(state.Exit());
 
-            //enter in new one
+            //set new one
             state = stateToSet;
-            StartCoroutine(state.Enter());
+
+            //enter in new one
+            if (state != null)
+                StartCoroutine(state.Enter());
         }
     }
 }
