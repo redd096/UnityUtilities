@@ -20,6 +20,4 @@ Poi quando si riempie si fa un foreach(if contains("NOMEVALORE: ") replace ("NOM
 ° metterlo anche come MonoBehaviour? Ha senso?
 
 - Managers/SceneLoader.cs
-° non è un manager e non credo di averne bisogno in scena.
-° rimuoverlo dal singleton e lasciarlo MonoBehaviour solo per poterlo usare come prefab (per onClick dei pulsanti UI settati da inspector)
 ° vedere se quando gli onClick si settano da script è possibile utilizzare le funzioni statiche di SceneLoader

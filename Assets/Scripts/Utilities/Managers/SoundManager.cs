@@ -2,7 +2,7 @@
 {
     using UnityEngine;
 
-    [AddComponentMenu("redd096/Sound Manager")]
+    [AddComponentMenu("redd096/Managers/Sound Manager")]
     public class SoundManager : Singleton<SoundManager>
     {
         AudioSource backgroundAudioSource;
@@ -27,7 +27,7 @@
         #endregion
 
         /// <summary>
-        /// Start audio clip. Can set volume and loop
+        /// Start audio clip for background. Can set volume and loop
         /// </summary>
         public void StartBackgroundMusic(AudioClip clip, float volume = 1, bool loop = false)
         {
@@ -38,6 +38,9 @@
             StartMusic(backgroundAudioSource, clip, volume, loop);
         }
 
+        /// <summary>
+        /// Start audio clip. Can set volume and loop
+        /// </summary>
         public static void StartMusic(AudioSource audioSource, AudioClip clip, float volume = 1, bool loop = false)
         {
             //be sure to have audio source

@@ -45,7 +45,7 @@
         }
     }
 
-    [CreateAssetMenu(fileName = "Color", menuName = "redd096/Color")]
+    [CreateAssetMenu(fileName = "Color", menuName = "redd096/UIControl/Color")]
     public class ColorValue : ScriptableObject
     {
         [SerializeField] Color color = Color.red;

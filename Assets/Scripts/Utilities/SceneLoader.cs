@@ -4,7 +4,7 @@
     using UnityEngine.SceneManagement;
 
     [AddComponentMenu("redd096/Scene Loader")]
-    public class SceneLoader : Singleton<SceneLoader>
+    public class SceneLoader : MonoBehaviour
     {
         /// <summary>
         /// Resume time and hide cursor
