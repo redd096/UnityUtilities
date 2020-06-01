@@ -2,7 +2,7 @@
 {
     using UnityEngine;
 
-    [AddComponentMenu("redd096/Managers/Sound Manager")]
+    [AddComponentMenu("redd096/Singletons/Sound Manager")]
     public class SoundManager : Singleton<SoundManager>
     {
         AudioSource backgroundAudioSource;

@@ -3,7 +3,7 @@
     using System.Collections;
     using UnityEngine;
     using UnityEngine.UI;
-    //using UnityEngine.SceneManagement;
+    using UnityEngine.SceneManagement;
 
     [AddComponentMenu("redd096/Splash Screen")]
     public class SplashScreen : MonoBehaviour
@@ -88,8 +88,7 @@
             }
 
             //load new scene
-            //SceneManager.LoadScene(nextSceneName);
-            SceneLoader.LoadNewScene(nextSceneName);
+            SceneManager.LoadScene(nextSceneName);
         }
 
         float Fade(float from, float to, float delta, float duration)

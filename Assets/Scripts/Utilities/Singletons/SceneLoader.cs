@@ -3,13 +3,13 @@
     using UnityEngine;
     using UnityEngine.SceneManagement;
 
-    [AddComponentMenu("redd096/Scene Loader")]
-    public class SceneLoader : MonoBehaviour
+    [AddComponentMenu("redd096/Singletons/Scene Loader")]
+    public class SceneLoader : Singleton<SceneLoader>
     {
         /// <summary>
         /// Resume time and hide cursor
         /// </summary>
-        public static void ResumeGame()
+        public void ResumeGame()
         {
             //hide pause menu and enable player input
             //GameManager.instance.uiManager.PauseMenu(false);
@@ -23,7 +23,7 @@
         /// <summary>
         /// Pause time and show cursor
         /// </summary>
-        public static void PauseGame()
+        public void PauseGame()
         {
             //show pause menu and disable player input
             //GameManager.instance.uiManager.PauseMenu(true);
@@ -37,7 +37,7 @@
         /// <summary>
         /// Exit game (works also in editor)
         /// </summary>
-        public static void ExitGame()
+        public void ExitGame()
         {
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
@@ -49,7 +49,7 @@
         /// <summary>
         /// Reload this scene
         /// </summary>
-        public static void RestartGame()
+        public void RestartGame()
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
@@ -57,7 +57,7 @@
         /// <summary>
         /// Load new scene by name
         /// </summary>
-        public static void LoadNewScene(string scene)
+        public void LoadNewScene(string scene)
         {
             //show cursor and set timeScale to 1
             Utility.LockMouse(CursorLockMode.None);
