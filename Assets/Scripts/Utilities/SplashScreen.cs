@@ -77,7 +77,7 @@
                 delta = 0;
                 while (delta < 1)
                 {
-                    image.FadeOut(ref delta, timeToFadeIn);
+                    image.FadeOut(ref delta, timeToFadeOut);
 
                     yield return null;
                 }
