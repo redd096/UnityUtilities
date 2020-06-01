@@ -62,7 +62,7 @@
                 float delta = 0;
                 while (delta < 1)
                 {
-                    delta = Fade(0, 1, delta, timeToFadeIn);
+                    image.FadeIn(ref delta, timeToFadeIn);
 
                     yield return null;
                 }
@@ -77,7 +77,7 @@
                 delta = 0;
                 while (delta < 1)
                 {
-                    delta = Fade(1, 0, delta, timeToFadeOut);
+                    image.FadeOut(ref delta, timeToFadeIn);
 
                     yield return null;
                 }
