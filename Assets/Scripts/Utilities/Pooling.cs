@@ -3,6 +3,95 @@
     using System.Collections.Generic;
     using UnityEngine;
 
+    public class Pooling
+    {
+        #region variables
+
+        bool canGrow = true;
+        List<GameObject> pooledObjects = new List<GameObject>();
+
+        /// <summary>
+        /// List of objects in the list
+        /// </summary>
+        public List<GameObject> PooledObjects { get { return pooledObjects; } }
+
+        #endregion
+
+        /// <summary>
+        /// Set if the list can grow when use Instantiate, or use only amount in the Init function
+        /// </summary>
+        public Pooling(bool canGrow)
+        {
+            this.canGrow = canGrow;
+        }
+
+        #region private API
+
+        GameObject Spawn(GameObject prefab)
+        {
+            //instantiate and add to list
+            GameObject obj = Object.Instantiate(prefab);
+            pooledObjects.Add(obj);
+
+            return obj;
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Instantiate pooled amount and set inactive
+        /// </summary>
+        public void Init(GameObject prefab, int pooledAmount)
+        {
+            //spawn amount and deactive
+            for (int i = 0; i < pooledAmount; i++)
+            {
+                GameObject obj = Spawn(prefab);
+
+                obj.SetActive(false);
+            }
+        }
+
+        /// <summary>
+        /// Active first inactive in the list. If everything is already active, if can grow, instantiate new one
+        /// </summary>
+        public GameObject Instantiate(GameObject prefab)
+        {
+            //get the first inactive and return
+            foreach (GameObject obj in pooledObjects)
+            {
+                if (obj.activeInHierarchy == false)
+                {
+                    obj.SetActive(true);
+                    return obj;
+                }
+            }
+
+            //else if can grow, create new one and return it
+            if (canGrow)
+            {
+                return Spawn(prefab);
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Active first inactive in the list. If everything is already active, if can grow, instantiate new one. 
+        /// Then set position and rotation
+        /// </summary>
+        public GameObject Instantiate(GameObject prefab, Vector3 position, Quaternion rotation)
+        {
+            //return obj but with position and rotation set
+            GameObject obj = Instantiate(prefab);
+
+            obj.transform.position = position;
+            obj.transform.rotation = rotation;
+
+            return obj;
+        }
+    }
+
     public class Pooling<T> where T : Component
     {
         #region variables

@@ -24,4 +24,9 @@
                 StartCoroutine(state.Enter());
         }
     }
+
+    //void Update()
+    //{
+    //    state?.Execution();
+    //}
 }

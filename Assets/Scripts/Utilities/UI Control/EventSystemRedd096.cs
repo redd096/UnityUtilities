@@ -37,10 +37,10 @@
                 }
                 else
                 {
-                    //else check what firstSelectedGameObject is active, and select it
-                    foreach(GameObject firstSelect in firstSelectedGameObjects)
+                    //else check which firstSelectedGameObject is active, and select it
+                    foreach (GameObject firstSelect in firstSelectedGameObjects)
                     {
-                        if (firstSelect.activeInHierarchy)
+                        if (firstSelect && firstSelect.activeInHierarchy)
                         {
                             current.SetSelectedGameObject(firstSelect);
                             break;
