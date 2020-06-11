@@ -3,6 +3,9 @@
     using System.Collections.Generic;
     using UnityEngine;
 
+    /// <summary>
+    /// GameObject Pooling
+    /// </summary>
     public class Pooling
     {
         #region variables
@@ -20,7 +23,7 @@
         /// <summary>
         /// Set if the list can grow when use Instantiate, or use only amount in the Init function
         /// </summary>
-        public Pooling(bool canGrow)
+        public Pooling(bool canGrow = true)
         {
             this.canGrow = canGrow;
         }
@@ -90,8 +93,22 @@
 
             return obj;
         }
+
+        /// <summary>
+        /// Deactive every object in the list
+        /// </summary>
+        public void DeactiveAll()
+        {
+            for (int i = 0; i < pooledObjects.Count; i++)
+            {
+                pooledObjects[i].SetActive(false);
+            }
+        }
     }
 
+    /// <summary>
+    /// Component Pooling
+    /// </summary>
     public class Pooling<T> where T : Component
     {
         #region variables
@@ -109,7 +126,7 @@
         /// <summary>
         /// Set if the list can grow when use Instantiate, or use only amount in the Init function
         /// </summary>
-        public Pooling(bool canGrow)
+        public Pooling(bool canGrow = true)
         {
             this.canGrow = canGrow;
         }
@@ -178,6 +195,17 @@
             obj.transform.rotation = rotation;
 
             return obj;
+        }
+
+        /// <summary>
+        /// Deactive every object in the list
+        /// </summary>
+        public void DeactiveAll()
+        {
+            for (int i = 0; i < pooledObjects.Count; i++)
+            {
+                pooledObjects[i].gameObject.SetActive(false);
+            }
         }
     }
 }
