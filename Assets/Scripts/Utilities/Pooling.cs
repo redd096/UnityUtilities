@@ -104,6 +104,14 @@
                 pooledObjects[i].SetActive(false);
             }
         }
+
+        /// <summary>
+        /// Simple deactive function
+        /// </summary>
+        public static void Destroy(GameObject objToDestroy)
+        {
+            objToDestroy.SetActive(false);
+        }
     }
 
     /// <summary>
@@ -206,6 +214,14 @@
             {
                 pooledObjects[i].gameObject.SetActive(false);
             }
+        }
+
+        /// <summary>
+        /// Simple deactive function
+        /// </summary>
+        public static void Destroy(GameObject objToDestroy)
+        {
+            objToDestroy.SetActive(false);
         }
     }
 }
