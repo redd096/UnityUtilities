@@ -5,6 +5,18 @@
 
     public static class Utility
     {
+        /// <summary>
+        /// set lockState, and visible only when not locked
+        /// </summary>
+        public static void LockMouse(CursorLockMode lockMode)
+        {
+            Cursor.lockState = lockMode;
+            Cursor.visible = lockMode != CursorLockMode.Locked;
+        }
+    }
+
+    public static class Fade
+    {
         #region private API
 
         static void Fade(this Image image, ref float delta, float from, float to, float duration)
@@ -28,14 +40,6 @@
 
         #endregion
 
-        /// <summary>
-        /// set lockState, and visible only when not locked
-        /// </summary>
-        public static void LockMouse(CursorLockMode lockMode)
-        {
-            Cursor.lockState = lockMode;
-            Cursor.visible = lockMode != CursorLockMode.Locked;
-        }
         /// <summary>
         /// Use inside a coroutine (delta 0 to 1), for fade in (alpha from 0 to 1)
         /// </summary>
@@ -66,6 +70,41 @@
         public static void FadeOut_Fill(this Image image, ref float delta, float duration)
         {
             image.Fade_Fill(ref delta, 1, 0, duration);
+        }
+    }
+
+    public static class TextLetterByLetter
+    {
+        /// <summary>
+        /// Write a text letter by letter, then wait input. When press to skip, accelerate speed
+        /// </summary>
+        public static void WriteLetterByLetterAndWait(this Text textToSet, string value, float timeBetweenChar, float skipSpeed, System.Action onEndWrite = null, bool canSkip = true)
+        {
+            UtilityMonoBehaviour.instance.WriteLetterByLetterAndWait(textToSet, value, timeBetweenChar, skipSpeed, onEndWrite, canSkip);
+        }
+
+        /// <summary>
+        /// Write a text letter by letter, then wait input. When press to skip, set immediatly all text
+        /// </summary>
+        public static void WriteLetterByLetterAndWait(this Text textToSet, string value, float timeBetweenChar, System.Action onEndWrite = null, bool canSkip = true)
+        {
+            UtilityMonoBehaviour.instance.WriteLetterByLetterAndWait(textToSet, value, timeBetweenChar, onEndWrite, canSkip);
+        }
+
+        /// <summary>
+        /// Write a text letter by letter. When press to skip, accelerate speed
+        /// </summary>
+        public static void WriteLetterByLetter(this Text textToSet, string value, float timeBetweenChar, float skipSpeed, System.Action onEndWrite = null, bool canSkip = true)
+        {
+            UtilityMonoBehaviour.instance.WriteLetterByLetter(textToSet, value, timeBetweenChar, skipSpeed, onEndWrite, canSkip);
+        }
+
+        /// <summary>
+        /// Write a text letter by letter. When press to skip, set immediatly all text
+        /// </summary>
+        public static void WriteLetterByLetter(this Text textToSet, string value, float timeBetweenChar, System.Action onEndWrite = null, bool canSkip = true)
+        {
+            UtilityMonoBehaviour.instance.WriteLetterByLetter(textToSet, value, timeBetweenChar, onEndWrite, canSkip);
         }
     }
 }
