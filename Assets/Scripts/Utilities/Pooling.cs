@@ -11,12 +11,11 @@
         #region variables
 
         bool canGrow = true;
-        List<GameObject> pooledObjects = new List<GameObject>();
 
         /// <summary>
         /// List of objects in the list
         /// </summary>
-        public List<GameObject> PooledObjects { get { return pooledObjects; } }
+        public List<GameObject> PooledObjects = new List<GameObject>();
 
         #endregion
 
@@ -34,7 +33,7 @@
         {
             //instantiate and add to list
             GameObject obj = Object.Instantiate(prefab);
-            pooledObjects.Add(obj);
+            PooledObjects.Add(obj);
 
             return obj;
         }
@@ -56,16 +55,36 @@
         }
 
         /// <summary>
-        /// Active first inactive in the list. If everything is already active, if can grow, instantiate new one
+        /// If not enough objects in the pool, instantiate necessary to reach the cycleAmount
+        /// </summary>
+        public void InitCycle(GameObject prefab, int cycleAmount)
+        {
+            //add if there are not enough buttons in pool
+            if (cycleAmount > PooledObjects.Count)
+            {
+                Init(prefab, cycleAmount - PooledObjects.Count);
+            }
+        }
+
+        #region instantiate
+
+        /// <summary>
+        /// Active first inactive in the list. If everything is already active, if can grow, instantiate new one. 
+        /// NB SetActive not works in the same frame, so if you are instantiating in a cycle consider to use InitCycle()
         /// </summary>
         public GameObject Instantiate(GameObject prefab)
         {
             //get the first inactive and return
-            foreach (GameObject obj in pooledObjects)
+            foreach (GameObject obj in PooledObjects)
             {
                 if (obj.activeInHierarchy == false)
                 {
                     obj.SetActive(true);
+
+                    //move to the end of the list
+                    PooledObjects.Remove(obj);
+                    PooledObjects.Add(obj);
+
                     return obj;
                 }
             }
@@ -81,7 +100,8 @@
 
         /// <summary>
         /// Active first inactive in the list. If everything is already active, if can grow, instantiate new one. 
-        /// Then set position and rotation
+        /// Then set position and rotation. 
+        /// NB SetActive not works in the same frame, so if you are instantiating in a cycle consider to use InitCycle()
         /// </summary>
         public GameObject Instantiate(GameObject prefab, Vector3 position, Quaternion rotation)
         {
@@ -95,13 +115,45 @@
         }
 
         /// <summary>
+        /// Active first inactive in the list. If everything is already active, if can grow, instantiate new one. 
+        /// Then set parent. 
+        /// NB SetActive not works in the same frame, so if you are instantiating in a cycle consider to use InitCycle()
+        /// </summary>
+        public GameObject Instantiate(GameObject prefab, Transform parent)
+        {
+            //return obj but with position and rotation set
+            GameObject obj = Instantiate(prefab);
+
+            obj.transform.SetParent(parent);
+
+            return obj;
+        }
+
+        /// <summary>
+        /// Active first inactive in the list. If everything is already active, if can grow, instantiate new one. 
+        /// Then set parent. 
+        /// NB SetActive not works in the same frame, so if you are instantiating in a cycle consider to use InitCycle()
+        /// </summary>
+        public GameObject Instantiate(GameObject prefab, Transform parent, bool worldPositionStays)
+        {
+            //return obj but with position and rotation set
+            GameObject obj = Instantiate(prefab);
+
+            obj.transform.SetParent(parent, worldPositionStays);
+
+            return obj;
+        }
+
+        #endregion
+
+        /// <summary>
         /// Deactive every object in the list
         /// </summary>
         public void DeactiveAll()
         {
-            for (int i = 0; i < pooledObjects.Count; i++)
+            for (int i = 0; i < PooledObjects.Count; i++)
             {
-                pooledObjects[i].SetActive(false);
+                PooledObjects[i].SetActive(false);
             }
         }
 
@@ -122,12 +174,11 @@
         #region variables
 
         bool canGrow = true;
-        List<T> pooledObjects = new List<T>();
 
         /// <summary>
         /// List of objects in the list
         /// </summary>
-        public List<T> PooledObjects { get { return pooledObjects; } }
+        public List<T> PooledObjects = new List<T>();
 
         #endregion
 
@@ -145,7 +196,7 @@
         {
             //instantiate and add to list
             T obj = Object.Instantiate(prefab);
-            pooledObjects.Add(obj);
+            PooledObjects.Add(obj);
 
             return obj;
         }
@@ -167,16 +218,36 @@
         }
 
         /// <summary>
-        /// Active first inactive in the list. If everything is already active, if can grow, instantiate new one
+        /// If not enough objects in the pool, instantiate necessary to reach the cycleAmount
+        /// </summary>
+        public void InitCycle(T prefab, int cycleAmount)
+        {
+            //add if there are not enough buttons in pool
+            if (cycleAmount > PooledObjects.Count)
+            {
+                Init(prefab, cycleAmount - PooledObjects.Count);
+            }
+        }
+
+        #region instantiate
+
+        /// <summary>
+        /// Active first inactive in the list. If everything is already active, if can grow, instantiate new one. 
+        /// NB SetActive not works in the same frame, so if you are instantiating in a cycle consider to use InitCycle()
         /// </summary>
         public T Instantiate(T prefab)
         {
             //get the first inactive and return
-            foreach (T obj in pooledObjects)
+            foreach (T obj in PooledObjects)
             {
                 if (obj.gameObject.activeInHierarchy == false)
                 {
                     obj.gameObject.SetActive(true);
+
+                    //move to the end of the list
+                    PooledObjects.Remove(obj);
+                    PooledObjects.Add(obj);
+
                     return obj;
                 }
             }
@@ -192,7 +263,8 @@
 
         /// <summary>
         /// Active first inactive in the list. If everything is already active, if can grow, instantiate new one. 
-        /// Then set position and rotation
+        /// Then set position and rotation. 
+        /// NB SetActive not works in the same frame, so if you are instantiating in a cycle consider to use InitCycle()
         /// </summary>
         public T Instantiate(T prefab, Vector3 position, Quaternion rotation)
         {
@@ -206,13 +278,45 @@
         }
 
         /// <summary>
+        /// Active first inactive in the list. If everything is already active, if can grow, instantiate new one. 
+        /// Then set parent. 
+        /// NB SetActive not works in the same frame, so if you are instantiating in a cycle consider to use InitCycle()
+        /// </summary>
+        public T Instantiate(T prefab, Transform parent)
+        {
+            //return obj but with position and rotation set
+            T obj = Instantiate(prefab);
+
+            obj.transform.SetParent(parent);
+
+            return obj;
+        }
+
+        /// <summary>
+        /// Active first inactive in the list. If everything is already active, if can grow, instantiate new one. 
+        /// Then set parent. 
+        /// NB SetActive not works in the same frame, so if you are instantiating in a cycle consider to use InitCycle()
+        /// </summary>
+        public T Instantiate(T prefab, Transform parent, bool worldPositionStays)
+        {
+            //return obj but with position and rotation set
+            T obj = Instantiate(prefab);
+
+            obj.transform.SetParent(parent, worldPositionStays);
+
+            return obj;
+        }
+
+        #endregion
+
+        /// <summary>
         /// Deactive every object in the list
         /// </summary>
         public void DeactiveAll()
         {
-            for (int i = 0; i < pooledObjects.Count; i++)
+            for (int i = 0; i < PooledObjects.Count; i++)
             {
-                pooledObjects[i].gameObject.SetActive(false);
+                PooledObjects[i].gameObject.SetActive(false);
             }
         }
 
