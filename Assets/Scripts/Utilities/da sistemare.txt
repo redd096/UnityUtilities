@@ -19,5 +19,15 @@ Poi quando si riempie si fa un foreach(if contains("NOMEVALORE: ") replace ("NOM
 - Pooling.cs
 ° metterlo anche come MonoBehaviour? Ha senso?
 
-- Managers/SceneLoader.cs
-° vedere se quando gli onClick si settano da script è possibile utilizzare le funzioni statiche di SceneLoader
+EDIT:
+- aggiornare letterbyletter - in pokemon ho messo che checka se la coroutine sta già andando e la stoppa
+(NB: la voglio rendere generale, quindi probabilmente meglio un Dictionary di Text e la loro coroutine - è davvero meglio?)
+- i tempi di letterbyletter metterli nell'UtilityMonobehaviour come in pokemon? Tanto in un gioco la velocità è uguale per tutte le scritte
+- aggiungere il fade out e fade in della clip audio, come ho messo nell'audio manager di cube invaders
+- trasformare il fade in e fade fill come il letter by letter, quindi aggiungere le coroutine nell'utility monobehaviour
+- aggiungere il controllo degli input di cube invaders ?
+- mettere nella state machine una funzione per attivare Coroutine come ho fatto in pokemon ?
+---
+- aggiungere sia alle utilities che ai pokemon, negli event trigger una funzione per "snap"
+  ° quando si clicca col mouse o touch, la scroll rect snappa verso il bottone, anche se magari è poco visibile
+  ° o anche quando viene selezionato (così è utilizzabile anche da tastiera e pad)
