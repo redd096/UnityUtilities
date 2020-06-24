@@ -13,6 +13,38 @@
             Cursor.lockState = lockMode;
             Cursor.visible = lockMode != CursorLockMode.Locked;
         }
+
+        /// <summary>
+        /// create a copy of the list
+        /// </summary>
+        public static List<T> CreateCopy<T>(this List<T> list)
+        {
+            List<T> newList = new List<T>();
+
+            //add every element in new list
+            foreach (T element in list)
+            {
+                newList.Add(element);
+            }
+
+            return newList;
+        }
+
+        /// <summary>
+        /// create a copy of the array
+        /// </summary>
+        public static T[] CreateCopy<T>(this T[] array)
+        {
+            T[] newArray = new T[array.Length];
+
+            //add every element in new array
+            for (int i = 0; i < array.Length; i++)
+            {
+                newArray[i] = array[i];
+            }
+
+            return newArray;
+        }
     }
 
     public static class Fade
