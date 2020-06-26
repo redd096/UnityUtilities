@@ -20,6 +20,8 @@ Poi quando si riempie si fa un foreach(if contains("NOMEVALORE: ") replace ("NOM
 ° metterlo anche come MonoBehaviour? Ha senso?
 
 EDIT:
+- modificare EventSystem come in pokemon ? con l'override e i non interagibili
+- in pokemon non ho utilizzato SceneLoader come nelle utilities, ma agganciandosi al GameManager -> da controllare
 - aggiornare letterbyletter - in pokemon ho messo che checka se la coroutine sta già andando e la stoppa
 (NB: la voglio rendere generale, quindi probabilmente meglio un Dictionary di Text e la loro coroutine - è davvero meglio?)
 - i tempi di letterbyletter metterli nell'UtilityMonobehaviour come in pokemon? Tanto in un gioco la velocità è uguale per tutte le scritte
