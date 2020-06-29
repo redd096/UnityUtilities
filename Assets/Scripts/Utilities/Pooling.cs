@@ -54,6 +54,8 @@
             }
         }
 
+        #region cycle
+
         /// <summary>
         /// If not enough objects in the pool, instantiate necessary to reach the cycleAmount
         /// </summary>
@@ -65,6 +67,28 @@
                 Init(prefab, cycleAmount - PooledObjects.Count);
             }
         }
+
+        /// <summary>
+        /// Move to the end of the list every object unused in the cycle
+        /// </summary>
+        /// <param name="cycledAmount">The number of objects used in the cycle</param>
+        public void EndCycle(int cycledAmount)
+        {
+            //only if there are really objects unused
+            if (cycledAmount >= PooledObjects.Count)
+                return;
+
+            for (int i = 0; i < PooledObjects.Count - cycledAmount; i++)
+            {
+                GameObject obj = PooledObjects[i];
+
+                //move to the end of the list
+                PooledObjects.Remove(obj);
+                PooledObjects.Add(obj);
+            }
+        }
+
+        #endregion
 
         #region instantiate
 
@@ -217,6 +241,8 @@
             }
         }
 
+        #region cycle
+
         /// <summary>
         /// If not enough objects in the pool, instantiate necessary to reach the cycleAmount
         /// </summary>
@@ -228,6 +254,28 @@
                 Init(prefab, cycleAmount - PooledObjects.Count);
             }
         }
+
+        /// <summary>
+        /// Move to the end of the list every object unused in the cycle
+        /// </summary>
+        /// <param name="cycledAmount">The number of objects used in the cycle</param>
+        public void EndCycle(int cycledAmount)
+        {
+            //only if there are really objects unused
+            if (cycledAmount >= PooledObjects.Count)
+                return;
+
+            for (int i = 0; i < PooledObjects.Count - cycledAmount; i++)
+            {
+                T obj = PooledObjects[i];
+
+                //move to the end of the list
+                PooledObjects.Remove(obj);
+                PooledObjects.Add(obj);
+            }
+        }
+
+        #endregion
 
         #region instantiate
 
