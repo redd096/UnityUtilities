@@ -26,6 +26,7 @@ EDIT:
 - i tempi di letterbyletter metterli nell'UtilityMonobehaviour come in pokemon? Tanto in un gioco la velocità è uguale per tutte le scritte
 - aggiungere il fade out e fade in della clip audio, come ho messo nell'audio manager di cube invaders
 - trasformare il fade in e fade fill come il letter by letter, quindi aggiungere le coroutine nell'utility monobehaviour
+- allo splash screen, mettere una bool per decidere se dev'essere premuto un tasto prima di fare il fade out
 - aggiungere il controllo degli input di cube invaders ?
 - mettere nella state machine una funzione per attivare Coroutine come ho fatto in pokemon ?
 ---
