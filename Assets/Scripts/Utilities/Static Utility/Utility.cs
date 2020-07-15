@@ -16,6 +16,22 @@
         }
 
         /// <summary>
+        /// create a copy of the array
+        /// </summary>
+        public static T[] CreateCopy<T>(this T[] array)
+        {
+            T[] newArray = new T[array.Length];
+
+            //add every element in new array
+            for (int i = 0; i < array.Length; i++)
+            {
+                newArray[i] = array[i];
+            }
+
+            return newArray;
+        }
+
+        /// <summary>
         /// create a copy of the list
         /// </summary>
         public static List<T> CreateCopy<T>(this List<T> list)
