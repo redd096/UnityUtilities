@@ -16,6 +16,9 @@
         [SerializeField] float waitBeforeStartFadeIn = 1;
         [Min(0)]
         [SerializeField] float timeToFadeIn = 1;
+
+        [SerializeField] bool pressToContinue = false;
+
         [Min(0)]
         [SerializeField] float waitBeforeStartFadeOut = 2;
         [Min(0)]
@@ -24,19 +27,11 @@
 
         void Start()
         {
-            // if null, try to find in scene
+            //if image is null, stop here
             if (image == null)
             {
-                Debug.LogWarning("Missing Image UI");
-
-                image = FindObjectOfType<Image>();
-
-                //if still null, stop here
-                if (image == null)
-                {
-                    Debug.LogError("Missing Image UI");
-                    return;
-                }
+                Debug.LogError("Missing Image UI");
+                return;
             }
 
             //start splash screen
@@ -69,6 +64,15 @@
                 //final alpha to 1
                 image.color = new Color(image.color.r, image.color.g, image.color.b, 1);
 
+                //wait until press any key down
+                if (pressToContinue)
+                {
+                    while (!Input.anyKeyDown)
+                    {
+                        yield return null;
+                    }
+                }
+
                 //wait before start fade out
                 yield return new WaitForSeconds(waitBeforeStartFadeOut);
 
@@ -87,18 +91,6 @@
 
             //load new scene
             UnityEngine.SceneManagement.SceneManager.LoadScene(nextSceneName);
-        }
-
-        float Fade(float from, float to, float delta, float duration)
-        {
-            //speed based to duration
-            delta += Time.deltaTime / duration;
-
-            //set alpha from to
-            float alpha = Mathf.Lerp(from, to, delta);
-            image.color = new Color(image.color.r, image.color.g, image.color.b, alpha);
-
-            return delta;
         }
     }
 }
