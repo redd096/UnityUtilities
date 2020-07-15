@@ -18,6 +18,8 @@ Poi quando si riempie si fa un foreach(if contains("NOMEVALORE: ") replace ("NOM
 
 - Pooling.cs
 ° metterlo anche come MonoBehaviour? Ha senso?
+° trovare come mettere GameObject parametro generico T come per Component (così da mantenere l'inizializzazione Pooling<T> pooling = new Pooling<T>)
+° InitCycle dovrebbe controllare se ci sono abbastanza elementi, ma solo tra quelli disattivati? In quel caso andrebbe modificato anche EndCycle
 
 EDIT:
 - in pokemon non ho utilizzato SceneLoader come nelle utilities, ma agganciandosi al GameManager -> da controllare
