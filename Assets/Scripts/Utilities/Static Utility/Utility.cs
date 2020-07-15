@@ -1,5 +1,6 @@
 ﻿namespace redd096
 {
+    using System.Collections.Generic;
     using UnityEngine;
     using UnityEngine.UI;
 
@@ -31,27 +32,44 @@
         }
 
         /// <summary>
-        /// create a copy of the array
+        /// create a copy of the dictionary (N.B. note a copy of the elements)
         /// </summary>
-        public static T[] CreateCopy<T>(this T[] array)
+        public static Dictionary<T, J> CreateCopy<T, J>(this Dictionary<T, J> dictionary)
         {
-            T[] newArray = new T[array.Length];
+            Dictionary<T, J> newDictionary = new Dictionary<T, J>();
 
-            //add every element in new array
-            for (int i = 0; i < array.Length; i++)
+            //add every element in new dictionary
+            foreach(T key in dictionary.Keys)
             {
-                newArray[i] = array[i];
+                newDictionary.Add(key, dictionary[key]);
             }
 
-            return newArray;
+            return newDictionary;
         }
     }
 
-    public static class Fade
+    public static class FadeImage
     {
-        #region private API
+        /// <summary>
+        /// Fade an image
+        /// </summary>
+        public static void Fade(this Image image, float from, float to, float duration, System.Action onEndFade = null)
+        {
+            UtilityMonoBehaviour.instance.Fade(image, from, to, duration, onEndFade);
+        }
 
-        static void Fade(this Image image, ref float delta, float from, float to, float duration)
+        /// <summary>
+        /// Fade an image with fillAmount
+        /// </summary>
+        public static void FadeFill(this Image image, float from, float to, float duration, System.Action onEndFade = null)
+        {
+            UtilityMonoBehaviour.instance.FadeFill(image, from, to, duration, onEndFade);
+        }
+
+        /// <summary>
+        /// Fade an image - to use in a coroutine
+        /// </summary>
+        public static void Set_Fade(this Image image, ref float delta, float from, float to, float duration)
         {
             //speed based to duration
             delta += Time.deltaTime / duration;
@@ -61,47 +79,16 @@
             image.color = new Color(image.color.r, image.color.g, image.color.b, alpha);
         }
 
-        static void Fade_Fill(this Image image, ref float delta, float from, float to, float duration)
+        /// <summary>
+        /// Fade an image with fillAmount - to use in a coroutine
+        /// </summary>
+        public static void Set_FadeFill(this Image image, ref float delta, float from, float to, float duration)
         {
             //speed based to duration
             delta += Time.deltaTime / duration;
 
             //set fill amout
             image.fillAmount = Mathf.Lerp(from, to, delta);
-        }
-
-        #endregion
-
-        /// <summary>
-        /// Use inside a coroutine (delta 0 to 1), for fade in (alpha from 0 to 1)
-        /// </summary>
-        public static void FadeIn(this Image image, ref float delta, float duration)
-        {
-            image.Fade(ref delta, 0, 1, duration);
-        }
-
-        /// <summary>
-        /// Use inside a coroutine (delta 0 to 1), for fade out (alpha from 1 to 0)
-        /// </summary>
-        public static void FadeOut(this Image image, ref float delta, float duration)
-        {
-            image.Fade(ref delta, 1, 0, duration);
-        }
-
-        /// <summary>
-        /// Use inside a coroutine (delta 0 to 1), for fade in (alpha from 0 to 1) with fillAmount
-        /// </summary>
-        public static void FadeIn_Fill(this Image image, ref float delta, float duration)
-        {
-            image.Fade_Fill(ref delta, 0, 1, duration);
-        }
-
-        /// <summary>
-        /// Use inside a coroutine (delta 0 to 1), for fade out (alpha from 1 to 0) with fillAmount
-        /// </summary>
-        public static void FadeOut_Fill(this Image image, ref float delta, float duration)
-        {
-            image.Fade_Fill(ref delta, 1, 0, duration);
         }
     }
 

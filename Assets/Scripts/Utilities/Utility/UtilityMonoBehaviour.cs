@@ -6,6 +6,8 @@
 
     public class UtilityMonoBehaviour : Singleton<UtilityMonoBehaviour>
     {
+        #region Write Letter By Letter
+
         #region private API
 
         /// <summary>
@@ -38,7 +40,7 @@
 
             }
 
-            //if wait or when player skip text
+            //if wait
             if (wait)
             {
                 //wait until press any key down
@@ -48,7 +50,7 @@
                 }
             }
 
-            //call a function on end write
+            //call a function on end
             onEndWrite?.Invoke();
         }
 
@@ -95,11 +97,13 @@
                 }
             }
 
-            //call a function on end write
+            //call a function on end
             onEndWrite?.Invoke();
         }
 
         #endregion
+
+        #region public API
 
         /// <summary>
         /// Write a text letter by letter, then wait input. When press to skip, accelerate speed
@@ -132,5 +136,61 @@
         {
             StartCoroutine(WriteLetterByLetter_Coroutine(textToSet, value, timeBetweenChar, onEndWrite, canSkip, false));
         }
+
+        #endregion
+
+        #endregion
+
+        #region Fade
+
+        #region private API
+
+        IEnumerator Fade_Coroutine(Image image, float from, float to, float duration, System.Action onEndFade, bool isNormalFade)
+        {
+            float delta = 0;
+
+            //from 0 to 1
+            while(delta < 1)
+            {
+                //fade or fade_fill
+                if(isNormalFade)
+                {
+                    image.Set_Fade(ref delta, from, to, duration);
+                }
+                else
+                {
+                    image.Set_FadeFill(ref delta, from, to, duration);
+                }
+
+                yield return null;
+            }
+
+            //call a function on end
+            onEndFade?.Invoke();
+        }
+
+        #endregion
+
+        #region public API
+
+        /// <summary>
+        /// Fade an image
+        /// </summary>
+        public void Fade(Image image, float from, float to, float duration, System.Action onEndFade = null)
+        {
+            StartCoroutine(Fade_Coroutine(image, from, to, duration, onEndFade, true));
+        }
+
+        /// <summary>
+        /// Fade an image with fillAmount
+        /// </summary>
+        public void FadeFill(Image image, float from, float to, float duration, System.Action onEndFade = null)
+        {
+            StartCoroutine(Fade_Coroutine(image, from, to, duration, onEndFade, false));
+        }
+
+        #endregion
+
+        #endregion
     }
 }

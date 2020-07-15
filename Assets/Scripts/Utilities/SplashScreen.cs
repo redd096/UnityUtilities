@@ -3,7 +3,6 @@
     using System.Collections;
     using UnityEngine;
     using UnityEngine.UI;
-    using UnityEngine.SceneManagement;
 
     [AddComponentMenu("redd096/Splash Screen")]
     public class SplashScreen : MonoBehaviour
@@ -62,7 +61,7 @@
                 float delta = 0;
                 while (delta < 1)
                 {
-                    image.FadeIn(ref delta, timeToFadeIn);
+                    image.Set_Fade(ref delta, 0, 1, timeToFadeIn);
 
                     yield return null;
                 }
@@ -77,18 +76,17 @@
                 delta = 0;
                 while (delta < 1)
                 {
-                    image.FadeOut(ref delta, timeToFadeOut);
+                    image.Set_Fade(ref delta, 1, 0, timeToFadeOut);
 
                     yield return null;
                 }
 
                 //final alpha to 0
                 image.color = new Color(image.color.r, image.color.g, image.color.b, 0);
-
             }
 
             //load new scene
-            SceneManager.LoadScene(nextSceneName);
+            UnityEngine.SceneManagement.SceneManager.LoadScene(nextSceneName);
         }
 
         float Fade(float from, float to, float delta, float duration)
