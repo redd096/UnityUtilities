@@ -26,6 +26,7 @@ EDIT:
 - aggiornare letterbyletter - in pokemon ho messo che checka se la coroutine sta già andando e la stoppa
 (NB: la voglio rendere generale, quindi probabilmente meglio un Dictionary di Text e la loro coroutine - è davvero meglio?)
 - i tempi di letterbyletter metterli nell'UtilityMonobehaviour come in pokemon? Tanto in un gioco la velocità è uguale per tutte le scritte
+(NB: in pokemon poi ho avuto bisogno di modificare il tempo di una sola scritta, quindi ho lasciato comunque le funzioni che richiedono il tempo come parametro)
 - aggiungere il fade out e fade in della clip audio, come ho messo nell'audio manager di cube invaders
 - aggiungere il controllo degli input di cube invaders ?
 - mettere nella state machine una funzione per attivare Coroutine come ho fatto in pokemon ?
@@ -33,3 +34,9 @@ EDIT:
 - aggiungere sia alle utilities che ai pokemon, negli event trigger una funzione per "snap"
   ° quando si clicca col mouse o touch, la scroll rect snappa verso il bottone, anche se magari è poco visibile
   ° o anche quando viene selezionato (così è utilizzabile anche da tastiera e pad)
+
+ANOTHER EDIT:
+- bisogna aggiungere il CameraBaseControl che sto usando in Sekiro-Combat-Style
+(aggiungere anche l'override da Gravity_Project per poter girare in base alla gravità?)
+- in CameraBaseControl vedere se si riesce a rendere Local la rotazione della camera, invece che globale come ora. In teoria poi non c'è nemmeno più bisogno dell'override
+(NB: guardare ControlloCamera presente in VoxBuster/voxelEngine/progettoBase/Script/Classi)
