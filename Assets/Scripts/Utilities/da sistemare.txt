@@ -39,4 +39,7 @@ ANOTHER EDIT:
 - bisogna aggiungere il CameraBaseControl che sto usando in Sekiro-Combat-Style
 (aggiungere anche l'override da Gravity_Project per poter girare in base alla gravità?)
 - in CameraBaseControl vedere se si riesce a rendere Local la rotazione della camera, invece che globale come ora. In teoria poi non c'è nemmeno più bisogno dell'override
+(NB: sto utilizzando una camera che non è per forza figlia del player, quindi si controllerà sempre global, ma con dei calcoli come se fossi local)
+- farla funzionare come cinemachine per la terza persona, perché per ora con l'offset si rompe quando si guarda in alto o in basso
 (NB: guardare ControlloCamera presente in VoxBuster/voxelEngine/progettoBase/Script/Classi)
+- aggiungere che collide coi muri o oggetti e si avvicina al player

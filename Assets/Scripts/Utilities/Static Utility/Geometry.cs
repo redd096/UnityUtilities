@@ -126,6 +126,14 @@
         }
 
         /// <summary>
+        /// Return the local direction using inverse rotation. Used for example to transform rigidbody.velocity to local velocity
+        /// </summary>
+        public static Vector3 WorldToInverseLocalDirection(Vector3 worldDirection, Quaternion rotation)
+        {
+            return Quaternion.Inverse(rotation) * worldDirection;
+        }
+
+        /// <summary>
         /// Return the world direction
         /// </summary>
         public static Vector3 LocalToWorldDirection(Vector3 localDirection)
