@@ -23,10 +23,15 @@
             if (state != null)
                 StartCoroutine(state.Enter());
         }
-    }
 
-    //void Update()
-    //{
-    //    state?.Execution();
-    //}
+        //void Start()
+        //{
+        //    SetState(new PlayerState(this));
+        //}
+        
+        //void Update()
+        //{
+        //    state?.Execution();
+        //}
+    }
 }
