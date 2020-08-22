@@ -16,6 +16,32 @@
         }
 
         /// <summary>
+        /// Find collider nearest to position
+        /// </summary>
+        public static Collider FindNearest(Collider[] list, Vector3 position)
+        {
+            Collider nearest = null;
+            float distance = Mathf.Infinity;
+
+            //foreach collider
+            foreach (Collider col in list)
+            {
+                //check distance to find nearest
+                float newDistance = Vector3.Distance(col.transform.position, position);
+                if (newDistance < distance)
+                {
+                    distance = newDistance;
+                    nearest = col;
+                }
+            }
+
+            return nearest;
+        }
+    }
+
+    public static class Extensions
+    {
+        /// <summary>
         /// create a copy of the array
         /// </summary>
         public static T[] CreateCopy<T>(this T[] array)
@@ -48,14 +74,14 @@
         }
 
         /// <summary>
-        /// create a copy of the dictionary (N.B. note a copy of the elements)
+        /// create a copy of the dictionary (N.B. a copy of dictionary, not elements neither keys)
         /// </summary>
         public static Dictionary<T, J> CreateCopy<T, J>(this Dictionary<T, J> dictionary)
         {
             Dictionary<T, J> newDictionary = new Dictionary<T, J>();
 
             //add every element in new dictionary
-            foreach(T key in dictionary.Keys)
+            foreach (T key in dictionary.Keys)
             {
                 newDictionary.Add(key, dictionary[key]);
             }
