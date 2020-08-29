@@ -21,12 +21,12 @@
         }
 
         /// <summary>
-        /// If greater than max, subtract 360 to get negative value
+        /// If greater than 180, subtract 360 to get negative value
         /// </summary>
         public static float NegativeAngle(float angle, float min, float max)
         {
             //maybe we need negative value, like -90 instead of 270, for example with clamp from -90 to 90
-            if (angle > max)
+            if (angle > 180)
                 angle -= 360;
 
             return Mathf.Clamp(angle, min, max); ;
