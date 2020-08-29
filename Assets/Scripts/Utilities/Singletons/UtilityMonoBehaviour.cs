@@ -4,6 +4,7 @@
     using UnityEngine;
     using UnityEngine.UI;
 
+    [AddComponentMenu("redd096/Singletons/Utility MonoBehaviour")]
     public class UtilityMonoBehaviour : Singleton<UtilityMonoBehaviour>
     {
         #region Write Letter By Letter

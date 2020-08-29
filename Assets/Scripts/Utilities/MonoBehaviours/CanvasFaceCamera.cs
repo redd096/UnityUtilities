@@ -2,6 +2,7 @@
 {
     using UnityEngine;
 
+    [AddComponentMenu("redd096/MonoBehaviours/Canvas Face Camera")]
     public class CanvasFaceCamera : MonoBehaviour
     {
         [Header("Important")]

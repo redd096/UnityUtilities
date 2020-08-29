@@ -4,7 +4,7 @@
     using UnityEngine;
     using UnityEngine.UI;
 
-    [AddComponentMenu("redd096/Splash Screen")]
+    [AddComponentMenu("redd096/MonoBehaviours/Splash Screen")]
     public class SplashScreen : MonoBehaviour
     {
         [Header("Image and Sprites")]
