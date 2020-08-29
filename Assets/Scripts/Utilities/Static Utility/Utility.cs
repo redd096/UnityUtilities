@@ -18,13 +18,13 @@
         /// <summary>
         /// Find collider nearest to position
         /// </summary>
-        public static Collider FindNearest(Collider[] list, Vector3 position)
+        public static Collider FindNearest(Collider[] colliders, Vector3 position)
         {
             Collider nearest = null;
             float distance = Mathf.Infinity;
 
             //foreach collider
-            foreach (Collider col in list)
+            foreach (Collider col in colliders)
             {
                 //check distance to find nearest
                 float newDistance = Vector3.Distance(col.transform.position, position);
