@@ -14,9 +14,9 @@
         /// <summary>
         /// Function called when enter in this state (before of Enter). You can use it instead of constructor for example when use serialized states
         /// </summary>
-        public virtual void Awake(StateMachine stateMachine)
+        public virtual void AwakeState(StateMachine stateMachine)
         {
-            //this.stateMachine = stateMachine;
+            this.stateMachine = stateMachine;
         }
 
         /// <summary>

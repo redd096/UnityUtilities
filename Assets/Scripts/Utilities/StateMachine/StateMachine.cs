@@ -21,7 +21,7 @@
             //enter in new one
             if (state != null)
             {
-                state.Awake(this);
+                state.AwakeState(this);
                 StartCoroutine(state.Enter());
             }
         }
