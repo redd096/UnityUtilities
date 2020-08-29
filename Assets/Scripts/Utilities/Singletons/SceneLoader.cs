@@ -66,5 +66,18 @@
             //load new scene
             SceneManager.LoadScene(scene);
         }
+
+        /// <summary>
+        /// Load next scene in build settings
+        /// </summary>
+        public void LoadNextScene()
+        {
+            //show cursor and set timeScale to 1
+            Utility.LockMouse(CursorLockMode.None);
+            Time.timeScale = 1;
+
+            //load next scene
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        }
     }
 }
