@@ -26,6 +26,10 @@
             //foreach collider
             foreach (Collider col in colliders)
             {
+                //only if there is collider
+                if (col == null)
+                    continue;
+
                 //check distance to find nearest
                 float newDistance = Vector3.Distance(col.transform.position, position);
                 if (newDistance < distance)
