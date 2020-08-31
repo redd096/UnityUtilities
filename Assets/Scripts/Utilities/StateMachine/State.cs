@@ -1,7 +1,5 @@
 ﻿namespace redd096
 {
-    using System.Collections;
-
     public abstract class State
     {
         protected StateMachine stateMachine;
@@ -22,9 +20,9 @@
         /// <summary>
         /// Function called when enter in this state
         /// </summary>
-        public virtual IEnumerator Enter()
+        public virtual void Enter()
         {
-            yield break;
+
         }
 
         /// <summary>
@@ -38,9 +36,9 @@
         /// <summary>
         /// Function called when exit from this state
         /// </summary>
-        public virtual IEnumerator Exit()
+        public virtual void Exit()
         {
-            yield break;
+
         }
     }
 }

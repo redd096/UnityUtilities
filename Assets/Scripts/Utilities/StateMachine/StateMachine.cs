@@ -13,7 +13,7 @@
         {
             //exit from previous
             if (state != null)
-                StartCoroutine(state.Exit());
+                state.Exit();
 
             //set new one
             state = stateToSet;
@@ -22,7 +22,7 @@
             if (state != null)
             {
                 state.AwakeState(this);
-                StartCoroutine(state.Enter());
+                state.Enter();
             }
         }
     }
