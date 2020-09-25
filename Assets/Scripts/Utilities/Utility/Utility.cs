@@ -43,8 +43,10 @@
         }
     }
 
-    public static class Extensions
+    public static class Collections
     {
+        #region create copy
+
         /// <summary>
         /// create a copy of the array
         /// </summary>
@@ -92,6 +94,78 @@
 
             return newDictionary;
         }
+
+        #endregion
+
+        #region set parent
+
+        /// <summary>
+        /// set parent for every element in the array
+        /// </summary>
+        public static void SetParent<T>(this T[] array, Transform parent, bool worldPositionStays = true) where T : Component
+        {
+            foreach (T c in array)
+            {
+                c.transform.SetParent(parent, worldPositionStays);
+            }
+        }
+
+        /// <summary>
+        /// set parent for every element in the array
+        /// </summary>
+        public static void SetParent(this GameObject[] array, Transform parent, bool worldPositionStays = true)
+        {
+            foreach (GameObject c in array)
+            {
+                c.transform.SetParent(parent, worldPositionStays);
+            }
+        }
+
+        /// <summary>
+        /// set parent for every element in the list
+        /// </summary>
+        public static void SetParent<T>(this List<T> list, Transform parent, bool worldPositionStays = true) where T : Component
+        {
+            foreach (T c in list)
+            {
+                c.transform.SetParent(parent, worldPositionStays);
+            }
+        }
+
+        /// <summary>
+        /// set parent for every element in the list
+        /// </summary>
+        public static void SetParent(this List<GameObject> list, Transform parent, bool worldPositionStays = true)
+        {
+            foreach (GameObject c in list)
+            {
+                c.transform.SetParent(parent, worldPositionStays);
+            }
+        }
+
+        /// <summary>
+        /// set parent for every element in the dictionary
+        /// </summary>
+        public static void SetParent<T, J>(this Dictionary<T, J> dictionary, Transform parent, bool worldPositionStays = true) where J : Component
+        {
+            foreach (T key in dictionary.Keys)
+            {
+                dictionary[key].transform.SetParent(parent, worldPositionStays);
+            }
+        }
+
+        /// <summary>
+        /// set parent for every element in the dictionary
+        /// </summary>
+        public static void SetParent<T>(this Dictionary<T, GameObject> dictionary, Transform parent, bool worldPositionStays = true)
+        {
+            foreach (T key in dictionary.Keys)
+            {
+                dictionary[key].transform.SetParent(parent, worldPositionStays);
+            }
+        }
+
+        #endregion
     }
 
     public static class FadeImage
