@@ -101,7 +101,7 @@
         /// </summary>
         public static void Fade(this Image image, float from, float to, float duration, System.Action onEndFade = null)
         {
-            UtilityMonoBehaviour.instance.Fade(image, from, to, duration, onEndFade);
+            UtilitySingleton.instance.Fade(image, from, to, duration, onEndFade);
         }
 
         /// <summary>
@@ -109,7 +109,7 @@
         /// </summary>
         public static void FadeFill(this Image image, float from, float to, float duration, System.Action onEndFade = null)
         {
-            UtilityMonoBehaviour.instance.FadeFill(image, from, to, duration, onEndFade);
+            UtilitySingleton.instance.FadeFill(image, from, to, duration, onEndFade);
         }
 
         /// <summary>
@@ -145,7 +145,7 @@
         /// </summary>
         public static void WriteLetterByLetterAndWait(this Text textToSet, string value, float timeBetweenChar, float skipSpeed, System.Action onEndWrite = null, bool canSkip = true)
         {
-            UtilityMonoBehaviour.instance.WriteLetterByLetterAndWait(textToSet, value, timeBetweenChar, skipSpeed, onEndWrite, canSkip);
+            UtilitySingleton.instance.WriteLetterByLetterAndWait(textToSet, value, timeBetweenChar, skipSpeed, onEndWrite, canSkip);
         }
 
         /// <summary>
@@ -153,7 +153,7 @@
         /// </summary>
         public static void WriteLetterByLetterAndWait(this Text textToSet, string value, float timeBetweenChar, System.Action onEndWrite = null, bool canSkip = true)
         {
-            UtilityMonoBehaviour.instance.WriteLetterByLetterAndWait(textToSet, value, timeBetweenChar, onEndWrite, canSkip);
+            UtilitySingleton.instance.WriteLetterByLetterAndWait(textToSet, value, timeBetweenChar, onEndWrite, canSkip);
         }
 
         /// <summary>
@@ -161,7 +161,7 @@
         /// </summary>
         public static void WriteLetterByLetter(this Text textToSet, string value, float timeBetweenChar, float skipSpeed, System.Action onEndWrite = null, bool canSkip = true)
         {
-            UtilityMonoBehaviour.instance.WriteLetterByLetter(textToSet, value, timeBetweenChar, skipSpeed, onEndWrite, canSkip);
+            UtilitySingleton.instance.WriteLetterByLetter(textToSet, value, timeBetweenChar, skipSpeed, onEndWrite, canSkip);
         }
 
         /// <summary>
@@ -169,7 +169,7 @@
         /// </summary>
         public static void WriteLetterByLetter(this Text textToSet, string value, float timeBetweenChar, System.Action onEndWrite = null, bool canSkip = true)
         {
-            UtilityMonoBehaviour.instance.WriteLetterByLetter(textToSet, value, timeBetweenChar, onEndWrite, canSkip);
+            UtilitySingleton.instance.WriteLetterByLetter(textToSet, value, timeBetweenChar, onEndWrite, canSkip);
         }
     }
 }
