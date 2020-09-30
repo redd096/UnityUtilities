@@ -15,32 +15,63 @@
             Cursor.visible = lockMode != CursorLockMode.Locked;
         }
 
+        #region find nearest
+
         /// <summary>
-        /// Find collider nearest to position
+        /// Find nearest to position
         /// </summary>
-        public static Collider FindNearest(Collider[] colliders, Vector3 position)
+        public static T FindNearest<T>(this T[] array, Vector3 position) where T : Component
         {
-            Collider nearest = null;
+            T nearest = default;
             float distance = Mathf.Infinity;
 
-            //foreach collider
-            foreach (Collider col in colliders)
+            //foreach element in the array
+            foreach (T element in array)
             {
-                //only if there is collider
-                if (col == null)
+                //only if there is element
+                if (element == null)
                     continue;
 
                 //check distance to find nearest
-                float newDistance = Vector3.Distance(col.transform.position, position);
+                float newDistance = Vector3.Distance(element.transform.position, position);
                 if (newDistance < distance)
                 {
                     distance = newDistance;
-                    nearest = col;
+                    nearest = element;
                 }
             }
 
             return nearest;
         }
+
+        /// <summary>
+        /// Find nearest to position
+        /// </summary>
+        public static GameObject FindNearest(this GameObject[] array, Vector3 position)
+        {
+            GameObject nearest = default;
+            float distance = Mathf.Infinity;
+
+            //foreach element in the array
+            foreach (GameObject element in array)
+            {
+                //only if there is element
+                if (element == null)
+                    continue;
+
+                //check distance to find nearest
+                float newDistance = Vector3.Distance(element.transform.position, position);
+                if (newDistance < distance)
+                {
+                    distance = newDistance;
+                    nearest = element;
+                }
+            }
+
+            return nearest;
+        }
+
+        #endregion
     }
 
     public static class Collections
