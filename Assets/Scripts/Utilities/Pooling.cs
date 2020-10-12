@@ -101,6 +101,12 @@
             //get the first inactive and return
             foreach (GameObject obj in PooledObjects)
             {
+                if(obj == null)
+                {
+                    Debug.LogWarning("Pool object is destroyed");
+                    continue;
+                }
+
                 if (obj.activeInHierarchy == false)
                 {
                     obj.SetActive(true);
@@ -132,8 +138,11 @@
             //return obj but with position and rotation set
             GameObject obj = Instantiate(prefab);
 
-            obj.transform.position = position;
-            obj.transform.rotation = rotation;
+            if (obj != null)
+            {
+                obj.transform.position = position;
+                obj.transform.rotation = rotation;
+            }
 
             return obj;
         }
@@ -148,7 +157,10 @@
             //return obj but with position and rotation set
             GameObject obj = Instantiate(prefab);
 
-            obj.transform.SetParent(parent);
+            if (obj != null)
+            {
+                obj.transform.SetParent(parent);
+            }
 
             return obj;
         }
@@ -163,7 +175,10 @@
             //return obj but with position and rotation set
             GameObject obj = Instantiate(prefab);
 
-            obj.transform.SetParent(parent, worldPositionStays);
+            if (obj != null)
+            {
+                obj.transform.SetParent(parent, worldPositionStays);
+            }
 
             return obj;
         }
@@ -288,6 +303,12 @@
             //get the first inactive and return
             foreach (T obj in PooledObjects)
             {
+                if (obj == null)
+                {
+                    Debug.LogWarning("Pool object is destroyed");
+                    continue;
+                }
+
                 if (obj.gameObject.activeInHierarchy == false)
                 {
                     obj.gameObject.SetActive(true);
@@ -319,8 +340,11 @@
             //return obj but with position and rotation set
             T obj = Instantiate(prefab);
 
-            obj.transform.position = position;
-            obj.transform.rotation = rotation;
+            if (obj != null)
+            {
+                obj.transform.position = position;
+                obj.transform.rotation = rotation;
+            }
 
             return obj;
         }
@@ -335,7 +359,10 @@
             //return obj but with position and rotation set
             T obj = Instantiate(prefab);
 
-            obj.transform.SetParent(parent);
+            if (obj != null)
+            {
+                obj.transform.SetParent(parent);
+            }
 
             return obj;
         }
@@ -350,7 +377,10 @@
             //return obj but with position and rotation set
             T obj = Instantiate(prefab);
 
-            obj.transform.SetParent(parent, worldPositionStays);
+            if (obj != null)
+            {
+                obj.transform.SetParent(parent, worldPositionStays);
+            }
 
             return obj;
         }
