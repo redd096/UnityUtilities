@@ -16,6 +16,9 @@ Poi quando si riempie si fa un foreach(if contains("NOMEVALORE: ") replace ("NOM
 - Utility/Raycasts.cs
 ° è fatto unicamente per gravity project, andrebbe riadattato
 
+- Utility/Geometry.cs
+° TransformRot e RotatedIdentity sono creati per gravity project, andrebbero modificati (usando ad esempio forward invece di up)
+
 - Pooling.cs
 ° metterlo anche come MonoBehaviour? Ha senso?
 ° trovare come mettere GameObject parametro generico T come per Component (così da mantenere l'inizializzazione Pooling<T> pooling = new Pooling<T>)
