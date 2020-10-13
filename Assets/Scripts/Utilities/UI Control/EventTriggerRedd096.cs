@@ -43,5 +43,21 @@
         {
             GetComponent<Image>().color = colorValue.Color;
         }
+
+        /// <summary>
+        /// Set position
+        /// </summary>
+        public void SetPosition(Vector3UIControl position)
+        {
+            transform.position = position.Vector3;
+        }
+
+        /// <summary>
+        /// Set local position
+        /// </summary>
+        public void SetLocalPosition(Vector3UIControl localPosition)
+        {
+            transform.localPosition = localPosition.Vector3;
+        }
     }
 }
