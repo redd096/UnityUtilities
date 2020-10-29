@@ -5,29 +5,35 @@
 
     public class EventListener : MonoBehaviour
     {
-        [Header("Put scriptable object on Listener and Subscriber")]
-        [SerializeField] EventRedd096 eventToSubscribe = default;
+        [Header("Collisions")]
+        [SerializeField] bool onCollisionEnter = false;
+        [SerializeField] bool onTriggerEnter = false;
 
         [Header("Event to set")]
         [SerializeField] UnityEvent response = new UnityEvent();
 
-        void OnEnable()
-        {
-            eventToSubscribe.Add(this);
-        }
-
-        void OnDisable()
-        {
-            eventToSubscribe.Remove(this);
-        }
-
         /// <summary>
-        /// When event occurs, this function is called
+        /// Call this function to invoke event
         /// </summary>
-        public void OnEventOccurs()
+        public void InvokeEvent()
         {
             response.Invoke();
         }
 
+        void OnCollisionEnter(Collision collision)
+        {
+            if (onCollisionEnter)
+            {
+                InvokeEvent();
+            }
+        }
+
+        void OnTriggerEnter(Collider other)
+        {
+            if(onTriggerEnter)
+            {
+                InvokeEvent();
+            }
+        }
     }
 }
