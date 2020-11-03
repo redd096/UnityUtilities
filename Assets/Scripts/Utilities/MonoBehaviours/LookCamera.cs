@@ -12,8 +12,8 @@
         [Header("Override, if you don't want to use defaults")]
         [Tooltip("Default is main camera")]
         [SerializeField] Camera cam;
-        [Tooltip("Default is this gameObject")]
-        [SerializeField] GameObject objectToRotate;
+        [Tooltip("Default is this transform")]
+        [SerializeField] Transform transformToRotate;
 
         void Start()
         {
@@ -22,27 +22,27 @@
                 cam = Camera.main;
 
             //get this gameObject
-            if (objectToRotate == null)
-                objectToRotate = gameObject;
+            if (transformToRotate == null)
+                transformToRotate = transform;
         }
 
         void Update()
         {
-            if (cam && objectToRotate)
+            if (cam && transformToRotate)
             {
                 //look at camera
                 Vector3 cameraPosition = cam.transform.position;
 
                 //ignore y axis
                 if (ignoreYAxis)
-                    cameraPosition.y = objectToRotate.transform.position.y;
+                    cameraPosition.y = transformToRotate.position.y;
 
                 //get look rotation
-                Vector3 direction = cameraPosition - objectToRotate.transform.position;
+                Vector3 direction = cameraPosition - transformToRotate.position;
                 Quaternion rotation = Quaternion.LookRotation(direction, Vector3.up);
 
                 //set rotation
-                objectToRotate.transform.rotation = rotation;
+                transformToRotate.rotation = rotation;
             }
         }
     }
