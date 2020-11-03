@@ -6,8 +6,6 @@
     public class CanvasFaceCamera : MonoBehaviour
     {
         [Header("Important")]
-        [Tooltip("Enable or disable Update")]
-        [SerializeField] bool lookAlwaysCamera = true;
         [Tooltip("Don't follow y axis of the camera (up or down)")]
         [SerializeField] bool ignoreYAxis = false;
 
@@ -29,25 +27,29 @@
 
             //set world camera
             canvas.worldCamera = cam;
-
-            //if not look to camera, disable update - else enable it
-            this.enabled = lookAlwaysCamera;
         }
 
         void Update()
         {
-            if (cam)
+            if (cam && canvas)
             {
                 //look at camera
-                Vector3 position = cam.transform.position;
+                Vector3 cameraPosition = cam.transform.position;
 
                 //ignore y axis
                 if (ignoreYAxis)
-                    position.y = canvas.transform.position.y;
+                    cameraPosition.y = canvas.transform.position.y;
+
+                //get look rotation
+                Vector3 direction = cameraPosition - canvas.transform.position;
+                Quaternion rotation = Quaternion.LookRotation(direction, Vector3.up);
+
+                //set rotation
+                canvas.transform.rotation = rotation;
 
                 //look at camera, but rotate 180 to look same direction (so left of the camera is the same of canvas left)
-                canvas.transform.LookAt(position);
-                canvas.transform.Rotate(0, 180, 0);
+                //canvas.transform.LookAt(cameraPosition);
+                //canvas.transform.Rotate(0, 180, 0);
             }
         }
     }
