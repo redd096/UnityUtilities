@@ -71,6 +71,60 @@
             return nearest;
         }
 
+        /// <summary>
+        /// Find nearest to position
+        /// </summary>
+        public static T FindNearest<T>(this List<T> list, Vector3 position) where T : Component
+        {
+            T nearest = default;
+            float distance = Mathf.Infinity;
+
+            //foreach element in the list
+            foreach (T element in list)
+            {
+                //only if there is element
+                if (element == null)
+                    continue;
+
+                //check distance to find nearest
+                float newDistance = Vector3.Distance(element.transform.position, position);
+                if (newDistance < distance)
+                {
+                    distance = newDistance;
+                    nearest = element;
+                }
+            }
+
+            return nearest;
+        }
+
+        /// <summary>
+        /// Find nearest to position
+        /// </summary>
+        public static GameObject FindNearest(this List<GameObject> list, Vector3 position)
+        {
+            GameObject nearest = default;
+            float distance = Mathf.Infinity;
+
+            //foreach element in the list
+            foreach (GameObject element in list)
+            {
+                //only if there is element
+                if (element == null)
+                    continue;
+
+                //check distance to find nearest
+                float newDistance = Vector3.Distance(element.transform.position, position);
+                if (newDistance < distance)
+                {
+                    distance = newDistance;
+                    nearest = element;
+                }
+            }
+
+            return nearest;
+        }
+
         #endregion
     }
 
