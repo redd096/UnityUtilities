@@ -11,13 +11,15 @@
         /// </summary>
         public void ResumeGame()
         {
-            //hide pause menu and enable player input
+            //hide pause menu
             GameManager.instance.uiManager.PauseMenu(false);
-            GameManager.instance.player.enabled = true;
 
-            //hide cursor and set timeScale to 1
-            Utility.LockMouse(CursorLockMode.Locked);
+            //set timeScale to 1
             Time.timeScale = 1;
+
+            //enable player input and hide cursor
+            //GameManager.instance.player.enabled = true;
+            //Utility.LockMouse(CursorLockMode.Locked);
         }
 
         /// <summary>
@@ -25,13 +27,15 @@
         /// </summary>
         public void PauseGame()
         {
-            //show pause menu and disable player input
+            //show pause menu
             GameManager.instance.uiManager.PauseMenu(true);
-            GameManager.instance.player.enabled = false;
 
-            //show cursor and stop time
-            Utility.LockMouse(CursorLockMode.None);
+            //stop time
             Time.timeScale = 0;
+
+            //disable player input and show cursor
+            //GameManager.instance.player.enabled = false;
+            //Utility.LockMouse(CursorLockMode.None);
         }
 
         /// <summary>
