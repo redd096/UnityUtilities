@@ -56,6 +56,7 @@
         public void RestartGame()
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            Time.timeScale = 1;
         }
 
         /// <summary>
@@ -64,7 +65,7 @@
         public void LoadNewScene(string scene)
         {
             //show cursor and set timeScale to 1
-            Utility.LockMouse(CursorLockMode.None);
+            //Utility.LockMouse(CursorLockMode.None);
             Time.timeScale = 1;
 
             //load new scene
@@ -77,7 +78,7 @@
         public void LoadNextScene()
         {
             //show cursor and set timeScale to 1
-            Utility.LockMouse(CursorLockMode.None);
+            //Utility.LockMouse(CursorLockMode.None);
             Time.timeScale = 1;
 
             //load next scene
