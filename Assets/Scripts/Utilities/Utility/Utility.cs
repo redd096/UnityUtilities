@@ -6,14 +6,32 @@
 
     public static class Utility
     {
+        #region general
+
         /// <summary>
-        /// set lockState, and visible only when not locked
+        /// Set lockState, and visible only when not locked
         /// </summary>
         public static void LockMouse(CursorLockMode lockMode)
         {
             Cursor.lockState = lockMode;
             Cursor.visible = lockMode != CursorLockMode.Locked;
         }
+
+        /// <summary>
+        /// Remap a value min and max
+        /// </summary>
+        /// <param name="value">Value to remap</param>
+        /// <param name="from_prev">Previous minimum value</param>
+        /// <param name="to_prev">Previous maximum value</param>
+        /// <param name="from_new">New minimum value</param>
+        /// <param name="to_new">New max value</param>
+        /// <returns></returns>
+        public static float Remap(this float value, float from_prev, float to_prev, float from_new, float to_new)
+        {
+            return (value - from_prev) / (to_prev - from_prev) * (to_new - from_new) + from_new;
+        }
+
+        #endregion
 
         #region find nearest
 
@@ -133,7 +151,7 @@
         #region create copy
 
         /// <summary>
-        /// create a copy of the array
+        /// Create a copy of the array
         /// </summary>
         public static T[] CreateCopy<T>(this T[] array)
         {
@@ -149,7 +167,7 @@
         }
 
         /// <summary>
-        /// create a copy of the list
+        /// Create a copy of the list
         /// </summary>
         public static List<T> CreateCopy<T>(this List<T> list)
         {
@@ -165,7 +183,7 @@
         }
 
         /// <summary>
-        /// create a copy of the dictionary (N.B. a copy of dictionary, not elements neither keys)
+        /// Create a copy of the dictionary (N.B. a copy of dictionary, not elements neither keys)
         /// </summary>
         public static Dictionary<T, J> CreateCopy<T, J>(this Dictionary<T, J> dictionary)
         {
@@ -185,7 +203,7 @@
         #region set parent
 
         /// <summary>
-        /// set parent for every element in the array
+        /// Set parent for every element in the array
         /// </summary>
         public static void SetParent<T>(this T[] array, Transform parent, bool worldPositionStays = true) where T : Component
         {
@@ -196,7 +214,7 @@
         }
 
         /// <summary>
-        /// set parent for every element in the array
+        /// Set parent for every element in the array
         /// </summary>
         public static void SetParent(this GameObject[] array, Transform parent, bool worldPositionStays = true)
         {
@@ -207,7 +225,7 @@
         }
 
         /// <summary>
-        /// set parent for every element in the list
+        /// Set parent for every element in the list
         /// </summary>
         public static void SetParent<T>(this List<T> list, Transform parent, bool worldPositionStays = true) where T : Component
         {
@@ -218,7 +236,7 @@
         }
 
         /// <summary>
-        /// set parent for every element in the list
+        /// Set parent for every element in the list
         /// </summary>
         public static void SetParent(this List<GameObject> list, Transform parent, bool worldPositionStays = true)
         {
@@ -229,7 +247,7 @@
         }
 
         /// <summary>
-        /// set parent for every element in the dictionary
+        /// Set parent for every element in the dictionary
         /// </summary>
         public static void SetParent<T, J>(this Dictionary<T, J> dictionary, Transform parent, bool worldPositionStays = true) where J : Component
         {
@@ -240,7 +258,7 @@
         }
 
         /// <summary>
-        /// set parent for every element in the dictionary
+        /// Set parent for every element in the dictionary
         /// </summary>
         public static void SetParent<T>(this Dictionary<T, GameObject> dictionary, Transform parent, bool worldPositionStays = true)
         {
