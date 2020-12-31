@@ -143,6 +143,62 @@
             return nearest;
         }
 
+        /// <summary>
+        /// Find nearest to position
+        /// </summary>
+        public static T FindNearest<K, T>(this Dictionary<K, T> dictionary, Vector3 position, out K key) where T : Component
+        {
+            K nearestKey = default;
+            float distance = Mathf.Infinity;
+
+            //foreach element in the dictionary
+            foreach (K elementKey in dictionary.Keys)
+            {
+                //only if there is element
+                if (dictionary[elementKey] == null)
+                    continue;
+
+                //check distance to find nearest
+                float newDistance = Vector3.Distance(dictionary[elementKey].transform.position, position);
+                if (newDistance < distance)
+                {
+                    distance = newDistance;
+                    nearestKey = elementKey;
+                }
+            }
+
+            key = nearestKey;
+            return dictionary[nearestKey];
+        }
+
+        /// <summary>
+        /// Find nearest to position
+        /// </summary>
+        public static GameObject FindNearest<K>(this Dictionary<K, GameObject> dictionary, Vector3 position, out K key)
+        {
+            K nearestKey = default;
+            float distance = Mathf.Infinity;
+
+            //foreach element in the dictionary
+            foreach (K elementKey in dictionary.Keys)
+            {
+                //only if there is element
+                if (dictionary[elementKey] == null)
+                    continue;
+
+                //check distance to find nearest
+                float newDistance = Vector3.Distance(dictionary[elementKey].transform.position, position);
+                if (newDistance < distance)
+                {
+                    distance = newDistance;
+                    nearestKey = elementKey;
+                }
+            }
+
+            key = nearestKey;
+            return dictionary[nearestKey];
+        }
+
         #endregion
     }
 
