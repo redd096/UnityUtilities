@@ -27,5 +27,15 @@
                 state.Enter();
             }
         }
+
+        protected virtual void Update()
+        {
+            state?.Update();
+        }
+        
+        protected virtual void FixedUpdate()
+        {
+            state?.FixedUpdate();
+        }
     }
 }
