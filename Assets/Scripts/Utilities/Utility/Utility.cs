@@ -327,6 +327,73 @@
         #endregion
     }
 
+    public static class ExtendVectors
+    {
+        /// <summary>
+        /// Sum return Vector2
+        /// </summary>
+        public static Vector2 SumVectors(this Vector2 first, Vector3 second)
+        {
+            return new Vector2(first.x + second.x, first.y + second.y);
+        }
+
+        /// <summary>
+        /// Sum return Vector3
+        /// </summary>
+        public static Vector3 SumVectors(this Vector3 first, Vector2 second)
+        {
+            return new Vector3(first.x + second.x, first.y + second.y, first.z);
+        }
+
+        /// <summary>
+        /// Subtraction return Vector2
+        /// </summary>
+        public static Vector2 SubtractVectors(this Vector2 first, Vector3 second)
+        {
+            return new Vector2(first.x - second.x, first.y - second.y);
+        }
+
+        /// <summary>
+        /// Subtraction return Vector3
+        /// </summary>
+        public static Vector3 SubtractVectors(this Vector3 first, Vector2 second)
+        {
+            return new Vector3(first.x - second.x, first.y - second.y, first.z);
+        }
+
+        /// <summary>
+        /// Multiplication return Vector2
+        /// </summary>
+        public static Vector2 MultiplyVectors(this Vector2 first, Vector3 second)
+        {
+            return new Vector2(first.x * second.x, first.y * second.y);
+        }
+
+        /// <summary>
+        /// Multiplication return Vector3
+        /// </summary>
+        public static Vector3 MultiplyVectors(this Vector3 first, Vector2 second)
+        {
+            return new Vector3(first.x * second.x, first.y * second.y, first.z);
+        }
+
+        /// <summary>
+        /// Division return Vector2
+        /// </summary>
+        public static Vector2 DivideVectors(this Vector2 first, Vector3 second)
+        {
+            return new Vector2(first.x / second.x, first.y / second.y);
+        }
+
+        /// <summary>
+        /// Division return Vector3
+        /// </summary>
+        public static Vector3 DivideVectors(this Vector3 first, Vector2 second)
+        {
+            return new Vector3(first.x / second.x, first.y / second.y, first.z);
+        }
+    }
+
     public static class FadeImage
     {
         /// <summary>

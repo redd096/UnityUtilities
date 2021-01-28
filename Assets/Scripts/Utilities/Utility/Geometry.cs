@@ -29,7 +29,7 @@
             if (angle > 180)
                 angle -= 360;
 
-            return Mathf.Clamp(angle, min, max); ;
+            return Mathf.Clamp(angle, min, max);
         }
     }
 

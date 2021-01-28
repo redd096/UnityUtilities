@@ -164,5 +164,13 @@
 
             return true;
         }
+
+        /// <summary>
+        /// Check if this layer is inside layerMask
+        /// </summary>
+        public static bool ContainsLayer(this LayerMask layerMask, int layerToCompare)
+        {
+            return layerMask.value == 1 << layerToCompare;
+        }
     }
 }
