@@ -4,13 +4,8 @@
     {
         protected StateMachine stateMachine;
 
-        public State(StateMachine stateMachine)
-        {
-            this.stateMachine = stateMachine;
-        }
-
         /// <summary>
-        /// Function called when enter in this state (before of Enter). You can use it instead of constructor for example when use serialized states
+        /// Function called when enter in this state (before of Enter). This one is used by default to set stateMachine
         /// </summary>
         public virtual void AwakeState(StateMachine stateMachine)
         {
@@ -28,7 +23,15 @@
         /// <summary>
         /// Function to call in Update()
         /// </summary>
-        public virtual void Execution()
+        public virtual void Update()
+        {
+
+        }
+
+        /// <summary>
+        /// Function to call in FixedUpdate()
+        /// </summary>
+        public virtual void FixedUpdate()
         {
 
         }

@@ -9,8 +9,10 @@
         protected Rigidbody rb;
         protected CameraBaseControl cameraControl;
 
-        public PlayerState(StateMachine stateMachine) : base(stateMachine)
+        public override void AwakeState(StateMachine stateMachine)
         {
+            base.AwakeState(stateMachine);
+        
             //get references
             player = stateMachine as Player;
             transform = player.transform;
@@ -18,18 +20,7 @@
             cameraControl = player.cameraControl;
         }
 
-        //public override void AwakeState(StateMachine stateMachine)
-        //{
-        //    base.AwakeState(stateMachine);
-        //
-        //    //get references
-        //    player = stateMachine as Player;
-        //    transform = player.transform;
-        //    rb = transform.GetComponent<Rigidbody>();
-        //    cameraControl = player.cameraControl;
-        //}
-
-        public override void Execution()
+        public override void Update()
         {
             base.Execution();
 
