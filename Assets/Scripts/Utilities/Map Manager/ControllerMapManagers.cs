@@ -1,33 +1,37 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class ControllerMapManagers : MonoBehaviour
+﻿namespace redd096
 {
-    [SerializeField] MapManager[] mapManagers = default;
+    using System.Collections;
+    using System.Collections.Generic;
+    using UnityEngine;
 
-    public List<Room> roomsEveryMapManager { get; private set; } = new List<Room>();
-
-    void Start()
+    [AddComponentMenu("redd096/Map Manager/Controller Map Managers")]
+    public class ControllerMapManagers : MonoBehaviour
     {
-        StartCoroutine(StartManagers());
-    }
+        [SerializeField] MapManager[] mapManagers = default;
 
-    IEnumerator StartManagers()
-    {
-        //destroy every map by default
-        foreach (MapManager mapManager in mapManagers)
+        public List<Room> roomsEveryMapManager { get; private set; } = new List<Room>();
+
+        void Start()
         {
-            mapManager.DestroyMap();
+            StartCoroutine(StartManagers());
         }
 
-        //foreach map manager, create map
-        for (int i = 0; i < mapManagers.Length; i++)
+        IEnumerator StartManagers()
         {
-            yield return mapManagers[i].CreateMap(roomsEveryMapManager);
+            //destroy every map by default
+            foreach (MapManager mapManager in mapManagers)
+            {
+                mapManager.DestroyMap();
+            }
 
-            //add created rooms to controller
-            roomsEveryMapManager.AddRange(mapManagers[i].Rooms);
+            //foreach map manager, create map
+            for (int i = 0; i < mapManagers.Length; i++)
+            {
+                yield return mapManagers[i].CreateMap(roomsEveryMapManager);
+
+                //add created rooms to controller
+                roomsEveryMapManager.AddRange(mapManagers[i].Rooms);
+            }
         }
     }
 }
