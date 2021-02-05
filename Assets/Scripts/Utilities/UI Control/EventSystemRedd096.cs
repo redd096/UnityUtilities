@@ -15,8 +15,9 @@
         [SerializeField] GameObject[] overrideObjects = default;
 
         [Header("Can't navigate to these objects")]
-        [SerializeField] GameObject[] notInteractables = default;
+        [SerializeField] System.Collections.Generic.List<GameObject> notNavigables = new System.Collections.Generic.List<GameObject>();
 
+        GameObject selected;
         GameObject lastSelected;
 
         #endregion
@@ -25,92 +26,128 @@
         {
             base.Update();
 
-            GameObject selected = current.currentSelectedGameObject;
+            //set current selected
+            selected = current.currentSelectedGameObject;
 
             //if there is something selected and active
             if (selected && selected.activeInHierarchy)
             {
-                //if there are override objects
-                if (overrideObjects != null && overrideObjects.Length > 0)
-                {
-                    foreach (GameObject overrideObject in overrideObjects)
-                    {
-                        //if active override, can't go to another menu
-                        if (overrideObject && overrideObject.activeInHierarchy && selected.transform.parent != overrideObject.transform.parent)
-                        {
-                            //if last selected was in override menu, select it - otherwise select override object
-                            if (lastSelected && lastSelected.activeInHierarchy && lastSelected.transform.parent == overrideObject.transform.parent)
-                                current.SetSelectedGameObject(lastSelected);
-                            else
-                                current.SetSelectedGameObject(overrideObject);
+                //check if there is an override object active (can navigate only in its menu)
+                CheckOverride();
 
-                            break;
-                        }
-                    }
-                }
-
-                //if there are "not interactables"
-                if (notInteractables != null && notInteractables.Length > 0)
-                {
-                    foreach (GameObject notInteractable in notInteractables)
-                    {
-                        //if selected a not interactable object
-                        if (notInteractable != null && selected == notInteractable)
-                        {
-                            //back to last selected or select null
-                            if (lastSelected && lastSelected.activeInHierarchy)
-                                current.SetSelectedGameObject(lastSelected);
-                            else
-                                current.SetSelectedGameObject(null);
-
-                            break;
-                        }
-                    }
-                }
+                //check if selected a not navigable object
+                CheckNotNavigables();
 
                 //if != from last selected, set last selected
                 if (lastSelected != selected)
                     lastSelected = selected;
             }
-            //if selected nothing or is not active
+            //else if selected nothing or is not active
             else
             {
-                //if there are override objects
-                if (overrideObjects != null && overrideObjects.Length > 0)
-                {
-                    //if is active an override object, select it
-                    foreach (GameObject overrideObject in overrideObjects)
-                    {
-                        if (overrideObject && overrideObject.activeInHierarchy)
-                        {
-                            current.SetSelectedGameObject(overrideObject);
-                            return;
-                        }
-                    }
-                }
+                //if is active an override object, select it
+                if (SetOverride())
+                    return;
 
                 //else, if last selected is active, select it
-                if (lastSelected && lastSelected.activeInHierarchy)
-                {
-                    current.SetSelectedGameObject(lastSelected);
-                }
-                else
-                {
-                    //else check which firstSelectedGameObject is active, and select it
-                    foreach (GameObject firstSelect in firstSelectedGameObjects)
-                    {
-                        if (firstSelect && firstSelect.activeInHierarchy)
-                        {
-                            current.SetSelectedGameObject(firstSelect);
-                            break;
-                        }
-                    }
-                }
+                //else check which firstSelectedGameObject is active, and select it
+                SetFirstObject();
             }
 
             //if selected something not active, select null
             if (selected && selected.activeInHierarchy == false)
                 current.SetSelectedGameObject(null);
         }
+
+        #region selected and active
+
+        void CheckOverride()
+        {
+            if (overrideObjects == null || overrideObjects.Length <= 0)
+                return;
+
+            foreach (GameObject overrideObj in overrideObjects)
+            {
+                //if an override is active, if selected something out of its menu
+                if (overrideObj && overrideObj.activeInHierarchy &&
+                    (selected == null || selected.transform.parent != overrideObj.transform.parent))
+                {
+                    //if last selected was in override menu, select it - otherwise select override object
+                    if (lastSelected && lastSelected.activeInHierarchy && lastSelected.transform.parent == overrideObj.transform.parent)
+                        current.SetSelectedGameObject(lastSelected);
+                    else
+                        current.SetSelectedGameObject(overrideObj);
+
+                    break;
+                }
+            }
+        }
+
+        void CheckNotNavigables()
+        {
+            if (notNavigables == null || notNavigables.Count <= 0)
+                return;
+
+            //if selected a not navigable object
+            if (notNavigables.Contains(selected))
+            {
+                //back to last selected or select null
+                if (lastSelected && lastSelected.activeInHierarchy)
+                    current.SetSelectedGameObject(lastSelected);
+                else
+                    current.SetSelectedGameObject(null);
+            }
+        }
+
+        #endregion
+
+        #region selected nothing or not active
+
+        bool SetOverride()
+        {
+            if (overrideObjects == null || overrideObjects.Length <= 0)
+                return false;
+
+            //if is active an override object, select it
+            foreach (GameObject overrideObj in overrideObjects)
+            {
+                if (overrideObj && overrideObj.activeInHierarchy)
+                {
+                    current.SetSelectedGameObject(overrideObj);
+                    selected = overrideObj;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        void SetFirstObject()
+        {
+            //if last selected is active, select it
+            if (lastSelected && lastSelected.activeInHierarchy)
+            {
+                current.SetSelectedGameObject(lastSelected);
+                selected = lastSelected;
+            }
+            //else check which firstSelectedGameObject is active, and select it
+            else
+            {
+                if (firstSelectedGameObjects == null || firstSelectedGameObjects.Length <= 0)
+                    return;
+
+                foreach (GameObject firstSelect in firstSelectedGameObjects)
+                {
+                    if (firstSelect && firstSelect.activeInHierarchy)
+                    {
+                        current.SetSelectedGameObject(firstSelect);
+                        selected = firstSelect;
+                        break;
+                    }
+                }
+            }
+        }
+
+        #endregion
     }
 }
