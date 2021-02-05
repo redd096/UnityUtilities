@@ -22,7 +22,7 @@
 
         public override void Update()
         {
-            base.Execution();
+            base.Update();
 
             //camera update
             MoveCamera();
