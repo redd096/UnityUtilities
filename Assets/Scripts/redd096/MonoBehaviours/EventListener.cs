@@ -3,6 +3,7 @@
     using UnityEngine;
     using UnityEngine.Events;
 
+    [AddComponentMenu("redd096/MonoBehaviours/Event Listener")]
     public class EventListener : MonoBehaviour
     {
         [Header("Collisions")]
@@ -20,16 +21,18 @@
             response.Invoke();
         }
 
-        void OnCollisionEnter(Collision collision)
+        protected virtual void OnCollisionEnter(Collision collision)
         {
+            //call if collision enter
             if (onCollisionEnter)
             {
                 InvokeEvent();
             }
         }
 
-        void OnTriggerEnter(Collider other)
+        protected virtual void OnTriggerEnter(Collider other)
         {
+            //call if trigger enter
             if(onTriggerEnter)
             {
                 InvokeEvent();
