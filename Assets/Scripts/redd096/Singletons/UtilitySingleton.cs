@@ -142,9 +142,6 @@
 
         #endregion
 
-
-
-
         #region Fade
 
         #region private API
@@ -156,14 +153,19 @@
             //from 0 to 1
             while(delta < 1)
             {
+                delta += Time.deltaTime / duration;
+
                 //fade or fade_fill
-                if(isNormalFade)
+                if (isNormalFade)
                 {
-                    image.Set_Fade(ref delta, from, to, duration);
+                    //set alpha from to
+                    float alpha = Mathf.Lerp(from, to, delta);
+                    image.color = new Color(image.color.r, image.color.g, image.color.b, alpha);
                 }
                 else
                 {
-                    image.Set_FadeFill(ref delta, from, to, duration);
+                    //set fill amount
+                    image.fillAmount = Mathf.Lerp(from, to, delta);
                 }
 
                 yield return null;
