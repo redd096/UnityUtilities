@@ -12,7 +12,7 @@
         greater, greaterEqual, lower, lowerEqual, equal, notEqual
     }
 
-    [CreateAssetMenu(menuName = "Map Manager Check/Axis Check")]
+    [CreateAssetMenu(menuName = "redd096/Map Manager Check/Axis Check")]
     public class AxisCheck : MapManagerCheck
     {
         [SerializeField] Axis test = Axis.X;
