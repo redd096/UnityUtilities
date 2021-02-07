@@ -2,7 +2,7 @@
 {
     using UnityEngine;
 
-    public class StateMachine : MonoBehaviour
+    public abstract class StateMachine : MonoBehaviour
     {
         protected State state;
 

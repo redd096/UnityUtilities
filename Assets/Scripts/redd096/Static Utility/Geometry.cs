@@ -21,11 +21,11 @@
         }
 
         /// <summary>
-        /// If greater than 180, subtract 360 to get negative value
+        /// When we need negative value, like -90 instead of 270, for example with clamp from -90 to 90
         /// </summary>
         public static float NegativeAngle(float angle, float min, float max)
         {
-            //maybe we need negative value, like -90 instead of 270, for example with clamp from -90 to 90
+            //if greater than 180, subtract 360 to get negative value
             if (angle > 180)
                 angle -= 360;
 

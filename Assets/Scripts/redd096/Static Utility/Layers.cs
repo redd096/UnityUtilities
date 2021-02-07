@@ -4,17 +4,19 @@
 
     public static class CreateLayer
     {
-        // layers are binary -> this is to get 8 in binary
+        // layers are binary
+        // this is to get 8 in binary
         // LayerMask layer = 1 << 8;
 
         // this is to add the binary value of a layer named "Ignore Raycast"
         // layer |= 1 << LayerMask.NameToLayer("Ignore Raycast");
 
         // a raycast with this layer, now hits only things with layer 8 or Ignore Raycast, 
-        // but we can use tilde (~) to reverse -> hits everything except those layers
+        // but we can use tilde (~) to reverse and hits everything except those layers
         // Layer = ~Layer;
 
-        //or with only one line ---> LayerMask Layer = ~( (1 << 8) | (1 << LayerMask.NameToLayer("Ignore Raycast")) );
+        //or with only one line
+        //LayerMask Layer = ~( (1 << 8) | (1 << LayerMask.NameToLayer("Ignore Raycast")) );
 
 
         /// <summary>

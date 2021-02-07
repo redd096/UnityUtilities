@@ -118,29 +118,6 @@
         }
 
         #endregion
-
-        #region fade image
-
-        /// <summary>
-        /// Fade an image - to use in a coroutine
-        /// </summary>
-        public static void Set_Fade(this Image image, float delta, float from, float to)
-        {
-            //set alpha from to
-            float alpha = Mathf.Lerp(from, to, delta);
-            image.color = new Color(image.color.r, image.color.g, image.color.b, alpha);
-        }
-
-        /// <summary>
-        /// Fade an image with fillAmount - to use in a coroutine
-        /// </summary>
-        public static void Set_FadeFill(this Image image, float delta, float from, float to)
-        {
-            //set fill amount
-            image.fillAmount = Mathf.Lerp(from, to, delta);
-        }
-
-        #endregion
     }
 
     public static class Collections
@@ -334,6 +311,29 @@
         public static Vector3 DivideVectors(this Vector3 first, Vector2 second)
         {
             return new Vector3(first.x / second.x, first.y / second.y, first.z);
+        }
+
+        #endregion
+
+        #region image
+
+        /// <summary>
+        /// Fade an image - to use in a coroutine
+        /// </summary>
+        public static void Set_Fade(this Image image, float delta, float from, float to)
+        {
+            //set alpha from to
+            float alpha = Mathf.Lerp(from, to, delta);
+            image.color = new Color(image.color.r, image.color.g, image.color.b, alpha);
+        }
+
+        /// <summary>
+        /// Fade an image with fillAmount - to use in a coroutine
+        /// </summary>
+        public static void Set_FadeFill(this Image image, float delta, float from, float to)
+        {
+            //set fill amount
+            image.fillAmount = Mathf.Lerp(from, to, delta);
         }
 
         #endregion
