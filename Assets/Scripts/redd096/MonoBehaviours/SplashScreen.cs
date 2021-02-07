@@ -11,18 +11,22 @@
         [SerializeField] Image image = default;
         [SerializeField] Sprite[] spritesToUse = default;
 
-        [Header("Fade In and Out")]
+        [Header("Fade In")]
         [Min(0)]
         [SerializeField] float waitBeforeStartFadeIn = 1;
         [Min(0)]
         [SerializeField] float timeToFadeIn = 1;
 
+        [Header("Press to continue")]
         [SerializeField] bool pressToContinue = false;
 
+        [Header("Fade Out")]
         [Min(0)]
         [SerializeField] float waitBeforeStartFadeOut = 2;
         [Min(0)]
         [SerializeField] float timeToFadeOut = 1;
+
+        [Header("Load New Scene")]
         [SerializeField] string nextSceneName = "Main Scene";
 
         void Start()
@@ -56,13 +60,13 @@
                 float delta = 0;
                 while (delta < 1)
                 {
-                    image.Set_Fade(ref delta, 0, 1, timeToFadeIn);
+                    delta += Time.deltaTime / timeToFadeIn;
+
+                    float alpha = Mathf.Lerp(0, 1, delta);
+                    image.color = new Color(image.color.r, image.color.g, image.color.b, alpha);
 
                     yield return null;
                 }
-
-                //final alpha to 1
-                image.color = new Color(image.color.r, image.color.g, image.color.b, 1);
 
                 //wait until press any key down
                 if (pressToContinue)
@@ -80,13 +84,13 @@
                 delta = 0;
                 while (delta < 1)
                 {
-                    image.Set_Fade(ref delta, 1, 0, timeToFadeOut);
+                    delta += Time.deltaTime / timeToFadeOut;
+
+                    float alpha = Mathf.Lerp(1, 0, delta);
+                    image.color = new Color(image.color.r, image.color.g, image.color.b, alpha);
 
                     yield return null;
                 }
-
-                //final alpha to 0
-                image.color = new Color(image.color.r, image.color.g, image.color.b, 0);
             }
 
             //load new scene
