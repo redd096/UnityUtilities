@@ -37,7 +37,7 @@
 
         GameObject GetGameObject(Object obj)
         {
-            //return obj as GameObject, or return gameObject variable of obj as Component
+            //return GameObject (cast obj as GameObject or Component)
             if (obj is GameObject)
                 return obj as GameObject;
             else
@@ -46,7 +46,7 @@
 
         Transform GetTransform(Object obj)
         {
-            //return obj transform, casting to GameObject or Component
+            //return Transform (cast obj as GameObject or Component)
             if (obj is GameObject)
                 return (obj as GameObject).transform;
             else

@@ -38,20 +38,20 @@
         /// <summary>
         /// Find nearest to position
         /// </summary>
-        public static T FindNearest<T>(this T[] array, Vector3 position) where T : Component
+        public static T FindNearest<T>(this T[] collection, Vector3 position) where T : Object
         {
             T nearest = default;
             float distance = Mathf.Infinity;
 
-            //foreach element in the array
-            foreach (T element in array)
+            //foreach element in the collection
+            foreach (T element in collection)
             {
                 //only if there is element
                 if (element == null)
                     continue;
 
                 //check distance to find nearest
-                float newDistance = Vector3.Distance(element.transform.position, position);
+                float newDistance = Vector3.Distance(element.GetTransform().position, position);
                 if (newDistance < distance)
                 {
                     distance = newDistance;
@@ -65,47 +65,20 @@
         /// <summary>
         /// Find nearest to position
         /// </summary>
-        public static GameObject FindNearest(this GameObject[] array, Vector3 position)
-        {
-            GameObject nearest = default;
-            float distance = Mathf.Infinity;
-
-            //foreach element in the array
-            foreach (GameObject element in array)
-            {
-                //only if there is element
-                if (element == null)
-                    continue;
-
-                //check distance to find nearest
-                float newDistance = Vector3.Distance(element.transform.position, position);
-                if (newDistance < distance)
-                {
-                    distance = newDistance;
-                    nearest = element;
-                }
-            }
-
-            return nearest;
-        }
-
-        /// <summary>
-        /// Find nearest to position
-        /// </summary>
-        public static T FindNearest<T>(this List<T> list, Vector3 position) where T : Component
+        public static T FindNearest<T>(this List<T> collection, Vector3 position) where T : Object
         {
             T nearest = default;
             float distance = Mathf.Infinity;
 
-            //foreach element in the list
-            foreach (T element in list)
+            //foreach element in the collection
+            foreach (T element in collection)
             {
                 //only if there is element
                 if (element == null)
                     continue;
 
                 //check distance to find nearest
-                float newDistance = Vector3.Distance(element.transform.position, position);
+                float newDistance = Vector3.Distance(element.GetTransform().position, position);
                 if (newDistance < distance)
                 {
                     distance = newDistance;
@@ -119,47 +92,20 @@
         /// <summary>
         /// Find nearest to position
         /// </summary>
-        public static GameObject FindNearest(this List<GameObject> list, Vector3 position)
-        {
-            GameObject nearest = default;
-            float distance = Mathf.Infinity;
-
-            //foreach element in the list
-            foreach (GameObject element in list)
-            {
-                //only if there is element
-                if (element == null)
-                    continue;
-
-                //check distance to find nearest
-                float newDistance = Vector3.Distance(element.transform.position, position);
-                if (newDistance < distance)
-                {
-                    distance = newDistance;
-                    nearest = element;
-                }
-            }
-
-            return nearest;
-        }
-
-        /// <summary>
-        /// Find nearest to position
-        /// </summary>
-        public static T FindNearest<K, T>(this Dictionary<K, T> dictionary, Vector3 position, out K key) where T : Component
+        public static T FindNearest<K, T>(this Dictionary<K, T> collection, Vector3 position, out K key) where T : Object
         {
             K nearestKey = default;
             float distance = Mathf.Infinity;
 
-            //foreach element in the dictionary
-            foreach (K elementKey in dictionary.Keys)
+            //foreach element in the collection
+            foreach (K elementKey in collection.Keys)
             {
                 //only if there is element
-                if (dictionary[elementKey] == null)
+                if (collection[elementKey] == null)
                     continue;
 
                 //check distance to find nearest
-                float newDistance = Vector3.Distance(dictionary[elementKey].transform.position, position);
+                float newDistance = Vector3.Distance(collection[elementKey].GetTransform().position, position);
                 if (newDistance < distance)
                 {
                     distance = newDistance;
@@ -168,35 +114,30 @@
             }
 
             key = nearestKey;
-            return dictionary[nearestKey];
+            return collection[nearestKey];
+        }
+
+        #endregion
+
+        #region fade image
+
+        /// <summary>
+        /// Fade an image - to use in a coroutine
+        /// </summary>
+        public static void Set_Fade(this Image image, float delta, float from, float to)
+        {
+            //set alpha from to
+            float alpha = Mathf.Lerp(from, to, delta);
+            image.color = new Color(image.color.r, image.color.g, image.color.b, alpha);
         }
 
         /// <summary>
-        /// Find nearest to position
+        /// Fade an image with fillAmount - to use in a coroutine
         /// </summary>
-        public static GameObject FindNearest<K>(this Dictionary<K, GameObject> dictionary, Vector3 position, out K key)
+        public static void Set_FadeFill(this Image image, float delta, float from, float to)
         {
-            K nearestKey = default;
-            float distance = Mathf.Infinity;
-
-            //foreach element in the dictionary
-            foreach (K elementKey in dictionary.Keys)
-            {
-                //only if there is element
-                if (dictionary[elementKey] == null)
-                    continue;
-
-                //check distance to find nearest
-                float newDistance = Vector3.Distance(dictionary[elementKey].transform.position, position);
-                if (newDistance < distance)
-                {
-                    distance = newDistance;
-                    nearestKey = elementKey;
-                }
-            }
-
-            key = nearestKey;
-            return dictionary[nearestKey];
+            //set fill amout
+            image.fillAmount = Mathf.Lerp(from, to, delta);
         }
 
         #endregion
@@ -207,51 +148,51 @@
         #region create copy
 
         /// <summary>
-        /// Create a copy of the array
+        /// Create a copy of the collection
         /// </summary>
-        public static T[] CreateCopy<T>(this T[] array)
+        public static T[] CreateCopy<T>(this T[] collection)
         {
-            T[] newArray = new T[array.Length];
+            T[] newCollection = new T[collection.Length];
 
-            //add every element in new array
-            for (int i = 0; i < array.Length; i++)
+            //add every element in new collection
+            for (int i = 0; i < collection.Length; i++)
             {
-                newArray[i] = array[i];
+                newCollection[i] = collection[i];
             }
 
-            return newArray;
+            return newCollection;
         }
 
         /// <summary>
-        /// Create a copy of the list
+        /// Create a copy of the collection
         /// </summary>
-        public static List<T> CreateCopy<T>(this List<T> list)
+        public static List<T> CreateCopy<T>(this List<T> collection)
         {
-            List<T> newList = new List<T>();
+            List<T> newCollection = new List<T>();
 
-            //add every element in new list
-            foreach (T element in list)
+            //add every element in new collection
+            foreach (T element in collection)
             {
-                newList.Add(element);
+                newCollection.Add(element);
             }
 
-            return newList;
+            return newCollection;
         }
 
         /// <summary>
-        /// Create a copy of the dictionary (N.B. a copy of dictionary, not elements neither keys)
+        /// Create a copy of the collection
         /// </summary>
-        public static Dictionary<T, J> CreateCopy<T, J>(this Dictionary<T, J> dictionary)
+        public static Dictionary<K, T> CreateCopy<K, T>(this Dictionary<K, T> collection)
         {
-            Dictionary<T, J> newDictionary = new Dictionary<T, J>();
+            Dictionary<K, T> newCollection = new Dictionary<K, T>();
 
-            //add every element in new dictionary
-            foreach (T key in dictionary.Keys)
+            //add every element in new collection
+            foreach (K key in collection.Keys)
             {
-                newDictionary.Add(key, dictionary[key]);
+                newCollection.Add(key, collection[key]);
             }
 
-            return newDictionary;
+            return newCollection;
         }
 
         #endregion
@@ -259,90 +200,80 @@
         #region set parent
 
         /// <summary>
-        /// Set parent for every element in the array
+        /// Set parent for every element in the collection
         /// </summary>
-        public static void SetParent<T>(this T[] array, Transform parent, bool worldPositionStays = true) where T : Component
+        public static void SetParent<T>(this T[] collection, Transform parent, bool worldPositionStays = true) where T : Object
         {
-            foreach (T c in array)
+            //set parent for every element in the collection
+            foreach (T element in collection)
             {
-                c.transform.SetParent(parent, worldPositionStays);
+                element.GetTransform().SetParent(parent, worldPositionStays);
             }
         }
 
         /// <summary>
-        /// Set parent for every element in the array
+        /// Set parent for every element in the collection
         /// </summary>
-        public static void SetParent(this GameObject[] array, Transform parent, bool worldPositionStays = true)
+        public static void SetParent<T>(this List<T> collection, Transform parent, bool worldPositionStays = true) where T : Object
         {
-            foreach (GameObject c in array)
+            //set parent for every element in the collection
+            foreach (T element in collection)
             {
-                c.transform.SetParent(parent, worldPositionStays);
+                element.GetTransform().SetParent(parent, worldPositionStays);
             }
         }
 
         /// <summary>
-        /// Set parent for every element in the list
+        /// Set parent for every element in the collection
         /// </summary>
-        public static void SetParent<T>(this List<T> list, Transform parent, bool worldPositionStays = true) where T : Component
+        public static void SetParent<K, T>(this Dictionary<K, T> collection, Transform parent, bool worldPositionStays = true) where T : Object
         {
-            foreach (T c in list)
+            //set parent for every element in the collection
+            foreach (K key in collection.Keys)
             {
-                c.transform.SetParent(parent, worldPositionStays);
-            }
-        }
-
-        /// <summary>
-        /// Set parent for every element in the list
-        /// </summary>
-        public static void SetParent(this List<GameObject> list, Transform parent, bool worldPositionStays = true)
-        {
-            foreach (GameObject c in list)
-            {
-                c.transform.SetParent(parent, worldPositionStays);
-            }
-        }
-
-        /// <summary>
-        /// Set parent for every element in the dictionary
-        /// </summary>
-        public static void SetParent<T, J>(this Dictionary<T, J> dictionary, Transform parent, bool worldPositionStays = true) where J : Component
-        {
-            foreach (T key in dictionary.Keys)
-            {
-                dictionary[key].transform.SetParent(parent, worldPositionStays);
-            }
-        }
-
-        /// <summary>
-        /// Set parent for every element in the dictionary
-        /// </summary>
-        public static void SetParent<T>(this Dictionary<T, GameObject> dictionary, Transform parent, bool worldPositionStays = true)
-        {
-            foreach (T key in dictionary.Keys)
-            {
-                dictionary[key].transform.SetParent(parent, worldPositionStays);
+                collection[key].GetTransform().SetParent(parent, worldPositionStays);
             }
         }
 
         #endregion
     }
 
-    public static class ExtendVectors
+    public static class Extensions
     {
+        #region object
+
+        /// <summary>
+        /// Return GameObject (cast obj as GameObject or Component)
+        /// </summary>
+        public static GameObject GetGameObject(this Object obj)
+        {
+            if (obj is GameObject)
+                return obj as GameObject;
+            else
+                return (obj as Component).gameObject;
+        }
+
+        /// <summary>
+        /// Return Transform (cast obj as GameObject or Component)
+        /// </summary>
+        public static Transform GetTransform(this Object obj)
+        {
+            if (obj is GameObject)
+                return (obj as GameObject).transform;
+            else
+                return (obj as Component).transform;
+        }
+
+        #endregion
+
+        #region vector2
+
         /// <summary>
         /// Sum return Vector2
         /// </summary>
         public static Vector2 SumVectors(this Vector2 first, Vector3 second)
         {
             return new Vector2(first.x + second.x, first.y + second.y);
-        }
-
-        /// <summary>
-        /// Sum return Vector3
-        /// </summary>
-        public static Vector3 SumVectors(this Vector3 first, Vector2 second)
-        {
-            return new Vector3(first.x + second.x, first.y + second.y, first.z);
         }
 
         /// <summary>
@@ -354,19 +285,39 @@
         }
 
         /// <summary>
-        /// Subtraction return Vector3
-        /// </summary>
-        public static Vector3 SubtractVectors(this Vector3 first, Vector2 second)
-        {
-            return new Vector3(first.x - second.x, first.y - second.y, first.z);
-        }
-
-        /// <summary>
         /// Multiplication return Vector2
         /// </summary>
         public static Vector2 MultiplyVectors(this Vector2 first, Vector3 second)
         {
             return new Vector2(first.x * second.x, first.y * second.y);
+        }
+
+        /// <summary>
+        /// Division return Vector2
+        /// </summary>
+        public static Vector2 DivideVectors(this Vector2 first, Vector3 second)
+        {
+            return new Vector2(first.x / second.x, first.y / second.y);
+        }
+
+        #endregion
+
+        #region vector3
+
+        /// <summary>
+        /// Sum return Vector3
+        /// </summary>
+        public static Vector3 SumVectors(this Vector3 first, Vector2 second)
+        {
+            return new Vector3(first.x + second.x, first.y + second.y, first.z);
+        }
+
+        /// <summary>
+        /// Subtraction return Vector3
+        /// </summary>
+        public static Vector3 SubtractVectors(this Vector3 first, Vector2 second)
+        {
+            return new Vector3(first.x - second.x, first.y - second.y, first.z);
         }
 
         /// <summary>
@@ -378,64 +329,14 @@
         }
 
         /// <summary>
-        /// Division return Vector2
-        /// </summary>
-        public static Vector2 DivideVectors(this Vector2 first, Vector3 second)
-        {
-            return new Vector2(first.x / second.x, first.y / second.y);
-        }
-
-        /// <summary>
         /// Division return Vector3
         /// </summary>
         public static Vector3 DivideVectors(this Vector3 first, Vector2 second)
         {
             return new Vector3(first.x / second.x, first.y / second.y, first.z);
         }
-    }
 
-    public static class FadeImage
-    {
-        /// <summary>
-        /// Fade an image
-        /// </summary>
-        public static void Fade(this Image image, float from, float to, float duration, System.Action onEndFade = null)
-        {
-            UtilitySingleton.instance.Fade(image, from, to, duration, onEndFade);
-        }
-
-        /// <summary>
-        /// Fade an image with fillAmount
-        /// </summary>
-        public static void FadeFill(this Image image, float from, float to, float duration, System.Action onEndFade = null)
-        {
-            UtilitySingleton.instance.FadeFill(image, from, to, duration, onEndFade);
-        }
-
-        /// <summary>
-        /// Fade an image - to use in a coroutine
-        /// </summary>
-        public static void Set_Fade(this Image image, ref float delta, float from, float to, float duration)
-        {
-            //speed based to duration
-            delta += Time.deltaTime / duration;
-
-            //set alpha from to
-            float alpha = Mathf.Lerp(from, to, delta);
-            image.color = new Color(image.color.r, image.color.g, image.color.b, alpha);
-        }
-
-        /// <summary>
-        /// Fade an image with fillAmount - to use in a coroutine
-        /// </summary>
-        public static void Set_FadeFill(this Image image, ref float delta, float from, float to, float duration)
-        {
-            //speed based to duration
-            delta += Time.deltaTime / duration;
-
-            //set fill amout
-            image.fillAmount = Mathf.Lerp(from, to, delta);
-        }
+        #endregion
     }
 
     public static class TextLetterByLetter
