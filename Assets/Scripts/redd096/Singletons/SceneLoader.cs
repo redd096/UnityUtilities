@@ -53,7 +53,7 @@
         /// <summary>
         /// Reload this scene
         /// </summary>
-        public void RestartGame()
+        public void ReloadScene()
         {
             //show cursor and set timeScale to 1
             //Utility.LockMouse(CursorLockMode.None);
