@@ -18,7 +18,7 @@
         public Room roomPrefab;
     }
 
-    [AddComponentMenu("redd096/Map Manager/Map Manager")]
+    [AddComponentMenu("redd096/Procedural Map/Map Manager")]
     public class MapManager : MonoBehaviour
     {
         [Header("Setup")]

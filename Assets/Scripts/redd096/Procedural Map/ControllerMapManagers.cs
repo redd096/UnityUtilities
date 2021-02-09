@@ -4,7 +4,7 @@
     using System.Collections.Generic;
     using UnityEngine;
 
-    [AddComponentMenu("redd096/Map Manager/Controller Map Managers")]
+    [AddComponentMenu("redd096/Procedural Map/Controller Map Managers")]
     public class ControllerMapManagers : MonoBehaviour
     {
         [SerializeField] MapManager[] mapManagers = default;
