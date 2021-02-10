@@ -31,17 +31,18 @@
     //attribute
     public class CanShowAttribute : PropertyAttribute
     {
-        bool checkAND;
+        /// <summary>
+        /// check every value as AND or as OR
+        /// </summary>
+        public bool checkAND = true;
         string[] values;
 
         /// <summary>
         /// Attribute to show variable only if specific values are true
         /// </summary>
-        /// <param name="checkAND">check every value as AND or as OR</param>
         /// <param name="values">the values to determine if show or not</param>
-        public CanShowAttribute(bool checkAND, params string[] values)
+        public CanShowAttribute(params string[] values)
         {
-            this.checkAND = checkAND;
             this.values = values;
         }
 
