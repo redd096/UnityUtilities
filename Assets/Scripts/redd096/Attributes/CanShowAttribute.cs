@@ -11,8 +11,15 @@
     {
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
-            //update height when open a list/array/struct in inspector
-            return EditorGUI.GetPropertyHeight(property, label, true);
+            //update height only if can show (to hide space where there are hidden variables) - necessary also to update height when open a list/array/struct in inspector
+            CanShowAttribute canShowAttribute = attribute as CanShowAttribute;
+            if (canShowAttribute.CanShow(property))
+            {
+                return EditorGUI.GetPropertyHeight(property, label, true);
+            }
+
+            //else hide space
+            return 0;
         }
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
@@ -35,6 +42,7 @@
         /// check every value as AND or as OR
         /// </summary>
         public bool checkAND = true;
+
         /// <summary>
         /// set NOT for every value
         /// </summary>
