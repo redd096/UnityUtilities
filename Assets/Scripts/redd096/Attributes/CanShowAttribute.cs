@@ -35,6 +35,11 @@
         /// check every value as AND or as OR
         /// </summary>
         public bool checkAND = true;
+        /// <summary>
+        /// set NOT for every value
+        /// </summary>
+        public bool NOT = false;
+
         string[] values;
 
         /// <summary>
@@ -49,9 +54,13 @@
         public bool CanShow(SerializedProperty property)
         {
             //foreach value to check
-            foreach(string value in values)
+            foreach (string value in values)
             {
                 bool check = property.serializedObject.FindProperty(value).boolValue;
+
+                //use NOT
+                if (NOT)
+                    check = !check;
 
                 //if checkAND, when find one false, return false
                 if (checkAND && !check)
