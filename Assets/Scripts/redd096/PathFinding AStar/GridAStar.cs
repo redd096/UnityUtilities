@@ -44,11 +44,13 @@
     {
         #region variables
 
+        [Header("Use Z instead of Y")]
+        [SerializeField] bool useZ = true;
+
         [Header("Layer Mask Unwalkable")]
         [SerializeField] LayerMask unwalkableMask = default;
 
         [Header("Grid")]
-        [SerializeField] bool useZInsteadOfY = true;
         [SerializeField] Vector2 gridWorldSize = Vector2.one;
         [SerializeField] float nodeDiameter = 1;
 
@@ -76,7 +78,7 @@
         {
             //draw area
             Gizmos.color = Color.cyan;
-            if (useZInsteadOfY)
+            if (useZ)
                 Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));      //use z
             else
                 Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, gridWorldSize.y, 1));      //or y
@@ -110,7 +112,7 @@
         {
             //reset grid and find bottom left world position
             grid = new Node[gridSize.x, gridSize.y];
-            Vector3 worldBottomLeft = useZInsteadOfY ?
+            Vector3 worldBottomLeft = useZ ?
                 transform.position + (Vector3.left * gridWorldSize.x / 2) + (Vector3.back * gridWorldSize.y / 2) :      //use z
                 transform.position + (Vector3.left * gridWorldSize.x / 2) + (Vector3.down * gridWorldSize.y / 2);       //or y
 
@@ -120,11 +122,11 @@
                 for (int y = 0; y < gridSize.y; y++)
                 {
                     //find world position and if walkable
-                    Vector3 worldPosition = useZInsteadOfY ?
+                    Vector3 worldPosition = useZ ?
                         worldBottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.forward * (y * nodeDiameter + nodeRadius) :     //use z
                         worldBottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.up * (y * nodeDiameter + nodeRadius);           //or y
 
-                    bool isWalkable = useZInsteadOfY ?
+                    bool isWalkable = useZ ?
                         !Physics.CheckSphere(worldPosition, nodeRadius, unwalkableMask) :       //use 3d (z)
                         !Physics2D.OverlapCircle(worldPosition, nodeRadius, unwalkableMask);    //or 2d (y)
 
@@ -169,7 +171,7 @@
         {
             //find percent
             float percentX = (worldPosition.x + gridWorldSize.x / 2) / gridWorldSize.x;
-            float percentY = useZInsteadOfY ?
+            float percentY = useZ ?
                 (worldPosition.z + gridWorldSize.y / 2) / gridWorldSize.y :     //use z
                 (worldPosition.y + gridWorldSize.y / 2) / gridWorldSize.y;      //or y
             percentX = Mathf.Clamp01(percentX);
