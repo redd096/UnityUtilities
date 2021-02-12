@@ -4,10 +4,11 @@
     using System.Collections.Generic;
     using UnityEngine;
 
-    [AddComponentMenu("redd096/Procedural Map/Controller Map Managers")]
-    public class ControllerMapManagers : MonoBehaviour
+    [AddComponentMenu("redd096/Procedural Map/Controller Procedural Map Managers")]
+    public class ControllerProceduralMapManagers : MonoBehaviour
     {
-        [SerializeField] MapManager[] mapManagers = default;
+        [Header("Managers to activate in order")]
+        [SerializeField] ProceduralMapManager[] mapManagers = default;
 
         public List<Room> roomsEveryMapManager { get; private set; } = new List<Room>();
 
@@ -19,7 +20,7 @@
         IEnumerator StartManagers()
         {
             //destroy every map by default
-            foreach (MapManager mapManager in mapManagers)
+            foreach (ProceduralMapManager mapManager in mapManagers)
             {
                 mapManager.DestroyMap();
             }

@@ -3,6 +3,11 @@
     using System.Collections.Generic;
     using UnityEngine;
 
+    public enum TypeOfDoor
+    {
+        both, onlyEnter, onlyExit
+    }
+
     public enum CardinalDirection
     {
         up, down, left, right
@@ -13,7 +18,7 @@
     {
         public Transform door;
         public CardinalDirection direction;
-        public bool isOnlyExit;
+        public TypeOfDoor typeOfDoor;
     }
 
     [AddComponentMenu("redd096/Procedural Map/Room")]
@@ -22,8 +27,8 @@
     {
         #region variables
 
-        [Header("2D or 3D")]
-        [SerializeField] bool is3D = true;
+        [Header("Use Z instead of Y")]
+        [SerializeField] bool useZ = true;
 
         [Header("Important")]
         [Tooltip("Size of every tile which compose this room")] [SerializeField] float tileSize = 1f;
@@ -33,8 +38,8 @@
 
         float HalfWidth => width * tileSize * 0.5f;
         float HalfHeight => height * tileSize * 0.5f;
-        Vector2 UpRight => is3D ? new Vector3(transform.position.x + HalfWidth, transform.position.z + HalfHeight) : new Vector3(transform.position.x + HalfWidth, transform.position.y + HalfHeight);
-        Vector2 DownLeft => is3D ? new Vector3(transform.position.x - HalfWidth, transform.position.z - HalfHeight) : new Vector3(transform.position.x - HalfWidth, transform.position.y - HalfHeight);
+        Vector2 UpRight => useZ ? new Vector3(transform.position.x + HalfWidth, transform.position.z + HalfHeight) : new Vector3(transform.position.x + HalfWidth, transform.position.y + HalfHeight);
+        Vector2 DownLeft => useZ ? new Vector3(transform.position.x - HalfWidth, transform.position.z - HalfHeight) : new Vector3(transform.position.x - HalfWidth, transform.position.y - HalfHeight);
 
         [Header("DEBUG")]
         [SerializeField] TextMesh textID = default;
@@ -79,7 +84,7 @@
             transform.position = position;
         }
 
-        public bool SetPosition(DoorStruct adjacentDoor, Room adjacentRoom, MapManager mapManager)
+        public bool SetPosition(DoorStruct adjacentDoor, Room adjacentRoom, ProceduralMapManager mapManager)
         {
             //set references
             this.adjacentDoor = adjacentDoor;
@@ -101,8 +106,17 @@
 
         public DoorStruct GetRandomDoor()
         {
+            List<DoorStruct> possibleDoors = new List<DoorStruct>();
+
+            //add every door except only enter
+            foreach(DoorStruct doorStruct in doors)
+            {
+                if (doorStruct.typeOfDoor != TypeOfDoor.onlyEnter)      //be sure is not OnlyEnter, because this one will be an exit from adjacent room
+                    possibleDoors.Add(doorStruct);
+            }
+
             //return random door
-            return doors[Random.Range(0, doors.Count)];
+            return possibleDoors[Random.Range(0, possibleDoors.Count)];
         }
 
         #endregion
@@ -128,7 +142,7 @@
             foreach (DoorStruct possibleDoor in doors)
             {
                 if (possibleDoor.direction == door.direction
-                    && possibleDoor.isOnlyExit == false)                //be sure is not OnlyExit, because this one will be an entrance to this room
+                    && possibleDoor.typeOfDoor != TypeOfDoor.onlyExit)                //be sure is not OnlyExit, because this one will be an entrance to this room
                 {
                     possibleDoors.Add(possibleDoor);
                 }
@@ -148,7 +162,7 @@
             return true;
         }
 
-        bool CheckOverlap(MapManager mapManager)
+        bool CheckOverlap(ProceduralMapManager mapManager)
         {
             //check rooms of this map manager and also rooms of others map managers
             List<Room> roomsToCheck = new List<Room>(mapManager.Rooms);
@@ -195,7 +209,7 @@
             }
 
             //check also center if inside this room
-            Vector2 center = is3D ? new Vector2(roomToCheck.transform.position.x, roomToCheck.transform.position.z) : new Vector2(roomToCheck.transform.position.x, roomToCheck.transform.position.y);
+            Vector2 center = useZ ? new Vector2(roomToCheck.transform.position.x, roomToCheck.transform.position.z) : new Vector2(roomToCheck.transform.position.x, roomToCheck.transform.position.y);
             if (center.x > DownLeft.x && center.x < UpRight.x)
             {
                 if (center.y > DownLeft.y && center.y < UpRight.y)

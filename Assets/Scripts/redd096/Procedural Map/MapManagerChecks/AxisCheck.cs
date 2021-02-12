@@ -12,14 +12,14 @@
         greater, greaterEqual, lower, lowerEqual, equal, notEqual
     }
 
-    [CreateAssetMenu(menuName = "redd096/Map Manager Check/Axis Check")]
-    public class AxisCheck : MapManagerCheck
+    [CreateAssetMenu(menuName = "redd096/Procedural Map Manager Check/Axis Check")]
+    public class AxisCheck : ProceduralMapManagerCheck
     {
         [SerializeField] Axis test = Axis.X;
         [SerializeField] CheckOperator checkToDo = CheckOperator.greaterEqual;
         [SerializeField] float threshold = 0;
 
-        public override bool IsValid(Room roomToPlace, MapManager mapManager)
+        public override bool IsValid(Room roomToPlace, ProceduralMapManager mapManager)
         {
             //for every axis, check
             switch (test)

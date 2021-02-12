@@ -4,10 +4,51 @@
     using System.Collections.Generic;
     using UnityEngine;
 
-    //scriptable object class
-    public abstract class MapManagerCheck : ScriptableObject
+#if UNITY_EDITOR
+
+    using UnityEditor;
+
+    [CustomEditor(typeof(ProceduralMapManager))]
+    public class ProceduralMapManagerEditor : Editor
     {
-        public abstract bool IsValid(Room roomToPlace, MapManager mapManager);
+        private ProceduralMapManager mapManager;
+
+        private void OnEnable()
+        {
+            mapManager = target as ProceduralMapManager;
+        }
+
+        public override void OnInspectorGUI()
+        {
+            base.OnInspectorGUI();
+
+            GUILayout.Space(10);
+
+            if (GUILayout.Button("Regen Map - OLD"))
+            {
+                mapManager.DestroyMap();
+                mapManager.CreateEditorMap();
+
+                //set undo
+                Undo.RegisterFullObjectHierarchyUndo(target, "Regen World");
+            }
+
+            if (GUILayout.Button("Destroy Map"))
+            {
+                mapManager.DestroyMap();
+
+                //set undo
+                Undo.RegisterFullObjectHierarchyUndo(target, "Regen World");
+            }
+        }
+    }
+
+#endif
+
+    //scriptable object class
+    public abstract class ProceduralMapManagerCheck : ScriptableObject
+    {
+        public abstract bool IsValid(Room roomToPlace, ProceduralMapManager mapManager);
     }
 
     [System.Serializable]
@@ -18,13 +59,13 @@
         public Room roomPrefab;
     }
 
-    [AddComponentMenu("redd096/Procedural Map/Map Manager")]
-    public class MapManager : MonoBehaviour
+    [AddComponentMenu("redd096/Procedural Map/Procedural Map Manager")]
+    public class ProceduralMapManager : MonoBehaviour
     {
         [Header("Setup")]
         [SerializeField] bool regenOnPlay = true;
         [Min(1)] [SerializeField] int numberRooms = 12;
-        [SerializeField] MapManagerCheck[] checks = default;
+        [SerializeField] ProceduralMapManagerCheck[] checks = default;
 
         [Header("Attempts")]
         [Min(1)] [SerializeField] int maxAttempts = 5;
@@ -244,7 +285,7 @@
         bool IsValidPlace(Room roomToPlace)
         {
             //foreach check, be sure is valid
-            foreach (MapManagerCheck check in checks)
+            foreach (ProceduralMapManagerCheck check in checks)
             {
                 if (!check.IsValid(roomToPlace, this))
                     return false;
