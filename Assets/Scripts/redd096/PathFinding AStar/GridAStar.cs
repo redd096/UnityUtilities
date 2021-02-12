@@ -1,143 +1,188 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
-
-public class GridAStar : MonoBehaviour
+﻿namespace redd096
 {
-    #region variables
+    using System.Collections.Generic;
+    using UnityEngine;
 
-    [Header("Update")]
-    [SerializeField] bool update = false;
+#if UNITY_EDITOR
 
-    [Header("Layer Mask Unwalkable")]
-    [SerializeField] LayerMask unwalkableMask = default;
+    using UnityEditor;
 
-    [Header("Grid")]
-    [SerializeField] Vector2 gridWorldSize = Vector2.one;
-    [SerializeField] float nodeRadius = 1;
-
-    //grid
-    Node[,] grid;
-
-    float nodeDiameter;
-    Vector2Int gridSize;
-
-    #endregion
-
-    void Start()
+    [CustomEditor(typeof(GridAStar))]
+    public class GridAStarEditor : Editor
     {
-        SetGridSize();
-        CreateGrid();
+        private GridAStar gridAStar;
+
+        private void OnEnable()
+        {
+            gridAStar = target as GridAStar;
+        }
+
+        public override void OnInspectorGUI()
+        {
+            base.OnInspectorGUI();
+
+            GUILayout.Space(10);
+
+            if (GUILayout.Button("Update Nodes"))
+            {
+                //update nodes
+                gridAStar.UpdateNodesFromEditor();
+
+                //repaint scene
+                SceneView.RepaintAll();
+
+                //set undo
+                Undo.RegisterFullObjectHierarchyUndo(target, "Update Nodes");
+            }
+        }
     }
 
-    void OnValidate()
-    {
-        if(update)
-        {
-            update = false;
+#endif
 
+    [AddComponentMenu("redd096/Path Finding A Star/Grid A Star")]
+    public class GridAStar : MonoBehaviour
+    {
+        #region variables
+
+        [Header("Layer Mask Unwalkable")]
+        [SerializeField] LayerMask unwalkableMask = default;
+
+        [Header("Grid")]
+        [SerializeField] bool useZInsteadOfY = true;
+        [SerializeField] Vector2 gridWorldSize = Vector2.one;
+        [SerializeField] float nodeDiameter = 1;
+
+        //grid
+        Node[,] grid;
+
+        float nodeRadius;
+        Vector2Int gridSize;
+
+        #endregion
+
+        void Start()
+        {
             SetGridSize();
             CreateGrid();
         }
-    }
 
-    void OnDrawGizmos()
-    {
-        //draw area
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));
-
-        //draw every node in grid
-        if (grid != null)
+        public void UpdateNodesFromEditor()
         {
-            foreach (Node node in grid)
-            {
-                //set color if walkable or not
-                Gizmos.color = node.isWalkable ? Color.white : Color.red;
-                //Gizmos.DrawSphere(node.worldPosition, nodeRadius);
-                Gizmos.DrawCube(node.worldPosition, Vector3.one * (nodeDiameter - 0.1f));
-            }
+            SetGridSize();
+            CreateGrid();
         }
-    }
 
-    #region create grid
-
-    void SetGridSize()
-    {
-        //set diameter for every node
-        nodeDiameter = nodeRadius * 2;
-
-        //set grid size
-        gridSize.x = Mathf.RoundToInt(gridWorldSize.x / nodeDiameter);
-        gridSize.y = Mathf.RoundToInt(gridWorldSize.y / nodeDiameter);
-    }
-
-    void CreateGrid()
-    {
-        //reset grid and find bottom left world position
-        grid = new Node[gridSize.x, gridSize.y];
-        Vector3 worldBottomLeft = transform.position + (Vector3.left * gridWorldSize.x / 2) + (Vector3.back * gridWorldSize.y / 2);
-
-        //create grid
-        for (int x = 0; x < gridSize.x; x++)
+        void OnDrawGizmosSelected()
         {
-            for(int y = 0; y < gridSize.y; y++)
+            //draw area
+            Gizmos.color = Color.cyan;
+            if (useZInsteadOfY)
+                Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));      //use z
+            else
+                Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, gridWorldSize.y, 1));      //or y
+
+            //draw every node in grid
+            if (grid != null)
             {
-                //find world position and if walkable
-                Vector3 worldPosition = worldBottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.forward * (y * nodeDiameter + nodeRadius);
-                bool isWalkable = !(Physics.CheckSphere(worldPosition, nodeRadius, unwalkableMask));
-
-                //set new node in grid
-                grid[x, y] = new Node(isWalkable, worldPosition, x, y);
-            }
-        }
-    }
-
-    #endregion
-
-    #region public API
-
-    public List<Node> GetNeighbours(Node node)
-    {
-        List<Node> neighbours = new List<Node>();
-
-        for (int x = -1; x <= 1; x++)
-        {
-            for(int y = -1; y <= 1; y++)
-            {
-                //this is the node we are using as parameter
-                if (x == 0 && y == 0)
-                    continue;
-
-                //find grid position
-                int checkX = node.gridPosition.x + x;
-                int checkY = node.gridPosition.y + y;
-
-                //if that position is inside the grid, add to neighbours
-                if(checkX >= 0 && checkX < gridSize.x && checkY >= 0 && checkY < gridSize.y)
+                foreach (Node node in grid)
                 {
-                    neighbours.Add(grid[checkX, checkY]);
+                    //set color if walkable or not
+                    Gizmos.color = node.isWalkable ? Color.white : Color.red;
+                    //Gizmos.DrawSphere(node.worldPosition, nodeRadius);
+                    Gizmos.DrawCube(node.worldPosition, Vector3.one * (nodeDiameter - 0.1f));
                 }
             }
         }
 
-        return neighbours;
+        #region create grid
+
+        void SetGridSize()
+        {
+            //set radius for every node
+            nodeRadius = nodeDiameter * 0.5f;
+
+            //set grid size
+            gridSize.x = Mathf.RoundToInt(gridWorldSize.x / nodeDiameter);
+            gridSize.y = Mathf.RoundToInt(gridWorldSize.y / nodeDiameter);
+        }
+
+        void CreateGrid()
+        {
+            //reset grid and find bottom left world position
+            grid = new Node[gridSize.x, gridSize.y];
+            Vector3 worldBottomLeft = useZInsteadOfY ?
+                transform.position + (Vector3.left * gridWorldSize.x / 2) + (Vector3.back * gridWorldSize.y / 2) :      //use z
+                transform.position + (Vector3.left * gridWorldSize.x / 2) + (Vector3.down * gridWorldSize.y / 2);       //or y
+
+            //create grid
+            for (int x = 0; x < gridSize.x; x++)
+            {
+                for (int y = 0; y < gridSize.y; y++)
+                {
+                    //find world position and if walkable
+                    Vector3 worldPosition = useZInsteadOfY ?
+                        worldBottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.forward * (y * nodeDiameter + nodeRadius) :     //use z
+                        worldBottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.up * (y * nodeDiameter + nodeRadius);           //or y
+
+                    bool isWalkable = useZInsteadOfY ?
+                        !Physics.CheckSphere(worldPosition, nodeRadius, unwalkableMask) :       //use 3d (z)
+                        !Physics2D.OverlapCircle(worldPosition, nodeRadius, unwalkableMask);    //or 2d (y)
+
+                    //set new node in grid
+                    grid[x, y] = new Node(isWalkable, worldPosition, x, y);
+                }
+            }
+        }
+
+        #endregion
+
+        #region public API
+
+        public List<Node> GetNeighbours(Node node)
+        {
+            List<Node> neighbours = new List<Node>();
+
+            for (int x = -1; x <= 1; x++)
+            {
+                for (int y = -1; y <= 1; y++)
+                {
+                    //this is the node we are using as parameter
+                    if (x == 0 && y == 0)
+                        continue;
+
+                    //find grid position
+                    int checkX = node.gridPosition.x + x;
+                    int checkY = node.gridPosition.y + y;
+
+                    //if that position is inside the grid, add to neighbours
+                    if (checkX >= 0 && checkX < gridSize.x && checkY >= 0 && checkY < gridSize.y)
+                    {
+                        neighbours.Add(grid[checkX, checkY]);
+                    }
+                }
+            }
+
+            return neighbours;
+        }
+
+        public Node NodeFromWorldPosition(Vector3 worldPosition)
+        {
+            //find percent
+            float percentX = (worldPosition.x + gridWorldSize.x / 2) / gridWorldSize.x;
+            float percentY = useZInsteadOfY ?
+                (worldPosition.z + gridWorldSize.y / 2) / gridWorldSize.y :     //use z
+                (worldPosition.y + gridWorldSize.y / 2) / gridWorldSize.y;      //or y
+            percentX = Mathf.Clamp01(percentX);
+            percentY = Mathf.Clamp01(percentY);
+
+            //get coordinates from it
+            int x = Mathf.RoundToInt((gridSize.x - 1) * percentX);
+            int y = Mathf.RoundToInt((gridSize.y - 1) * percentY);
+
+            //return node
+            return grid[x, y];
+        }
+
+        #endregion
     }
-
-    public Node NodeFromWorldPosition(Vector3 worldPosition)
-    {
-        //find percent
-        float percentX = (worldPosition.x + gridWorldSize.x / 2) / gridWorldSize.x;
-        float percentY = (worldPosition.z + gridWorldSize.y / 2) / gridWorldSize.y;
-        percentX = Mathf.Clamp01(percentX);
-        percentY = Mathf.Clamp01(percentY);
-
-        //get coordinates from it
-        int x = Mathf.RoundToInt((gridSize.x - 1) * percentX);
-        int y = Mathf.RoundToInt((gridSize.y - 1) * percentY);
-
-        //return node
-        return grid[x, y];
-    }
-
-    #endregion
 }
