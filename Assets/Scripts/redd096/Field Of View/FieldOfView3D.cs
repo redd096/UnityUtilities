@@ -41,8 +41,11 @@
             //button to show if hit targets
             if (GUILayout.Button("Update Targets"))
             {
-                FieldOfView2D fov = (FieldOfView2D)target;
+                FieldOfView3D fov = (FieldOfView3D)target;
                 fov.FindVisibleTargets();
+
+                //repaint scene
+                SceneView.RepaintAll();
             }
         }
     }

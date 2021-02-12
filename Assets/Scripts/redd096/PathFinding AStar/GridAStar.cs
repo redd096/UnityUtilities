@@ -28,10 +28,8 @@
                 //update nodes
                 gridAStar.UpdateNodesFromEditor();
 
-                //repaint scene
+                //repaint scene and set undo
                 SceneView.RepaintAll();
-
-                //set undo
                 Undo.RegisterFullObjectHierarchyUndo(target, "Update Nodes");
             }
         }

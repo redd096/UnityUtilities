@@ -43,6 +43,9 @@
             {
                 FieldOfView2D fov = (FieldOfView2D)target;
                 fov.FindVisibleTargets();
+
+                //repaint scene
+                SceneView.RepaintAll();
             }
         }
     }
