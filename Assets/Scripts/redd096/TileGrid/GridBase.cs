@@ -20,7 +20,7 @@
             GenerateReferences();
         }
 
-#region regen grid
+        #region regen grid
 
         protected void RemoveOldGrid()
         {
@@ -61,9 +61,9 @@
             }
         }
 
-#endregion
+        #endregion
 
-#region awake
+        #region awake
 
         void GenerateReferences()
         {
@@ -74,16 +74,17 @@
                 TileBase tile = child.GetComponent<TileBase>();
                 if (tile != null)
                 {
-                    Vector2Int index = new Vector2Int(
-                        Mathf.FloorToInt(tile.transform.position.x / tileSize.x),
-                        Mathf.FloorToInt(tile.transform.position.z / tileSize.z));
+                    Vector2Int index = new Vector2Int(Mathf.FloorToInt(tile.transform.position.x / tileSize.x),
+                        useZ ?
+                        Mathf.FloorToInt(tile.transform.position.z / tileSize.z) :  //if use Z, check Z axis
+                        Mathf.FloorToInt(tile.transform.position.y / tileSize.y));  //if use Y, check Y axis
 
                     grid.Add(index, tile);
                 }
             }
         }
 
-#endregion
+        #endregion
 
         /// <summary>
         /// Get Tile Prefab
