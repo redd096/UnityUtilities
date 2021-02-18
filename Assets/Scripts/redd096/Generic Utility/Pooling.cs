@@ -7,7 +7,7 @@
     {
         #region variables
 
-        bool canGrow = true;
+        int limit = 0;
 
         /// <summary>
         /// List of objects in the list
@@ -17,11 +17,11 @@
         #endregion
 
         /// <summary>
-        /// Set if the list can grow when use Instantiate, or use only amount in the Init function
+        /// Set list limit (0 or lower is equal to no limit)
         /// </summary>
-        public Pooling(bool canGrow = true)
+        public Pooling(int limit = 0)
         {
-            this.canGrow = canGrow;
+            this.limit = limit;
         }
 
         #region private API
@@ -104,7 +104,7 @@
         #region instantiate
 
         /// <summary>
-        /// Active first inactive in the list. If everything is already active, if can grow, instantiate new one. 
+        /// Active first inactive in the list. If everything is already active, if not reached limit, instantiate new one. 
         /// NB GameObject.SetActive not works in the same frame, so if you are instantiating in a cycle consider to use InitCycle()
         /// </summary>
         public T Instantiate(T prefab)
@@ -131,8 +131,8 @@
                 }
             }
 
-            //else if can grow, create new one and return it
-            if (canGrow)
+            //else if didn't reach limit, create new one and return it
+            if (limit <= 0 || PooledObjects.Count < limit)
             {
                 return Spawn(prefab);
             }
@@ -141,7 +141,7 @@
         }
 
         /// <summary>
-        /// Active first inactive in the list. If everything is already active, if can grow, instantiate new one. 
+        /// Active first inactive in the list. If everything is already active, if not reached limit, instantiate new one. 
         /// Then set position and rotation. 
         /// NB GameObject.SetActive not works in the same frame, so if you are instantiating in a cycle consider to use InitCycle()
         /// </summary>
@@ -160,7 +160,7 @@
         }
 
         /// <summary>
-        /// Active first inactive in the list. If everything is already active, if can grow, instantiate new one. 
+        /// Active first inactive in the list. If everything is already active, if not reached limit, instantiate new one. 
         /// Then set parent. 
         /// NB GameObject.SetActive not works in the same frame, so if you are instantiating in a cycle consider to use InitCycle()
         /// </summary>
@@ -178,7 +178,7 @@
         }
 
         /// <summary>
-        /// Active first inactive in the list. If everything is already active, if can grow, instantiate new one. 
+        /// Active first inactive in the list. If everything is already active, if not reached limit, instantiate new one. 
         /// Then set parent. 
         /// NB GameObject.SetActive not works in the same frame, so if you are instantiating in a cycle consider to use InitCycle()
         /// </summary>
