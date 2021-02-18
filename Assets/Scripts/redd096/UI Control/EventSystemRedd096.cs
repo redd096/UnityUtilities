@@ -211,6 +211,18 @@
         /// </summary>
         public void ChangeMenu(GameObject newMenu)
         {
+            //check if back to last previous menu
+            if (previousMenu != null && previousMenu.Count > 0)
+            {
+                GameObject lastMenu = previousMenu[previousMenu.Count - 1];
+
+                if (newMenu == lastMenu)
+                {
+                    BackToOldMenu();
+                    return;
+                }
+            }
+
             //active new menu and deactive current
             newMenu.SetActive(true);
             currentMenu.SetActive(false);
