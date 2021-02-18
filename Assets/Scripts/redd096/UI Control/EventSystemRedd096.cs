@@ -23,6 +23,7 @@
 
         GameObject selected;
         GameObject lastSelected;
+        GameObject currentOverrideObjectActive;
 
         List<GameObject> previousMenu = new List<GameObject>();
         GameObject currentMenu;
@@ -48,8 +49,9 @@
                     return;
             }
 
-            //set current selected
+            //set current selected and current override object active
             selected = current.currentSelectedGameObject;
+            currentOverrideObjectActive = GetCurrentOverrideObject();
 
             //if there is something selected and active
             if (selected && selected.activeInHierarchy)
@@ -81,27 +83,36 @@
                 current.SetSelectedGameObject(null);
         }
 
+        GameObject GetCurrentOverrideObject()
+        {
+            //if is active an override object, return it
+            if (overrideObjects != null)
+            {
+                foreach (GameObject overrideObj in overrideObjects)
+                {
+                    if (overrideObj && overrideObj.activeInHierarchy)
+                    {
+                        return overrideObj;
+                    }
+                }
+            }
+
+            return null;
+        }
+
         #region selected and active
 
         void CheckOverride()
         {
-            if (overrideObjects == null || overrideObjects.Length <= 0)
-                return;
-
-            foreach (GameObject overrideObj in overrideObjects)
+            //if an override is active
+            if (currentOverrideObjectActive &&
+                (selected == null || selected.transform.parent != currentOverrideObjectActive.transform.parent))    //if selected something out of its menu
             {
-                //if an override is active, if selected something out of its menu
-                if (overrideObj && overrideObj.activeInHierarchy &&
-                    (selected == null || selected.transform.parent != overrideObj.transform.parent))
-                {
-                    //if last selected was in override menu, select it - otherwise select override object
-                    if (lastSelected && lastSelected.activeInHierarchy && lastSelected.transform.parent == overrideObj.transform.parent)
-                        current.SetSelectedGameObject(lastSelected);
-                    else
-                        current.SetSelectedGameObject(overrideObj);
-
-                    break;
-                }
+                //if last selected was in override menu, select it - otherwise select override object
+                if (lastSelected && lastSelected.activeInHierarchy && lastSelected.transform.parent == currentOverrideObjectActive.transform.parent)
+                    current.SetSelectedGameObject(lastSelected);
+                else
+                    current.SetSelectedGameObject(currentOverrideObjectActive);
             }
         }
 
@@ -127,18 +138,12 @@
 
         bool SetOverride()
         {
-            if (overrideObjects == null || overrideObjects.Length <= 0)
-                return false;
-
             //if is active an override object, select it
-            foreach (GameObject overrideObj in overrideObjects)
+            if (currentOverrideObjectActive)
             {
-                if (overrideObj && overrideObj.activeInHierarchy)
-                {
-                    current.SetSelectedGameObject(overrideObj);
-                    selected = overrideObj;
-                    return true;
-                }
+                current.SetSelectedGameObject(currentOverrideObjectActive);
+                selected = currentOverrideObjectActive;
+                return true;
             }
 
             return false;
@@ -179,6 +184,12 @@
         /// </summary>
         bool BackToOldMenu()
         {
+            //if is active an override object, can't go back
+            if (currentOverrideObjectActive)
+            {
+                return false;
+            }
+
             if (previousMenu != null && previousMenu.Count > 0 && currentMenu != null)
             {
                 GameObject lastMenu = previousMenu[previousMenu.Count - 1];
@@ -198,22 +209,10 @@
         }
 
         /// <summary>
-        /// Active new menu and deactive old one (if changing to previous menu, is the same as BackMenu())
+        /// Active new menu and deactive old one
         /// </summary>
         public void ChangeMenu(GameObject newMenu)
         {
-            //check if back to last previous menu
-            if (previousMenu != null && previousMenu.Count > 0)
-            {
-                GameObject lastMenu = previousMenu[previousMenu.Count - 1];
-
-                if (newMenu == lastMenu)
-                {
-                    BackToOldMenu();
-                    return;
-                }
-            }
-
             //active new menu and deactive current
             newMenu.SetActive(true);
             currentMenu.SetActive(false);
@@ -221,6 +220,12 @@
             //add current menu to previous and set new one as current
             previousMenu.Add(currentMenu);
             currentMenu = newMenu;
+
+            //if we were in override object, clear the previous menu list (can't go back to override menu)
+            if (currentOverrideObjectActive)
+            {
+                previousMenu.Clear();
+            }
         }
 
         /// <summary>
