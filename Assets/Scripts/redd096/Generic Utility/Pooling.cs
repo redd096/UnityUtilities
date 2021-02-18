@@ -17,7 +17,7 @@
         #endregion
 
         /// <summary>
-        /// Set list limit (0 or lower is equal to no limit)
+        /// Set list limit when Instantiate (0 or lower is equal to no limit)
         /// </summary>
         public Pooling(int limit = 0)
         {
