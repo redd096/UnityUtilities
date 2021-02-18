@@ -178,7 +178,20 @@
             }
             else
             {
+                //if unique map manager, end generation
+                if (regenOnPlay)
+                    EndGeneration();
+
                 Debug.Log("<color=cyan>Mission complete!</color>");
+            }
+        }
+
+        public void EndGeneration()
+        {
+            //foreach room create, call function
+            foreach (Room room in rooms)
+            {
+                room.CompleteRoom();
             }
         }
 
@@ -295,7 +308,7 @@
         {
             //add to list and update ID
             rooms.Add(newRoom);
-            newRoom.Init(roomID, teleported);
+            newRoom.Register(roomID, teleported);
             roomID++;
 
             //update fixed rooms
@@ -362,7 +375,7 @@
                 if (loopCount > 50)
                 {
 #if UNITY_EDITOR
-                    if (UnityEditor.EditorApplication.isPlaying)
+                    if (EditorApplication.isPlaying)
                         Destroy(currentRoom.gameObject);
                     else
                         DestroyImmediate(currentRoom.gameObject);
@@ -381,6 +394,9 @@
 
             if (rooms.Count >= numberRooms)
             {
+                //end generation
+                EndGeneration();
+
                 Debug.Log("<color=cyan>Mission complete!</color>");
             }
         }
@@ -389,7 +405,7 @@
         {
             //instantiate room (child of this transform) and initialize
             currentRoom = Instantiate(roomPrefabs[Random.Range(0, roomPrefabs.Length)], transform);
-            currentRoom.Init(roomID, false);
+            currentRoom.Register(roomID, false);
             currentRoom.SetPosition(Vector3.zero);
 
             //add to list and update ID and last room
@@ -410,7 +426,7 @@
             }
 
             //initialize and set position
-            currentRoom.Init(roomID, teleported);
+            currentRoom.Register(roomID, teleported);
             if (currentRoom.SetPosition(door, lastRoom, this))    //if can't set position is because there are not doors which attach - EDIT now check also if there is space for this room
             {
                 //add to list and update ID and last room

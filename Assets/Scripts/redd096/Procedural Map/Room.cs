@@ -48,35 +48,12 @@
         [Header("DEBUG adjancent room (necessary not public)")]
         [SerializeField] DoorStruct adjacentDoor = default;
         [SerializeField] Room adjacentRoom = default;
-        [SerializeField] DoorStruct door = default;
+        [SerializeField] DoorStruct entranceDoor = default;
+        [SerializeField] List<DoorStruct> usedDoors = new List<DoorStruct>();
 
         #endregion
 
         #region public API
-
-        public void Init(int id, bool teleported)
-        {
-            this.id = id;
-
-            //debug
-            if (textID)
-            {
-                textID.text = teleported ? "tp: " + id.ToString() : id.ToString();
-            }
-            else
-            {
-                Debug.Log("La room " + name + " non ha un Text per mostrare il suo ID in scena");
-            }
-
-            //random color
-            float h = Random.value;
-            Color color = Color.HSVToRGB(h, 0.8f, 0.8f);
-            foreach (Renderer r in GetComponentsInChildren<Renderer>())
-            {
-                r.material.color = color;
-                color = Color.HSVToRGB(h, 1f, 1f);
-            }
-        }
 
         public void SetPosition(Vector3 position)
         {
@@ -111,12 +88,51 @@
             //add every door except only enter
             foreach(DoorStruct doorStruct in doors)
             {
+                if (usedDoors.Contains(doorStruct))                     //don't check already used doors
+                    continue;
+
                 if (doorStruct.typeOfDoor != TypeOfDoor.onlyEnter)      //be sure is not OnlyEnter, because this one will be an exit from adjacent room
                     possibleDoors.Add(doorStruct);
             }
 
             //return random door
             return possibleDoors[Random.Range(0, possibleDoors.Count)];
+        }
+
+        public void Register(int id, bool teleported)
+        {
+            this.id = id;
+
+            //set our entrance and adjacentRoom's exit doors used
+            if (adjacentRoom)
+            {
+                usedDoors.Add(entranceDoor);
+                adjacentRoom.usedDoors.Add(adjacentDoor);
+            }
+
+            //debug
+            if (textID)
+            {
+                textID.text = teleported ? "tp: " + id.ToString() : id.ToString();
+            }
+            else
+            {
+                Debug.Log("La room " + name + " non ha un Text per mostrare il suo ID in scena");
+            }
+
+            //random color
+            float h = Random.value;
+            Color color = Color.HSVToRGB(h, 0.8f, 0.8f);
+            foreach (Renderer r in GetComponentsInChildren<Renderer>())
+            {
+                r.material.color = color;
+                color = Color.HSVToRGB(h, 1f, 1f);
+            }
+        }
+
+        public virtual void CompleteRoom()
+        {
+
         }
 
         #endregion
@@ -128,12 +144,12 @@
             //if moving left, check doors on right, else check doors on left
             if (adjacentDoor.direction == CardinalDirection.left || adjacentDoor.direction == CardinalDirection.right)
             {
-                door.direction = adjacentDoor.direction == CardinalDirection.left ? CardinalDirection.right : CardinalDirection.left;
+                entranceDoor.direction = adjacentDoor.direction == CardinalDirection.left ? CardinalDirection.right : CardinalDirection.left;
             }
             //if moving up, check doors on bottom, else check doors on top
             else
             {
-                door.direction = adjacentDoor.direction == CardinalDirection.up ? CardinalDirection.down : CardinalDirection.up;
+                entranceDoor.direction = adjacentDoor.direction == CardinalDirection.up ? CardinalDirection.down : CardinalDirection.up;
             }
 
             List<DoorStruct> possibleDoors = new List<DoorStruct>();
@@ -141,7 +157,7 @@
             //add every possible door (using direction setted before)
             foreach (DoorStruct possibleDoor in doors)
             {
-                if (possibleDoor.direction == door.direction
+                if (possibleDoor.direction == entranceDoor.direction
                     && possibleDoor.typeOfDoor != TypeOfDoor.onlyExit)                //be sure is not OnlyExit, because this one will be an entrance to this room
                 {
                     possibleDoors.Add(possibleDoor);
@@ -153,10 +169,10 @@
                 return false;
 
             //else get a random door between possibles
-            door = possibleDoors[Random.Range(0, possibleDoors.Count)];
+            entranceDoor = possibleDoors[Random.Range(0, possibleDoors.Count)];
 
             //calculate distance and move
-            Vector3 fromDoorToAdjacentDoor = adjacentDoor.door.position - door.door.position;
+            Vector3 fromDoorToAdjacentDoor = adjacentDoor.door.position - entranceDoor.door.position;
             transform.position += fromDoorToAdjacentDoor;
 
             return true;

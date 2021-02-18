@@ -33,6 +33,12 @@
                 //add created rooms to controller
                 roomsEveryMapManager.AddRange(mapManagers[i].Rooms);
             }
+
+            //end generation for every map manager
+            foreach (ProceduralMapManager mapManager in mapManagers)
+            {
+                mapManager.EndGeneration();
+            }
         }
     }
 }
