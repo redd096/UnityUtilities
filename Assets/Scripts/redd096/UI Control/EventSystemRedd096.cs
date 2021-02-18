@@ -1,5 +1,6 @@
 ﻿namespace redd096
 {
+    using System.Collections.Generic;
     using UnityEngine;
     using UnityEngine.EventSystems;
 
@@ -8,6 +9,9 @@
     {
         #region variables
 
+        [Header("Start from this Menu")]
+        [SerializeField] GameObject startMenu = default;
+
         [Header("For every menu, from what object start?")]
         [SerializeField] GameObject[] firstSelectedGameObjects = default;
 
@@ -15,16 +19,34 @@
         [SerializeField] GameObject[] overrideObjects = default;
 
         [Header("Can't navigate to these objects")]
-        [SerializeField] System.Collections.Generic.List<GameObject> notNavigables = new System.Collections.Generic.List<GameObject>();
+        [SerializeField] List<GameObject> notNavigables = new List<GameObject>();
 
         GameObject selected;
         GameObject lastSelected;
 
+        List<GameObject> previousMenu = new List<GameObject>();
+        GameObject currentMenu;
+
         #endregion
+
+        protected override void Start()
+        {
+            base.Start();
+
+            //set current menu
+            currentMenu = startMenu;
+        }
 
         protected override void Update()
         {
             base.Update();
+
+            //if press cancel button come back to old menu
+            if (Input.GetButtonDown(((StandaloneInputModule)currentInputModule).cancelButton))
+            {
+                if (BackToOldMenu())
+                    return;
+            }
 
             //set current selected
             selected = current.currentSelectedGameObject;
@@ -146,6 +168,67 @@
                     }
                 }
             }
+        }
+
+        #endregion
+
+        #region menu
+
+        /// <summary>
+        /// Deactive current menu and active old one
+        /// </summary>
+        bool BackToOldMenu()
+        {
+            if (previousMenu != null && previousMenu.Count > 0 && currentMenu != null)
+            {
+                GameObject lastMenu = previousMenu[previousMenu.Count - 1];
+
+                //reactive last previous menu and deactive current
+                lastMenu.SetActive(true);
+                currentMenu.SetActive(false);
+
+                //set this as current menu and remove from previous menu list
+                currentMenu = lastMenu;
+                previousMenu.Remove(lastMenu);
+
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Active new menu and deactive old one (if changing to previous menu, is the same as BackMenu())
+        /// </summary>
+        public void ChangeMenu(GameObject newMenu)
+        {
+            //check if back to last previous menu
+            if (previousMenu != null && previousMenu.Count > 0)
+            {
+                GameObject lastMenu = previousMenu[previousMenu.Count - 1];
+
+                if (newMenu == lastMenu)
+                {
+                    BackToOldMenu();
+                    return;
+                }
+            }
+
+            //active new menu and deactive current
+            newMenu.SetActive(true);
+            currentMenu.SetActive(false);
+
+            //add current menu to previous and set new one as current
+            previousMenu.Add(currentMenu);
+            currentMenu = newMenu;
+        }
+
+        /// <summary>
+        /// Deactive current menu and active old one
+        /// </summary>
+        public void BackMenu()
+        {
+            BackToOldMenu();
         }
 
         #endregion
