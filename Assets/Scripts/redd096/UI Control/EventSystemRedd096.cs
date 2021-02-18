@@ -42,16 +42,20 @@
         {
             base.Update();
 
-            //if press cancel button come back to old menu
-            if (Input.GetButtonDown(((StandaloneInputModule)currentInputModule).cancelButton))
-            {
-                if (BackToOldMenu())
-                    return;
-            }
-
             //set current selected and current override object active
             selected = current.currentSelectedGameObject;
             currentOverrideObjectActive = GetCurrentOverrideObject();
+
+            //can't close override menu
+            if (currentOverrideObjectActive == null)
+            {
+                //if press cancel button come back to old menu
+                if (Input.GetButtonDown(((StandaloneInputModule)currentInputModule).cancelButton))
+                {
+                    if (BackToOldMenu())
+                        return;
+                }
+            }
 
             //if there is something selected and active
             if (selected && selected.activeInHierarchy)
@@ -184,12 +188,6 @@
         /// </summary>
         bool BackToOldMenu()
         {
-            //if is active an override object, can't go back
-            if (currentOverrideObjectActive)
-            {
-                return false;
-            }
-
             if (previousMenu != null && previousMenu.Count > 0 && currentMenu != null)
             {
                 GameObject lastMenu = previousMenu[previousMenu.Count - 1];
@@ -220,12 +218,6 @@
             //add current menu to previous and set new one as current
             previousMenu.Add(currentMenu);
             currentMenu = newMenu;
-
-            //if we were in override object, clear the previous menu list (can't go back to override menu)
-            if (currentOverrideObjectActive)
-            {
-                previousMenu.Clear();
-            }
         }
 
         /// <summary>
