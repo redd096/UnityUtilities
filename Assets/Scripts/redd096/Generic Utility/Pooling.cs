@@ -215,7 +215,10 @@
         {
             PooledObjects.Clear();
         }
+    }
 
+    public static class Pooling
+    {
         /// <summary>
         /// Simple deactive function
         /// </summary>
