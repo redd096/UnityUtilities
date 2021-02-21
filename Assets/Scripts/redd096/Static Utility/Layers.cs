@@ -172,7 +172,7 @@
         /// </summary>
         public static bool ContainsLayer(this LayerMask layerMask, int layerToCompare)
         {
-            return layerMask.value == 1 << layerToCompare;
+            return layerMask == (layerMask | ( 1 << layerToCompare));
         }
     }
 }
