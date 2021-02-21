@@ -7,7 +7,7 @@
     {
         #region variables
 
-        int limit = 0;
+        int limit = -1;
 
         /// <summary>
         /// List of objects in the list
@@ -17,9 +17,9 @@
         #endregion
 
         /// <summary>
-        /// Set list limit when Instantiate (0 or lower is equal to no limit)
+        /// Set list limit when Instantiate (-1 is no limit)
         /// </summary>
-        public Pooling(int limit = 0)
+        public Pooling(int limit = -1)
         {
             this.limit = limit;
         }
@@ -132,7 +132,7 @@
             }
 
             //else if didn't reach limit, create new one and return it
-            if (limit <= 0 || PooledObjects.Count < limit)
+            if (limit < 0 || PooledObjects.Count < limit)
             {
                 return Spawn(prefab);
             }
