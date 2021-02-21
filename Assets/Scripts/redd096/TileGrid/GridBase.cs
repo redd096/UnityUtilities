@@ -69,18 +69,13 @@
         {
             //create dictionary
             grid.Clear();
-            foreach (Transform child in transform)
+            foreach (TileBase tile in FindObjectsOfType<TileBase>())
             {
-                TileBase tile = child.GetComponent<TileBase>();
-                if (tile != null)
-                {
-                    Vector2Int index = new Vector2Int(Mathf.FloorToInt(tile.transform.position.x / tileSize.x),
-                        useZ ?
-                        Mathf.FloorToInt(tile.transform.position.z / tileSize.z) :  //if use Z, check Z axis
-                        Mathf.FloorToInt(tile.transform.position.y / tileSize.y));  //if use Y, check Y axis
-
-                    grid.Add(index, tile);
-                }
+                //if not already inside grid, add it
+                if (grid.ContainsKey(tile.PositionInGrid) == false)
+                    grid.Add(tile.PositionInGrid, tile);
+                else
+                    Debug.LogWarning($"{tile.PositionInGrid} is already in the dictionary");
             }
         }
 
