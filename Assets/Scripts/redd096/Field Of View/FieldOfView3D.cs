@@ -69,7 +69,7 @@
         public List<Transform> VisibleTargets => visibleTargets;
         public Vector3 StartDirection => pointDirection ? (pointDirection.position - transform.position).normalized : transform.forward;   //direction from our to pointDirection - else use forward
 
-        void Start()
+        void OnEnable()
         {
             //start look every tot seconds
             StartCoroutine("FindTargetsWithDelay", 0.2f);
