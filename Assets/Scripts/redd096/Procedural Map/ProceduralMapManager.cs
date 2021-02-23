@@ -174,24 +174,26 @@
                 //destroy old and create new one
                 Debug.Log("<color=red>Shitty map, cry and restart</color>");
                 DestroyMap();
-                yield return StartCoroutine(CreateMap(roomsEveryOtherMapManager));
+                yield return CreateMap(roomsEveryOtherMapManager);
             }
             else
             {
                 //if unique map manager, end generation
                 if (regenOnPlay)
-                    EndGeneration();
+                    yield return EndGeneration();
 
                 Debug.Log("<color=cyan>Mission complete!</color>");
             }
         }
 
-        public void EndGeneration()
+        public IEnumerator EndGeneration()
         {
             //foreach room create, call function
             foreach (Room room in rooms)
             {
-                room.CompleteRoom();
+                room.EndRoom();
+
+                yield return null;
             }
         }
 

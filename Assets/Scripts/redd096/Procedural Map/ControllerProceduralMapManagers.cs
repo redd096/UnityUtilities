@@ -37,7 +37,7 @@
             //end generation for every map manager
             foreach (ProceduralMapManager mapManager in mapManagers)
             {
-                mapManager.EndGeneration();
+                yield return mapManager.EndGeneration();
             }
         }
     }

@@ -130,7 +130,7 @@
             }
         }
 
-        public virtual void CompleteRoom()
+        public virtual void EndRoom()
         {
 
         }
