@@ -188,7 +188,7 @@
 
         public IEnumerator EndGeneration()
         {
-            //foreach room create, call function
+            //foreach room created, call function
             foreach (Room room in rooms)
             {
                 room.EndRoom();
