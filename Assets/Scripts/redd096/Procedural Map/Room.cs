@@ -43,13 +43,12 @@
 
         [Header("DEBUG")]
         [SerializeField] TextMesh textID = default;
-        [SerializeField] int id = 0;
+        int id = 0;
 
-        [Header("DEBUG adjancent room (necessary not public)")]
-        [SerializeField] DoorStruct adjacentDoor = default;
-        [SerializeField] Room adjacentRoom = default;
-        [SerializeField] DoorStruct entranceDoor = default;
-        [SerializeField] List<DoorStruct> usedDoors = new List<DoorStruct>();
+        DoorStruct adjacentDoor = default;
+        Room adjacentRoom = default;
+        DoorStruct entranceDoor = default;
+        List<DoorStruct> usedDoors = new List<DoorStruct>();
 
         #endregion
 
@@ -115,12 +114,8 @@
             {
                 textID.text = teleported ? "tp: " + id.ToString() : id.ToString();
             }
-            else
-            {
-                Debug.Log("La room " + name + " non ha un Text per mostrare il suo ID in scena");
-            }
 
-            //random color
+            //debug random color
             float h = Random.value;
             Color color = Color.HSVToRGB(h, 0.8f, 0.8f);
             foreach (Renderer r in GetComponentsInChildren<Renderer>())
