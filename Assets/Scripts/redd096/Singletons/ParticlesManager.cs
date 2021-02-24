@@ -5,7 +5,7 @@
     [AddComponentMenu("redd096/Singletons/Particles Manager")]
     public class ParticlesManager : Singleton<ParticlesManager>
     {
-        Transform particlesParent;
+        private Transform particlesParent;
         Transform ParticlesParent
         {
             get
@@ -25,8 +25,18 @@
             if (prefab == null)
                 return;
 
-            //instantiate at position and rotation, set parent
-            ParticleSystem particles = pool.Instantiate(prefab, position, rotation);
+            //instantiate (if didn't find deactivated, take first one in the pool)
+            ParticleSystem particles = pool.Instantiate(prefab);
+            if (particles == null && pool.PooledObjects.Count > 0)
+                particles = pool.PooledObjects[0];
+
+            //if still null, return
+            if (particles == null)
+                return;
+
+            //set position, rotation and parent
+            particles.transform.position = position;
+            particles.transform.rotation = rotation;
             particles.transform.SetParent(ParticlesParent);
 
             //play
