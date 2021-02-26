@@ -16,7 +16,7 @@
     [System.Serializable]
     public struct DoorStruct
     {
-        public Transform door;
+        public Transform doorTransform;
         public CardinalDirection direction;
         public TypeOfDoor typeOfDoor;
     }
@@ -66,7 +66,7 @@
             this.adjacentDoor = adjacentDoor;
             this.adjacentRoom = adjacentRoom;
 
-            if (adjacentRoom == null || adjacentDoor.door == null)
+            if (adjacentRoom == null || adjacentDoor.doorTransform == null)
                 Debug.Log("<color=red>Houston, abbiamo un problema</color>");
 
             //check this room has a door to adjacent room, and adjust position
@@ -167,7 +167,7 @@
             entranceDoor = possibleDoors[Random.Range(0, possibleDoors.Count)];
 
             //calculate distance and move
-            Vector3 fromDoorToAdjacentDoor = adjacentDoor.door.position - entranceDoor.door.position;
+            Vector3 fromDoorToAdjacentDoor = adjacentDoor.doorTransform.position - entranceDoor.doorTransform.position;
             transform.position += fromDoorToAdjacentDoor;
 
             return true;
