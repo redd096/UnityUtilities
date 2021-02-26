@@ -104,10 +104,12 @@
         IEnumerator DeactiveSoundAtPointCoroutine(AudioSource audioToDeactivate)
         {
             //wait to end the clip
-            yield return new WaitForSeconds(audioToDeactivate.clip.length);
+            if (audioToDeactivate)
+                yield return new WaitForSeconds(audioToDeactivate.clip.length);
 
             //and deactive
-            audioToDeactivate.gameObject.SetActive(false);
+            if (audioToDeactivate)
+                audioToDeactivate.gameObject.SetActive(false);
         }
     }
 }

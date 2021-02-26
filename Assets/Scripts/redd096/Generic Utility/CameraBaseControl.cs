@@ -60,12 +60,12 @@
             if (firstPerson)
             {
                 //use player for local rotation, because camera rotate also on X axis (Mouse Y)
-                cam.position = Vector3.Slerp(cam.position, player.position + Direction.WorldToLocalDirection(cameraOffset, player.rotation), Time.deltaTime * smoothPosition);
+                cam.position = Vector3.Slerp(cam.position, player.position + WorldToLocalDirection(cameraOffset, player.rotation), Time.deltaTime * smoothPosition);
             }
             else
             {
                 //you can use camera rotation if you want the camera to move on top and bottom of the player, like 3rd person
-                cam.position = Vector3.Slerp(cam.position, player.position + Direction.WorldToLocalDirection(cameraOffset, cam.rotation), Time.deltaTime * smoothPosition);
+                cam.position = Vector3.Slerp(cam.position, player.position + WorldToLocalDirection(cameraOffset, cam.rotation), Time.deltaTime * smoothPosition);
             }
         }
 
@@ -93,12 +93,52 @@
 
         #region private API
 
+        #region utility
+
+        /// <summary>
+        /// Return the local direction
+        /// </summary>
+        Vector3 WorldToLocalDirection(Vector3 worldDirection, Quaternion rotation)
+        {
+            return rotation * worldDirection;
+        }
+
+        /// <summary>
+        /// Clamp from min to max
+        /// </summary>
+        float ClampAngle(float angle, float min, float max)
+        {
+            //can't go under -360
+            if (angle < -360)
+                angle += 360;
+
+            //can't go over 360
+            if (angle > 360)
+                angle -= 360;
+
+            return Mathf.Clamp(angle, min, max);
+        }
+
+        /// <summary>
+        /// When we need negative value, like -90 instead of 270, for example with clamp from -90 to 90
+        /// </summary>
+        float NegativeAngle(float angle, float min, float max)
+        {
+            //if greater than 180, subtract 360 to get negative value
+            if (angle > 180)
+                angle -= 360;
+
+            return Mathf.Clamp(angle, min, max);
+        }
+
+        #endregion
+
         #region set immediatly
 
         void SetPositionImmediatly()
         {
             //set camera position
-            cam.position = player.position + Direction.WorldToLocalDirection(cameraOffset, player.rotation);
+            cam.position = player.position + WorldToLocalDirection(cameraOffset, player.rotation);
         }
 
         void SetRotationImmediatly()
@@ -118,8 +158,8 @@
             rotX += inputX * sensitivityX * Time.deltaTime;
             rotY += inputY * sensitivityY * Time.deltaTime;
 
-            rotX = Angle.ClampAngle(rotX, minX, maxX);
-            rotY = Angle.ClampAngle(rotY, minY, maxY);
+            rotX = ClampAngle(rotX, minX, maxX);
+            rotY = ClampAngle(rotY, minY, maxY);
 
             //the rotation we want for cam and player, on world space
             camEuler = new Vector3(-rotY, rotX, 0);
@@ -161,8 +201,8 @@
         public void SetDefaultRotation()
         {
             //maybe we need negative values, like -90 instead of 270, for example with clamp from -90 to 90
-            float rotationX = Angle.NegativeAngle(player.eulerAngles.y, minX, maxX);
-            float rotationY = Angle.NegativeAngle(cam.eulerAngles.x, minY, maxY);
+            float rotationX = NegativeAngle(player.eulerAngles.y, minX, maxX);
+            float rotationY = NegativeAngle(cam.eulerAngles.x, minY, maxY);
 
             //final set
             rotX = rotationX;
@@ -175,8 +215,8 @@
         public void SetRotation(Vector3 euler)
         {
             //maybe we need negative values, like -90 instead of 270, for example with clamp from -90 to 90
-            float rotationX = Angle.NegativeAngle(euler.y, minX, maxX);
-            float rotationY = Angle.NegativeAngle(euler.x, minY, maxY);
+            float rotationX = NegativeAngle(euler.y, minX, maxX);
+            float rotationY = NegativeAngle(euler.x, minY, maxY);
 
             //final set
             rotX = rotationX;
@@ -191,8 +231,8 @@
             Vector3 euler = rotation.eulerAngles;
 
             //maybe we need negative values, like -90 instead of 270, for example with clamp from -90 to 90
-            float rotationX = Angle.NegativeAngle(euler.y, minX, maxX);
-            float rotationY = Angle.NegativeAngle(euler.x, minY, maxY);
+            float rotationX = NegativeAngle(euler.y, minX, maxX);
+            float rotationY = NegativeAngle(euler.x, minY, maxY);
 
             //final set
             rotX = rotationX;
@@ -213,8 +253,8 @@
             float rotationY = rotY + addY;
 
             //maybe we need negative values, like -90 instead of 270, for example with clamp from -90 to 90
-            rotationX = Angle.NegativeAngle(rotationX, minX, maxX);
-            rotationY = Angle.NegativeAngle(rotationY, minY, maxY);
+            rotationX = NegativeAngle(rotationX, minX, maxX);
+            rotationY = NegativeAngle(rotationY, minY, maxY);
 
             //final set
             rotX = rotationX;
@@ -233,8 +273,8 @@
             float rotationY = rotY + addY;
 
             //maybe we need negative values, like -90 instead of 270, for example with clamp from -90 to 90
-            rotationX = Angle.NegativeAngle(rotationX, minX, maxX);
-            rotationY = Angle.NegativeAngle(rotationY, minY, maxY);
+            rotationX = NegativeAngle(rotationX, minX, maxX);
+            rotationY = NegativeAngle(rotationY, minY, maxY);
 
             //animation
             float delta = 0;
