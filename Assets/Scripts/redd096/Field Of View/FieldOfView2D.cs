@@ -61,7 +61,7 @@
         [SerializeField] Transform pointDirection = default;
 
         [Header("Layers")]
-        [SerializeField] LayerMask targetMask = default;
+        [SerializeField] LayerMask targetMask = -1;
         [SerializeField] LayerMask obstacleMask = default;
 
         List<Transform> visibleTargets = new List<Transform>();

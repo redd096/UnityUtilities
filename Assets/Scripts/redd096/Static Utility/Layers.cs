@@ -172,6 +172,7 @@
         /// </summary>
         public static bool ContainsLayer(this LayerMask layerMask, int layerToCompare)
         {
+            //if add layer to this layermask, and layermask remain equals, then layermask contains this layer
             return layerMask == (layerMask | ( 1 << layerToCompare));
         }
     }
