@@ -63,9 +63,9 @@
         }
 
         /// <summary>
-        /// Load new scene by name
+        /// Load scene by name
         /// </summary>
-        public void LoadNewScene(string scene)
+        public void LoadScene(string scene)
         {
             //show cursor and set timeScale to 1
             //Utility.LockMouse(CursorLockMode.None);
