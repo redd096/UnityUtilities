@@ -230,7 +230,7 @@
     public static class RotatedIdentity
     {
         /// <summary>
-        /// Rotate the quaternion.identity to a newUp. Than return new quaternion.identity
+        /// Rotate the quaternion.identity to a newUp. Then return new quaternion.identity
         /// and difference on y axis (MouseX) from default quaternion.identity and the new identity (for RotationWithNewIdentity)
         /// </summary>
         public static void RotateQuaternionIdentity(Quaternion currentIdentity, Vector3 newUp, out Quaternion newIdentity, out Quaternion differenceYAxisFromDefaultIdentity)

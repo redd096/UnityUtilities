@@ -33,6 +33,22 @@
         #region IMPORTANT
 
         /// <summary>
+        /// Call in DrawGizmos. Show the cam position with this offset
+        /// </summary>
+        public void OnDrawGizmos(Transform cam, Transform player)
+        {
+            Gizmos.color = Color.green;
+
+            //get cam position
+            Quaternion rotation = firstPerson ? player.rotation : cam.rotation;
+            Vector3 camPosition = player.position + WorldToLocalDirection(cameraOffset, rotation);
+
+            //draw sphere at position and line to forward
+            Gizmos.DrawWireSphere(camPosition, 0.2f);
+            Gizmos.DrawRay(camPosition, WorldToLocalDirection(Vector3.forward, rotation));
+        }
+
+        /// <summary>
         /// Call in Start or Awake. Set references and default rotation
         /// </summary>
         public void StartDefault(Transform cam, Transform player, bool setDefault = true)
@@ -57,16 +73,11 @@
         /// </summary>
         public void UpdateCameraPosition()
         {
-            if (firstPerson)
-            {
-                //use player for local rotation, because camera rotate also on X axis (Mouse Y)
-                cam.position = Vector3.Slerp(cam.position, player.position + WorldToLocalDirection(cameraOffset, player.rotation), Time.deltaTime * smoothPosition);
-            }
-            else
-            {
-                //you can use camera rotation if you want the camera to move on top and bottom of the player, like 3rd person
-                cam.position = Vector3.Slerp(cam.position, player.position + WorldToLocalDirection(cameraOffset, cam.rotation), Time.deltaTime * smoothPosition);
-            }
+            //use player for first person rotation, because camera rotate also on X axis (Mouse Y)
+            //you can use camera rotation if you want the camera to move on top and bottom of the player, like 3rd person
+            Quaternion rotation = firstPerson ? player.rotation : cam.rotation;
+
+            cam.position = Vector3.Slerp(cam.position, player.position + WorldToLocalDirection(cameraOffset, rotation), Time.deltaTime * smoothPosition);
         }
 
         /// <summary>
@@ -137,8 +148,10 @@
 
         void SetPositionImmediatly()
         {
+            Quaternion rotation = firstPerson ? player.rotation : cam.rotation;
+
             //set camera position
-            cam.position = player.position + WorldToLocalDirection(cameraOffset, player.rotation);
+            cam.position = player.position + WorldToLocalDirection(cameraOffset, rotation);
         }
 
         void SetRotationImmediatly()
