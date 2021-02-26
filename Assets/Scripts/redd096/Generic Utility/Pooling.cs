@@ -112,9 +112,10 @@
             //get the first inactive and return
             foreach (T obj in PooledObjects)
             {
+                //if found obj null, remove from the list and go to next object
                 if (obj == null)
                 {
-                    Debug.LogWarning("Pool object is destroyed");
+                    PooledObjects.Remove(obj);
                     continue;
                 }
 
