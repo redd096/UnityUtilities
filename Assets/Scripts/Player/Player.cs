@@ -8,8 +8,6 @@ public class Player : StateMachine
     [Header("Camera")]
     public CameraBaseControl cameraControl;
 
-    [SerializeField] float duration = 10;
-
     private void OnDrawGizmos()
     {
         cameraControl.OnDrawGizmos(Camera.main.transform, transform);
