@@ -191,9 +191,7 @@
             //foreach room created, call function
             foreach (Room room in rooms)
             {
-                room.EndRoom();
-
-                yield return null;
+                yield return room.EndRoom();
             }
         }
 

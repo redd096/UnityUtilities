@@ -1,5 +1,6 @@
 ﻿namespace redd096
 {
+    using System.Collections;
     using System.Collections.Generic;
     using UnityEngine;
 
@@ -125,9 +126,9 @@
             }
         }
 
-        public virtual void EndRoom()
+        public virtual IEnumerator EndRoom()
         {
-
+            yield return null;
         }
 
         #endregion
