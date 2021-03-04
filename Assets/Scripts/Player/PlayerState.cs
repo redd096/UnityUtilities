@@ -25,7 +25,7 @@ public class PlayerState : State
 
         //camera update
         MoveCamera();
-        Rotate(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
+        //Rotate(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
     }
 
     #region private API
