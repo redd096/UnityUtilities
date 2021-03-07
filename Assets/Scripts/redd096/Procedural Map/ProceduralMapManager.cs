@@ -251,7 +251,7 @@
             succeded = false;
             teleported = false;
 
-            if (rooms.Count == 0)
+            if (rooms.Count <= 0 && RoomsEveryOtherMapManager.Count <= 0)
             {
                 //first room
                 Debug.Log("<color=lime>positioned first room</color>");
