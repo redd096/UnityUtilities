@@ -297,7 +297,7 @@
             //foreach check, be sure is valid
             foreach (ProceduralMapManagerCheck check in checks)
             {
-                if (!check.IsValid(roomToPlace, this))
+                if (check && !check.IsValid(roomToPlace, this))
                     return false;
             }
 

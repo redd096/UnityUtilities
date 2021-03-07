@@ -43,7 +43,7 @@
         Vector2 DownLeft => useZ ? new Vector3(transform.position.x - HalfWidth, transform.position.z - HalfHeight) : new Vector3(transform.position.x - HalfWidth, transform.position.y - HalfHeight);
 
         [Header("DEBUG")]
-        [SerializeField] TextMesh textID = default;
+        [SerializeField] UnityEngine.UI.Text textID = default;
         int id = 0;
 
         DoorStruct adjacentDoor = default;
@@ -95,6 +95,10 @@
                     possibleDoors.Add(doorStruct);
             }
 
+            //give a door, just to fail at position room
+            if (possibleDoors.Count <= 0)
+                return doors[0];
+
             //return random door
             return possibleDoors[Random.Range(0, possibleDoors.Count)];
         }
@@ -114,15 +118,15 @@
             if (textID)
             {
                 textID.text = teleported ? "tp: " + id.ToString() : id.ToString();
-            }
 
-            //debug random color
-            float h = Random.value;
-            Color color = Color.HSVToRGB(h, 0.8f, 0.8f);
-            foreach (Renderer r in GetComponentsInChildren<Renderer>())
-            {
-                r.material.color = color;
-                color = Color.HSVToRGB(h, 1f, 1f);
+                //debug random color
+                float h = Random.value;
+                Color color = Color.HSVToRGB(h, 0.8f, 0.8f);
+                foreach (Renderer r in GetComponentsInChildren<Renderer>())
+                {
+                    r.material.color = color;
+                    color = Color.HSVToRGB(h, 1f, 1f);
+                }
             }
         }
 

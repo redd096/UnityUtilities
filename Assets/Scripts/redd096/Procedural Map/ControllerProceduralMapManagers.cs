@@ -22,22 +22,27 @@
             //destroy every map by default
             foreach (ProceduralMapManager mapManager in mapManagers)
             {
-                mapManager.DestroyMap();
+                if (mapManager)
+                    mapManager.DestroyMap();
             }
 
             //foreach map manager, create map
             for (int i = 0; i < mapManagers.Length; i++)
             {
-                yield return mapManagers[i].CreateMap(roomsEveryMapManager);
+                if (mapManagers[i])
+                {
+                    yield return mapManagers[i].CreateMap(roomsEveryMapManager);
 
-                //add created rooms to controller
-                roomsEveryMapManager.AddRange(mapManagers[i].Rooms);
+                    //add created rooms to controller
+                    roomsEveryMapManager.AddRange(mapManagers[i].Rooms);
+                }
             }
 
             //end generation for every map manager
             foreach (ProceduralMapManager mapManager in mapManagers)
             {
-                yield return mapManager.EndGeneration();
+                if (mapManager)
+                    yield return mapManager.EndGeneration();
             }
         }
     }
