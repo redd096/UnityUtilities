@@ -122,7 +122,10 @@
             foreach (Transform child in transform)
             {
 #if UNITY_EDITOR
-                EditorApplication.delayCall += () => DestroyImmediate(child.gameObject);
+                if (Application.isPlaying)
+                    Destroy(child.gameObject);
+                else
+                    EditorApplication.delayCall += () => DestroyImmediate(child.gameObject);
 #else
                 Destroy(child.gameObject);
 #endif
