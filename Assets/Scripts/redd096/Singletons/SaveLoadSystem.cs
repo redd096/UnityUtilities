@@ -3,31 +3,33 @@
     using System.Collections.Generic;
     using UnityEngine;
     using System.IO;
+    using System.Runtime.Serialization.Formatters.Binary;
 
     [System.Serializable]
     public class ClassToSave
     {
-    }
+        public int test;
 
-    //TODO 
-    //dovrà salvare la dictionary del World
-    //UnityEngine.SceneManagement.SceneManager.GetActiveScene().name -> come nome del salvataggio utilizziamo il nome della scena + la wave raggiunta
-    //quando carica la scena, il level manager dovrà checkare il Game Manager per vedere se è stata caricata la scena 0 e quindi eseguire tutto come al solito, o è stata caricata un'altra scena ed in quel caso si deve chiamare SetWave
-    //quando si chiama WaveManager.EndWave(), deve salvare la dictionary (con il nome scritto sopra), così da poter ricaricare con le celle distrutte -> se si sta passando ad un livello già finito in precedenza, si sovrascrive
-    //NB CHE QUINDI SERVE UNA FUNZIONE NUOVA NEL GAME MANAGER, PER CARICARE LA SCENA MA PRIMA SETTARSI UN VALORE CHE DICE QUALE ONDATA VOGLIAMO AVVIARE (probabilmente basta una funzione chiamata dal bottone prima di LoadScene, che semplicemente setta una variabile int in GameManager)
+        public ClassToSave(int test)
+        {
+            this.test = test;
+        }
+    }
 
     [AddComponentMenu("redd096/Singletons/Save & Load System")]
     public class SaveLoadSystem : Singleton<SaveLoadSystem>
     {
         [Header("Data Directory")]
         [SerializeField] bool usePersistentDataPath = true;
-        [SerializeField] string directory = "Saves/";
+        [SerializeField] string directory = "Saves";
 
-        string pathDirectory => usePersistentDataPath ?
-            Application.persistentDataPath + directory :    //return persistent data path + directory path
-            directory;                                      //return only directory path
+        public string PathDirectory => usePersistentDataPath ?
+            Path.Combine(Application.persistentDataPath, directory) :      //return persistent data path + directory path
+            directory;                                                     //return only directory path
+    }
 
-
+    public static class SaveLoadJSON
+    {
         /// <summary>
         /// Get path to the file (directory path + name of the file (key) + format (.json))
         /// </summary>
@@ -36,7 +38,7 @@
         public static string GetPathFile(string key)
         {
             //directory path + name of the file (key) + format (.json)
-            return Path.Combine(instance.pathDirectory, key, ".json");
+            return Path.Combine(SaveLoadSystem.instance.PathDirectory, key + ".json");
         }
 
         /// <summary>
@@ -47,9 +49,9 @@
         public static void Save(string key, ClassToSave value)
         {
             //if there is no directory, create it
-            if (Directory.Exists(instance.pathDirectory) == false)
+            if (Directory.Exists(SaveLoadSystem.instance.PathDirectory) == false)
             {
-                Directory.CreateDirectory(instance.pathDirectory);
+                Directory.CreateDirectory(SaveLoadSystem.instance.PathDirectory);
             }
 
             //value to json, then save file
@@ -66,7 +68,7 @@
             //if there is no file, return null
             if (File.Exists(GetPathFile(key)) == false)
             {
-                Debug.Log("There is no saved at " + GetPathFile(key));
+                Debug.Log("Save file not found: " + GetPathFile(key));
                 return null;
             }
 
@@ -81,8 +83,124 @@
         /// <param name="key">Name of the file</param>
         public static void DeleteData(string key)
         {
+            //check there is a file
+            if (File.Exists(GetPathFile(key)) == false)
+            {
+                Debug.Log("Save file not found: " + GetPathFile(key));
+                return;
+            }
+
             //delete file
             File.Delete(GetPathFile(key));
+        }
+
+        /// <summary>
+        /// Delete directory with every file
+        /// </summary>
+        public static void DeleteAll()
+        {
+            //check there is a directory
+            if (Directory.Exists(SaveLoadSystem.instance.PathDirectory) == false)
+            {
+                Debug.Log("Directory not found: " + SaveLoadSystem.instance.PathDirectory);
+                return;
+            }
+
+            //delete directory
+            Directory.Delete(SaveLoadSystem.instance.PathDirectory, true);
+        }
+    }
+
+    public static class SaveLoadBinary
+    {
+        /// <summary>
+        /// Get path to the file (directory path + name of the file (key) + format (.bin))
+        /// </summary>
+        /// <param name="key">Name of the file</param>
+        /// <returns></returns>
+        public static string GetPathFile(string key)
+        {
+            //directory path + name of the file (key) + format (.bin)
+            return Path.Combine(SaveLoadSystem.instance.PathDirectory, key + ".bin");
+        }
+
+        /// <summary>
+        /// Save class in directory/key.bin
+        /// </summary>
+        /// <param name="key">Name of the file</param>
+        /// <param name="value">Value to save</param>
+        public static void Save(string key, ClassToSave value)
+        {
+            //if there is no directory, create it
+            if (Directory.Exists(SaveLoadSystem.instance.PathDirectory) == false)
+            {
+                Directory.CreateDirectory(SaveLoadSystem.instance.PathDirectory);
+            }
+
+            //create stream at file position
+            BinaryFormatter formatter = new BinaryFormatter();
+            FileStream stream = new FileStream(GetPathFile(key), FileMode.Create);
+
+            //then save value to file position, and close stream
+            formatter.Serialize(stream, value);
+            stream.Close();
+        }
+
+        /// <summary>
+        /// Load class from directory/key.bin
+        /// </summary>
+        /// <param name="key">name of the file</param>
+        public static ClassToSave Load(string key)
+        {
+            //if there is no file, return null
+            if (File.Exists(GetPathFile(key)) == false)
+            {
+                Debug.Log("Save file not found: " + GetPathFile(key));
+                return null;
+            }
+
+            //create stream at file position
+            BinaryFormatter formatter = new BinaryFormatter();
+            FileStream stream = new FileStream(GetPathFile(key), FileMode.Open);
+
+            //then load from file position as value, and close stream
+            ClassToSave value = formatter.Deserialize(stream) as ClassToSave;
+            stream.Close();
+
+            return value;
+        }
+
+        /// <summary>
+        /// Delete a file
+        /// </summary>
+        /// <param name="key">Name of the file</param>
+        public static void DeleteData(string key)
+        {
+            //check there is a file
+            if (File.Exists(GetPathFile(key)) == false)
+            {
+                Debug.Log("Save file not found: " + GetPathFile(key));
+                return;
+            }
+
+            //delete file
+            File.Delete(GetPathFile(key));
+        }
+
+        /// <summary>
+        /// Delete directory with every file
+        /// </summary>
+        public static void DeleteAll()
+        {
+            //check there is a directory
+            if (Directory.Exists(SaveLoadSystem.instance.PathDirectory) == false)
+            {
+                Debug.Log("Directory not found: " + SaveLoadSystem.instance.PathDirectory);
+                return;
+            }
+
+            //delete directory
+            Directory.Delete(SaveLoadSystem.instance.PathDirectory, true);
         }
     }
 }
