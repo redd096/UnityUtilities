@@ -15,14 +15,14 @@
     [CreateAssetMenu(menuName = "redd096/Procedural Map Manager Check/Axis Check")]
     public class AxisCheck : ProceduralMapManagerCheck
     {
-        [SerializeField] Axis test = Axis.X;
+        [SerializeField] Axis axis = Axis.X;
         [SerializeField] CheckOperator checkToDo = CheckOperator.greaterEqual;
         [SerializeField] float threshold = 0;
 
         public override bool IsValid(Room roomToPlace, ProceduralMapManager mapManager)
         {
             //for every axis, check
-            switch (test)
+            switch (axis)
             {
                 case Axis.X:
                     return CheckToDo(roomToPlace.transform.position.x);

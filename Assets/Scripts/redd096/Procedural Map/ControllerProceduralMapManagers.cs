@@ -5,10 +5,10 @@
     using UnityEngine;
 
     [AddComponentMenu("redd096/Procedural Map/Controller Procedural Map Managers")]
-    public class ControllerProceduralMapManagers : MonoBehaviour
+    public abstract class ControllerProceduralMapManagers : MonoBehaviour
     {
         [Header("Managers to activate in order")]
-        [SerializeField] ProceduralMapManager[] mapManagers = default;
+        [SerializeField] protected ProceduralMapManager[] mapManagers = default;
 
         public List<Room> roomsEveryMapManager { get; private set; } = new List<Room>();
 

@@ -24,7 +24,7 @@
 
     [AddComponentMenu("redd096/Procedural Map/Room")]
     [SelectionBase]
-    public class Room : MonoBehaviour
+    public abstract class Room : MonoBehaviour
     {
         #region variables
 
@@ -35,15 +35,13 @@
         [Tooltip("Size of every tile which compose this room")] [SerializeField] float tileSize = 1f;
         [Tooltip("Int because the size will be exspressed in tiles")] [SerializeField] int width = 1;
         [Tooltip("Int because the size will be exspressed in tiles")] [SerializeField] int height = 1;
-        [SerializeField] List<DoorStruct> doors = new List<DoorStruct>();
+        [SerializeField] protected List<DoorStruct> doors = new List<DoorStruct>();
 
         float HalfWidth => width * tileSize * 0.5f;
         float HalfHeight => height * tileSize * 0.5f;
         Vector2 UpRight => useZ ? new Vector3(transform.position.x + HalfWidth, transform.position.z + HalfHeight) : new Vector3(transform.position.x + HalfWidth, transform.position.y + HalfHeight);
         Vector2 DownLeft => useZ ? new Vector3(transform.position.x - HalfWidth, transform.position.z - HalfHeight) : new Vector3(transform.position.x - HalfWidth, transform.position.y - HalfHeight);
 
-        [Header("DEBUG")]
-        [SerializeField] UnityEngine.UI.Text textID = default;
         int id = 0;
 
         DoorStruct adjacentDoor = default;
@@ -86,7 +84,7 @@
             List<DoorStruct> possibleDoors = new List<DoorStruct>();
 
             //add every door except only enter
-            foreach(DoorStruct doorStruct in doors)
+            foreach (DoorStruct doorStruct in doors)
             {
                 if (usedDoors.Contains(doorStruct))                     //don't check already used doors
                     continue;
@@ -103,7 +101,7 @@
             return possibleDoors[Random.Range(0, possibleDoors.Count)];
         }
 
-        public void Register(int id, bool teleported)
+        public virtual void Register(int id, bool teleported)
         {
             this.id = id;
 
@@ -112,21 +110,6 @@
             {
                 usedDoors.Add(entranceDoor);
                 adjacentRoom.usedDoors.Add(adjacentDoor);
-            }
-
-            //debug
-            if (textID)
-            {
-                textID.text = teleported ? "tp: " + id.ToString() : id.ToString();
-
-                //debug random color
-                float h = Random.value;
-                Color color = Color.HSVToRGB(h, 0.8f, 0.8f);
-                foreach (Renderer r in GetComponentsInChildren<Renderer>())
-                {
-                    r.material.color = color;
-                    color = Color.HSVToRGB(h, 1f, 1f);
-                }
             }
         }
 

@@ -8,7 +8,8 @@
 
     using UnityEditor;
 
-    [CustomEditor(typeof(ProceduralMapManager))]
+    [CustomEditor(typeof(ProceduralMapManager), true)]
+    [CanEditMultipleObjects]
     public class ProceduralMapManagerEditor : Editor
     {
         private ProceduralMapManager mapManager;
@@ -59,12 +60,12 @@
     }
 
     [AddComponentMenu("redd096/Procedural Map/Procedural Map Manager")]
-    public class ProceduralMapManager : MonoBehaviour
+    public abstract class ProceduralMapManager : MonoBehaviour
     {
         [Header("Setup")]
         [SerializeField] bool regenOnPlay = true;
         [Min(1)] [SerializeField] int numberRooms = 12;
-        [SerializeField] ProceduralMapManagerCheck[] checks = default;
+        [SerializeField] protected ProceduralMapManagerCheck[] checks = default;
 
         [Header("Attempts")]
         [Min(1)] [SerializeField] int maxAttempts = 5;
@@ -72,10 +73,10 @@
         [Min(1)] [SerializeField] int doorsPerAttempt = 2;
 
         [Header("Filler Rooms - be sure the sum of every percentage is 100")]
-        [SerializeField] StructFillerRooms[] fillerRooms = default;
+        [SerializeField] protected StructFillerRooms[] fillerRooms = default;
 
         [Header("Fixed Rooms")]
-        [SerializeField] StructFixedRooms[] fixedRooms = default;
+        [SerializeField] protected StructFixedRooms[] fixedRooms = default;
 
         //rooms
         List<Room> rooms = new List<Room>();
