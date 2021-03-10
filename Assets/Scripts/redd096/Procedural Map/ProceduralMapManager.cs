@@ -189,7 +189,7 @@
             }
         }
 
-        public IEnumerator EndGeneration()
+        public virtual IEnumerator EndGeneration()
         {
             //foreach room created, call function
             foreach (Room room in rooms)

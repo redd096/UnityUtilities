@@ -42,14 +42,23 @@
         Vector2 UpRight => useZ ? new Vector3(transform.position.x + HalfWidth, transform.position.z + HalfHeight) : new Vector3(transform.position.x + HalfWidth, transform.position.y + HalfHeight);
         Vector2 DownLeft => useZ ? new Vector3(transform.position.x - HalfWidth, transform.position.z - HalfHeight) : new Vector3(transform.position.x - HalfWidth, transform.position.y - HalfHeight);
 
-        int id = 0;
+        protected int id = 0;
+        protected bool teleported;
 
         DoorStruct adjacentDoor = default;
         Room adjacentRoom = default;
         DoorStruct entranceDoor = default;
-        List<DoorStruct> usedDoors = new List<DoorStruct>();
+        protected List<DoorStruct> usedDoors = new List<DoorStruct>();
 
         #endregion
+
+        protected virtual void OnDrawGizmos()
+        {
+            Gizmos.color = Color.cyan;
+
+            //draw room size
+            Gizmos.DrawWireCube(transform.position, new Vector3(width * tileSize, useZ ? 0 : height * tileSize, useZ ? height * tileSize : 0));
+        }
 
         #region public API
 
@@ -104,6 +113,7 @@
         public virtual void Register(int id, bool teleported)
         {
             this.id = id;
+            this.teleported = teleported;
 
             //set our entrance and adjacentRoom's exit doors used
             if (adjacentRoom)
