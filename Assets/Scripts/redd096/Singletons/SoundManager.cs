@@ -13,9 +13,26 @@
     [AddComponentMenu("redd096/Singletons/Sound Manager")]
     public class SoundManager : Singleton<SoundManager>
     {
+        #region variables
+
         [Header("Instantiate sound at point")]
         [SerializeField] AudioSource audioPrefab = default;
 
+        //sound at point
+        private Transform soundsParent;
+        Transform SoundsParent
+        {
+            get
+            {
+                if (soundsParent == null)
+                    soundsParent = new GameObject("Sounds Parent").transform;
+
+                return soundsParent;
+            }
+        }
+        Pooling<AudioSource> poolingSounds = new Pooling<AudioSource>();
+
+        //background
         private AudioSource backgroundAudioSource;
         AudioSource BackgroundAudioSource
         {
@@ -30,17 +47,7 @@
             }
         }
 
-        private Transform soundsParent;
-        Transform SoundsParent
-        {
-            get
-            {
-                if (soundsParent == null)
-                    soundsParent = new GameObject("Sounds Parent").transform;
-
-                return soundsParent;
-            }
-        }
+        #endregion
 
         #region static Play
 
@@ -66,6 +73,8 @@
 
         #endregion
 
+        #region background music
+
         /// <summary>
         /// Start audio clip for background. Can set volume and loop
         /// </summary>
@@ -75,8 +84,12 @@
             Play(BackgroundAudioSource, clip, false, volume, loop);
         }
 
+        #endregion
+
+        #region sound at point
+
         /// <summary>
-        /// Start audio clip at point. Can set volume
+        /// Start audio clip at point. Can set volume. Use specific pooling
         /// </summary>
         public void Play(Pooling<AudioSource> pool, AudioClip clip, Vector3 position, float volume = 1)
         {
@@ -101,6 +114,15 @@
             StartCoroutine(DeactiveSoundAtPointCoroutine(audioSource));
         }
 
+        /// <summary>
+        /// Start audio clip at point. Can set volume
+        /// </summary>
+        public void Play(AudioClip clip, Vector3 position, float volume = 1)
+        {
+            //use this manager's pooling, instead of a specific one
+            Play(poolingSounds, clip, position, volume);
+        }
+
         IEnumerator DeactiveSoundAtPointCoroutine(AudioSource audioToDeactivate)
         {
             //wait to end the clip
@@ -111,5 +133,7 @@
             if (audioToDeactivate)
                 audioToDeactivate.gameObject.SetActive(false);
         }
+
+        #endregion
     }
 }

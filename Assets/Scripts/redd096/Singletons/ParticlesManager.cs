@@ -1,5 +1,6 @@
 ﻿namespace redd096
 {
+    using System.Collections.Generic;
     using UnityEngine;
 
     [AddComponentMenu("redd096/Singletons/Particles Manager")]
@@ -16,9 +17,10 @@
                 return particlesParent;
             }
         }
+        Dictionary<ParticleSystem, Pooling<ParticleSystem>> poolingParticles = new Dictionary<ParticleSystem, Pooling<ParticleSystem>>();
 
         /// <summary>
-        /// Start particles at point and rotation
+        /// Start particles at point and rotation. Use specific pooling
         /// </summary>
         public void Play(Pooling<ParticleSystem> pool, ParticleSystem prefab, Vector3 position, Quaternion rotation)
         {
@@ -41,6 +43,19 @@
 
             //play
             particles.Play();
+        }
+
+        /// <summary>
+        /// Start particles at point and rotation
+        /// </summary>
+        public void Play(ParticleSystem prefab, Vector3 position, Quaternion rotation)
+        {
+            //if this pooling is not in the dictionary, add it
+            if (poolingParticles.ContainsKey(prefab) == false)
+                poolingParticles.Add(prefab, new Pooling<ParticleSystem>());
+
+            //use this manager's pooling, instead of a specific one
+            Play(poolingParticles[prefab], prefab, position, rotation);
         }
     }
 }
