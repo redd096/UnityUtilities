@@ -57,5 +57,17 @@
             //use this manager's pooling, instead of a specific one
             Play(poolingParticles[prefab], prefab, position, rotation);
         }
+
+        /// <summary>
+        /// Start particles at point and rotation. Get one random from the array
+        /// </summary>
+        public void Play(ParticleSystem[] prefabs, Vector3 position, Quaternion rotation)
+        {
+            //do only if there are elements in the array
+            if (prefabs.Length > 0)
+            {
+                Play(prefabs[Random.Range(0, prefabs.Length)], position, rotation);
+            }
+        }
     }
 }

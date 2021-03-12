@@ -134,6 +134,32 @@
                 audioToDeactivate.gameObject.SetActive(false);
         }
 
+        /// <summary>
+        /// Start audio clip at point. Can set volume. Get clip random from the array
+        /// </summary>
+        public void Play(AudioClip[] clips, Vector3 position, float volume = 1)
+        {
+            //do only if there are elements in the array
+            if (clips.Length > 0)
+            {
+                Play(clips[Random.Range(0, clips.Length)], position, volume);
+            }
+        }
+
+        /// <summary>
+        /// Start audio clip at point. Get clip and volume random from the array
+        /// </summary>
+        public void Play(AudioStruct[] audios, Vector3 position)
+        {
+            //do only if there are elements in the array
+            if (audios.Length > 0)
+            {
+                AudioStruct audio = audios[Random.Range(0, audios.Length)];
+
+                Play(audio.audioClip, position, audio.volume);
+            }
+        }
+
         #endregion
     }
 }
