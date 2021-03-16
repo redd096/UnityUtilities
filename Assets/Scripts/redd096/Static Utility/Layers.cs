@@ -168,12 +168,28 @@
         }
 
         /// <summary>
-        /// Check if this layer is inside layerMask
+        /// Check if this layer is inside LayerMask
         /// </summary>
         public static bool ContainsLayer(this LayerMask layerMask, int layerToCompare)
         {
             //if add layer to this layermask, and layermask remain equals, then layermask contains this layer
-            return layerMask == (layerMask | ( 1 << layerToCompare));
+            return layerMask == (layerMask | (1 << layerToCompare));
+        }
+
+        /// <summary>
+        /// Add layer to this LayerMask
+        /// </summary>
+        public static LayerMask AddLayer(LayerMask layerMask, int layer)
+        {
+            return layerMask | (1 << layer);
+        }
+
+        /// <summary>
+        /// Remove layer from this LayerMask
+        /// </summary>
+        public static LayerMask RemoveLayer(LayerMask layerMask, int layer)
+        {
+            return layerMask & ~(1 << layer);
         }
     }
 }
