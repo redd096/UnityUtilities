@@ -12,12 +12,22 @@
 
         public PlayerInput playerInput { get; set; }
 
-        void OnEnable()
+        void OnValidate()
         {
             //get PlayerInput and be sure has actions setted
             playerInput = GetComponent<PlayerInput>();
             if (playerInput.actions != inputActionAsset)
                 playerInput.actions = inputActionAsset;
+        }
+
+        void OnEnable()
+        {
+            inputActionAsset.Enable();
+        }
+
+        void OnDisable()
+        {
+            inputActionAsset.Disable();
         }
     }
 
@@ -51,14 +61,18 @@
 
         #endregion
 
-        #region compare
+        #region utility
 
         /// <summary>
         /// Returns true if current activeControl is the same on inputName1 and inputName2 
         /// </summary>
         public static bool IsSameInput(string inputName1, string inputName2)
         {
-            return InputManagerRedd096.instance.inputActionAsset.FindAction(inputName1).activeControl.name == InputManagerRedd096.instance.inputActionAsset.FindAction(inputName2).activeControl.name;
+            //if both with active control != null, else obviously is not same input
+            if (InputManagerRedd096.instance.inputActionAsset.FindAction(inputName1).activeControl != null && InputManagerRedd096.instance.inputActionAsset.FindAction(inputName2).activeControl != null)
+                return InputManagerRedd096.instance.inputActionAsset.FindAction(inputName1).activeControl.name == InputManagerRedd096.instance.inputActionAsset.FindAction(inputName2).activeControl.name;
+
+            return false;
         }
 
         /// <summary>
@@ -76,6 +90,18 @@
         {
             //return InputManagerRedd096.instance.playerInput.currentControlScheme == InputManagerRedd096.instance.inputActionAsset.FindControlScheme(controlSchemeName).Value.name
             return InputManagerRedd096.instance.playerInput.currentControlScheme == controlSchemeName;
+        }
+
+        /// <summary>
+        /// Returns name of active control with this action
+        /// </summary>
+        public static string GetActiveControlName(string inputName)
+        {
+            if (InputManagerRedd096.instance.inputActionAsset.FindAction(inputName).activeControl != null)
+                return InputManagerRedd096.instance.inputActionAsset.FindAction(inputName).activeControl.name;
+
+            //if no active control, return empty string
+            return string.Empty;
         }
 
         #endregion
