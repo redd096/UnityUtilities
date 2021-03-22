@@ -109,7 +109,7 @@
         #region replace old input system
 
         /// <summary>
-        /// Returns the value of the virtual axis identified by inputtName
+        /// Returns the value of the virtual axis identified by inputName
         /// </summary>
         public static float GetAxis(string inputName)
         {
