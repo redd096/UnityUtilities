@@ -20,6 +20,12 @@
                 playerInput.actions = inputActionAsset;
         }
 
+        void Awake()
+        {
+            //get references
+            playerInput = GetComponent<PlayerInput>();
+        }
+
         void OnEnable()
         {
             inputActionAsset.Enable();
