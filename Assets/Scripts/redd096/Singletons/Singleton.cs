@@ -6,7 +6,7 @@
     {
         public static T instance { get; private set; }
 
-        void Awake()
+        protected virtual void Awake()
         {
             CheckInstance();
         }

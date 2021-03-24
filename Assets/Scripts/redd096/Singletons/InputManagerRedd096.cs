@@ -20,8 +20,10 @@
                 playerInput.actions = inputActionAsset;
         }
 
-        void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+
             //get references
             playerInput = GetComponent<PlayerInput>();
         }
