@@ -4,29 +4,10 @@
     using UnityEngine.InputSystem;
 
     [AddComponentMenu("redd096/Singletons/Input Manager redd096")]
-    [RequireComponent(typeof(PlayerInput))]
     public class InputManagerRedd096 : Singleton<InputManagerRedd096>
     {
         [Header("Input Action Asset")]
         public InputActionAsset inputActionAsset;
-
-        public PlayerInput playerInput { get; set; }
-
-        void OnValidate()
-        {
-            //get PlayerInput and be sure has actions setted
-            playerInput = GetComponent<PlayerInput>();
-            if (playerInput.actions != inputActionAsset)
-                playerInput.actions = inputActionAsset;
-        }
-
-        protected override void Awake()
-        {
-            base.Awake();
-
-            //get references
-            playerInput = GetComponent<PlayerInput>();
-        }
 
         void OnEnable()
         {
@@ -46,25 +27,37 @@
         /// <summary>
         /// Returns true during the frame the user pressed down the virtual button identified by inputName
         /// </summary>
-        public static bool GetButtonDown(string inputName)
+        public static bool GetButtonDown(string inputName, InputActionAsset inputActionAsset = null)
         {
-            return InputManagerRedd096.instance.inputActionAsset.FindAction(inputName).triggered;
+            //use singleton if no input action asset
+            if (inputActionAsset == null)
+                inputActionAsset = InputManagerRedd096.instance.inputActionAsset;
+
+            return inputActionAsset.FindAction(inputName).triggered;
         }
 
         /// <summary>
         /// Returns true while the virtual button identified by inputName is held down
         /// </summary>
-        public static bool GetButton(string inputName)
+        public static bool GetButton(string inputName, InputActionAsset inputActionAsset = null)
         {
-            return InputManagerRedd096.instance.inputActionAsset.FindAction(inputName).phase == InputActionPhase.Started;
+            //use singleton if no input action asset
+            if (inputActionAsset == null)
+                inputActionAsset = InputManagerRedd096.instance.inputActionAsset;
+
+            return inputActionAsset.FindAction(inputName).phase == InputActionPhase.Started;
         }
 
         /// <summary>
         /// Returns the value of the virtual T identified by inputtName (GetAxis returns only float, this one returns every type of value)
         /// </summary>
-        public static T GetValue<T>(string inputName) where T : struct
+        public static T GetValue<T>(string inputName, InputActionAsset inputActionAsset = null) where T : struct
         {
-            return InputManagerRedd096.instance.inputActionAsset.FindAction(inputName).ReadValue<T>();
+            //use singleton if no input action asset
+            if (inputActionAsset == null)
+                inputActionAsset = InputManagerRedd096.instance.inputActionAsset;
+
+            return inputActionAsset.FindAction(inputName).ReadValue<T>();
         }
 
         #endregion
@@ -74,11 +67,15 @@
         /// <summary>
         /// Returns true if current activeControl is the same on inputName1 and inputName2 
         /// </summary>
-        public static bool IsSameInput(string inputName1, string inputName2)
+        public static bool IsSameInput(string inputName1, string inputName2, InputActionAsset inputActionAsset = null)
         {
+            //use singleton if no input action asset
+            if (inputActionAsset == null)
+                inputActionAsset = InputManagerRedd096.instance.inputActionAsset;
+
             //if both with active control != null, else obviously is not same input
-            if (InputManagerRedd096.instance.inputActionAsset.FindAction(inputName1).activeControl != null && InputManagerRedd096.instance.inputActionAsset.FindAction(inputName2).activeControl != null)
-                return InputManagerRedd096.instance.inputActionAsset.FindAction(inputName1).activeControl.name == InputManagerRedd096.instance.inputActionAsset.FindAction(inputName2).activeControl.name;
+            if (inputActionAsset.FindAction(inputName1).activeControl != null && inputActionAsset.FindAction(inputName2).activeControl != null)
+                return inputActionAsset.FindAction(inputName1).activeControl.name == inputActionAsset.FindAction(inputName2).activeControl.name;
 
             return false;
         }
@@ -86,27 +83,35 @@
         /// <summary>
         /// Returns true if current activeControl in inputName1 is "escape"
         /// </summary>
-        public static bool IsEscape(string inputName)
+        public static bool IsEscape(string inputName, InputActionAsset inputActionAsset = null)
         {
-            return InputManagerRedd096.instance.inputActionAsset.FindAction(inputName).activeControl.name == "escape";
+            //use singleton if no input action asset
+            if (inputActionAsset == null)
+                inputActionAsset = InputManagerRedd096.instance.inputActionAsset;
+
+            return inputActionAsset.FindAction(inputName).activeControl.name == "escape";
         }
 
         /// <summary>
         /// Returns true if controlSchemeName is current control scheme
         /// </summary>
-        public static bool IsCurrentControlScheme(string controlSchemeName)
+        public static bool IsCurrentControlScheme(PlayerInput playerInput, string controlSchemeName)
         {
             //return InputManagerRedd096.instance.playerInput.currentControlScheme == InputManagerRedd096.instance.inputActionAsset.FindControlScheme(controlSchemeName).Value.name
-            return InputManagerRedd096.instance.playerInput.currentControlScheme == controlSchemeName;
+            return playerInput.currentControlScheme == controlSchemeName;
         }
 
         /// <summary>
         /// Returns name of active control with this action
         /// </summary>
-        public static string GetActiveControlName(string inputName)
+        public static string GetActiveControlName(string inputName, InputActionAsset inputActionAsset = null)
         {
-            if (InputManagerRedd096.instance.inputActionAsset.FindAction(inputName).activeControl != null)
-                return InputManagerRedd096.instance.inputActionAsset.FindAction(inputName).activeControl.name;
+            //use singleton if no input action asset
+            if (inputActionAsset == null)
+                inputActionAsset = InputManagerRedd096.instance.inputActionAsset;
+
+            if (inputActionAsset.FindAction(inputName).activeControl != null)
+                return inputActionAsset.FindAction(inputName).activeControl.name;
 
             //if no active control, return empty string
             return string.Empty;
@@ -119,9 +124,13 @@
         /// <summary>
         /// Returns the value of the virtual axis identified by inputName
         /// </summary>
-        public static float GetAxis(string inputName)
+        public static float GetAxis(string inputName, InputActionAsset inputActionAsset = null)
         {
-            return InputManagerRedd096.instance.inputActionAsset.FindAction(inputName).ReadValue<float>();
+            //use singleton if no input action asset
+            if (inputActionAsset == null)
+                inputActionAsset = InputManagerRedd096.instance.inputActionAsset;
+
+            return inputActionAsset.FindAction(inputName).ReadValue<float>();
         }
 
         /// <summary>
