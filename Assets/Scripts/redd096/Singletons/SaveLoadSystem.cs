@@ -5,6 +5,11 @@
     using System.IO;
     using System.Runtime.Serialization.Formatters.Binary;
 
+    public enum SaveFolder
+    {
+        persistentDataPath, gameFolder, nothing
+    }
+
     [System.Serializable]
     public class ClassToSave
     {
@@ -20,12 +25,21 @@
     public class SaveLoadSystem : Singleton<SaveLoadSystem>
     {
         [Header("Data Directory")]
-        [SerializeField] bool usePersistentDataPath = true;
-        [SerializeField] string directory = "Saves";
+        [SerializeField] SaveFolder saveFolder = SaveFolder.persistentDataPath;
+        [SerializeField] string directoryName = "Saves";
 
-        public string PathDirectory => usePersistentDataPath ?
-            Path.Combine(Application.persistentDataPath, directory) :      //return persistent data path + directory path
-            directory;                                                     //return only directory path
+        public string PathDirectory
+        {
+            get
+            {
+                if (saveFolder == SaveFolder.persistentDataPath)
+                    return Path.Combine(Application.persistentDataPath, directoryName);     //return persistent data path + directory path
+                else if (saveFolder == SaveFolder.gameFolder)
+                    return Path.Combine(Application.dataPath, directoryName);               //return game folder path + directory path
+                else
+                    return directoryName;                                                   //return only directory path
+            }
+        }
     }
 
     public static class SaveLoadJSON
