@@ -1,6 +1,5 @@
 ﻿namespace redd096
 {
-    using System.Collections.Generic;
     using UnityEngine;
     using System.IO;
     using System.Runtime.Serialization.Formatters.Binary;
@@ -11,11 +10,11 @@
     }
 
     [System.Serializable]
-    public class ClassToSave
+    public class ExampleClassToSave
     {
         public int test;
 
-        public ClassToSave(int test)
+        public ExampleClassToSave(int test)
         {
             this.test = test;
         }
@@ -60,7 +59,7 @@
         /// </summary>
         /// <param name="key">Name of the file</param>
         /// <param name="value">Value to save</param>
-        public static void Save(string key, ClassToSave value)
+        public static void Save<T>(string key, T value)
         {
             //if there is no directory, create it
             if (Directory.Exists(SaveLoadSystem.instance.PathDirectory) == false)
@@ -77,7 +76,7 @@
         /// Load class from directory/key.json
         /// </summary>
         /// <param name="key">name of the file</param>
-        public static ClassToSave Load(string key)
+        public static T Load<T>(string key) where T : class
         {
             //if there is no file, return null
             if (File.Exists(GetPathFile(key)) == false)
@@ -88,7 +87,7 @@
 
             //load file, then json to value
             string jsonValue = File.ReadAllText(GetPathFile(key));
-            return JsonUtility.FromJson<ClassToSave>(jsonValue);
+            return JsonUtility.FromJson<T>(jsonValue);
         }
 
         /// <summary>
@@ -143,7 +142,7 @@
         /// </summary>
         /// <param name="key">Name of the file</param>
         /// <param name="value">Value to save</param>
-        public static void Save(string key, ClassToSave value)
+        public static void Save<T>(string key, T value)
         {
             //if there is no directory, create it
             if (Directory.Exists(SaveLoadSystem.instance.PathDirectory) == false)
@@ -164,7 +163,7 @@
         /// Load class from directory/key.bin
         /// </summary>
         /// <param name="key">name of the file</param>
-        public static ClassToSave Load(string key)
+        public static T Load<T>(string key) where T : class
         {
             //if there is no file, return null
             if (File.Exists(GetPathFile(key)) == false)
@@ -178,7 +177,7 @@
             FileStream stream = new FileStream(GetPathFile(key), FileMode.Open);
 
             //then load from file position as value, and close stream
-            ClassToSave value = formatter.Deserialize(stream) as ClassToSave;
+            T value = formatter.Deserialize(stream) as T;
             stream.Close();
 
             return value;
