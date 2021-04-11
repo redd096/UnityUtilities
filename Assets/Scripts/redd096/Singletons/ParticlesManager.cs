@@ -50,6 +50,9 @@
         /// </summary>
         public void Play(ParticleSystem prefab, Vector3 position, Quaternion rotation)
         {
+            if (prefab == null)
+                return;
+
             //if this pooling is not in the dictionary, add it
             if (poolingParticles.ContainsKey(prefab) == false)
                 poolingParticles.Add(prefab, new Pooling<ParticleSystem>());
