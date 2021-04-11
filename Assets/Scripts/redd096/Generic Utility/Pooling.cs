@@ -116,7 +116,7 @@
                 if (obj == null)
                 {
                     PooledObjects.Remove(obj);
-                    continue;
+                    return Instantiate(prefab);
                 }
 
                 if (GetGameObject(obj).activeInHierarchy == false)
