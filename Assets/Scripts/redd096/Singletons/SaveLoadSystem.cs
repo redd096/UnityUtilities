@@ -4,6 +4,39 @@
     using System.IO;
     using System.Runtime.Serialization.Formatters.Binary;
 
+    #region custom editor
+
+#if UNITY_EDITOR
+
+    using UnityEditor;
+
+    [CustomEditor(typeof(SaveLoadSystem))]
+    public class SaveLoadSystemEditor : Editor
+    {
+        public override void OnInspectorGUI()
+        {
+            base.OnInspectorGUI();
+
+            SaveLoadSystem saveLoad = target as SaveLoadSystem;
+
+            EditorGUILayout.BeginVertical();
+            EditorGUILayout.Space(5);
+
+            EditorGUILayout.LabelField("Path Directory:");
+
+            EditorGUILayout.Space(-15);
+
+            //show path directory
+            EditorGUILayout.SelectableLabel(saveLoad.PathDirectory);
+
+            EditorGUILayout.EndVertical();
+        }
+    }
+
+#endif
+
+    #endregion
+
     public enum SaveFolder
     {
         persistentDataPath, gameFolder, nothing
