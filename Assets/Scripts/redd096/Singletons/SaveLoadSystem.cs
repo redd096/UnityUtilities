@@ -64,6 +64,9 @@
         [SerializeField] SaveFolder saveFolder = SaveFolder.persistentDataPath;
         [SerializeField] string directoryName = "Saves";
 
+        [Header("Debug Mode")]
+        public bool ShowDebug = false;
+
         public string PathDirectory
         {
             get
@@ -118,7 +121,9 @@
             //if there is no file, return null
             if (File.Exists(GetPathFile(key)) == false)
             {
-                Debug.Log("Save file not found: " + GetPathFile(key));
+                if (SaveLoadSystem.instance.ShowDebug)
+                    Debug.Log("Save file not found: " + GetPathFile(key));
+
                 return null;
             }
 
@@ -136,7 +141,9 @@
             //check there is a file
             if (File.Exists(GetPathFile(key)) == false)
             {
-                Debug.Log("Save file not found: " + GetPathFile(key));
+                if (SaveLoadSystem.instance.ShowDebug)
+                    Debug.Log("Save file not found: " + GetPathFile(key));
+
                 return;
             }
 
@@ -152,7 +159,9 @@
             //check there is a directory
             if (Directory.Exists(SaveLoadSystem.instance.PathDirectory) == false)
             {
-                Debug.Log("Directory not found: " + SaveLoadSystem.instance.PathDirectory);
+                if (SaveLoadSystem.instance.ShowDebug)
+                    Debug.Log("Directory not found: " + SaveLoadSystem.instance.PathDirectory);
+
                 return;
             }
 
@@ -205,7 +214,9 @@
             //if there is no file, return null
             if (File.Exists(GetPathFile(key)) == false)
             {
-                Debug.Log("Save file not found: " + GetPathFile(key));
+                if (SaveLoadSystem.instance.ShowDebug)
+                    Debug.Log("Save file not found: " + GetPathFile(key));
+
                 return null;
             }
 
@@ -229,7 +240,9 @@
             //check there is a file
             if (File.Exists(GetPathFile(key)) == false)
             {
-                Debug.Log("Save file not found: " + GetPathFile(key));
+                if (SaveLoadSystem.instance.ShowDebug)
+                    Debug.Log("Save file not found: " + GetPathFile(key));
+
                 return;
             }
 
@@ -245,7 +258,9 @@
             //check there is a directory
             if (Directory.Exists(SaveLoadSystem.instance.PathDirectory) == false)
             {
-                Debug.Log("Directory not found: " + SaveLoadSystem.instance.PathDirectory);
+                if (SaveLoadSystem.instance.ShowDebug)
+                    Debug.Log("Directory not found: " + SaveLoadSystem.instance.PathDirectory);
+
                 return;
             }
 
