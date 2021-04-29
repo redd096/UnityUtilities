@@ -37,10 +37,7 @@
 
     #endregion
 
-    public enum SaveFolder
-    {
-        persistentDataPath, gameFolder, nothing
-    }
+    #region save class
 
     [System.Serializable]
     public class ExampleClassToSave
@@ -51,6 +48,13 @@
         {
             this.test = test;
         }
+    }
+
+    #endregion
+
+    public enum SaveFolder
+    {
+        persistentDataPath, gameFolder, nothing
     }
 
     [AddComponentMenu("redd096/Singletons/Save and Load System")]
