@@ -3,6 +3,7 @@
     using System.Collections.Generic;
     using UnityEngine;
     using UnityEngine.EventSystems;
+    using UnityEngine.InputSystem.UI;
 
     [AddComponentMenu("redd096/UI Control/Event System redd096")]
     public class EventSystemRedd096 : EventSystem
@@ -50,8 +51,8 @@
             if (currentOverrideObjectActive == null)
             {
                 //if press cancel button come back to old menu
-                if ((currentInputModule is StandaloneInputModule && Input.GetButtonDown(((StandaloneInputModule)currentInputModule).cancelButton))                                                           //old input system
-                    || (currentInputModule is UnityEngine.InputSystem.UI.InputSystemUIInputModule && ((UnityEngine.InputSystem.UI.InputSystemUIInputModule)currentInputModule).cancel.action.triggered))     //new input system
+                if ((currentInputModule is StandaloneInputModule && Input.GetButtonDown(((StandaloneInputModule)currentInputModule).cancelButton))      //old input system
+                    || (currentInputModule is InputSystemUIInputModule && ((InputSystemUIInputModule)currentInputModule).cancel.action.triggered))      //new input system
                 {
                     if (BackToOldMenu())
                         return;
