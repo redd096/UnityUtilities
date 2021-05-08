@@ -19,7 +19,6 @@
         {
             if (pauseMenu == null)
             {
-                Debug.LogWarning("There is no pause menu");
                 return;
             }
 

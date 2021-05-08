@@ -50,7 +50,8 @@
             if (currentOverrideObjectActive == null)
             {
                 //if press cancel button come back to old menu
-                if (Input.GetButtonDown(((StandaloneInputModule)currentInputModule).cancelButton))
+                if ((currentInputModule is StandaloneInputModule && Input.GetButtonDown(((StandaloneInputModule)currentInputModule).cancelButton))   //old input system
+                    || ((UnityEngine.InputSystem.UI.InputSystemUIInputModule)currentInputModule).cancel.action.triggered)                               //new input system
                 {
                     if (BackToOldMenu())
                         return;
