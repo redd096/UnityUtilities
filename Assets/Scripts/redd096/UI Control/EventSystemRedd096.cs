@@ -226,10 +226,14 @@
 
             //active new menu and deactive current
             newMenu.SetActive(true);
-            currentMenu.SetActive(false);
+            if (currentMenu != null)
+                currentMenu.SetActive(false);
 
-            //add current menu to previous and set new one as current
-            previousMenu.Add(currentMenu);
+            //add current menu to previous
+            if (previousMenu != null && currentMenu != null)
+                previousMenu.Add(currentMenu);
+
+            //and set new one as current
             currentMenu = newMenu;
         }
 
