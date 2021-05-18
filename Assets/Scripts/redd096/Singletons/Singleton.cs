@@ -2,6 +2,7 @@
 {
     using UnityEngine;
 
+    [DefaultExecutionOrder(-10)]
     public class Singleton<T> : MonoBehaviour where T : Singleton<T>
     {
         public static T instance { get; private set; }
