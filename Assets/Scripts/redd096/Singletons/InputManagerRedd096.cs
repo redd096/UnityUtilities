@@ -117,6 +117,40 @@
             return string.Empty;
         }
 
+        /// <summary>
+        /// Returns name of selected control
+        /// </summary>
+        public static string GetControlName(string inputName, int index, InputActionAsset inputActionAsset = null)
+        {
+            //use singleton if no input action asset
+            if (inputActionAsset == null)
+                inputActionAsset = InputManagerRedd096.instance.inputActionAsset;
+
+            if (inputActionAsset.FindAction(inputName) != null)
+                if (inputActionAsset.FindAction(inputName).controls.Count > index)
+                    return inputActionAsset.FindAction(inputName).controls[index].name;
+
+            //if no control, return empty string
+            return string.Empty;
+        }
+
+        /// <summary>
+        /// Returns display name of selected control
+        /// </summary>
+        public static string GetControlDisplayName(string inputName, int index, InputActionAsset inputActionAsset = null)
+        {
+            //use singleton if no input action asset
+            if (inputActionAsset == null)
+                inputActionAsset = InputManagerRedd096.instance.inputActionAsset;
+
+            if (inputActionAsset.FindAction(inputName) != null)
+                if (inputActionAsset.FindAction(inputName).controls.Count > index)
+                    return inputActionAsset.FindAction(inputName).controls[index].displayName;
+
+            //if no control, return empty string
+            return string.Empty;
+        }
+
         #endregion
 
         #region replace old input system
