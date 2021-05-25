@@ -30,6 +30,8 @@
             }
         }
 
+        #region private API
+
         bool CanShow(SerializedProperty property)
         {
             CanShowAttribute canShowAttribute = attribute as CanShowAttribute;
@@ -58,6 +60,8 @@
             //else return checkAND, cause it mean every value is true if checkAND, or every value is false if checkOR
             return canShowAttribute.checkAND;
         }
+
+        #endregion
     }
 
 #endif
