@@ -31,6 +31,9 @@
             scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
             EditorGUILayout.Space(15);
 
+            //select item from list
+            SelectItemFromList();
+
             //set link to CSV
             SetLinkCSV();
 
@@ -58,11 +61,78 @@
 
         #region window GUI API
 
+        void SelectItemFromList()
+        {
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.Space();
+
+            //create options with name of every item in the list
+            string[] optionsList = new string[data.StructCSV.Count];
+            for (int i = 0; i < data.StructCSV.Count; i++)
+            {
+                //check every next element in the list
+                for (int j = i + 1; j < data.StructCSV.Count; j++)
+                {
+                    //if same name already in the list, change it to not have duplicates (because EditorGUILayout.Popup doesn't show duplicates - and now name is used also in LoadFile(string name))
+                    while (data.StructCSV[i].StructName.Equals(data.StructCSV[j].StructName))
+                        data.StructCSV[i].StructName += "#";
+                }
+
+                optionsList[i] = data.StructCSV[i].StructName;
+            }
+
+            //show every item
+            data.IndexStruct = EditorGUILayout.Popup(data.IndexStruct, optionsList);
+
+            EditorGUILayout.Space();
+
+            //set name link
+            data.StructCSV[data.IndexStruct].StructName = EditorGUILayout.TextField(data.StructCSV[data.IndexStruct].StructName, new GUIStyle(EditorStyles.textField));
+
+            //create new item at index
+            if (GUILayout.Button("Add Item"))
+            {
+                //clone item
+                WindowCSVStruct newItem = new WindowCSVStruct(data.StructCSV[data.IndexStruct]);
+
+                //while there is an item with same name, change it
+                while (ArrayUtility.Contains(optionsList, newItem.StructName))
+                    newItem.StructName += "#";
+
+                //add item to the list and move index to the item created
+                data.StructCSV.Insert(data.IndexStruct + 1, newItem);
+                data.IndexStruct += 1;
+
+                return;
+            }
+
+            //remove item at index
+            if (GUILayout.Button("Remove Item"))
+            {
+                //only if there are others (always keep 1 in the list)
+                if (data.StructCSV.Count > 1)
+                {
+                    //remove from the list
+                    data.StructCSV.RemoveAt(data.IndexStruct);
+
+                    //if index is not at 0, move to previous item in the list
+                    if (data.IndexStruct > 0)
+                        data.IndexStruct -= 1;
+
+                    return;
+                }
+            }
+
+            EditorGUILayout.Space();
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.Space();
+        }
+
         void SetLinkCSV()
         {
             //set link to CSV
-            EditorGUILayout.LabelField("Link to CSV", new GUIStyle(EditorStyles.boldLabel));
-            data.LinkCSV = EditorGUILayout.TextArea(data.LinkCSV, new GUIStyle(EditorStyles.textArea));
+            EditorGUILayout.LabelField("Links to CSV", new GUIStyle(EditorStyles.boldLabel));
+            data.StructCSV[data.IndexStruct].LinkCSV = EditorGUILayout.TextArea(data.StructCSV[data.IndexStruct].LinkCSV, new GUIStyle(EditorStyles.textArea));
         }
 
         void GUIDownloadPath()
@@ -87,13 +157,13 @@
             EditorGUILayout.Space();
 
             //set directory path
-            data.IndexPath = EditorGUILayout.Popup(data.IndexPath, data.OptionsPath);
+            data.StructCSV[data.IndexStruct].IndexPath = EditorGUILayout.Popup(data.StructCSV[data.IndexStruct].IndexPath, data.StructCSV[data.IndexStruct].OptionsPath);
             if (GUILayout.Button("Set Path"))
             {
-                if (data.IndexPath <= 0)
-                    data.PathDownload = Application.dataPath;
+                if (data.StructCSV[data.IndexStruct].IndexPath <= 0)
+                    data.StructCSV[data.IndexStruct].PathDownload = Application.dataPath;
                 else
-                    data.PathDownload = Application.persistentDataPath;
+                    data.StructCSV[data.IndexStruct].PathDownload = Application.persistentDataPath;
             }
 
             EditorGUILayout.Space();
@@ -102,16 +172,16 @@
 
             //set path download
             EditorGUILayout.LabelField("Path Download", new GUIStyle(EditorStyles.boldLabel));
-            data.PathDownload = EditorGUILayout.TextArea(data.PathDownload, new GUIStyle(EditorStyles.textArea));
+            data.StructCSV[data.IndexStruct].PathDownload = EditorGUILayout.TextArea(data.StructCSV[data.IndexStruct].PathDownload, new GUIStyle(EditorStyles.textArea));
         }
 
         void SetFolderAndFileName()
         {
             //set folder name
-            data.FolderName = EditorGUILayout.TextField("Folder:", data.FolderName, new GUIStyle(EditorStyles.textField));
+            data.StructCSV[data.IndexStruct].FolderName = EditorGUILayout.TextField("Folder:", data.StructCSV[data.IndexStruct].FolderName, new GUIStyle(EditorStyles.textField));
 
             //set file name
-            data.FileName = EditorGUILayout.TextField("File:", data.FileName, new GUIStyle(EditorStyles.textField));
+            data.StructCSV[data.IndexStruct].FileName = EditorGUILayout.TextField("File:", data.StructCSV[data.IndexStruct].FileName, new GUIStyle(EditorStyles.textField));
         }
 
         void ButtonDownloadCSV()
@@ -198,7 +268,7 @@
             WindowCSVData data = WindowCSVData.LoadData();
 
             //UnityWebRequest replace old WWW
-            www = UnityWebRequest.Get(data.LinkCSV);
+            www = UnityWebRequest.Get(data.StructCSV[data.IndexStruct].LinkCSV);
             UnityWebRequestAsyncOperation request = www.SendWebRequest();
 
             //wait download
@@ -238,6 +308,58 @@
     public static class ManageCSV
     {
         /// <summary>
+        /// Load File from folder
+        /// </summary>
+        public static string LoadFile(WindowCSVStruct structCSV)
+        {
+            //if there is no file, return null
+            if (File.Exists(structCSV.PathFile) == false)
+            {
+                Debug.Log("File not found: " + structCSV.PathFile);
+                return null;
+            }
+
+            //create stream at file position
+            StreamReader reader = new StreamReader(structCSV.PathFile);
+
+            //then load from file position as value, and close stream
+            string value = reader.ReadToEnd();
+            reader.Close();
+
+            return value;
+        }
+
+        /// <summary>
+        /// Load File from folder using selected one in the window
+        /// </summary>
+        public static string LoadFile()
+        {
+            //load data
+            WindowCSVData data = WindowCSVData.LoadData();
+
+            //load file using index in
+            return LoadFile(data.StructCSV[data.IndexStruct]);
+        }
+
+        /// <summary>
+        /// Load File from folder looking in the list using StructName
+        /// </summary>
+        public static string LoadFile(string structName)
+        {
+            //load data
+            WindowCSVData data = WindowCSVData.LoadData();
+
+            foreach (WindowCSVStruct structCSV in data.StructCSV)
+            {
+                //if found name
+                if (structCSV.StructName.Equals(structName))
+                    return LoadFile(structCSV);
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// Save downloaded File in folder
         /// </summary>
         /// <param name="value"></param>
@@ -247,42 +369,17 @@
             WindowCSVData data = WindowCSVData.LoadData();
 
             //if there is no directory, create it
-            if (Directory.Exists(data.PathFolder) == false)
+            if (Directory.Exists(data.StructCSV[data.IndexStruct].PathFolder) == false)
             {
-                Directory.CreateDirectory(data.PathFolder);
+                Directory.CreateDirectory(data.StructCSV[data.IndexStruct].PathFolder);
             }
 
             //create stream to file position
-            StreamWriter writer = new StreamWriter(data.PathFile);
+            StreamWriter writer = new StreamWriter(data.StructCSV[data.IndexStruct].PathFile);
 
             //then save value to file position, and close stream
             writer.Write(value);
             writer.Close();
-        }
-
-        /// <summary>
-        /// Load File from folder
-        /// </summary>
-        public static string LoadFile()
-        {
-            //load data
-            WindowCSVData data = WindowCSVData.LoadData();
-
-            //if there is no file, return null
-            if (File.Exists(data.PathFile) == false)
-            {
-                Debug.Log("File not found: " + data.PathFile);
-                return null;
-            }
-
-            //create stream at file position
-            StreamReader reader = new StreamReader(data.PathFile);
-
-            //then load from file position as value, and close stream
-            string value = reader.ReadToEnd();
-            reader.Close();
-
-            return value;
         }
 
         /// <summary>
@@ -294,15 +391,15 @@
             WindowCSVData data = WindowCSVData.LoadData();
 
             //check there is a file
-            if (File.Exists(data.PathFile) == false)
+            if (File.Exists(data.StructCSV[data.IndexStruct].PathFile) == false)
             {
-                Debug.Log("File not found: " + data.PathFile);
+                Debug.Log("File not found: " + data.StructCSV[data.IndexStruct].PathFile);
                 return;
             }
 
             //delete file
-            File.Delete(data.PathFile);
-            Debug.Log("File deleted successfully: " + data.PathFile);
+            File.Delete(data.StructCSV[data.IndexStruct].PathFile);
+            Debug.Log("File deleted successfully: " + data.StructCSV[data.IndexStruct].PathFile);
         }
 
         /// <summary>
@@ -314,15 +411,15 @@
             WindowCSVData data = WindowCSVData.LoadData();
 
             //check there is a directory
-            if (Directory.Exists(data.PathFolder) == false)
+            if (Directory.Exists(data.StructCSV[data.IndexStruct].PathFolder) == false)
             {
-                Debug.Log("Directory not found: " + data.PathFolder);
+                Debug.Log("Directory not found: " + data.StructCSV[data.IndexStruct].PathFolder);
                 return;
             }
 
             //delete directory
-            Directory.Delete(data.PathFolder, true);
-            Debug.Log("Directory deleted successfully: " + data.PathFolder);
+            Directory.Delete(data.StructCSV[data.IndexStruct].PathFolder, true);
+            Debug.Log("Directory deleted successfully: " + data.StructCSV[data.IndexStruct].PathFolder);
         }
     }
 }
