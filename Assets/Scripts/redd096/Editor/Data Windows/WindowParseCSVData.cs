@@ -64,9 +64,9 @@
 
 		[Header("CSV")]
 		[TextArea(2, 5)]
-		public string DefaultCSV = "";                      //downloaded CSV
-		public string[][] ParsedCSV = default;              //at [row][column] there is excel cell item - can be a variable (item) or array (item1;item2;item3;)
-		public string[][][] ArraysParsedCSV = default;      //every [row][column] is an array - a variable ([0] = item) or array ([0] = item1, [1] = item2, [2] = item3)
+		public string DefaultCSV = "";                                              //downloaded CSV
+		[SerializeField] KeyValueStruct[] privateParsedCSV = default;               //at [row][column] there is excel cell item - can be a variable (item) or array (item1;item2;item3;)
+		[SerializeField] KeyKeyValueStruct[] privateArrayParsedCSV = default;       //every [row][column] is an array - a variable ([0] = item) or array ([0] = item1, [1] = item2, [2] = item3)
 
 		[Header("Split Arrays")]
 		public bool SplitArrays = true;
@@ -79,6 +79,95 @@
 		public bool AllCapsDictionaryValues = true;
 		public bool NoSpacesDictionaryValues = true;
 		public string[] Dictionary;
+
+		public string[][] ParsedCSV
+		{
+			get
+			{
+				//if privateParsedCSV is null, return null
+				if (privateParsedCSV == null)
+					return null;
+
+				//else return privateParsedCSV
+				string[][] temp = new string[privateParsedCSV.Length][];
+				for (int i = 0; i < privateParsedCSV.Length; i++)
+					temp[i] = privateParsedCSV[i].Value;
+
+				return temp;
+			}
+			set
+			{
+				//if value is null, set null
+				if (value == null)
+				{
+					privateParsedCSV = null;
+					return;
+				}
+
+				//else set privateParsedCSV
+				privateParsedCSV = new KeyValueStruct[value.Length];
+				for (int i = 0; i < value.Length; i++)
+					privateParsedCSV[i].Value = value[i];
+			}
+		}
+		public string[][][] ArraysParsedCSV
+		{
+			get
+			{
+				//if privateArrayParsedCSV is null, return null
+				if (privateArrayParsedCSV == null)
+					return null;
+
+				//else return privateArrayParsedCSV
+				string[][][] temp = new string[privateArrayParsedCSV.Length][][];
+				for (int i = 0; i < privateArrayParsedCSV.Length; i++)
+				{
+					//if privateArrayParsedCSV[i].Values is null, this element is null
+					if (privateArrayParsedCSV[i].Values == null)
+					{
+						temp[i] = null;
+						continue;
+					}
+
+					//else get element from privateArrayParsedCSV[i].Values
+					temp[i] = new string[privateArrayParsedCSV[i].Values.Length][];
+					for (int j = 0; j < privateArrayParsedCSV[i].Values.Length; j++)
+					{
+						temp[i][j] = privateArrayParsedCSV[i].Values[j].Value;
+					}
+				}
+
+				return temp;
+			}
+			set
+			{
+				//if value is null, set null
+				if (value == null)
+				{
+					privateArrayParsedCSV = null;
+					return;
+				}
+
+				//else set privateArrayParsedCSV
+				privateArrayParsedCSV = new KeyKeyValueStruct[value.Length];
+				for (int i = 0; i < value.Length; i++)
+				{
+					//if value[i] is null, this element is null
+					if (value[i] == null)
+					{
+						privateArrayParsedCSV[i].Values = null;
+						continue;
+					}
+
+					//else get element from value[i]
+					privateArrayParsedCSV[i].Values = new KeyValueStruct[value[i].Length];
+					for (int j = 0; j < value[i].Length; j++)
+					{
+						privateArrayParsedCSV[i].Values[j].Value = value[i][j];
+					}
+				}
+			}
+		}
 
 		#region public API
 
@@ -253,5 +342,17 @@
 		#endregion
 
 		#endregion
+	}
+
+	[Serializable]
+	public struct KeyValueStruct
+	{
+		public string[] Value;
+	}
+
+	[Serializable]
+	public struct KeyKeyValueStruct
+	{
+		public KeyValueStruct[] Values;
 	}
 }
