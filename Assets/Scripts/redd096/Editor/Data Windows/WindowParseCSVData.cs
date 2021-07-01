@@ -10,6 +10,7 @@
 	{
 		const string DATANAME = "Window Parse CSV Data.asset";
 
+		public int IndexStruct = 0;
 		public ParseCSV ParseClass = new ParseCSV();
 
 		#region static functions
@@ -78,7 +79,7 @@
 		[Header("Dictionary")]
 		public bool AllCapsDictionaryValues = true;
 		public bool NoSpacesDictionaryValues = true;
-		public string[] Dictionary;
+		[SerializeField] string[] privateColumnsDictionary = default;
 
 		public string[][] ParsedCSV
 		{
@@ -171,6 +172,9 @@
 
 		#region public API
 
+		/// <summary>
+		/// Create Dictionary, ParsedCSV and ArraysParsedCSV
+		/// </summary>
 		public void Parse()
 		{
 			//from csv to rows, then [rows][columns]
@@ -178,13 +182,32 @@
 			ParsedCSV = SplitInColumns(rows);
 
 			//create a dictionary, so can reorder columns on excel without problem
-			Dictionary = CreateDictionary(ParsedCSV);
+			privateColumnsDictionary = CreateDictionary(ParsedCSV);
 
 			//if split arrays, split every string in array
 			if (SplitArrays)
 			{
 				ArraysParsedCSV = SplitArray(ParsedCSV);
 			}
+		}
+
+		/// <summary>
+		/// Get value from Dictionary
+		/// </summary>
+		/// <param name="key"></param>
+		/// <returns></returns>
+		public int ColumnsDictionary(string key)
+		{
+			//if key inside dictionary, return value
+			for (int i = 0; i < privateColumnsDictionary.Length; i++)
+			{
+				if (privateColumnsDictionary[i].Equals(key))
+				{
+					return i;
+				}
+			}
+
+			return -1;
 		}
 
 		#endregion

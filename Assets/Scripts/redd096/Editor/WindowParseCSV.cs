@@ -11,6 +11,7 @@
         Vector2 scrollArraysParsedCSV = Vector2.zero;
 
         WindowParseCSVData data;
+        WindowCSVData csvData;
 
         /// <summary>
         /// Open Window from Editor
@@ -26,6 +27,7 @@
         {
             //load data
             data = WindowParseCSVData.LoadData();
+            csvData = WindowCSVData.LoadData();
         }
 
         private void OnGUI()
@@ -33,8 +35,8 @@
             scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
             EditorGUILayout.Space(50);
 
-            //buttons download
-            ButtonsForDownload();
+            //select item to load
+            SelectItemToLoad();
 
             EditorGUILayout.Space(30);
 
@@ -52,25 +54,35 @@
 
         #region window GUI API
 
-        void ButtonsForDownload()
+        void SelectItemToLoad()
         {
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.Space();
 
-            //button load songs
-            if (GUILayout.Button("Load Songs"))
+            //create options with name of every item in the list
+            string[] optionsList = new string[csvData.StructCSV.Count];
+            for (int i = 0; i < csvData.StructCSV.Count; i++)
             {
-                data.ParseClass.DefaultCSV = ManageCSV.LoadFile("Songs");
-                data.ParseClass.ParsedCSV = null;
-                data.ParseClass.ArraysParsedCSV = null;
+                //check every next element in the list
+                for (int j = i + 1; j < csvData.StructCSV.Count; j++)
+                {
+                    //if same name already in the list, change it to not have duplicates (because EditorGUILayout.Popup doesn't show duplicates - and now name is used also in LoadFile(string name))
+                    while (csvData.StructCSV[i].StructName.Equals(csvData.StructCSV[j].StructName))
+                        csvData.StructCSV[i].StructName += "#";
+                }
+
+                optionsList[i] = csvData.StructCSV[i].StructName;
             }
+
+            //show every item
+            data.IndexStruct = EditorGUILayout.Popup(data.IndexStruct, optionsList);
 
             EditorGUILayout.Space();
 
-            //button load answers
-            if (GUILayout.Button("Load Wrong Answers"))
+            //button load songs
+            if (GUILayout.Button("Load CSV"))
             {
-                data.ParseClass.DefaultCSV = ManageCSV.LoadFile("Wrong Answers");
+                data.ParseClass.DefaultCSV = ManageCSV.LoadFile(data.IndexStruct);
                 data.ParseClass.ParsedCSV = null;
                 data.ParseClass.ArraysParsedCSV = null;
             }

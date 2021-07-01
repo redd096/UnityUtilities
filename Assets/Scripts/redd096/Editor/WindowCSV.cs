@@ -339,8 +339,20 @@
             //load data
             WindowCSVData data = WindowCSVData.LoadData();
 
-            //load file using index in
+            //load file using index in data
             return LoadFile(data.StructCSV[data.IndexStruct]);
+        }
+
+        /// <summary>
+        /// Load File from folder using index
+        /// </summary>
+        public static string LoadFile(int structIndex)
+        {
+            //load data
+            WindowCSVData data = WindowCSVData.LoadData();
+
+            //load file using index
+            return LoadFile(data.StructCSV[structIndex]);
         }
 
         /// <summary>
