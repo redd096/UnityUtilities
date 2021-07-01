@@ -31,16 +31,15 @@
         /// <summary>
         /// Get Path to this scriptable object saved in project folder
         /// </summary>
-        /// <param name="fileInSameDirectory"></param>
         /// <returns></returns>
         public static string GetDataPath()
         {
-            //find window csv folder and create scriptable object there
+            //find script folder and create scriptable object there
             string[] guids = AssetDatabase.FindAssets(typeof(WindowCSVData).ToString());
             foreach (string guid in guids)
             {
-                string pathToScript = AssetDatabase.GUIDToAssetPath(guid);                                                                      //get path to the script
-                string pathToFolder = pathToScript.Remove(pathToScript.LastIndexOf('/'), pathToScript.Length - pathToScript.LastIndexOf('/'));  //remove everything from last slash (script name) to get only directory path
+                string pathToScript = AssetDatabase.GUIDToAssetPath(guid);                                                                          //get path to the script
+                string pathToFolder = pathToScript.Remove(pathToScript.LastIndexOf('/'), pathToScript.Length - pathToScript.LastIndexOf('/'));      //remove everything from last slash (script name) to get only directory path
 
                 return Path.Combine(pathToFolder, DATANAME);
             }
@@ -61,7 +60,7 @@
             if (data == null)
             {
                 data = CreateInstance<WindowCSVData>();
-                data.PathDownload = Application.dataPath;   //initialize path beucase is not possible doing when initialize var :/
+                data.PathDownload = Application.dataPath;           //initialize path because is not possible doing when initialize var :/
                 AssetDatabase.CreateAsset(data, GetDataPath());
             }
 
