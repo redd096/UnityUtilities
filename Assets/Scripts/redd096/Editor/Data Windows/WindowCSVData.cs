@@ -5,49 +5,6 @@
     using UnityEditor;
     using System.IO;
 
-    [System.Serializable]
-    public class WindowCSVStruct
-    {
-        [Header("Name")]
-        public string StructName = "Songs";
-
-        [Header("Download")]
-        public string LinkCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQUwVhCiPn1nvfdwMfOwU1RDmPAmllJ4tQYx7w-30kFyiSomK_GR7ebaFNnBYF6MlJEWuHbgK03kMdb/pub?gid=0&single=true&output=csv";
-
-        [Header("Window")]
-        public int IndexPath = 0;
-        public string[] OptionsPath = new string[] { "Data Path", "Persistent Data Path" };
-
-        [Header("CSV")]
-        [TextArea(2, 5)]
-        public string PathDownload = "";
-        public string FolderName = "Commons/CSV";
-        public string FileName = "Songs.csv";
-
-        public string PathFolder => Path.Combine(PathDownload, FolderName);
-        public string PathFile => Path.Combine(PathDownload, FolderName, FileName);
-
-        public WindowCSVStruct()
-        {
-
-        }
-
-        //create clone
-        public WindowCSVStruct(WindowCSVStruct itemToClone)
-        {
-            StructName = itemToClone.StructName;
-
-            LinkCSV = itemToClone.LinkCSV;
-
-            IndexPath = itemToClone.IndexPath;
-            OptionsPath = itemToClone.OptionsPath;
-
-            PathDownload = itemToClone.PathDownload;
-            FolderName = itemToClone.FolderName;
-            FileName = itemToClone.FileName;
-        }
-    }
-
     public class WindowCSVData : ScriptableObject
     {
         const string DATANAME = "Window CSV Data.asset";
@@ -98,5 +55,49 @@
         }
 
         #endregion
+    }
+
+    [System.Serializable]
+    public class WindowCSVStruct
+    {
+        [Header("Name")]
+        public string StructName = "Songs";
+
+        [Header("Download")]
+        [TextArea(2, 5)]
+        public string LinkCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQUwVhCiPn1nvfdwMfOwU1RDmPAmllJ4tQYx7w-30kFyiSomK_GR7ebaFNnBYF6MlJEWuHbgK03kMdb/pub?gid=0&single=true&output=csv";
+
+        [Header("Window")]
+        public int IndexPath = 0;
+        public string[] OptionsPath = new string[] { "Data Path", "Persistent Data Path" };
+
+        [Header("CSV")]
+        [TextArea(2, 5)]
+        public string PathDownload = "";
+        public string FolderName = "Commons/CSV";
+        public string FileName = "Songs.csv";
+
+        public string PathFolder => Path.Combine(PathDownload, FolderName);
+        public string PathFile => Path.Combine(PathDownload, FolderName, FileName);
+
+        public WindowCSVStruct()
+        {
+
+        }
+
+        //create clone
+        public WindowCSVStruct(WindowCSVStruct itemToClone)
+        {
+            StructName = itemToClone.StructName;
+
+            LinkCSV = itemToClone.LinkCSV;
+
+            IndexPath = itemToClone.IndexPath;
+            OptionsPath = itemToClone.OptionsPath;
+
+            PathDownload = itemToClone.PathDownload;
+            FolderName = itemToClone.FolderName;
+            FileName = itemToClone.FileName;
+        }
     }
 }

@@ -87,7 +87,9 @@
             EditorGUILayout.Space();
 
             //set name link
-            data.StructCSV[data.IndexStruct].StructName = EditorGUILayout.TextField(data.StructCSV[data.IndexStruct].StructName, new GUIStyle(EditorStyles.textField));
+            data.StructCSV[data.IndexStruct].StructName = EditorGUILayout.TextField(data.StructCSV[data.IndexStruct].StructName, EditorStyles.textField);
+
+            EditorGUILayout.Space();
 
             //create new item at index
             if (GUILayout.Button("Add Item"))
@@ -131,8 +133,8 @@
         void SetLinkCSV()
         {
             //set link to CSV
-            EditorGUILayout.LabelField("Links to CSV", new GUIStyle(EditorStyles.boldLabel));
-            data.StructCSV[data.IndexStruct].LinkCSV = EditorGUILayout.TextArea(data.StructCSV[data.IndexStruct].LinkCSV, new GUIStyle(EditorStyles.textArea));
+            EditorGUILayout.LabelField("Links to CSV", EditorStyles.boldLabel);
+            data.StructCSV[data.IndexStruct].LinkCSV = EditorGUILayout.TextArea(data.StructCSV[data.IndexStruct].LinkCSV, EditorStyles.textArea);
         }
 
         void GUIDownloadPath()
@@ -171,17 +173,17 @@
             EditorGUILayout.Space();
 
             //set path download
-            EditorGUILayout.LabelField("Path Download", new GUIStyle(EditorStyles.boldLabel));
-            data.StructCSV[data.IndexStruct].PathDownload = EditorGUILayout.TextArea(data.StructCSV[data.IndexStruct].PathDownload, new GUIStyle(EditorStyles.textArea));
+            EditorGUILayout.LabelField("Path Download", EditorStyles.boldLabel);
+            data.StructCSV[data.IndexStruct].PathDownload = EditorGUILayout.TextArea(data.StructCSV[data.IndexStruct].PathDownload, EditorStyles.textArea);
         }
 
         void SetFolderAndFileName()
         {
             //set folder name
-            data.StructCSV[data.IndexStruct].FolderName = EditorGUILayout.TextField("Folder:", data.StructCSV[data.IndexStruct].FolderName, new GUIStyle(EditorStyles.textField));
+            data.StructCSV[data.IndexStruct].FolderName = EditorGUILayout.TextField("Folder:", data.StructCSV[data.IndexStruct].FolderName, EditorStyles.textField);
 
             //set file name
-            data.StructCSV[data.IndexStruct].FileName = EditorGUILayout.TextField("File:", data.StructCSV[data.IndexStruct].FileName, new GUIStyle(EditorStyles.textField));
+            data.StructCSV[data.IndexStruct].FileName = EditorGUILayout.TextField("File:", data.StructCSV[data.IndexStruct].FileName, EditorStyles.textField);
         }
 
         void ButtonDownloadCSV()
@@ -223,9 +225,9 @@
             if (ManageDownloadCSV.www.isDone)
             {
                 if (ManageDownloadCSV.www.isHttpError || ManageDownloadCSV.www.isNetworkError)
-                    EditorGUILayout.LabelField("Error:", ManageDownloadCSV.www.error, new GUIStyle(EditorStyles.boldLabel));
+                    EditorGUILayout.LabelField("Error:", ManageDownloadCSV.www.error, EditorStyles.boldLabel);
                 else
-                    EditorGUILayout.LabelField("Download Completed!", new GUIStyle(EditorStyles.boldLabel));
+                    EditorGUILayout.LabelField("Download Completed!", EditorStyles.boldLabel);
             }
         }
 
