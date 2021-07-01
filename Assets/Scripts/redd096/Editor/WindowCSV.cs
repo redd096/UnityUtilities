@@ -4,12 +4,11 @@
     using UnityEditor;
     using UnityEngine.Networking;
     using System.IO;
-    using System.Runtime.Serialization.Formatters.Binary;
 
     public class WindowCSV : EditorWindow
     {
-        string[] optionsPath = new string[] { "Data Path", "Persistent Data Path" };
-        int indexPath;
+        Vector2 scrollPosition = Vector2.zero;
+        WindowCSVData data;
 
         /// <summary>
         /// Open Window from Editor
@@ -21,15 +20,53 @@
             GetWindow<WindowCSV>("Window CSV");
         }
 
+        void OnEnable()
+        {
+            //load data
+            data = WindowCSVData.LoadData();
+        }
+
         void OnGUI()
         {
-            EditorGUILayout.Space();
+            scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
+            EditorGUILayout.Space(15);
 
             //set link to CSV
             SetLinkCSV();
 
             EditorGUILayout.Space(50);
 
+            //GUI download path
+            GUIDownloadPath();
+
+            EditorGUILayout.Space(30);
+
+            //button abort and percentage download CSV (only if there is a download)
+            if (ManageDownloadCSV.www != null)
+            {
+                ButtonAbortAndPercentageDownloadCSV();
+            }
+
+            EditorGUILayout.Space(60);
+
+            //buttons delete file and delete directory
+            ButtonDeleteFileAndDirectory();
+
+            EditorGUILayout.Space(15);
+            EditorGUILayout.EndScrollView();
+        }
+
+        #region window GUI API
+
+        void SetLinkCSV()
+        {
+            //set link to CSV
+            EditorGUILayout.LabelField("Link to CSV", new GUIStyle(EditorStyles.boldLabel));
+            data.LinkCSV = EditorGUILayout.TextArea(data.LinkCSV, new GUIStyle(EditorStyles.textArea));
+        }
+
+        void GUIDownloadPath()
+        {
             //set path download
             SetPathDownload();
 
@@ -42,21 +79,6 @@
 
             //button to download CSV
             ButtonDownloadCSV();
-
-            EditorGUILayout.Space(30);
-
-            //button abort and percentage download CSV (only if there is a download)
-            if (ManageDownloadCSV.www != null)
-            {
-                ButtonAbortAndPercentageDownloadCSV();
-            }
-        }
-
-        void SetLinkCSV()
-        {
-            //set link to CSV
-            EditorGUILayout.LabelField("Link to CSV:", new GUIStyle(EditorStyles.boldLabel));
-            ManageDownloadCSV.linkCSV = EditorGUILayout.TextArea(ManageDownloadCSV.linkCSV, new GUIStyle(EditorStyles.textArea));
         }
 
         void SetPathDownload()
@@ -64,31 +86,32 @@
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.Space();
 
-            //set data path
-            indexPath = EditorGUILayout.Popup(indexPath, optionsPath);
+            //set directory path
+            data.IndexPath = EditorGUILayout.Popup(data.IndexPath, data.OptionsPath);
             if (GUILayout.Button("Set Path"))
             {
-                if (indexPath <= 0)
-                    ManageCSV.pathDownload = Application.dataPath;
+                if (data.IndexPath <= 0)
+                    data.PathDownload = Application.dataPath;
                 else
-                    ManageCSV.pathDownload = Application.persistentDataPath;
+                    data.PathDownload = Application.persistentDataPath;
             }
 
             EditorGUILayout.Space();
             EditorGUILayout.EndHorizontal();
+            EditorGUILayout.Space();
 
-            //text area file path
-            EditorGUILayout.LabelField("File Path:", new GUIStyle(EditorStyles.boldLabel));
-            ManageCSV.pathDownload = EditorGUILayout.TextArea(ManageCSV.pathDownload, new GUIStyle(EditorStyles.textArea));
+            //set path download
+            EditorGUILayout.LabelField("Path Download", new GUIStyle(EditorStyles.boldLabel));
+            data.PathDownload = EditorGUILayout.TextArea(data.PathDownload, new GUIStyle(EditorStyles.textArea));
         }
 
         void SetFolderAndFileName()
         {
             //set folder name
-            ManageCSV.folderName = EditorGUILayout.TextField("Folder:", ManageCSV.folderName, new GUIStyle(EditorStyles.textField));
+            data.FolderName = EditorGUILayout.TextField("Folder:", data.FolderName, new GUIStyle(EditorStyles.textField));
 
             //set file name
-            ManageCSV.fileName = EditorGUILayout.TextField("File:", ManageCSV.fileName, new GUIStyle(EditorStyles.textField));
+            data.FileName = EditorGUILayout.TextField("File:", data.FileName, new GUIStyle(EditorStyles.textField));
         }
 
         void ButtonDownloadCSV()
@@ -135,11 +158,35 @@
                     EditorGUILayout.LabelField("Download Completed!", new GUIStyle(EditorStyles.boldLabel));
             }
         }
+
+        void ButtonDeleteFileAndDirectory()
+        {
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.Space();
+
+            //button to delete file
+            if (GUILayout.Button("Delete File"))
+            {
+                ManageCSV.DeleteFile();
+            }
+
+            EditorGUILayout.Space();
+
+            //button to delete directory
+            if (GUILayout.Button("Delete Directory"))
+            {
+                ManageCSV.DeleteDirectory();
+            }
+
+            EditorGUILayout.Space();
+            EditorGUILayout.EndHorizontal();
+        }
+
+        #endregion
     }
 
     public static class ManageDownloadCSV
     {
-        public static string linkCSV { get; set; } = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQUwVhCiPn1nvfdwMfOwU1RDmPAmllJ4tQYx7w-30kFyiSomK_GR7ebaFNnBYF6MlJEWuHbgK03kMdb/pub?gid=0&single=true&output=csv";
         public static UnityWebRequest www { get; set; }
 
         /// <summary>
@@ -147,12 +194,16 @@
         /// </summary>
         public static void DownloadCSV()
         {
+            //load data
+            WindowCSVData data = WindowCSVData.LoadData();
+
             //UnityWebRequest replace old WWW
-            www = UnityWebRequest.Get(linkCSV);
+            www = UnityWebRequest.Get(data.LinkCSV);
             UnityWebRequestAsyncOperation request = www.SendWebRequest();
+
+            //wait download
             request.completed += OnCompleteDownload;
 
-            ////wait download
             //while (!request.isDone) { }
         }
 
@@ -186,32 +237,27 @@
 
     public static class ManageCSV
     {
-        public static string pathDownload { get; set; } = Application.dataPath;
-        public static string folderName { get; set; } = "Commons/CSV";
-        public static string fileName { get; set; } = "Options.csv";
-
-        static string pathFolder => Path.Combine(pathDownload, folderName);
-        static string pathFile => Path.Combine(pathDownload, folderName, fileName);
-
         /// <summary>
         /// Save downloaded File in folder
         /// </summary>
         /// <param name="value"></param>
         public static void SaveFile(string value)
         {
+            //load data
+            WindowCSVData data = WindowCSVData.LoadData();
+
             //if there is no directory, create it
-            if (Directory.Exists(pathFolder) == false)
+            if (Directory.Exists(data.PathFolder) == false)
             {
-                Directory.CreateDirectory(pathFolder);
+                Directory.CreateDirectory(data.PathFolder);
             }
 
-            //create stream at file position
-            BinaryFormatter formatter = new BinaryFormatter();
-            FileStream stream = new FileStream(pathFile, FileMode.Create);
+            //create stream to file position
+            StreamWriter writer = new StreamWriter(data.PathFile);
 
             //then save value to file position, and close stream
-            formatter.Serialize(stream, value);
-            stream.Close();
+            writer.Write(value);
+            writer.Close();
         }
 
         /// <summary>
@@ -219,20 +265,22 @@
         /// </summary>
         public static string LoadFile()
         {
+            //load data
+            WindowCSVData data = WindowCSVData.LoadData();
+
             //if there is no file, return null
-            if (File.Exists(pathFile) == false)
+            if (File.Exists(data.PathFile) == false)
             {
-                Debug.Log("File not found: " + pathFile);
+                Debug.Log("File not found: " + data.PathFile);
                 return null;
             }
 
             //create stream at file position
-            BinaryFormatter formatter = new BinaryFormatter();
-            FileStream stream = new FileStream(pathFile, FileMode.Open);
+            StreamReader reader = new StreamReader(data.PathFile);
 
             //then load from file position as value, and close stream
-            string value = formatter.Deserialize(stream) as string;
-            stream.Close();
+            string value = reader.ReadToEnd();
+            reader.Close();
 
             return value;
         }
@@ -242,15 +290,19 @@
         /// </summary>
         public static void DeleteFile()
         {
+            //load data
+            WindowCSVData data = WindowCSVData.LoadData();
+
             //check there is a file
-            if (File.Exists(pathFile) == false)
+            if (File.Exists(data.PathFile) == false)
             {
-                Debug.Log("File not found: " + pathFile);
+                Debug.Log("File not found: " + data.PathFile);
                 return;
             }
 
             //delete file
-            File.Delete(pathFile);
+            File.Delete(data.PathFile);
+            Debug.Log("File deleted successfully: " + data.PathFile);
         }
 
         /// <summary>
@@ -258,15 +310,19 @@
         /// </summary>
         public static void DeleteDirectory()
         {
+            //load data
+            WindowCSVData data = WindowCSVData.LoadData();
+
             //check there is a directory
-            if (Directory.Exists(pathFolder) == false)
+            if (Directory.Exists(data.PathFolder) == false)
             {
-                Debug.Log("Directory not found: " + pathFolder);
+                Debug.Log("Directory not found: " + data.PathFolder);
                 return;
             }
 
             //delete directory
-            Directory.Delete(pathFolder, true);
+            Directory.Delete(data.PathFolder, true);
+            Debug.Log("Directory deleted successfully: " + data.PathFolder);
         }
     }
 }
