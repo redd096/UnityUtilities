@@ -46,7 +46,7 @@
             base.Update();
 
             //set current selected and current override object active
-            selected = current.currentSelectedGameObject;
+            selected = currentSelectedGameObject;
             currentOverrideObjectActive = GetCurrentOverrideObject();
 
             //can't close override menu
@@ -92,7 +92,7 @@
 
             //if selected something not active, select null
             if (selected && selected.activeInHierarchy == false)
-                current.SetSelectedGameObject(null);
+                SetSelectedGameObject(null);
         }
 
         GameObject GetCurrentOverrideObject()
@@ -122,9 +122,9 @@
             {
                 //if last selected was in override menu, select it - otherwise select override object
                 if (lastSelected && lastSelected.activeInHierarchy && lastSelected.transform.parent == currentOverrideObjectActive.transform.parent)
-                    current.SetSelectedGameObject(lastSelected);
+                    SetSelectedGameObject(lastSelected);
                 else
-                    current.SetSelectedGameObject(currentOverrideObjectActive);
+                    SetSelectedGameObject(currentOverrideObjectActive);
             }
         }
 
@@ -138,9 +138,9 @@
             {
                 //back to last selected or select null
                 if (lastSelected && lastSelected.activeInHierarchy)
-                    current.SetSelectedGameObject(lastSelected);
+                    SetSelectedGameObject(lastSelected);
                 else
-                    current.SetSelectedGameObject(null);
+                    SetSelectedGameObject(null);
             }
         }
 
@@ -153,7 +153,7 @@
             //if is active an override object, select it
             if (currentOverrideObjectActive)
             {
-                current.SetSelectedGameObject(currentOverrideObjectActive);
+                SetSelectedGameObject(currentOverrideObjectActive);
                 selected = currentOverrideObjectActive;
                 return true;
             }
@@ -166,7 +166,7 @@
             //if last selected is active, select it
             if (lastSelected && lastSelected.activeInHierarchy)
             {
-                current.SetSelectedGameObject(lastSelected);
+                SetSelectedGameObject(lastSelected);
                 selected = lastSelected;
             }
             //else check which firstSelectedGameObject is active, and select it
@@ -179,7 +179,7 @@
                 {
                     if (firstSelect && firstSelect.activeInHierarchy)
                     {
-                        current.SetSelectedGameObject(firstSelect);
+                        SetSelectedGameObject(firstSelect);
                         selected = firstSelect;
                         break;
                     }
