@@ -117,6 +117,14 @@
             return null;
         }
 
+        /// <summary>
+        /// Update grid at runtime
+        /// </summary>
+        public void UpdateGrid()
+        {
+            grid.UpdateGrid();
+        }
+
         #region private API
 
         /// <summary>
