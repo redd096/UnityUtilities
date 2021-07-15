@@ -6,6 +6,19 @@
     [AddComponentMenu("redd096/Singletons/Scene Loader")]
     public class SceneLoader : Singleton<SceneLoader>
     {
+        #region private API
+
+        /// <summary>
+        /// Set lockState, and visible only when not locked
+        /// </summary>
+        void LockMouse(CursorLockMode lockMode)
+        {
+            Cursor.lockState = lockMode;
+            Cursor.visible = lockMode != CursorLockMode.Locked;
+        }
+
+        #endregion
+
         /// <summary>
         /// Resume time and hide cursor
         /// </summary>
@@ -19,7 +32,7 @@
 
             //enable player input and hide cursor
             //GameManager.instance.player.enabled = true;
-            //Utility.LockMouse(CursorLockMode.Locked);
+            LockMouse(CursorLockMode.Locked);
         }
 
         /// <summary>
@@ -35,7 +48,7 @@
 
             //disable player input and show cursor
             //GameManager.instance.player.enabled = false;
-            //Utility.LockMouse(CursorLockMode.None);
+            LockMouse(CursorLockMode.None);
         }
 
         /// <summary>
@@ -44,7 +57,7 @@
         public void ExitGame()
         {
 #if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
+            UnityEditor.EditorApplication.isPlaying = false;
 #else
             Application.Quit();
 #endif
@@ -56,7 +69,7 @@
         public void ReloadScene()
         {
             //show cursor and set timeScale to 1
-            //Utility.LockMouse(CursorLockMode.None);
+            LockMouse(CursorLockMode.None);
             Time.timeScale = 1;
 
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
@@ -68,7 +81,7 @@
         public void LoadScene(string scene)
         {
             //show cursor and set timeScale to 1
-            //Utility.LockMouse(CursorLockMode.None);
+            LockMouse(CursorLockMode.None);
             Time.timeScale = 1;
 
             //load new scene
@@ -81,7 +94,7 @@
         public void LoadNextScene()
         {
             //show cursor and set timeScale to 1
-            //Utility.LockMouse(CursorLockMode.None);
+            LockMouse(CursorLockMode.None);
             Time.timeScale = 1;
 
             //load next scene
