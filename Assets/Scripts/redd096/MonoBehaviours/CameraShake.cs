@@ -31,9 +31,6 @@
 			{
 				camTransform = Camera.main.transform;
 			}
-
-			//then save original position
-			originalPos = camTransform.localPosition;
 		}
 
 		IEnumerator ShakeCoroutine(float duration, float amount)
@@ -42,7 +39,7 @@
 			float shake = Time.time + duration;
 
 			//shake
-			while (shake > Time.time)
+			while (shake > Time.time && Time.timeScale > 0)
 			{
 				camTransform.localPosition = originalPos + Random.insideUnitSphere * amount;
 
@@ -70,6 +67,10 @@
 		/// </summary>
 		public void StartShake(float duration, float amount)
 		{
+			//set start position if no shake is running
+			if (shakeCoroutine == null)
+				originalPos = transform.localPosition;
+
 			//do only if there is not another shake, or can overwrite it
 			if (shakeCoroutine == null || ovewriteShake)
 			{
