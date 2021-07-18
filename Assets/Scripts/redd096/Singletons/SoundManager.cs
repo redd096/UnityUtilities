@@ -92,10 +92,10 @@
         /// <summary>
         /// Start audio clip at point. Can set volume. Use specific pooling
         /// </summary>
-        public void Play(Pooling<AudioSource> pool, AudioClip clip, Vector3 position, float volume = 1)
+        public AudioSource Play(Pooling<AudioSource> pool, AudioClip clip, Vector3 position, float volume = 1)
         {
             if (clip == null)
-                return;
+                return null;
 
             //instantiate (if didn't find deactivated, take first one in the pool)
             AudioSource audioSource = pool.Instantiate(audioPrefab);
@@ -104,7 +104,7 @@
 
             //if still null, return
             if (audioSource == null)
-                return;
+                return null;
 
             //set position, rotation and parent
             audioSource.transform.position = position;
@@ -113,24 +113,26 @@
             //play and start coroutine to deactivate
             Play(audioSource, clip, true, volume);
             StartCoroutine(DeactiveSoundAtPointCoroutine(audioSource));
+
+            return audioSource;
         }
 
         /// <summary>
         /// Start audio clip at point. Can set volume
         /// </summary>
-        public void Play(AudioClip clip, Vector3 position, float volume = 1)
+        public AudioSource Play(AudioClip clip, Vector3 position, float volume = 1)
         {
             //use this manager's pooling, instead of a specific one
-            Play(poolingSounds, clip, position, volume);
+            return Play(poolingSounds, clip, position, volume);
         }
 
         /// <summary>
         /// Start audio clip at point, with selected volume
         /// </summary>
-        public void Play(AudioStruct audio, Vector3 position)
+        public AudioSource Play(AudioStruct audio, Vector3 position)
         {
             //use this manager's pooling, instead of a specific one
-            Play(poolingSounds, audio.audioClip, position, audio.volume);
+            return Play(poolingSounds, audio.audioClip, position, audio.volume);
         }
 
         IEnumerator DeactiveSoundAtPointCoroutine(AudioSource audioToDeactivate)
@@ -147,25 +149,29 @@
         /// <summary>
         /// Start audio clip at point. Can set volume. Get clip random from the array
         /// </summary>
-        public void Play(AudioClip[] clips, Vector3 position, float volume = 1)
+        public AudioSource Play(AudioClip[] clips, Vector3 position, float volume = 1)
         {
             //do only if there are elements in the array
             if (clips.Length > 0)
             {
-                Play(clips[Random.Range(0, clips.Length)], position, volume);
+                return Play(clips[Random.Range(0, clips.Length)], position, volume);
             }
+
+            return null;
         }
 
         /// <summary>
         /// Start audio clip at point. Get clip and volume random from the array
         /// </summary>
-        public void Play(AudioStruct[] audios, Vector3 position)
+        public AudioSource Play(AudioStruct[] audios, Vector3 position)
         {
             //do only if there are elements in the array
             if (audios.Length > 0)
             {
-                Play(audios[Random.Range(0, audios.Length)], position);
+                return Play(audios[Random.Range(0, audios.Length)], position);
             }
+
+            return null;
         }
 
         #endregion
