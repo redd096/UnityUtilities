@@ -229,6 +229,9 @@
                 else
                     EditorGUILayout.LabelField("Download Completed!", EditorStyles.boldLabel);
             }
+
+            //repaint to update editor window
+            Repaint();
         }
 
         void ButtonDeleteFileAndDirectory()
