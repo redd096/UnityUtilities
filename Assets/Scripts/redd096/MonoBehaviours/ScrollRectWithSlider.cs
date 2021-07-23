@@ -11,7 +11,12 @@
         [SerializeField] Slider verticalSlider = default;
         [SerializeField] Slider horizontalSlider = default;
 
-        private void Start()
+        [Header("Hide when not necessary")]
+        [SerializeField] bool hideWhenNotNecessary = true;
+        [SerializeField] RectTransform viewport = default;
+        [SerializeField] RectTransform content = default;
+
+        void Start()
         {
             //set default positions
             verticalSlider?.SetValueWithoutNotify(1 - scrollRect.verticalNormalizedPosition);
@@ -21,6 +26,26 @@
             scrollRect.onValueChanged.AddListener(OnScrollRectChanged);
             verticalSlider?.onValueChanged.AddListener(OnVerticalSliderChanged);
             horizontalSlider?.onValueChanged.AddListener(OnHorizontalSliderChanged);
+        }
+
+        void FixedUpdate()
+        {
+            //check size
+            if (hideWhenNotNecessary && viewport && content)
+            {
+                //hide if not necessary
+                if (content.rect.height <= viewport.rect.height)
+                {
+                    verticalSlider?.gameObject.SetActive(false);
+                    horizontalSlider?.gameObject.SetActive(false);
+                }
+                //else show
+                else
+                {
+                    verticalSlider?.gameObject.SetActive(true);
+                    horizontalSlider?.gameObject.SetActive(true);
+                }
+            }
         }
 
         void OnScrollRectChanged(Vector2 value)
