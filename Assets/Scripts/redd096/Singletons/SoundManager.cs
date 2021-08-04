@@ -65,7 +65,7 @@
             //else, on the instance, play new background music
             else
             {
-                instance.PlayBackgroundMusic(musicThisScene.audioClip, musicThisScene.volume, loopMusic);
+                instance.PlayBackgroundMusic(musicThisScene.audioClip, true, musicThisScene.volume, loopMusic);
             }
         }
 
@@ -125,8 +125,8 @@
 
         IEnumerator FadeAudioCoroutine(AudioSource audioSource, AudioClip clip, AnimationCurve fadeIn, AnimationCurve fadeOut, float volume = 1, bool loop = false)
         {
-            //if playing, do fade out (only if there is an animation curve)
-            if (audioSource.isPlaying && fadeOut.keys.Length > 0)
+            //if playing, do fade out (only if there is an animation curve and volume is not already at 0)
+            if (audioSource.isPlaying && fadeOut.keys.Length > 0 && audioSource.volume > 0)
             {
                 yield return FadeCoroutine(audioSource, audioSource.volume, fadeOut);
             }
@@ -167,7 +167,7 @@
         /// <summary>
         /// Start audio clip for background music. Can set volume and loop
         /// </summary>
-        public AudioSource PlayBackgroundMusic(AudioClip clip, float volume = 1, bool loop = false)
+        public AudioSource PlayBackgroundMusic(AudioClip clip, bool doFade, float volume = 1, bool loop = false)
         {
             if (clip == null)
                 return null;
@@ -182,10 +182,22 @@
                 musicBackgroundAudioSource.transform.localPosition = Vector3.zero;      //and same position
             }
 
-            //play it (with fade)
-            PlayWithFade(musicBackgroundAudioSource, clip, fadeInMusic, fadeOutMusic, false, volume, loop);
+            //play it (with fade or not)
+            if (doFade)
+                PlayWithFade(musicBackgroundAudioSource, clip, fadeInMusic, fadeOutMusic, false, volume, loop);
+            else
+                Play(musicBackgroundAudioSource, clip, false, volume, loop);
 
             return musicBackgroundAudioSource;
+        }
+
+        /// <summary>
+        /// Start background music with clip setted in sound manager
+        /// </summary>
+        /// <param name="doFade"></param>
+        public void PlayBackgroundMusic(bool doFade)
+        {
+            PlayBackgroundMusic(musicThisScene.audioClip, doFade, musicThisScene.volume, loopMusic);
         }
 
         /// <summary>
