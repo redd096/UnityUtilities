@@ -2,6 +2,7 @@
 {
     using UnityEngine;
     using System.Collections;
+    using System.Collections.Generic;
 
     [System.Serializable]
     public struct AudioStruct
@@ -15,8 +16,22 @@
     {
         #region variables
 
+        [Header("Instantiate background music")]
+        [SerializeField] bool stopBackgroundMusic = false;
+        [SerializeField] AudioSource musicPrefab = default;
+        [SerializeField] AudioStruct musicThisScene = default;
+        [SerializeField] bool loopMusic = true;
+        [Tooltip("From 0 to 1, where 0 is 0 and 1 is volume to set")] [SerializeField] AnimationCurve fadeInMusic = default;
+        [Tooltip("From 1 to 0, where 1 is current volume and 0 is 0")] [SerializeField] AnimationCurve fadeOutMusic = default;
+
         [Header("Instantiate sound at point")]
-        [SerializeField] AudioSource audioPrefab = default;
+        [SerializeField] AudioSource sfxPrefab = default;
+
+        [Header("Sounds On Click Button")]
+        [SerializeField] AudioStruct[] soundsOnClick = default;
+
+        //background music
+        AudioSource musicBackgroundAudioSource;
 
         //sound at point
         private Transform soundsParent;
@@ -33,22 +48,34 @@
 
         Pooling<AudioSource> poolingSounds = new Pooling<AudioSource>();
 
-        //background
-        private AudioSource backgroundAudioSource;
-        AudioSource BackgroundAudioSource
-        {
-            get
-            {
-                //create audio source if null
-                if (backgroundAudioSource == null)
-                    backgroundAudioSource = gameObject.AddComponent<AudioSource>();
+        //fade in and fade out coroutines
+        Dictionary<AudioSource, Coroutine> fadeCoroutines = new Dictionary<AudioSource, Coroutine>();
 
-                //return audio source
-                return backgroundAudioSource;
+        #endregion
+
+        protected override void Awake()
+        {
+            base.Awake();
+
+            //stop background music if playing
+            if (stopBackgroundMusic)
+            {
+                instance.StopBackgroundMusic(true);
+            }
+            //else, on the instance, play new background music
+            else
+            {
+                instance.PlayBackgroundMusic(musicThisScene.audioClip, musicThisScene.volume, loopMusic);
             }
         }
 
-        #endregion
+        /// <summary>
+        /// Called by buttons in UI - play random sound on click
+        /// </summary>
+        public void PlayOnClick()
+        {
+            instance.Play(soundsOnClick, Vector3.zero);
+        }
 
         #region static Play
 
@@ -72,17 +99,122 @@
             }
         }
 
+        /// <summary>
+        /// Start audio clip. Can set volume and loop. It use animation curve to fade out previous audio clip and fade in new one
+        /// </summary>
+        public static void PlayWithFade(AudioSource audioSource, AudioClip clip, AnimationCurve fadeIn, AnimationCurve fadeOut, bool forceReplay, float volume = 1, bool loop = false)
+        {
+            //be sure to have audio source
+            if (audioSource == null)
+                return;
+
+            //change only if different clip (so we can have same music in different scenes without stop)
+            if (forceReplay || audioSource.clip != clip)
+            {
+                //if already running fade coroutine for this audiosource, stop it
+                if (instance.fadeCoroutines.ContainsKey(audioSource))
+                {
+                    instance.StopCoroutine(instance.fadeCoroutines[audioSource]);
+                    instance.fadeCoroutines.Remove(audioSource);
+                }
+
+                //start coroutine
+                instance.fadeCoroutines.Add(audioSource, instance.StartCoroutine(instance.FadeAudioCoroutine(audioSource, clip, fadeIn, fadeOut, volume, loop)));
+            }
+        }
+
+        IEnumerator FadeAudioCoroutine(AudioSource audioSource, AudioClip clip, AnimationCurve fadeIn, AnimationCurve fadeOut, float volume = 1, bool loop = false)
+        {
+            //if playing, do fade out (only if there is an animation curve)
+            if (audioSource.isPlaying && fadeOut.keys.Length > 0)
+            {
+                yield return FadeCoroutine(audioSource, audioSource.volume, fadeOut);
+            }
+
+            //set new clip, volume and loop - then be sure to play
+            audioSource.clip = clip;
+            audioSource.volume = fadeIn.keys.Length > 0 ? 0 : volume;       //if there is animation curve, set volume at 0, else set necessary volume
+            audioSource.loop = loop;
+            audioSource.Play();
+
+            //start fade in (only if there is an animation curve)
+            if (fadeIn.keys.Length > 0)
+            {
+                yield return FadeCoroutine(audioSource, volume, fadeIn);
+            }
+        }
+
+        IEnumerator FadeCoroutine(AudioSource audioSource, float volume, AnimationCurve fadeCurve)
+        {
+            float currentTime = 0;
+
+            //do fade
+            while (currentTime < fadeCurve.keys[fadeCurve.length - 1].time)
+            {
+                currentTime += Time.deltaTime;
+
+                //set volume using animation curve
+                audioSource.volume = Mathf.Lerp(0, volume, fadeCurve.Evaluate(currentTime));
+
+                yield return null;
+            }
+        }
+
         #endregion
 
-        #region background music
+        #region music background
 
         /// <summary>
-        /// Start audio clip for background. Can set volume and loop
+        /// Start audio clip for background music. Can set volume and loop
         /// </summary>
-        public void PlayBackgroundMusic(AudioClip clip, float volume = 1, bool loop = false)
+        public AudioSource PlayBackgroundMusic(AudioClip clip, float volume = 1, bool loop = false)
         {
-            //start music from this audio source
-            Play(BackgroundAudioSource, clip, false, volume, loop);
+            if (clip == null)
+                return null;
+
+            //if there is no music audioSource, instantiate it
+            if (musicBackgroundAudioSource == null)
+            {
+                if (musicPrefab == null)
+                    return null;
+
+                musicBackgroundAudioSource = Instantiate(musicPrefab, transform);       //child of this
+                musicBackgroundAudioSource.transform.localPosition = Vector3.zero;      //and same position
+            }
+
+            //play it (with fade)
+            PlayWithFade(musicBackgroundAudioSource, clip, fadeInMusic, fadeOutMusic, false, volume, loop);
+
+            return musicBackgroundAudioSource;
+        }
+
+        /// <summary>
+        /// Stop background music if playing
+        /// </summary>
+        public void StopBackgroundMusic(bool doFade)
+        {
+            //stop old background music
+            if (musicBackgroundAudioSource)
+            {
+                //with fade
+                if (doFade)
+                {
+                    //if already running fade coroutine for this audiosource, stop it
+                    if (fadeCoroutines.ContainsKey(musicBackgroundAudioSource))
+                    {
+                        StopCoroutine(fadeCoroutines[musicBackgroundAudioSource]);
+                        fadeCoroutines.Remove(musicBackgroundAudioSource);
+                    }
+
+                    //start coroutine
+                    fadeCoroutines.Add(musicBackgroundAudioSource, StartCoroutine(FadeCoroutine(musicBackgroundAudioSource, musicBackgroundAudioSource.volume, fadeOutMusic)));
+                }
+                //or immediatly
+                else
+                {
+                    musicBackgroundAudioSource.Stop();
+                }
+            }
         }
 
         #endregion
@@ -98,7 +230,7 @@
                 return null;
 
             //instantiate (if didn't find deactivated, take first one in the pool)
-            AudioSource audioSource = pool.Instantiate(audioPrefab);
+            AudioSource audioSource = pool.Instantiate(sfxPrefab);
             if (audioSource == null && pool.PooledObjects.Count > 0)
                 audioSource = pool.PooledObjects[0];
 
