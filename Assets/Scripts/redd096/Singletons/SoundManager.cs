@@ -88,8 +88,8 @@
             if (audioSource == null)
                 return;
 
-            //change only if different clip (so we can have same music in different scenes without stop)
-            if (forceReplay || audioSource.clip != clip)
+            //change only if different (so we can have same music in different scenes without stop) - or if set forceReplay or audioSource is not playing
+            if (forceReplay || audioSource.isPlaying == false || audioSource.clip != clip || audioSource.volume != volume || audioSource.loop != loop)
             {
                 audioSource.clip = clip;
                 audioSource.volume = volume;
@@ -108,8 +108,8 @@
             if (audioSource == null)
                 return;
 
-            //change only if different clip (so we can have same music in different scenes without stop)
-            if (forceReplay || audioSource.clip != clip)
+            //change only if different (so we can have same music in different scenes without stop) - or if set forceReplay or audioSource is not playing
+            if (forceReplay || audioSource.isPlaying == false || audioSource.clip != clip || audioSource.volume != volume || audioSource.loop != loop)
             {
                 //if already running fade coroutine for this audiosource, stop it
                 if (instance.fadeCoroutines.ContainsKey(audioSource))
