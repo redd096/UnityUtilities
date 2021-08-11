@@ -195,15 +195,15 @@
         /// Start background music with clip setted in sound manager
         /// </summary>
         /// <param name="doFade"></param>
-        public void PlayBackgroundMusic(bool doFade)
+        public AudioSource PlayBackgroundMusic(bool doFade)
         {
-            PlayBackgroundMusic(musicThisScene.audioClip, doFade, musicThisScene.volume, loopMusic);
+            return PlayBackgroundMusic(musicThisScene.audioClip, doFade, musicThisScene.volume, loopMusic);
         }
 
         /// <summary>
         /// Stop background music if playing
         /// </summary>
-        public void StopBackgroundMusic(bool doFade)
+        public AudioSource StopBackgroundMusic(bool doFade)
         {
             //stop old background music
             if (musicBackgroundAudioSource)
@@ -227,6 +227,8 @@
                     musicBackgroundAudioSource.Stop();
                 }
             }
+
+            return musicBackgroundAudioSource;
         }
 
         #endregion
