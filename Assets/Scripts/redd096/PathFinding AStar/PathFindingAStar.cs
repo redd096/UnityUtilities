@@ -1,5 +1,14 @@
 ﻿//https://www.youtube.com/watch?v=mZfyt03LDH4&list=PLFt_AvWsXl0cq5Umv3pMC9SPnKjfp9eGW&index=3
 
+//TODO
+//non mi piace com'è fatto in questo video
+//https://www.youtube.com/watch?v=dn1XRIaROM4&list=PLFt_AvWsXl0cq5Umv3pMC9SPnKjfp9eGW&index=5
+//ma effettivamente bisognerebbe trasformarlo in una coroutine
+//ad esempio: IA ogni tot secondi chiama FindPath passandogli la propria List come parametro
+//qua parte una coroutine, che alla fine invece di restituire il path, lo setta direttamente nella List passata
+//cosa succede se si continua a chiamare ma qua la coroutine non finisce mai?
+//prima di far partire di nuovo la coroutine conviene aspettare che finisca quella precedente, anche se rimane indietro, e magari non ha le posizioni aggiornate?
+
 namespace redd096
 {
     using System.Collections.Generic;
