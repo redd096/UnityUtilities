@@ -2,26 +2,20 @@
 {
     using UnityEngine;
 
-    public class Node
+    public class Node : IHeapItem<Node>
     {
-        #region variables contructor
+        //variables constructor
+        public bool isWalkable;
+        public Vector3 worldPosition;
+        public Vector2Int gridPosition;
 
-        public bool isWalkable { get; private set; }
-        public Vector3 worldPosition { get; private set; }
-        public Vector2Int gridPosition { get; private set; }
-
-        #endregion
-
-        #region variables path finding
-
-        public int gCost { get; set; }                      //distance from start point
-        public int hCost { get; set; }                      //distance from end point
-        public int fCost => gCost + hCost;                  //sum of G cost and H cost
+        //variables path finding
+        public int gCost;                       //distance from start point
+        public int hCost;                       //distance from end point
+        public int fCost => gCost + hCost;      //sum of G cost and H cost
 
         //used to retrace path
-        public Node parentNode { get; set; }
-
-        #endregion
+        public Node parentNode;
 
         public Node(bool isWalkable, Vector3 worldPosition, int x, int y)
         {
@@ -29,5 +23,22 @@
             this.worldPosition = worldPosition;
             this.gridPosition = new Vector2Int(x, y);
         }
+
+        #region heap optimization
+
+        public int HeapIndex { get; set; }
+
+        public int CompareTo(Node nodeToCompare)
+        {
+            //compare F Cost, if equals, compare H Cost
+            int compare = fCost.CompareTo(nodeToCompare.fCost);
+            if (compare == 0)
+                compare = hCost.CompareTo(nodeToCompare.hCost);
+
+            //return negative value to check if lower
+            return -compare;
+        }
+
+        #endregion
     }
 }

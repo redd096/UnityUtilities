@@ -1,12 +1,12 @@
-﻿namespace redd096
-{
-    //https://www.youtube.com/watch?v=mZfyt03LDH4&list=PLFt_AvWsXl0cq5Umv3pMC9SPnKjfp9eGW&index=3
+﻿//https://www.youtube.com/watch?v=mZfyt03LDH4&list=PLFt_AvWsXl0cq5Umv3pMC9SPnKjfp9eGW&index=3
 
+namespace redd096
+{
     using System.Collections.Generic;
     using UnityEngine;
 
-    [AddComponentMenu("redd096/Path Finding A Star/A Star")]
-    public class AStar : MonoBehaviour
+    [AddComponentMenu("redd096/Path Finding A Star/Path Finding A Star")]
+    public class PathFindingAStar : MonoBehaviour
     {
         [Header("Default use Find Object of Type")]
         [SerializeField] GridAStar grid = default;
@@ -63,14 +63,16 @@
             Node startNode = grid.NodeFromWorldPosition(startPosition);
             Node targetNode = grid.NodeFromWorldPosition(targetPosition);
 
-            List<Node> openList = new List<Node>();             //nodes to be evaluated
-            HashSet<Node> closedList = new HashSet<Node>();     //already evaluated
+            Heap<Node> openList = new Heap<Node>(grid.MaxSize);     //nodes to be evaluated
+            HashSet<Node> closedList = new HashSet<Node>();         //already evaluated
 
             //add the start node to OPEN
             openList.Add(startNode);
 
             while (openList.Count > 0)
             {
+                #region before heap optimization
+                /*
                 //Current = node in OPEN with the lowest F cost
                 Node currentNode = openList[0];
                 for (int i = 1; i < openList.Count; i++)
@@ -84,6 +86,13 @@
 
                 //remove Current from OPEN and add to CLOSED
                 openList.Remove(currentNode);
+                closedList.Add(currentNode);
+                */
+                #endregion
+
+                //Current = node in OPEN with the lowest F cost
+                //remove Current from OPEN and add to CLOSED
+                Node currentNode = openList.RemoveFirst();      //all optimized with heap
                 closedList.Add(currentNode);
 
                 //path has been found, return it

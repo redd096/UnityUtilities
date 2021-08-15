@@ -3,6 +3,8 @@
     using System.Collections.Generic;
     using UnityEngine;
 
+    #region unity editor
+
 #if UNITY_EDITOR
 
     using UnityEditor;
@@ -37,6 +39,8 @@
 
 #endif
 
+    #endregion
+
     [AddComponentMenu("redd096/Path Finding A Star/Grid A Star")]
     public class GridAStar : MonoBehaviour
     {
@@ -60,6 +64,8 @@
 
         float nodeRadius;
         Vector2Int gridSize;
+
+        public int MaxSize => gridSize.x * gridSize.y;
 
         #endregion
 
