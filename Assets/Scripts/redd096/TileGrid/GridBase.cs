@@ -46,7 +46,11 @@
                 for (int y = 0; y < gridsizeY; y++)
                 {
                     //instantiate tile
+#if UNITY_EDITOR
+                    TileBase tile = UnityEditor.PrefabUtility.InstantiatePrefab(GetTilePrefab(x, y), transform) as TileBase;
+#else
                     TileBase tile = Instantiate(GetTilePrefab(x, y), transform);
+#endif
                     tile.transform.position = startPosition +                   //from start position
                         (useZ ?
                         new Vector3(x * tileSize.x, 0, y * tileSize.z) :        //if use Z, move on X and Z
