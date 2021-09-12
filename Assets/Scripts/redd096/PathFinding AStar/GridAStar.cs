@@ -176,6 +176,9 @@
 
         public Node NodeFromWorldPosition(Vector3 worldPosition)
         {
+            //be sure to get right result also if grid doesn't start at [0,0]
+            worldPosition -= transform.position;
+
             //find percent
             float percentX = (worldPosition.x + gridWorldSize.x / 2) / gridWorldSize.x;
             float percentY = useZ ?
