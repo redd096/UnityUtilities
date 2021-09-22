@@ -26,6 +26,12 @@
             data = WindowCSVData.LoadData();
         }
 
+        void OnDisable()
+        {
+            //set dirty to save
+            EditorUtility.SetDirty(data);
+        }
+
         void OnGUI()
         {
             scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);

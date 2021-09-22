@@ -30,6 +30,13 @@
             csvData = WindowCSVData.LoadData();
         }
 
+        void OnDisable()
+        {
+            //set dirty to save
+            EditorUtility.SetDirty(data);
+            EditorUtility.SetDirty(csvData);
+        }
+
         private void OnGUI()
         {
             scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
@@ -104,6 +111,11 @@
 
             EditorGUILayout.Space();
 
+            //first parse
+            FirstParse();
+
+            EditorGUILayout.Space();
+
             //split arrays
             SplitArraysParse();
 
@@ -120,6 +132,14 @@
             //set vars for dictionary
             data.ParseClass.AllCapsDictionaryValues = EditorGUILayout.Toggle("All Caps", data.ParseClass.AllCapsDictionaryValues);
             data.ParseClass.NoSpacesDictionaryValues = EditorGUILayout.Toggle("No Spaces", data.ParseClass.NoSpacesDictionaryValues);
+        }
+
+        void FirstParse()
+        {
+            EditorGUILayout.LabelField("First Parse", EditorStyles.boldLabel);
+
+            //set var to trim elements
+            data.ParseClass.TrimParsedElements = EditorGUILayout.Toggle("Trim Parsed Elements", data.ParseClass.TrimParsedElements);
         }
 
         void SplitArraysParse()

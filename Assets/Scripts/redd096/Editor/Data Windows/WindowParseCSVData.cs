@@ -69,6 +69,9 @@
 		[SerializeField] KeyValueStruct[] privateParsedCSV = default;               //at [row][column] there is excel cell item - can be a variable (item) or array (item1;item2;item3;)
 		[SerializeField] KeyKeyValueStruct[] privateArrayParsedCSV = default;       //every [row][column] is an array - a variable ([0] = item) or array ([0] = item1, [1] = item2, [2] = item3)
 
+		[Header("First Parse")]
+		public bool TrimParsedElements = true;
+
 		[Header("Split Arrays")]
 		public bool SplitArrays = true;
 		public string StringToSplitArrayElements = ";";
@@ -230,8 +233,10 @@
 		/// <returns></returns>
 		string[] SplitInColumns(string row)
 		{
-			//split row
-			return row.Split(',');
+			//split row in columns
+			string[] columns = row.Split(',');
+
+			return ModifiedElement(columns);
 		}
 
 		/// <summary>
@@ -318,6 +323,18 @@
 		}
 
 		#region modify API
+
+		string[] ModifiedElement(string[] splittedRow)
+		{
+			if (TrimParsedElements)
+			{
+				//if necessary - foreach column, split it
+				for (int i = 0; i < splittedRow.Length; i++)
+					splittedRow[i] = splittedRow[i].Trim();
+			}
+
+			return splittedRow;
+		}
 
 		string ModifiedDictionaryValue(string dictionaryValue)
 		{
