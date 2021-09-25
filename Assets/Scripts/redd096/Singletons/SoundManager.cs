@@ -72,20 +72,6 @@
             }
         }
 
-        /// <summary>
-        /// Called by buttons in UI - play random sound on click
-        /// </summary>
-        public void PlayOnClick()
-        {
-            //do only if there are elements in the array
-            if (soundsOnClick.Length > 0)
-            {
-                //use this manager's pooling, instead of a specific one
-                AudioStruct sound = soundsOnClick[Random.Range(0, soundsOnClick.Length)];
-                instance.Play(poolingUISounds, UISoundPrefab, sound.audioClip, Vector3.zero, sound.volume);
-            }
-        }
-
         #region static Play
 
         /// <summary>
@@ -327,6 +313,30 @@
             }
 
             return null;
+        }
+
+        #endregion
+
+        #region sounds on click button
+
+        /// <summary>
+        /// Called by buttons in UI - play random sound on click
+        /// </summary>
+        public void PlayOnClick()
+        {
+            //find instance and call to play sound
+            instance.PlaySoundOnInstance();
+        }
+
+        void PlaySoundOnInstance()
+        {
+            //do only if there are elements in the array
+            if (soundsOnClick.Length > 0)
+            {
+                //use ui sounds' pooling
+                AudioStruct sound = soundsOnClick[Random.Range(0, soundsOnClick.Length)];
+                Play(poolingUISounds, UISoundPrefab, sound.audioClip, Vector3.zero, sound.volume);
+            }
         }
 
         #endregion
