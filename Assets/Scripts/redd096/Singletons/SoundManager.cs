@@ -328,8 +328,7 @@
             if (soundsOnClick.Length > 0)
             {
                 //get one random and call in instance to play it
-                AudioStruct sound = soundsOnClick[Random.Range(0, soundsOnClick.Length)];
-                instance.PlaySoundOnInstance(sound);
+                instance.PlaySoundOnInstance(soundsOnClick[Random.Range(0, soundsOnClick.Length)]);
             }
         }
 
