@@ -17,10 +17,10 @@
         #region variables
 
         [Header("Instantiate background music")]
-        [SerializeField] bool stopBackgroundMusic = false;
+        [SerializeField] bool stopBackgroundMusicThisScene = false;
         [SerializeField] AudioSource musicPrefab = default;
         [SerializeField] AudioStruct musicThisScene = default;
-        [SerializeField] bool loopMusic = true;
+        [SerializeField] bool loopMusicThisScene = true;
         [Tooltip("From 0 to 1, where 0 is 0 and 1 is volume to set")] [SerializeField] AnimationCurve fadeInMusic = default;
         [Tooltip("From 1 to 0, where 1 is current volume and 0 is 0")] [SerializeField] AnimationCurve fadeOutMusic = default;
 
@@ -58,14 +58,14 @@
             base.Awake();
 
             //stop background music if playing
-            if (stopBackgroundMusic)
+            if (stopBackgroundMusicThisScene)
             {
                 instance.StopBackgroundMusic(true);
             }
             //else, on the instance, play new background music
             else
             {
-                instance.PlayBackgroundMusic(musicThisScene.audioClip, true, musicThisScene.volume, loopMusic);
+                instance.PlayBackgroundMusic(musicThisScene.audioClip, true, musicThisScene.volume, loopMusicThisScene);
             }
         }
 
@@ -197,7 +197,7 @@
         /// <param name="doFade"></param>
         public AudioSource PlayBackgroundMusic(bool doFade)
         {
-            return PlayBackgroundMusic(musicThisScene.audioClip, doFade, musicThisScene.volume, loopMusic);
+            return PlayBackgroundMusic(musicThisScene.audioClip, doFade, musicThisScene.volume, loopMusicThisScene);
         }
 
         /// <summary>
