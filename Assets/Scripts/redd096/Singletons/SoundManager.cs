@@ -16,13 +16,15 @@
     {
         #region variables
 
-        [Header("Instantiate background music")]
-        [SerializeField] bool stopBackgroundMusicThisScene = false;
+        [Header("Background Music")]
         [SerializeField] AudioSource musicPrefab = default;
-        [SerializeField] AudioStruct musicThisScene = default;
-        [SerializeField] bool loopMusicThisScene = true;
         [Tooltip("From 0 to 1, where 0 is 0 and 1 is volume to set")] [SerializeField] AnimationCurve fadeInMusic = default;
         [Tooltip("From 1 to 0, where 1 is current volume and 0 is 0")] [SerializeField] AnimationCurve fadeOutMusic = default;
+
+        [Header("Edit Background Music for this scene")]
+        [SerializeField] bool stopBackgroundMusicThisScene = false;
+        [SerializeField] AudioStruct musicThisScene = default;
+        [SerializeField] bool loopMusicThisScene = true;
 
         [Header("Instantiate sound at point")]
         [SerializeField] AudioSource sfxPrefab = default;
