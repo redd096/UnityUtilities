@@ -324,19 +324,19 @@
         /// </summary>
         public void PlayOnClick()
         {
-            //find instance and call to play sound
-            instance.PlaySoundOnInstance();
-        }
-
-        void PlaySoundOnInstance()
-        {
             //do only if there are elements in the array
             if (soundsOnClick.Length > 0)
             {
-                //use ui sounds' pooling
+                //get one random and call in instance to play it
                 AudioStruct sound = soundsOnClick[Random.Range(0, soundsOnClick.Length)];
-                Play(poolingUISounds, UISoundPrefab, sound.audioClip, Vector3.zero, sound.volume);
+                instance.PlaySoundOnInstance(sound);
             }
+        }
+
+        void PlaySoundOnInstance(AudioStruct sound)
+        {
+            //play sound UI
+            Play(poolingUISounds, UISoundPrefab, sound.audioClip, Vector3.zero, sound.volume);
         }
 
         #endregion
