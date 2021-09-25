@@ -27,11 +27,9 @@
         [Header("Instantiate sound at point")]
         [SerializeField] AudioSource sfxPrefab = default;
 
-        [Header("Sounds On Click Button")]
+        [Header("Sounds On Click Button (random from array)")]
+        [SerializeField] AudioSource UISoundPrefab = default;
         [SerializeField] AudioStruct[] soundsOnClick = default;
-
-        //background music
-        AudioSource musicBackgroundAudioSource;
 
         //sound at point
         private Transform soundsParent;
@@ -46,7 +44,10 @@
             }
         }
 
-        Pooling<AudioSource> poolingSounds = new Pooling<AudioSource>();
+        //audio sources in scene
+        AudioSource musicBackgroundAudioSource;
+        Pooling<AudioSource> poolingSFX = new Pooling<AudioSource>();
+        Pooling<AudioSource> poolingUISounds = new Pooling<AudioSource>();
 
         //fade in and fade out coroutines
         Dictionary<AudioSource, Coroutine> fadeCoroutines = new Dictionary<AudioSource, Coroutine>();
@@ -74,7 +75,13 @@
         /// </summary>
         public void PlayOnClick()
         {
-            instance.Play(soundsOnClick, Vector3.zero);
+            //do only if there are elements in the array
+            if (soundsOnClick.Length > 0)
+            {
+                //use this manager's pooling, instead of a specific one
+                AudioStruct sound = soundsOnClick[Random.Range(0, soundsOnClick.Length)];
+                instance.Play(poolingUISounds, UISoundPrefab, sound.audioClip, Vector3.zero, sound.volume);
+            }
         }
 
         #region static Play
@@ -238,13 +245,13 @@
         /// <summary>
         /// Start audio clip at point. Can set volume. Use specific pooling
         /// </summary>
-        public AudioSource Play(Pooling<AudioSource> pool, AudioClip clip, Vector3 position, float volume = 1)
+        public AudioSource Play(Pooling<AudioSource> pool, AudioSource prefab, AudioClip clip, Vector3 position, float volume = 1)
         {
             if (clip == null)
                 return null;
 
             //instantiate (if didn't find deactivated, take first one in the pool)
-            AudioSource audioSource = pool.Instantiate(sfxPrefab);
+            AudioSource audioSource = pool.Instantiate(prefab);
             if (audioSource == null && pool.PooledObjects.Count > 0)
                 audioSource = pool.PooledObjects[0];
 
@@ -269,7 +276,7 @@
         public AudioSource Play(AudioClip clip, Vector3 position, float volume = 1)
         {
             //use this manager's pooling, instead of a specific one
-            return Play(poolingSounds, clip, position, volume);
+            return Play(poolingSFX, sfxPrefab, clip, position, volume);
         }
 
         /// <summary>
@@ -278,7 +285,7 @@
         public AudioSource Play(AudioStruct audio, Vector3 position)
         {
             //use this manager's pooling, instead of a specific one
-            return Play(poolingSounds, audio.audioClip, position, audio.volume);
+            return Play(poolingSFX, sfxPrefab, audio.audioClip, position, audio.volume);
         }
 
         IEnumerator DeactiveSoundAtPointCoroutine(AudioSource audioToDeactivate)
