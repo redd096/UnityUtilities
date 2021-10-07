@@ -332,10 +332,22 @@
             }
         }
 
-        void PlaySoundOnInstance(AudioStruct sound)
+        public AudioSource PlaySoundOnInstance(AudioStruct sound)
         {
             //play sound UI
-            Play(poolingUISounds, UISoundPrefab, sound.audioClip, Vector3.zero, sound.volume);
+            return Play(poolingUISounds, UISoundPrefab, sound.audioClip, Vector3.zero, sound.volume);
+        }
+
+        public AudioSource PlaySoundOnInstance(AudioStruct[] sounds)
+        {
+            //play sound UI
+            if (sounds.Length > 0)
+            {
+                AudioStruct sound = sounds[Random.Range(0, sounds.Length)];
+                return Play(poolingUISounds, UISoundPrefab, sound.audioClip, Vector3.zero, sound.volume);
+            }
+
+            return null;
         }
 
         #endregion
