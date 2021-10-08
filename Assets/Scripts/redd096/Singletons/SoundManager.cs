@@ -5,7 +5,7 @@
     using System.Collections.Generic;
 
     [System.Serializable]
-    public class AudioStruct
+    public class AudioClass
     {
         public AudioClip audioClip = default;
         [Range(0f, 1f)] public float volume = 1;
@@ -23,7 +23,7 @@
 
         [Header("Edit Background Music for this scene")]
         [SerializeField] bool stopBackgroundMusicThisScene = false;
-        [SerializeField] AudioStruct musicThisScene = default;
+        [SerializeField] AudioClass musicThisScene = default;
         [SerializeField] bool loopMusicThisScene = true;
 
         [Header("Instantiate sound at point")]
@@ -31,7 +31,7 @@
         [SerializeField] AudioSource sound3DPrefab = default;
 
         [Header("Sounds On Click Button (random from array)")]
-        [SerializeField] AudioStruct[] soundsOnClick = default;
+        [SerializeField] AudioClass[] soundsOnClick = default;
 
         //sound parent (instantiate if null)
         private Transform soundsParent;
@@ -269,7 +269,7 @@
         /// <summary>
         /// Start audio clip at point, with selected volume
         /// </summary>
-        public AudioSource Play(bool is3D, AudioStruct audio, Vector3 position)
+        public AudioSource Play(bool is3D, AudioClass audio, Vector3 position)
         {
             return Play(is3D, audio.audioClip, position, audio.volume);
         }
@@ -291,7 +291,7 @@
         /// <summary>
         /// Start audio clip at point. Get clip and volume random from the array
         /// </summary>
-        public AudioSource Play(bool is3D, AudioStruct[] audios, Vector3 position)
+        public AudioSource Play(bool is3D, AudioClass[] audios, Vector3 position)
         {
             //do only if there are elements in the array
             if (audios.Length > 0)
