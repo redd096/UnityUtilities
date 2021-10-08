@@ -45,8 +45,7 @@
         Pooling<AudioSource> pooling3D = new Pooling<AudioSource>();
 
         //coroutines
-        Dictionary<AudioSource, Coroutine> deactiveSoundCoroutines = new Dictionary<AudioSource, Coroutine>();  //deactive sound at point coroutines
-        Dictionary<AudioSource, Coroutine> fadeCoroutines = new Dictionary<AudioSource, Coroutine>();           //fade in and fade out coroutines
+        Dictionary<AudioSource, Coroutine> coroutines = new Dictionary<AudioSource, Coroutine>();   //fade in and fade out coroutines, or deactive sound at point coroutines
 
         #endregion
 
@@ -64,7 +63,6 @@
             {
                 instance.PlayBackgroundMusic(musicThisScene.audioClip, true, musicThisScene.volume, loopMusicThisScene);
             }
-
         }
 
         #region static Play
@@ -77,6 +75,13 @@
             //be sure to have audio source
             if (audioSource == null)
                 return;
+
+            //if running fade coroutine for this audiosource, stop it
+            if (instance.coroutines.ContainsKey(audioSource))
+            {
+                instance.StopCoroutine(instance.coroutines[audioSource]);
+                instance.coroutines.Remove(audioSource);
+            }
 
             //change only if different (so we can have same music in different scenes without stop) - or if set forceReplay or audioSource is not playing
             if (forceReplay || audioSource.isPlaying == false || audioSource.clip != clip || audioSource.volume != volume || audioSource.loop != loop)
@@ -102,14 +107,14 @@
             if (forceReplay || audioSource.isPlaying == false || audioSource.clip != clip || audioSource.volume != volume || audioSource.loop != loop)
             {
                 //if already running fade coroutine for this audiosource, stop it
-                if (instance.fadeCoroutines.ContainsKey(audioSource))
+                if (instance.coroutines.ContainsKey(audioSource))
                 {
-                    instance.StopCoroutine(instance.fadeCoroutines[audioSource]);
-                    instance.fadeCoroutines.Remove(audioSource);
+                    instance.StopCoroutine(instance.coroutines[audioSource]);
+                    instance.coroutines.Remove(audioSource);
                 }
 
                 //start coroutine
-                instance.fadeCoroutines.Add(audioSource, instance.StartCoroutine(instance.FadeAudioCoroutine(audioSource, clip, fadeIn, fadeOut, volume, loop)));
+                instance.coroutines.Add(audioSource, instance.StartCoroutine(instance.FadeAudioCoroutine(audioSource, clip, fadeIn, fadeOut, volume, loop)));
             }
         }
 
@@ -198,18 +203,17 @@
             //stop old background music
             if (musicBackgroundAudioSource)
             {
-                //with fade
+                //if running fade coroutine for this audiosource, stop it
+                if (coroutines.ContainsKey(musicBackgroundAudioSource))
+                {
+                    StopCoroutine(coroutines[musicBackgroundAudioSource]);
+                    coroutines.Remove(musicBackgroundAudioSource);
+                }
+
+                //with fade start coroutine
                 if (doFade)
                 {
-                    //if already running fade coroutine for this audiosource, stop it
-                    if (fadeCoroutines.ContainsKey(musicBackgroundAudioSource))
-                    {
-                        StopCoroutine(fadeCoroutines[musicBackgroundAudioSource]);
-                        fadeCoroutines.Remove(musicBackgroundAudioSource);
-                    }
-
-                    //start coroutine
-                    fadeCoroutines.Add(musicBackgroundAudioSource, StartCoroutine(FadeCoroutine(musicBackgroundAudioSource, musicBackgroundAudioSource.volume, fadeOutMusic)));
+                    coroutines.Add(musicBackgroundAudioSource, StartCoroutine(FadeCoroutine(musicBackgroundAudioSource, musicBackgroundAudioSource.volume, fadeOutMusic)));
                 }
                 //or immediatly
                 else
@@ -246,16 +250,9 @@
             audioSource.transform.position = position;
             audioSource.transform.SetParent(SoundsParent);
 
-            //if already running deactive coroutine for this audiosource, stop it
-            if (deactiveSoundCoroutines.ContainsKey(audioSource))
-            {
-                StopCoroutine(deactiveSoundCoroutines[audioSource]);
-                deactiveSoundCoroutines.Remove(audioSource);
-            }
-
             //play and start coroutine to deactivate
             Play(audioSource, clip, true, volume);
-            deactiveSoundCoroutines.Add(audioSource, StartCoroutine(DeactiveSoundAtPointCoroutine(audioSource)));
+            coroutines.Add(audioSource, StartCoroutine(DeactiveSoundAtPointCoroutine(audioSource)));
 
             return audioSource;
         }
