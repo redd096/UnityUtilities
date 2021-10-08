@@ -4,13 +4,22 @@
     using System.Collections;
     using System.Collections.Generic;
 
+    #region classes
+
     [System.Serializable]
-    public class AudioClass
+    public class AudioClassBase
     {
         public AudioClip audioClip = default;
-        public bool is3D = false;
         [Range(0f, 1f)] public float volume = 1;
     }
+
+    [System.Serializable]
+    public class AudioClass : AudioClassBase
+    {
+        public bool is3D = false;
+    }
+
+    #endregion
 
     [AddComponentMenu("redd096/Singletons/Sound Manager")]
     public class SoundManager : Singleton<SoundManager>
@@ -24,7 +33,7 @@
 
         [Header("Edit Background Music for this scene")]
         [SerializeField] bool stopBackgroundMusicThisScene = false;
-        [SerializeField] AudioClass musicThisScene = default;
+        [SerializeField] AudioClassBase musicThisScene = default;
         [SerializeField] bool loopMusicThisScene = true;
 
         [Header("Instantiate sound at point")]
@@ -32,7 +41,7 @@
         [SerializeField] AudioSource sound3DPrefab = default;
 
         [Header("Sounds On Click Button (random from array)")]
-        [SerializeField] AudioClass[] soundsOnClick = default;
+        [SerializeField] AudioClassBase[] soundsOnClick = default;
 
         //sound parent (instantiate if null)
         private Transform soundsParent;
@@ -268,14 +277,6 @@
         }
 
         /// <summary>
-        /// Start audio clip at point, with selected volume
-        /// </summary>
-        public AudioSource Play(AudioClass audio, Vector3 position)
-        {
-            return Play(audio.is3D, audio.audioClip, position, audio.volume);
-        }
-
-        /// <summary>
         /// Start audio clip at point. Can set volume. Get clip random from the array
         /// </summary>
         public AudioSource Play(bool is3D, AudioClip[] clips, Vector3 position, float volume = 1)
@@ -290,7 +291,37 @@
         }
 
         /// <summary>
+        /// Start audio clip at point, with selected volume
+        /// </summary>
+        public AudioSource Play(bool is3D, AudioClassBase audio, Vector3 position)
+        {
+            return Play(is3D, audio.audioClip, position, audio.volume);
+        }
+
+        /// <summary>
         /// Start audio clip at point. Get clip and volume random from the array
+        /// </summary>
+        public AudioSource Play(bool is3D, AudioClassBase[] audios, Vector3 position)
+        {
+            //do only if there are elements in the array
+            if (audios.Length > 0)
+            {
+                return Play(is3D, audios[Random.Range(0, audios.Length)], position);
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Start audio clip at point, with selected volume and selected 3d or 2d
+        /// </summary>
+        public AudioSource Play(AudioClass audio, Vector3 position)
+        {
+            return Play(audio.is3D, audio.audioClip, position, audio.volume);
+        }
+
+        /// <summary>
+        /// Start audio clip at point. Get clip, volume and 3d or 2d, random from the array
         /// </summary>
         public AudioSource Play(AudioClass[] audios, Vector3 position)
         {
@@ -324,7 +355,7 @@
         public void PlayOnClick()
         {
             //in instance, call Play 2D
-            instance.Play(soundsOnClick, Vector2.zero);
+            instance.Play(false, soundsOnClick, Vector2.zero);
         }
 
         #endregion
