@@ -8,6 +8,7 @@
     public class AudioClass
     {
         public AudioClip audioClip = default;
+        public bool is3D = false;
         [Range(0f, 1f)] public float volume = 1;
     }
 
@@ -269,9 +270,9 @@
         /// <summary>
         /// Start audio clip at point, with selected volume
         /// </summary>
-        public AudioSource Play(bool is3D, AudioClass audio, Vector3 position)
+        public AudioSource Play(AudioClass audio, Vector3 position)
         {
-            return Play(is3D, audio.audioClip, position, audio.volume);
+            return Play(audio.is3D, audio.audioClip, position, audio.volume);
         }
 
         /// <summary>
@@ -291,12 +292,12 @@
         /// <summary>
         /// Start audio clip at point. Get clip and volume random from the array
         /// </summary>
-        public AudioSource Play(bool is3D, AudioClass[] audios, Vector3 position)
+        public AudioSource Play(AudioClass[] audios, Vector3 position)
         {
             //do only if there are elements in the array
             if (audios.Length > 0)
             {
-                return Play(is3D, audios[Random.Range(0, audios.Length)], position);
+                return Play(audios[Random.Range(0, audios.Length)], position);
             }
 
             return null;
@@ -323,7 +324,7 @@
         public void PlayOnClick()
         {
             //in instance, call Play 2D
-            instance.Play(false, soundsOnClick, Vector2.zero);
+            instance.Play(soundsOnClick, Vector2.zero);
         }
 
         #endregion
