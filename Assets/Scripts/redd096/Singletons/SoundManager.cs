@@ -5,10 +5,10 @@
     using System.Collections.Generic;
 
     [System.Serializable]
-    public struct AudioStruct
+    public class AudioStruct
     {
-        public AudioClip audioClip;
-        [Range(0f, 1f)] public float volume;
+        public AudioClip audioClip = default;
+        [Range(0f, 1f)] public float volume = 1;
     }
 
     [AddComponentMenu("redd096/Singletons/Sound Manager")]
@@ -27,32 +27,26 @@
         [SerializeField] bool loopMusicThisScene = true;
 
         [Header("Instantiate sound at point")]
-        [SerializeField] AudioSource sfxPrefab = default;
+        [Tooltip("Used also for SoundsOnClickButton")] [SerializeField] AudioSource sound2DPrefab = default;
+        [SerializeField] AudioSource sound3DPrefab = default;
 
         [Header("Sounds On Click Button (random from array)")]
-        [SerializeField] AudioSource UISoundPrefab = default;
         [SerializeField] AudioStruct[] soundsOnClick = default;
 
-        //sound at point
+        //sound parent (instantiate if null)
         private Transform soundsParent;
-        Transform SoundsParent
-        {
-            get
-            {
-                if (soundsParent == null)
-                    soundsParent = new GameObject("Sounds Parent").transform;
-
-                return soundsParent;
-            }
-        }
+        Transform SoundsParent { get {
+                if (soundsParent == null) { soundsParent = new GameObject("Sounds Parent").transform; }
+                return soundsParent; } }
 
         //audio sources in scene
         AudioSource musicBackgroundAudioSource;
-        Pooling<AudioSource> poolingSFX = new Pooling<AudioSource>();
-        Pooling<AudioSource> poolingUISounds = new Pooling<AudioSource>();
+        Pooling<AudioSource> pooling2D = new Pooling<AudioSource>();
+        Pooling<AudioSource> pooling3D = new Pooling<AudioSource>();
 
-        //fade in and fade out coroutines
-        Dictionary<AudioSource, Coroutine> fadeCoroutines = new Dictionary<AudioSource, Coroutine>();
+        //coroutines
+        Dictionary<AudioSource, Coroutine> deactiveSoundCoroutines = new Dictionary<AudioSource, Coroutine>();  //deactive sound at point coroutines
+        Dictionary<AudioSource, Coroutine> fadeCoroutines = new Dictionary<AudioSource, Coroutine>();           //fade in and fade out coroutines
 
         #endregion
 
@@ -70,6 +64,7 @@
             {
                 instance.PlayBackgroundMusic(musicThisScene.audioClip, true, musicThisScene.volume, loopMusicThisScene);
             }
+
         }
 
         #region static Play
@@ -231,7 +226,7 @@
         #region sound at point
 
         /// <summary>
-        /// Start audio clip at point. Can set volume. Use specific pooling
+        /// Start audio clip at point. Can set volume. Use specific pooling and audio source
         /// </summary>
         public AudioSource Play(Pooling<AudioSource> pool, AudioSource prefab, AudioClip clip, Vector3 position, float volume = 1)
         {
@@ -251,9 +246,16 @@
             audioSource.transform.position = position;
             audioSource.transform.SetParent(SoundsParent);
 
+            //if already running deactive coroutine for this audiosource, stop it
+            if (deactiveSoundCoroutines.ContainsKey(audioSource))
+            {
+                StopCoroutine(deactiveSoundCoroutines[audioSource]);
+                deactiveSoundCoroutines.Remove(audioSource);
+            }
+
             //play and start coroutine to deactivate
             Play(audioSource, clip, true, volume);
-            StartCoroutine(DeactiveSoundAtPointCoroutine(audioSource));
+            deactiveSoundCoroutines.Add(audioSource, StartCoroutine(DeactiveSoundAtPointCoroutine(audioSource)));
 
             return audioSource;
         }
@@ -261,19 +263,46 @@
         /// <summary>
         /// Start audio clip at point. Can set volume
         /// </summary>
-        public AudioSource Play(AudioClip clip, Vector3 position, float volume = 1)
+        public AudioSource Play(bool is3D, AudioClip clip, Vector3 position, float volume = 1)
         {
-            //use this manager's pooling, instead of a specific one
-            return Play(poolingSFX, sfxPrefab, clip, position, volume);
+            //3d use 3dPooling and 3dPrefab, 2d use 2dPooling and 2dPrefab
+            return Play(is3D ? pooling3D : pooling2D, is3D ? sound3DPrefab : sound2DPrefab, clip, position, volume);
         }
 
         /// <summary>
         /// Start audio clip at point, with selected volume
         /// </summary>
-        public AudioSource Play(AudioStruct audio, Vector3 position)
+        public AudioSource Play(bool is3D, AudioStruct audio, Vector3 position)
         {
-            //use this manager's pooling, instead of a specific one
-            return Play(poolingSFX, sfxPrefab, audio.audioClip, position, audio.volume);
+            return Play(is3D, audio.audioClip, position, audio.volume);
+        }
+
+        /// <summary>
+        /// Start audio clip at point. Can set volume. Get clip random from the array
+        /// </summary>
+        public AudioSource Play(bool is3D, AudioClip[] clips, Vector3 position, float volume = 1)
+        {
+            //do only if there are elements in the array
+            if (clips.Length > 0)
+            {
+                return Play(is3D, clips[Random.Range(0, clips.Length)], position, volume);
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Start audio clip at point. Get clip and volume random from the array
+        /// </summary>
+        public AudioSource Play(bool is3D, AudioStruct[] audios, Vector3 position)
+        {
+            //do only if there are elements in the array
+            if (audios.Length > 0)
+            {
+                return Play(is3D, audios[Random.Range(0, audios.Length)], position);
+            }
+
+            return null;
         }
 
         IEnumerator DeactiveSoundAtPointCoroutine(AudioSource audioToDeactivate)
@@ -287,34 +316,6 @@
                 audioToDeactivate.gameObject.SetActive(false);
         }
 
-        /// <summary>
-        /// Start audio clip at point. Can set volume. Get clip random from the array
-        /// </summary>
-        public AudioSource Play(AudioClip[] clips, Vector3 position, float volume = 1)
-        {
-            //do only if there are elements in the array
-            if (clips.Length > 0)
-            {
-                return Play(clips[Random.Range(0, clips.Length)], position, volume);
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Start audio clip at point. Get clip and volume random from the array
-        /// </summary>
-        public AudioSource Play(AudioStruct[] audios, Vector3 position)
-        {
-            //do only if there are elements in the array
-            if (audios.Length > 0)
-            {
-                return Play(audios[Random.Range(0, audios.Length)], position);
-            }
-
-            return null;
-        }
-
         #endregion
 
         #region sounds on click button
@@ -324,30 +325,8 @@
         /// </summary>
         public void PlayOnClick()
         {
-            //do only if there are elements in the array
-            if (soundsOnClick.Length > 0)
-            {
-                //get one random and call in instance to play it
-                instance.PlaySoundOnInstance(soundsOnClick[Random.Range(0, soundsOnClick.Length)]);
-            }
-        }
-
-        public AudioSource PlaySoundOnInstance(AudioStruct sound)
-        {
-            //play sound UI
-            return Play(poolingUISounds, UISoundPrefab, sound.audioClip, Vector3.zero, sound.volume);
-        }
-
-        public AudioSource PlaySoundOnInstance(AudioStruct[] sounds)
-        {
-            //play sound UI
-            if (sounds.Length > 0)
-            {
-                AudioStruct sound = sounds[Random.Range(0, sounds.Length)];
-                return Play(poolingUISounds, UISoundPrefab, sound.audioClip, Vector3.zero, sound.volume);
-            }
-
-            return null;
+            //in instance, call Play 2D
+            instance.Play(false, soundsOnClick, Vector2.zero);
         }
 
         #endregion
