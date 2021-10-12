@@ -131,7 +131,7 @@
         IEnumerator FadeAudioCoroutine(AudioSource audioSource, AudioClip clip, AnimationCurve fadeIn, AnimationCurve fadeOut, float volume = 1, bool loop = false)
         {
             //if playing, do fade out (only if there is an animation curve and volume is not already at 0)
-            if (audioSource.isPlaying && fadeOut.keys.Length > 0 && audioSource.volume > 0)
+            if (audioSource.isPlaying && fadeOut != null && fadeOut.keys.Length > 0 && audioSource.volume > 0)
             {
                 yield return FadeCoroutine(audioSource, audioSource.volume, fadeOut);
             }
@@ -143,7 +143,7 @@
             audioSource.Play();
 
             //start fade in (only if there is an animation curve)
-            if (fadeIn.keys.Length > 0)
+            if (fadeIn != null && fadeIn.keys.Length > 0)
             {
                 yield return FadeCoroutine(audioSource, volume, fadeIn);
             }
