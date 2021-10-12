@@ -151,6 +151,13 @@
 
         public IEnumerator FadeCoroutine(AudioSource audioSource, float volume, AnimationCurve fadeCurve)
         {
+            //if there is no curve, set immediatly sound and stop coroutine
+            if (fadeCurve == null || fadeCurve.keys.Length <= 0)
+            {
+                audioSource.volume = volume;
+                yield break;
+            }
+
             float currentTime = 0;
 
             //do fade
