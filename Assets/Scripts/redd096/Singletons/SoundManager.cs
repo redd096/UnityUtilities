@@ -172,7 +172,7 @@
         /// <summary>
         /// Start audio clip for background music. Can set volume and loop
         /// </summary>
-        public AudioSource PlayBackgroundMusic(AudioClip clip, bool doFade, float volume = 1, bool loop = false)
+        public AudioSource PlayBackgroundMusic(AudioClip clip, bool doFade, float volume = 1, bool loop = true)
         {
             if (clip == null)
                 return null;
