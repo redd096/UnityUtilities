@@ -128,7 +128,7 @@
             }
         }
 
-        IEnumerator FadeAudioCoroutine(AudioSource audioSource, AudioClip clip, AnimationCurve fadeIn, AnimationCurve fadeOut, float volume = 1, bool loop = false)
+        public IEnumerator FadeAudioCoroutine(AudioSource audioSource, AudioClip clip, AnimationCurve fadeIn, AnimationCurve fadeOut, float volume = 1, bool loop = false)
         {
             //if playing, do fade out (only if there is an animation curve and volume is not already at 0)
             if (audioSource.isPlaying && fadeOut != null && fadeOut.keys.Length > 0 && audioSource.volume > 0)
@@ -149,7 +149,7 @@
             }
         }
 
-        IEnumerator FadeCoroutine(AudioSource audioSource, float volume, AnimationCurve fadeCurve)
+        public IEnumerator FadeCoroutine(AudioSource audioSource, float volume, AnimationCurve fadeCurve)
         {
             float currentTime = 0;
 
@@ -334,7 +334,7 @@
             return null;
         }
 
-        IEnumerator DeactiveSoundAtPointCoroutine(AudioSource audioToDeactivate)
+        public IEnumerator DeactiveSoundAtPointCoroutine(AudioSource audioToDeactivate)
         {
             //wait to end the clip
             if (audioToDeactivate)
