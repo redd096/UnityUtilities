@@ -6,19 +6,6 @@
     [AddComponentMenu("redd096/Singletons/Scene Loader")]
     public class SceneLoader : Singleton<SceneLoader>
     {
-        #region private API
-
-        /// <summary>
-        /// Set lockState, and visible only when not locked
-        /// </summary>
-        void LockMouse(CursorLockMode lockMode)
-        {
-            Cursor.lockState = lockMode;
-            Cursor.visible = lockMode != CursorLockMode.Locked;
-        }
-
-        #endregion
-
         /// <summary>
         /// Resume time and hide cursor
         /// </summary>
@@ -107,6 +94,15 @@
         public void OpenURL(string url)
         {
             Application.OpenURL(url);
+        }
+
+        /// <summary>
+        /// Set lockState, and visible only when not locked
+        /// </summary>
+        public void LockMouse(CursorLockMode lockMode)
+        {
+            Cursor.lockState = lockMode;
+            Cursor.visible = lockMode != CursorLockMode.Locked;
         }
     }
 }
