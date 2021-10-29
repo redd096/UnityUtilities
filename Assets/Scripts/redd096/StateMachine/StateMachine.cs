@@ -9,7 +9,7 @@
         /// <summary>
         /// Call it to change state
         /// </summary>
-        public void SetState(State stateToSet)
+        public virtual void SetState(State stateToSet)
         {
             State previousState = state;
 
