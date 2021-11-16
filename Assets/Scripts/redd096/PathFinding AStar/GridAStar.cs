@@ -55,6 +55,7 @@
         [Header("Grid")]
         [SerializeField] Vector2 gridWorldSize = Vector2.one;
         [SerializeField] float nodeDiameter = 1;
+        [SerializeField] float overlapDiameter = 0.9f;
 
         [Header("Gizmos")]
         [SerializeField] float alphaNodes = 0.3f;
@@ -63,6 +64,7 @@
         Node[,] grid;
 
         float nodeRadius;
+        float overlapRadius;
         Vector2Int gridSize;
 
         public int MaxSize => gridSize.x * gridSize.y;
@@ -96,7 +98,7 @@
                 foreach (Node node in grid)
                 {
                     //set color if walkable or not
-                    Gizmos.color = new Color(1, 1, 1, alphaNodes) * (node.isWalkable ? Color.white : Color.red);
+                    Gizmos.color = new Color(1, 1, 1, alphaNodes) * (node.isWalkable ? Color.green : Color.red);
                     //Gizmos.DrawSphere(node.worldPosition, nodeRadius);
                     Gizmos.DrawCube(node.worldPosition, Vector3.one * (nodeDiameter - 0.1f));
                 }
@@ -109,6 +111,7 @@
         {
             //set radius for every node
             nodeRadius = nodeDiameter * 0.5f;
+            overlapRadius = overlapDiameter * 0.5f;
 
             //set grid size
             gridSize.x = Mathf.RoundToInt(gridWorldSize.x / nodeDiameter);
@@ -134,8 +137,8 @@
                         worldBottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.up * (y * nodeDiameter + nodeRadius);           //or y
 
                     bool isWalkable = useZ ?
-                        !Physics.CheckSphere(worldPosition, nodeRadius, unwalkableMask) :       //use 3d (z)
-                        !Physics2D.OverlapCircle(worldPosition, nodeRadius, unwalkableMask);    //or 2d (y)
+                        !Physics.CheckSphere(worldPosition, overlapRadius, unwalkableMask) :        //use 3d (z)
+                        !Physics2D.OverlapCircle(worldPosition, overlapRadius, unwalkableMask);     //or 2d (y)
 
                     //set new node in grid
                     grid[x, y] = new Node(isWalkable, worldPosition, x, y);
