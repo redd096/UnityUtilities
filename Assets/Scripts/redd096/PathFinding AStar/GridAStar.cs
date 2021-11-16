@@ -71,7 +71,7 @@
 
         #endregion
 
-        void Start()
+        void Awake()
         {
             SetGridSize();
             CreateGrid();
@@ -149,6 +149,12 @@
         #endregion
 
         #region public API
+
+        public bool IsGridCreated()
+        {
+            //return if the grid was being created
+            return grid != null;
+        }
 
         public List<Node> GetNeighbours(Node node)
         {

@@ -68,6 +68,10 @@ namespace redd096
              *          add Neighbour to OPEN
              */
 
+            //be sure the grid is created
+            if (grid.IsGridCreated() == false)
+                grid.UpdateGrid();
+
             //get nodes from world position
             Node startNode = grid.NodeFromWorldPosition(startPosition);
             Node targetNode = grid.NodeFromWorldPosition(targetPosition);
