@@ -138,8 +138,8 @@
                         worldBottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.up * (y * nodeDiameter + nodeRadius);           //or y
 
                     bool isWalkable = useZ ?
-                        !Physics.CheckSphere(worldPosition, overlapRadius, unwalkableMask) :        //use 3d (z)
-                        !Physics2D.OverlapCircle(worldPosition, overlapRadius, unwalkableMask);     //or 2d (y)
+                        gameObject.scene.GetPhysicsScene().OverlapSphere(worldPosition, overlapRadius, new Collider[1], unwalkableMask, QueryTriggerInteraction.UseGlobal) <= 0 :    //use 3d (z)
+                        gameObject.scene.GetPhysicsScene2D().OverlapCircle(worldPosition, overlapRadius, unwalkableMask) == false;                                                  //or 2d (y)
 
                     //set new node in grid
                     grid[x, y] = new Node(isWalkable, worldPosition, x, y);
