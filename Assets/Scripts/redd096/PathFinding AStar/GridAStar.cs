@@ -73,8 +73,9 @@
 
         void Awake()
         {
-            SetGridSize();
-            CreateGrid();
+            //create grid
+            if (IsGridCreated() == false)
+                UpdateGrid();
         }
 
         public void UpdateGrid()
