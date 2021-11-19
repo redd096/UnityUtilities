@@ -9,7 +9,7 @@
 
     using UnityEditor;
 
-    [CustomEditor(typeof(GridAStar))]
+    [CustomEditor(typeof(GridAStar), true)]
     public class GridAStarEditor : Editor
     {
         private GridAStar gridAStar;
@@ -47,18 +47,19 @@
         #region variables
 
         [Header("Use Z instead of Y")]
-        [SerializeField] bool useZ = true;
+        [SerializeField] protected bool useZ = true;
 
         [Header("Layer Mask Unwalkable")]
-        [SerializeField] LayerMask unwalkableMask = default;
+        [SerializeField] protected LayerMask unwalkableMask = default;
 
         [Header("Grid")]
-        [SerializeField] Vector2 gridWorldSize = Vector2.one;
-        [SerializeField] float nodeDiameter = 1;
-        [SerializeField] float overlapDiameter = 0.9f;
+        [SerializeField] protected bool updateOnAwake = true;
+        [SerializeField] protected Vector2 gridWorldSize = Vector2.one;
+        [SerializeField] protected float nodeDiameter = 1;
+        [SerializeField] protected float overlapDiameter = 0.9f;
 
         [Header("Gizmos")]
-        [SerializeField] float alphaNodes = 0.3f;
+        [SerializeField] protected float alphaNodes = 0.3f;
 
         //grid
         Node[,] grid;
@@ -67,14 +68,17 @@
         float overlapRadius;
         Vector2Int gridSize;
 
+        //properties
         public int MaxSize => gridSize.x * gridSize.y;
+        public virtual Vector3 GridWorldPosition => transform.position;
+        public Vector2 GridWorldSize => gridWorldSize;
 
         #endregion
 
         void Awake()
         {
             //create grid
-            if (IsGridCreated() == false)
+            if (updateOnAwake && IsGridCreated() == false)
                 UpdateGrid();
         }
 
@@ -89,9 +93,9 @@
             //draw area
             Gizmos.color = Color.cyan;
             if (useZ)
-                Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));      //use z
+                Gizmos.DrawWireCube(GridWorldPosition, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));      //use z
             else
-                Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, gridWorldSize.y, 1));      //or y
+                Gizmos.DrawWireCube(GridWorldPosition, new Vector3(gridWorldSize.x, gridWorldSize.y, 1));      //or y
 
             //draw every node in grid
             if (grid != null)
@@ -108,7 +112,7 @@
 
         #region create grid
 
-        void SetGridSize()
+        protected virtual void SetGridSize()
         {
             //set radius for every node
             nodeRadius = nodeDiameter * 0.5f;
@@ -124,8 +128,8 @@
             //reset grid and find bottom left world position
             grid = new Node[gridSize.x, gridSize.y];
             Vector3 worldBottomLeft = useZ ?
-                transform.position + (Vector3.left * gridWorldSize.x / 2) + (Vector3.back * gridWorldSize.y / 2) :      //use z
-                transform.position + (Vector3.left * gridWorldSize.x / 2) + (Vector3.down * gridWorldSize.y / 2);       //or y
+                GridWorldPosition + (Vector3.left * gridWorldSize.x / 2) + (Vector3.back * gridWorldSize.y / 2) :      //use z
+                GridWorldPosition + (Vector3.left * gridWorldSize.x / 2) + (Vector3.down * gridWorldSize.y / 2);       //or y
 
             //create grid
             for (int x = 0; x < gridSize.x; x++)
@@ -137,14 +141,17 @@
                         worldBottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.forward * (y * nodeDiameter + nodeRadius) :     //use z
                         worldBottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.up * (y * nodeDiameter + nodeRadius);           //or y
 
-                    bool isWalkable = useZ ?
-                        gameObject.scene.GetPhysicsScene().OverlapSphere(worldPosition, overlapRadius, new Collider[1], unwalkableMask, QueryTriggerInteraction.UseGlobal) <= 0 :    //use 3d (z)
-                        gameObject.scene.GetPhysicsScene2D().OverlapCircle(worldPosition, overlapRadius, unwalkableMask) == false;                                                  //or 2d (y)
-
                     //set new node in grid
-                    grid[x, y] = new Node(isWalkable, worldPosition, x, y);
+                    grid[x, y] = new Node(IsWalkable(worldPosition), worldPosition, x, y);
                 }
             }
+        }
+
+        protected virtual bool IsWalkable(Vector3 worldPosition)
+        {
+            return useZ ?
+                gameObject.scene.GetPhysicsScene().OverlapSphere(worldPosition, overlapRadius, new Collider[1], unwalkableMask, QueryTriggerInteraction.UseGlobal) <= 0 :   //use 3d (z)
+                gameObject.scene.GetPhysicsScene2D().OverlapCircle(worldPosition, overlapRadius, unwalkableMask) == false;                                                  //or 2d (y)
         }
 
         #endregion
@@ -187,7 +194,7 @@
         public Node NodeFromWorldPosition(Vector3 worldPosition)
         {
             //be sure to get right result also if grid doesn't start at [0,0]
-            worldPosition -= transform.position;
+            worldPosition -= GridWorldPosition;
 
             //find percent
             float percentX = (worldPosition.x + gridWorldSize.x / 2) / gridWorldSize.x;
@@ -203,6 +210,22 @@
 
             //return node
             return grid[x, y];
+        }
+
+        public bool IsInsideGrid(Vector3 worldPosition)
+        {
+            //outside left or right
+            if (worldPosition.x < GridWorldPosition.x - (gridWorldSize.x * 0.5f) || worldPosition.x > GridWorldPosition.x + (gridWorldSize.x * 0.5f))
+                return false;
+
+            //outside down or up (if useZ, use back or forward)
+            if (useZ && worldPosition.z < GridWorldPosition.z - (gridWorldSize.y * 0.5f) || worldPosition.z > GridWorldPosition.z + (gridWorldSize.y * 0.5f))
+                return false;
+            else if (useZ == false && worldPosition.y < GridWorldPosition.y - (gridWorldSize.y * 0.5f) || worldPosition.y > GridWorldPosition.y + (gridWorldSize.y * 0.5f))
+                return false;
+
+            //else is inside
+            return true;
         }
 
         #endregion
