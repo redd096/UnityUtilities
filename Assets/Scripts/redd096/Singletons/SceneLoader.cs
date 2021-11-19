@@ -6,6 +6,8 @@
     [AddComponentMenu("redd096/Singletons/Scene Loader")]
     public class SceneLoader : Singleton<SceneLoader>
     {
+        [SerializeField] bool lockMouse = true;
+
         /// <summary>
         /// Resume time and hide cursor
         /// </summary>
@@ -18,8 +20,7 @@
             Time.timeScale = 1;
 
             //enable player input and hide cursor
-            //GameManager.instance.player.enabled = true;
-            LockMouse(CursorLockMode.Locked);
+            if (lockMouse) LockMouse(CursorLockMode.Locked);
         }
 
         /// <summary>
@@ -34,8 +35,7 @@
             Time.timeScale = 0;
 
             //disable player input and show cursor
-            //GameManager.instance.player.enabled = false;
-            LockMouse(CursorLockMode.None);
+            if (lockMouse) LockMouse(CursorLockMode.None);
         }
 
         /// <summary>
@@ -56,7 +56,7 @@
         public void ReloadScene()
         {
             //show cursor and set timeScale to 1
-            LockMouse(CursorLockMode.None);
+            if (lockMouse) LockMouse(CursorLockMode.None);
             Time.timeScale = 1;
 
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
@@ -68,7 +68,7 @@
         public void LoadScene(string scene)
         {
             //show cursor and set timeScale to 1
-            LockMouse(CursorLockMode.None);
+            if (lockMouse) LockMouse(CursorLockMode.None);
             Time.timeScale = 1;
 
             //load new scene
@@ -81,7 +81,7 @@
         public void LoadNextScene()
         {
             //show cursor and set timeScale to 1
-            LockMouse(CursorLockMode.None);
+            if (lockMouse) LockMouse(CursorLockMode.None);
             Time.timeScale = 1;
 
             //load next scene
