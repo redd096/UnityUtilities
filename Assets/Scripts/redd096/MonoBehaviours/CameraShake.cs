@@ -69,7 +69,7 @@
 		{
 			//set start position if no shake is running
 			if (shakeCoroutine == null)
-				originalPos = transform.localPosition;
+				originalPos = camTransform.localPosition;
 
 			//do only if there is not another shake, or can overwrite it
 			if (shakeCoroutine == null || ovewriteShake)
