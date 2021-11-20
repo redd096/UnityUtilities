@@ -18,12 +18,12 @@ namespace redd096
     public class PathFindingAStar : MonoBehaviour
     {
         [Header("Default use Find Object of Type")]
-        [SerializeField] GridAStar grid = default;
+        public GridAStar Grid = default;
 
         void Awake()
         {
-            if (grid == null)
-                grid = FindObjectOfType<GridAStar>();
+            if (Grid == null)
+                Grid = FindObjectOfType<GridAStar>();
         }
 
         /// <summary>
@@ -69,14 +69,14 @@ namespace redd096
              */
 
             //be sure the grid is created
-            if (grid.IsGridCreated() == false)
-                grid.UpdateGrid();
+            if (Grid.IsGridCreated() == false)
+                Grid.UpdateGrid();
 
             //get nodes from world position
-            Node startNode = grid.NodeFromWorldPosition(startPosition);
-            Node targetNode = grid.NodeFromWorldPosition(targetPosition);
+            Node startNode = Grid.NodeFromWorldPosition(startPosition);
+            Node targetNode = Grid.NodeFromWorldPosition(targetPosition);
 
-            Heap<Node> openList = new Heap<Node>(grid.MaxSize);     //nodes to be evaluated
+            Heap<Node> openList = new Heap<Node>(Grid.MaxSize);     //nodes to be evaluated
             HashSet<Node> closedList = new HashSet<Node>();         //already evaluated
 
             //add the start node to OPEN
@@ -113,7 +113,7 @@ namespace redd096
                     return RetracePath(startNode, currentNode);
 
                 //foreach Neighbour of the Current node
-                foreach (Node neighbour in grid.GetNeighbours(currentNode))
+                foreach (Node neighbour in Grid.GetNeighbours(currentNode))
                 {
                     //if Neighbour is not walkable or is in CLOSED
                     if (!neighbour.isWalkable || closedList.Contains(neighbour))
@@ -169,7 +169,7 @@ namespace redd096
         /// </summary>
         public void UpdateGrid()
         {
-            grid.UpdateGrid();
+            Grid.UpdateGrid();
         }
 
         #region private API
