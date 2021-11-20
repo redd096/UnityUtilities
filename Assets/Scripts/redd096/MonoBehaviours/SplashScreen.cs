@@ -3,6 +3,10 @@
     using System.Collections;
     using UnityEngine;
     using UnityEngine.UI;
+    using UnityEngine.EventSystems;
+#if ENABLE_INPUT_SYSTEM
+    using UnityEngine.InputSystem.UI;
+#endif
 
     [AddComponentMenu("redd096/MonoBehaviours/Splash Screen")]
     public class SplashScreen : MonoBehaviour
@@ -29,6 +33,8 @@
         [Header("Load New Scene")]
         [SerializeField] string nextSceneName = "Main Scene";
 
+        EventSystem eventSystem;
+
         void Start()
         {
             //if image is null, stop here
@@ -36,6 +42,12 @@
             {
                 Debug.LogError("Missing Image UI");
                 return;
+            }
+
+            eventSystem = FindObjectOfType<EventSystem>();
+            if (eventSystem == null && pressToContinue)
+            {
+                Debug.LogError("Can't press to continue without an EventSystem in scene");
             }
 
             //start splash screen
@@ -71,8 +83,18 @@
                 //wait until press any key down
                 if (pressToContinue)
                 {
-                    while (!Input.anyKeyDown)
+                    while (true)
                     {
+                        if (
+                        (eventSystem.currentInputModule is StandaloneInputModule && Input.GetButtonDown(((StandaloneInputModule)eventSystem.currentInputModule).submitButton))      //old input system
+#if ENABLE_INPUT_SYSTEM
+                        || (eventSystem.currentInputModule is InputSystemUIInputModule && ((InputSystemUIInputModule)eventSystem.currentInputModule).cancel.action.triggered)       //new input system
+#endif
+                            )
+                        {
+                            break;
+                        }
+
                         yield return null;
                     }
                 }
