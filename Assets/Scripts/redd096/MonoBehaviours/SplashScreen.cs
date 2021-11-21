@@ -83,12 +83,17 @@
                 //wait until press any key down
                 if (pressToContinue)
                 {
+                    StandaloneInputModule standaloneInputModule = eventSystem.currentInputModule as StandaloneInputModule;
+#if ENABLE_INPUT_SYSTEM
+                    InputSystemUIInputModule inputSystemUIInputModule = eventSystem.currentInputModule as InputSystemUIInputModule;
+#endif
+
                     while (true)
                     {
-                        if (
-                        (eventSystem.currentInputModule is StandaloneInputModule && Input.GetButtonDown(((StandaloneInputModule)eventSystem.currentInputModule).submitButton))      //old input system
+                        //submit old input system or submit/click new input system
+                        if (standaloneInputModule && Input.GetButtonDown(standaloneInputModule.submitButton)
 #if ENABLE_INPUT_SYSTEM
-                        || (eventSystem.currentInputModule is InputSystemUIInputModule && ((InputSystemUIInputModule)eventSystem.currentInputModule).cancel.action.triggered)       //new input system
+                            || inputSystemUIInputModule && (inputSystemUIInputModule.submit.action.triggered || inputSystemUIInputModule.leftClick.action.triggered)
 #endif
                             )
                         {

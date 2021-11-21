@@ -365,6 +365,15 @@
             instance.Play(false, soundsOnClick, Vector2.zero);
         }
 
+        /// <summary>
+        /// Called by buttons in UI - play specific sound
+        /// </summary>
+        public void PlayOnClick(AudioClip sound)
+        {
+            //in instance, call Play 2D
+            instance.Play(false, sound, Vector2.zero);
+        }
+
         #endregion
     }
 }
