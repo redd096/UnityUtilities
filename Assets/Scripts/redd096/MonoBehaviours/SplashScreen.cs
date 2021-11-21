@@ -6,6 +6,7 @@
     using UnityEngine.EventSystems;
 #if ENABLE_INPUT_SYSTEM
     using UnityEngine.InputSystem.UI;
+    using UnityEngine.InputSystem;
 #endif
 
     [AddComponentMenu("redd096/MonoBehaviours/Splash Screen")]
@@ -93,7 +94,8 @@
                         //submit old input system or submit/click new input system
                         if (standaloneInputModule && Input.GetButtonDown(standaloneInputModule.submitButton)
 #if ENABLE_INPUT_SYSTEM
-                            || inputSystemUIInputModule && (inputSystemUIInputModule.submit.action.triggered || inputSystemUIInputModule.leftClick.action.triggered)
+                            || (inputSystemUIInputModule && (inputSystemUIInputModule.submit.action.triggered || inputSystemUIInputModule.leftClick.action.triggered))
+                            || (Keyboard.current != null && Keyboard.current.anyKey.wasPressedThisFrame)
 #endif
                             )
                         {
