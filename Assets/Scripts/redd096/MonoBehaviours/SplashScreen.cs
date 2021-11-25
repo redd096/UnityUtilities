@@ -96,6 +96,8 @@
 #if ENABLE_INPUT_SYSTEM
                             || (inputSystemUIInputModule && (inputSystemUIInputModule.submit.action.triggered || inputSystemUIInputModule.leftClick.action.triggered))
                             || (Keyboard.current != null && Keyboard.current.anyKey.wasPressedThisFrame)
+#else
+                            || Input.anyKeyDown
 #endif
                             )
                         {
