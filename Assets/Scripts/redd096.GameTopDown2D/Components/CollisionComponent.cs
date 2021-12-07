@@ -95,7 +95,7 @@ namespace redd096.GameTopDown2D
             }
         }
 
-		[Button]
+		[Button("Draw Collisions")]
 		void DrawCollisions()
 		{
 			//be sure drawDebug is true
@@ -111,10 +111,6 @@ namespace redd096.GameTopDown2D
 			//restore debug values
 			drawDebug = previousDraw;
 			drawDebugDuration = -1;
-
-#if UNITY_EDITOR
-			UnityEditor.SceneView.RepaintAll();
-#endif
 		}
 
 #region private API
