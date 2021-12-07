@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using redd096;
+using redd096.OLD;
 
-public class PlayerState : State
+public class PlayerState : redd096.OLD.State
 {
     protected Player player;
     protected Transform transform;
