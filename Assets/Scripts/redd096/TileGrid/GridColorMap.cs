@@ -1,6 +1,8 @@
-﻿namespace redd096
+﻿using UnityEngine;
+
+namespace redd096
 {
-    using UnityEngine;
+    #region editor
 
 #if UNITY_EDITOR
 
@@ -34,6 +36,8 @@
     }
 
 #endif
+
+    #endregion
 
     [AddComponentMenu("redd096/TileGrid/Grid Color Map")]
     public class GridColorMap : GridBase

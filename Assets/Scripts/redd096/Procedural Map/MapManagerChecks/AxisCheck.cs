@@ -1,7 +1,7 @@
-﻿namespace redd096
-{
-    using UnityEngine;
+﻿using UnityEngine;
 
+namespace redd096
+{
     enum Axis
     {
         X, Y, Z

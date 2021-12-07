@@ -1,7 +1,7 @@
-﻿namespace redd096
-{
-    using UnityEngine;
+﻿using UnityEngine;
 
+namespace redd096
+{
     public abstract class TileBase : MonoBehaviour
     {
         [Header("Debug")]

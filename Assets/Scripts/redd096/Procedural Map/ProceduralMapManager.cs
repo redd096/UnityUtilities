@@ -1,8 +1,10 @@
-﻿namespace redd096
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace redd096
 {
-    using System.Collections;
-    using System.Collections.Generic;
-    using UnityEngine;
+    #region editor
 
 #if UNITY_EDITOR
 
@@ -37,6 +39,8 @@
 
 #endif
 
+    #endregion
+
     //scriptable object class
     public abstract class ProceduralMapManagerCheck : ScriptableObject
     {
@@ -60,7 +64,7 @@
     }
 
     [AddComponentMenu("redd096/Procedural Map/Procedural Map Manager")]
-    public abstract class ProceduralMapManager : MonoBehaviour
+    public class ProceduralMapManager : MonoBehaviour
     {
         [Header("Setup")]
         [SerializeField] bool regenOnPlay = true;

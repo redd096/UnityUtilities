@@ -1,9 +1,9 @@
-﻿namespace redd096
-{
-    using System.Collections;
-    using System.Collections.Generic;
-    using UnityEngine;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
+namespace redd096
+{
     public enum TypeOfDoor
     {
         both, onlyEnter, onlyExit
@@ -24,7 +24,7 @@
 
     [AddComponentMenu("redd096/Procedural Map/Room")]
     [SelectionBase]
-    public abstract class Room : MonoBehaviour
+    public class Room : MonoBehaviour
     {
         #region variables
 

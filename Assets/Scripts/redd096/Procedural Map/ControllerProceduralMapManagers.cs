@@ -1,11 +1,11 @@
-﻿namespace redd096
-{
-    using System.Collections;
-    using System.Collections.Generic;
-    using UnityEngine;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
+namespace redd096
+{
     [AddComponentMenu("redd096/Procedural Map/Controller Procedural Map Managers")]
-    public abstract class ControllerProceduralMapManagers : MonoBehaviour
+    public class ControllerProceduralMapManagers : MonoBehaviour
     {
         [Header("Managers to activate in order")]
         [SerializeField] protected ProceduralMapManager[] mapManagers = default;
