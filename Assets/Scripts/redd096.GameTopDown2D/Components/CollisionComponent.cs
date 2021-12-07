@@ -113,7 +113,7 @@ namespace redd096.GameTopDown2D
 			drawDebugDuration = -1;
 		}
 
-#region private API
+		#region private API
 
 		bool CheckComponents()
 		{
@@ -229,9 +229,9 @@ namespace redd096.GameTopDown2D
 				Debug.DrawRay(originPoint, direction * distance, color);                        //else show at every update
 		}
 
-#endregion
+		#endregion
 
-#region public API
+		#region public API
 
 		/// <summary>
 		/// Update collisions
@@ -421,6 +421,6 @@ namespace redd096.GameTopDown2D
 			}
 		}
 
-#endregion
+		#endregion
 	}
 }

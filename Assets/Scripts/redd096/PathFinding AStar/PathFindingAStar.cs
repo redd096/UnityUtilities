@@ -9,11 +9,11 @@
 //cosa succede se si continua a chiamare ma qua la coroutine non finisce mai?
 //prima di far partire di nuovo la coroutine conviene aspettare che finisca quella precedente, anche se rimane indietro, e magari non ha le posizioni aggiornate?
 
+using System.Collections.Generic;
+using UnityEngine;
+
 namespace redd096
 {
-    using System.Collections.Generic;
-    using UnityEngine;
-
     [AddComponentMenu("redd096/Path Finding A Star/Path Finding A Star")]
     public class PathFindingAStar : MonoBehaviour
     {

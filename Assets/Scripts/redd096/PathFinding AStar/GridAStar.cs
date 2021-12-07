@@ -1,8 +1,8 @@
-﻿namespace redd096
-{
-    using System.Collections.Generic;
-    using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
+namespace redd096
+{
     #region unity editor
 
 #if UNITY_EDITOR

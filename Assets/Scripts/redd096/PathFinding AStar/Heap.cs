@@ -2,10 +2,10 @@
 //this is used to optimize PathFinding calculations
 //https://www.youtube.com/watch?v=3Dw5d7PlcTM&list=PLFt_AvWsXl0cq5Umv3pMC9SPnKjfp9eGW&index=4
 
+using System;
+
 namespace redd096
 {
-    using System;
-
     public class Heap<T> where T : IHeapItem<T>
     {
         T[] items;

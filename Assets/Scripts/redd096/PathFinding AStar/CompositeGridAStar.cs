@@ -1,8 +1,8 @@
-﻿namespace redd096
-{
-    using System.Collections.Generic;
-    using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
+namespace redd096
+{
     [AddComponentMenu("redd096/Path Finding A Star/Composite Grid A Star")]
     public class CompositeGridAStar : GridAStar
     {
@@ -28,9 +28,9 @@
         protected override bool IsWalkable(Vector3 worldPosition)
         {
             //check is walkable, only if inside one of the grids in the array
-            foreach(GridAStar gridAStar in gridsAStar)
+            foreach (GridAStar gridAStar in gridsAStar)
             {
-                if(gridAStar.IsInsideGrid(worldPosition))
+                if (gridAStar.IsInsideGrid(worldPosition))
                     return base.IsWalkable(worldPosition);
             }
 
@@ -84,7 +84,7 @@
             float down = (useZ ? gridAStar.GridWorldPosition.z : gridAStar.GridWorldPosition.y) - (gridAStar.GridWorldSize.y / 2);
 
             //check if update current points
-            if(left < leftCompositeGrid)
+            if (left < leftCompositeGrid)
                 leftCompositeGrid = left;
             if (right > rightCompositeGrid)
                 rightCompositeGrid = right;
@@ -97,7 +97,7 @@
         void UpdateGridWorldSize()
         {
             //set world center of the grid
-            gridWorldPosition = 
+            gridWorldPosition =
                 Vector3.right * (rightCompositeGrid - (rightCompositeGrid - leftCompositeGrid) * 0.5f)                              //x
                 + (useZ ? Vector3.forward : Vector3.up) * (upCompositeGrid - (upCompositeGrid - downCompositeGrid) * 0.5f);         //z or y
 
