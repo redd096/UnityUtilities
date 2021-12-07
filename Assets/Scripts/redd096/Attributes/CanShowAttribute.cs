@@ -1,6 +1,7 @@
-﻿namespace redd096
+﻿using UnityEngine;
+
+namespace redd096.Attributes
 {
-    using UnityEngine;
 
 #if UNITY_EDITOR
 
@@ -39,7 +40,7 @@
             //foreach value to check
             foreach (string value in canShowAttribute.values)
             {
-                bool check = property.serializedObject.FindProperty(value).boolValue;
+                bool check = property.FindPropertyRelative(value).boolValue;
 
                 //use NOT
                 if (canShowAttribute.NOT)

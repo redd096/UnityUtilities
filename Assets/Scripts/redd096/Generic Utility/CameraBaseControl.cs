@@ -1,8 +1,8 @@
-﻿namespace redd096
-{
-    using System.Collections;
-    using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
+namespace redd096
+{
     [System.Serializable]
     public class CameraBaseControl
     {

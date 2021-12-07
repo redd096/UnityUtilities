@@ -1,14 +1,14 @@
-﻿namespace redd096
-{
-    using System.Collections;
-    using UnityEngine;
-    using UnityEngine.UI;
-    using UnityEngine.EventSystems;
+﻿using System.Collections;
+using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
 #if ENABLE_INPUT_SYSTEM
-    using UnityEngine.InputSystem.UI;
-    using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.UI;
+using UnityEngine.InputSystem;
 #endif
 
+namespace redd096
+{
     [AddComponentMenu("redd096/MonoBehaviours/Splash Screen")]
     public class SplashScreen : MonoBehaviour
     {

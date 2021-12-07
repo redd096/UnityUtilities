@@ -1,9 +1,9 @@
-﻿namespace redd096
-{
-    using System.Collections;
-    using System.Collections.Generic;
-    using UnityEngine;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
+namespace redd096
+{
     [System.Serializable]
     public struct InstantiatedGameObjectStruct
     {

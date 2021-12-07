@@ -1,9 +1,9 @@
-﻿namespace redd096
-{
-    using UnityEngine;
-    using System.Collections;
-    using System.Collections.Generic;
+﻿using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
 
+namespace redd096
+{
     #region classes
 
     [System.Serializable]
@@ -45,9 +45,14 @@
 
         //sound parent (instantiate if null)
         private Transform soundsParent;
-        Transform SoundsParent { get {
+        Transform SoundsParent
+        {
+            get
+            {
                 if (soundsParent == null) { soundsParent = new GameObject("Sounds Parent").transform; }
-                return soundsParent; } }
+                return soundsParent;
+            }
+        }
 
         //audio sources in scene
         AudioSource musicBackgroundAudioSource;

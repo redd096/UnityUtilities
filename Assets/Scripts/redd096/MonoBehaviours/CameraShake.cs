@@ -1,8 +1,8 @@
-﻿namespace redd096
-{
-	using System.Collections;
-	using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
+namespace redd096
+{
 	[AddComponentMenu("redd096/MonoBehaviours/Camera Shake")]
 	public class CameraShake : MonoBehaviour
 	{
@@ -16,7 +16,7 @@
 		[Tooltip("Amplitude of the shake. A larger value shakes the camera harder")] [SerializeField] float shakeAmount = 0.7f;
 
 		[Header("Overwrite - start shake also if another is running")]
-		[Tooltip("If another shake is already running, stop it and start new one")] [SerializeField] bool ovewriteShake = true;
+		[Tooltip("If another shake is already running, stop it and start new one")] [SerializeField] bool overwriteShake = true;
 
 		Coroutine shakeCoroutine;
 		Vector3 originalPos;
@@ -41,23 +41,28 @@
 			//shake
 			while (shake > Time.time && Time.timeScale > 0)
 			{
+				//stop if there is no camera
+				if (camTransform == null)
+					break;
+
 				camTransform.localPosition = originalPos + Random.insideUnitSphere * amount;
 
 				yield return null;
 			}
 
 			//then reset to original position
-			camTransform.localPosition = originalPos;
+			if (camTransform)
+				camTransform.localPosition = originalPos;
 
 			shakeCoroutine = null;
 		}
 
-        #region public API
+		#region public API
 
 		/// <summary>
 		/// Start shake, using variables in inspector
 		/// </summary>
-        public void StartShake()
+		public void StartShake()
 		{
 			StartShake(shakeDuration, shakeAmount);
 		}
@@ -68,11 +73,11 @@
 		public void StartShake(float duration, float amount)
 		{
 			//set start position if no shake is running
-			if (shakeCoroutine == null)
+			if (shakeCoroutine == null && camTransform)
 				originalPos = camTransform.localPosition;
 
 			//do only if there is not another shake, or can overwrite it
-			if (shakeCoroutine == null || ovewriteShake)
+			if (shakeCoroutine == null || overwriteShake)
 			{
 				//start or restart shake coroutine
 				if (shakeCoroutine != null)
@@ -82,6 +87,6 @@
 			}
 		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

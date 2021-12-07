@@ -1,8 +1,8 @@
-﻿namespace redd096
-{
-    using System.Collections.Generic;
-    using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
+namespace redd096
+{
     [AddComponentMenu("redd096/Singletons/Particles Manager")]
     public class ParticlesManager : Singleton<ParticlesManager>
     {

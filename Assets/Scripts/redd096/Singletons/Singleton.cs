@@ -1,7 +1,7 @@
-﻿namespace redd096
-{
-    using UnityEngine;
+﻿using UnityEngine;
 
+namespace redd096
+{
     [DefaultExecutionOrder(-10)]
     public class Singleton<T> : MonoBehaviour where T : Singleton<T>
     {

@@ -1,7 +1,7 @@
-﻿namespace redd096
-{
-    using UnityEngine;
+﻿using UnityEngine;
 
+namespace redd096
+{
     public abstract class StateMachine : MonoBehaviour
     {
         protected State state;

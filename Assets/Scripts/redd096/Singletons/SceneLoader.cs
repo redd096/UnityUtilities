@@ -1,8 +1,8 @@
-﻿namespace redd096
-{
-    using UnityEngine;
-    using UnityEngine.SceneManagement;
+﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
+namespace redd096
+{
     [AddComponentMenu("redd096/Singletons/Scene Loader")]
     public class SceneLoader : Singleton<SceneLoader>
     {

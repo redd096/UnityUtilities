@@ -1,8 +1,8 @@
-﻿namespace redd096
-{
-    using UnityEngine;
-    using UnityEngine.InputSystem;
+﻿using UnityEngine;
+using UnityEngine.InputSystem;
 
+namespace redd096
+{
     [AddComponentMenu("redd096/Singletons/Input Manager redd096")]
     public class InputManagerRedd096 : Singleton<InputManagerRedd096>
     {

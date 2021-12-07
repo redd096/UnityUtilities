@@ -1,8 +1,7 @@
-﻿namespace redd096
+﻿using UnityEngine;
+using UnityEditor;
+namespace redd096
 {
-    using UnityEngine;
-    using UnityEditor;
-
     public class WindowParseCSV : EditorWindow
     {
         Vector2 scrollPosition = Vector2.zero;

@@ -1,9 +1,9 @@
-﻿namespace redd096
-{
-    using System.Collections;
-    using UnityEngine;
-    using UnityEngine.UI;
+﻿using System.Collections;
+using UnityEngine;
+using UnityEngine.UI;
 
+namespace redd096
+{
     public static class StaticUtilitySingleton
     {
         #region write letter by letter

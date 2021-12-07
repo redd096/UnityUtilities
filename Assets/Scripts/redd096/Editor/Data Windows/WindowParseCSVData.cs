@@ -1,11 +1,11 @@
-﻿namespace redd096
-{
-	using System;
-	using System.Collections.Generic;
-	using UnityEngine;
-	using UnityEditor;
-	using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEditor;
+using System.IO;
 
+namespace redd096
+{
 	public class WindowParseCSVData : ScriptableObject
 	{
 		const string DATANAME = "Window Parse CSV Data.asset";

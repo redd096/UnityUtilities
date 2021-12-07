@@ -1,9 +1,9 @@
-﻿namespace redd096
-{
-    using UnityEngine;
-    using UnityEngine.UI;
-    using UnityEngine.EventSystems;
+﻿using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
+namespace redd096
+{
     [AddComponentMenu("redd096/UI Control/Event Trigger redd096")]
     public class EventTriggerRedd096 : EventTrigger
     {

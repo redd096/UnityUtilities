@@ -1,7 +1,7 @@
-﻿namespace redd096
-{
-    using UnityEngine;
+﻿using UnityEngine;
 
+namespace redd096
+{
     [AddComponentMenu("redd096/Singletons/Game Manager")]
     [DefaultExecutionOrder(-100)]
     public class GameManager : Singleton<GameManager>

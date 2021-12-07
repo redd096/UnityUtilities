@@ -1,9 +1,9 @@
-﻿namespace redd096
-{
-    using UnityEngine;
-    using System.IO;
-    using System.Runtime.Serialization.Formatters.Binary;
+﻿using UnityEngine;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
+namespace redd096
+{
     #region custom editor
 
 #if UNITY_EDITOR

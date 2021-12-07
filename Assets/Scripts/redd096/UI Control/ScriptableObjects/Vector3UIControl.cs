@@ -1,7 +1,7 @@
-﻿namespace redd096
-{
-    using UnityEngine;
+﻿using UnityEngine;
 
+namespace redd096
+{
     [CreateAssetMenu(fileName = "Vector3", menuName = "redd096/UIControl/Vector3")]
     public class Vector3UIControl : ScriptableObject
     {

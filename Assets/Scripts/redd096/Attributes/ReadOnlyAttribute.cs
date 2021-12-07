@@ -1,6 +1,7 @@
-﻿namespace redd096
+﻿using UnityEngine;
+
+namespace redd096.Attributes
 {
-    using UnityEngine;
 
 #if UNITY_EDITOR
 

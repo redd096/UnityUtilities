@@ -1,8 +1,8 @@
-﻿namespace redd096
-{
-    using UnityEngine;
-    using UnityEngine.UI;
+﻿using UnityEngine;
+using UnityEngine.UI;
 
+namespace redd096
+{
     [AddComponentMenu("redd096/MonoBehaviours/UI Manager")]
     public class UIManager : MonoBehaviour
     {
@@ -16,6 +16,8 @@
             PauseMenu(false);
             EndMenu(false);
         }
+
+        #region menu
 
         public void PauseMenu(bool active)
         {
@@ -42,5 +44,7 @@
             //active or deactive pause menu
             endMenu.SetActive(active);
         }
+
+        #endregion
     }
 }

@@ -1,12 +1,12 @@
-﻿namespace redd096
-{
-    using System.Collections.Generic;
-    using UnityEngine;
-    using UnityEngine.EventSystems;
+﻿using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.EventSystems;
 #if ENABLE_INPUT_SYSTEM
-    using UnityEngine.InputSystem.UI;
+using UnityEngine.InputSystem.UI;
 #endif
 
+namespace redd096
+{
     [AddComponentMenu("redd096/UI Control/Event System redd096")]
     public class EventSystemRedd096 : EventSystem
     {

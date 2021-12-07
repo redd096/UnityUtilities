@@ -1,8 +1,8 @@
-﻿namespace redd096
-{
-    using UnityEngine;
-    using UnityEngine.Events;
+﻿using UnityEngine;
+using UnityEngine.Events;
 
+namespace redd096
+{
     [AddComponentMenu("redd096/MonoBehaviours/Event Listener")]
     public class EventListener : MonoBehaviour
     {

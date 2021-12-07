@@ -1,7 +1,7 @@
-﻿namespace redd096
-{
-    using UnityEngine;
+﻿using UnityEngine;
 
+namespace redd096
+{
     [CreateAssetMenu(fileName = "Color", menuName = "redd096/UIControl/Color")]
     public class ColorValue : ScriptableObject
     {

@@ -1,7 +1,7 @@
-﻿namespace redd096
-{
-    using UnityEngine;
+﻿using UnityEngine;
 
+namespace redd096
+{
     [AddComponentMenu("redd096/MonoBehaviours/Look Camera")]
     public class LookCamera : MonoBehaviour
     {

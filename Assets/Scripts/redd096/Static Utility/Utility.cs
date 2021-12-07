@@ -1,9 +1,9 @@
-﻿namespace redd096
-{
-    using System.Collections.Generic;
-    using UnityEngine;
-    using UnityEngine.UI;
+﻿using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
 
+namespace redd096
+{
     public static class Utility
     {
         #region general

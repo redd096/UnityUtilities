@@ -1,6 +1,7 @@
-﻿namespace redd096
+﻿using UnityEngine;
+
+namespace redd096.Attributes
 {
-    using UnityEngine;
 
 #if UNITY_EDITOR
 
@@ -36,7 +37,7 @@
         {
             ShowIfAttribute showIf = attribute as ShowIfAttribute;
 
-            SerializedProperty comparedProperty = property.serializedObject.FindProperty(showIf.propertyA);
+            SerializedProperty comparedProperty = property.FindPropertyRelative(showIf.propertyA);
 
             //compare property based on propertyType
             if (comparedProperty.propertyType == SerializedPropertyType.Boolean)
