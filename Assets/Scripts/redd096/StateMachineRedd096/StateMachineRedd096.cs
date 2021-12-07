@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 //using NaughtyAttributes;
+using redd096.Attributes;
 
 namespace redd096
 {
@@ -29,13 +30,10 @@ namespace redd096
     [AddComponentMenu("redd096/StateMachineRedd096/State Machine redd096")]
     public class StateMachineRedd096 : MonoBehaviour
     {
-        //[ReorderableList] 
-        public State[] States = default;
+        /*[ReorderableList]*/ public State[] States = default;
 
-        //[BoxGroup("DEBUG")] [ReadOnly] 
-        public State CurrentState = default;
-        //[BoxGroup("DEBUG")] [ReadOnly] 
-        [SerializeField] List<string> blackboardDebug = new List<string>();
+        /*[BoxGroup("DEBUG")]*/ [ReadOnly] public State CurrentState = default;
+        /*[BoxGroup("DEBUG")]*/ [ReadOnly] [SerializeField] List<string> blackboardDebug = new List<string>();
 
         //blackboard to save vars to use in differents tasks
         Dictionary<string, object> blackboard = new Dictionary<string, object>();

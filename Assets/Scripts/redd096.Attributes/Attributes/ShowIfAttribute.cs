@@ -10,6 +10,9 @@ namespace redd096.Attributes
     [CustomPropertyDrawer(typeof(ShowIfAttribute))]
     public class ShowIfAttributeDrawer : PropertyDrawer
     {
+        //used to compare float
+        float floatingPoint = 0.05f;
+
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
             //update height only if can show (to hide space where there are hidden variables) - necessary also to update height when open a list/array/struct in inspector
@@ -37,15 +40,17 @@ namespace redd096.Attributes
         {
             ShowIfAttribute showIf = attribute as ShowIfAttribute;
 
-            SerializedProperty comparedProperty = property.FindPropertyRelative(showIf.propertyA);
+            SerializedProperty comparedProperty = property.serializedObject.FindProperty(showIf.propertyA);
 
             //compare property based on propertyType
             if (comparedProperty.propertyType == SerializedPropertyType.Boolean)
                 return CompareBool(showIf, comparedProperty.boolValue);
             else if (comparedProperty.propertyType == SerializedPropertyType.Enum)
                 return CompareInt(showIf, comparedProperty.enumValueIndex);
-            else if(comparedProperty.propertyType == SerializedPropertyType.Integer)
+            else if (comparedProperty.propertyType == SerializedPropertyType.Integer)
                 return CompareInt(showIf, comparedProperty.intValue);
+            else if (comparedProperty.propertyType == SerializedPropertyType.Float)
+                return CompareFloat(showIf, comparedProperty.floatValue);
 
             return false;
         }
@@ -81,6 +86,28 @@ namespace redd096.Attributes
                     return comparedProperty <= (int)showIf.valueToCompare;
                 default:
                     return comparedProperty == (int)showIf.valueToCompare;
+            }
+        }
+
+        bool CompareFloat(ShowIfAttribute showIf, float comparedProperty)
+        {
+            //compare property A and value
+            switch (showIf.comparisonType)
+            {
+                case ShowIfAttribute.EComparisonType.isEqual:
+                    return Mathf.Abs(comparedProperty - (float)showIf.valueToCompare) <= floatingPoint;
+                case ShowIfAttribute.EComparisonType.isNotEqual:
+                    return comparedProperty != (float)showIf.valueToCompare;
+                case ShowIfAttribute.EComparisonType.isGreater:
+                    return comparedProperty > (float)showIf.valueToCompare;
+                case ShowIfAttribute.EComparisonType.isGreaterEqual:
+                    return comparedProperty >= (float)showIf.valueToCompare;
+                case ShowIfAttribute.EComparisonType.isLower:
+                    return comparedProperty < (float)showIf.valueToCompare;
+                case ShowIfAttribute.EComparisonType.isLowerEqual:
+                    return comparedProperty <= (float)showIf.valueToCompare;
+                default:
+                    return Mathf.Abs(comparedProperty - (float)showIf.valueToCompare) <= floatingPoint;
             }
         }
 

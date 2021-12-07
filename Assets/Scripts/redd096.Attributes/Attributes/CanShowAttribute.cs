@@ -2,6 +2,7 @@
 
 namespace redd096.Attributes
 {
+    #region editor
 
 #if UNITY_EDITOR
 
@@ -40,7 +41,7 @@ namespace redd096.Attributes
             //foreach value to check
             foreach (string value in canShowAttribute.values)
             {
-                bool check = property.FindPropertyRelative(value).boolValue;
+                bool check = property.serializedObject.FindProperty(value).boolValue;
 
                 //use NOT
                 if (canShowAttribute.NOT)
@@ -66,6 +67,8 @@ namespace redd096.Attributes
     }
 
 #endif
+
+    #endregion
 
     //attribute
     public class CanShowAttribute : PropertyAttribute
