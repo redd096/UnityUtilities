@@ -8,59 +8,55 @@ namespace redd096.Attributes
 
     using UnityEditor;
 
-    [CustomPropertyDrawer(typeof(CanShowAttribute))]
-    public class CanShowDrawer : PropertyDrawer
+    [CustomPropertyDrawer(typeof(CanEnableAttribute))]
+    public class CanEnableDrawer : PropertyDrawer
     {
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
-            //update height only if can show (to hide space where there are hidden variables) - necessary also to update height when open a list/array/struct in inspector
-            if (CanShow(property))
-            {
-                return EditorGUI.GetPropertyHeight(property, label, true);
-            }
-
-            //else hide space
-            return 0;
+            //update height when open a list/array/struct in inspector
+            return EditorGUI.GetPropertyHeight(property, label, true);
         }
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            //show only if CanShow return true
-            if (CanShow(property))
-            {
-                EditorGUI.PropertyField(position, property, label, true);
-            }
+            //disable GUI for this property if CanEnable is false
+            GUI.enabled = CanEnable(property);
+
+            EditorGUI.PropertyField(position, property, label, true);
+
+            //re-enable GUI
+            GUI.enabled = true;
         }
 
         #region private API
 
-        bool CanShow(SerializedProperty property)
+        bool CanEnable(SerializedProperty property)
         {
-            CanShowAttribute canShowAttribute = attribute as CanShowAttribute;
+            CanEnableAttribute canEnableAttribute = attribute as CanEnableAttribute;
 
             //foreach value to check
-            foreach (string value in canShowAttribute.values)
+            foreach (string value in canEnableAttribute.values)
             {
                 bool check = property.serializedObject.FindProperty(value).boolValue;
 
                 //use NOT
-                if (canShowAttribute.NOT)
+                if (canEnableAttribute.NOT)
                     check = !check;
 
                 //if checkAND, when find one false, return false
-                if (canShowAttribute.checkAND && !check)
+                if (canEnableAttribute.checkAND && !check)
                 {
                     return false;
                 }
                 //if checkOR, when find one true, return true
-                else if (!canShowAttribute.checkAND && check)
+                else if (!canEnableAttribute.checkAND && check)
                 {
                     return true;
                 }
             }
 
             //else return checkAND, cause it mean every value is true if checkAND, or every value is false if checkOR
-            return canShowAttribute.checkAND;
+            return canEnableAttribute.checkAND;
         }
 
         #endregion
@@ -71,7 +67,7 @@ namespace redd096.Attributes
     #endregion
 
     //attribute
-    public class CanShowAttribute : PropertyAttribute
+    public class CanEnableAttribute : PropertyAttribute
     {
         /// <summary>
         /// check every value as AND or as OR (default is true)
@@ -86,10 +82,10 @@ namespace redd096.Attributes
         public readonly string[] values;
 
         /// <summary>
-        /// Attribute to show variable only if specific values are true
+        /// Attribute to show writable variable only if specific values are true
         /// </summary>
         /// <param name="values">the values to determine if show or not</param>
-        public CanShowAttribute(params string[] values)
+        public CanEnableAttribute(params string[] values)
         {
             this.values = values;
         }

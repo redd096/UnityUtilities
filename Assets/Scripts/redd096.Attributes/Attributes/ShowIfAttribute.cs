@@ -2,13 +2,14 @@
 
 namespace redd096.Attributes
 {
+    #region editor
 
 #if UNITY_EDITOR
 
     using UnityEditor;
 
     [CustomPropertyDrawer(typeof(ShowIfAttribute))]
-    public class ShowIfAttributeDrawer : PropertyDrawer
+    public class ShowIfDrawer : PropertyDrawer
     {
         //used to compare float
         float floatingPoint = 0.05f;
@@ -116,11 +117,13 @@ namespace redd096.Attributes
 
 #endif
 
+    #endregion
+
     //attribute
     public class ShowIfAttribute : PropertyAttribute
     {
         /// <summary>
-        /// How to compare variables
+        /// How to compare variables (default is Equal)
         /// </summary>
         public EComparisonType comparisonType = EComparisonType.isEqual;
 
