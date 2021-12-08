@@ -14,7 +14,7 @@ namespace redd096.GameTopDown2D
 
 		[Header("Check Raycasts")]
 		[Tooltip("Check collisions on Update or FixedUpdate?")] [SerializeField] EUpdateModes updateMode = EUpdateModes.Coroutine;
-		[Tooltip("Delay between updates using Coroutine method")] [ShowIf("updateMode", EUpdateModes.Coroutine)] [SerializeField] float timeCoroutine = 0.1f;
+		[Tooltip("Delay between updates using Coroutine method")] [EnableIf("updateMode", EUpdateModes.Coroutine)] [SerializeField] float timeCoroutine = 0.1f;
 		[Tooltip("Number of rays cast for every side horizontally")] [SerializeField] int numberOfHorizontalRays = 4;
 		[Tooltip("Number of rays cast for every side vertically")] [SerializeField] int numberOfVerticalRays = 4;
 		[Tooltip("A small value to accomodate for edge cases")] [SerializeField] float offsetRays = 0.01f;

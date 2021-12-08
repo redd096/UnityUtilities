@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using redd096.Attributes;
 
 namespace redd096.GameTopDown2D
 {
@@ -10,10 +11,10 @@ namespace redd096.GameTopDown2D
         [SerializeField] bool isActive = true;
 
         [Header("Damage")]
-        [SerializeField] List<Character.ECharacterType> charactersToHit = new List<Character.ECharacterType>() { Character.ECharacterType.Player };
-        [SerializeField] float damage = 10;
-        [SerializeField] float pushForce = 10;
-        [Tooltip("Necessary for on collision stay, to not call damage every frame")] [SerializeField] float delayBetweenAttacks = 1;
+        [CanEnable("isActive")] [SerializeField] List<Character.ECharacterType> charactersToHit = new List<Character.ECharacterType>() { Character.ECharacterType.Player };
+        [CanEnable("isActive")] [SerializeField] float damage = 10;
+        [CanEnable("isActive")] [SerializeField] float pushForce = 10;
+        [Tooltip("Necessary for on collision stay, to not call damage every frame")] [CanEnable("isActive")] [SerializeField] float delayBetweenAttacks = 1;
 
         //events
         public System.Action onHit { get; set; }

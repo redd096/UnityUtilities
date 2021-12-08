@@ -13,7 +13,7 @@ namespace redd096.GameTopDown2D
 
 		[Header("Find Interactables")]
 		[Tooltip("Find interactables on Update or FixedUpdate?")] [SerializeField] EUpdateModes updateMode = EUpdateModes.Coroutine;
-		[Tooltip("Delay between updates using Coroutine method")] [ShowIf("updateMode", EUpdateModes.Coroutine)] [SerializeField] float timeCoroutine = 0.1f;
+		[Tooltip("Delay between updates using Coroutine method")] [EnableIf("updateMode", EUpdateModes.Coroutine)] [SerializeField] float timeCoroutine = 0.1f;
 		[Tooltip("Area to check for interactables")] [SerializeField] float radiusInteract = 1.5f;
 		[Tooltip("Ignore interactables with this layer")] [SerializeField] LayerMask layersToIgnore = default;
 

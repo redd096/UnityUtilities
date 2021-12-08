@@ -13,7 +13,7 @@ namespace redd096.GameTopDown2D
         [Header("Destroy Weapon On Death (necessary HealthComponent - default get from this gameObject)")]
         [SerializeField] bool dropWeaponOnDeath = true;
         [SerializeField] bool destroyWeaponOnDeath = true;
-        [ShowIf("destroyWeaponOnDeath", true)] [SerializeField] HealthComponent healthComponent;
+        [CanEnable("dropWeaponOnDeath", "destroyWeaponOnDeath", checkAND = false)] [SerializeField] HealthComponent healthComponent;
 
         [Header("DEBUG")]
         [ReadOnly] public WeaponBASE CurrentWeapon = default;
