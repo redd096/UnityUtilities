@@ -14,16 +14,16 @@ using UnityEngine;
 
 namespace redd096
 {
-    [AddComponentMenu("redd096/Path Finding A Star/Path Finding A Star")]
-    public class PathFindingAStar : MonoBehaviour
+    [AddComponentMenu("redd096/Path Finding A Star/Path Finding A Star 2D")]
+    public class PathFindingAStar2D : MonoBehaviour
     {
         [Header("Default use Find Object of Type")]
-        public GridAStar Grid = default;
+        public GridAStar2D Grid = default;
 
         void Awake()
         {
             if (Grid == null)
-                Grid = FindObjectOfType<GridAStar>();
+                Grid = FindObjectOfType<GridAStar2D>();
         }
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace redd096
         /// <param name="targetPosition"></param>
         /// <param name="returnNearestPointToTarget">if no path to target position, return path to nearest point</param>
         /// <returns></returns>
-        public List<Node> FindPath(Vector3 startPosition, Vector3 targetPosition, bool returnNearestPointToTarget = true)
+        public List<Node2D> FindPath(Vector2 startPosition, Vector2 targetPosition, bool returnNearestPointToTarget = true)
         {
             /*
              * OPEN - the set of nodes to be evaluated
@@ -73,11 +73,11 @@ namespace redd096
                 Grid.UpdateGrid();
 
             //get nodes from world position
-            Node startNode = Grid.NodeFromWorldPosition(startPosition);
-            Node targetNode = Grid.NodeFromWorldPosition(targetPosition);
+            Node2D startNode = Grid.NodeFromWorldPosition(startPosition);
+            Node2D targetNode = Grid.NodeFromWorldPosition(targetPosition);
 
-            Heap<Node> openList = new Heap<Node>(Grid.MaxSize);     //nodes to be evaluated
-            HashSet<Node> closedList = new HashSet<Node>();         //already evaluated
+            Heap2D<Node2D> openList = new Heap2D<Node2D>(Grid.MaxSize);     //nodes to be evaluated
+            HashSet<Node2D> closedList = new HashSet<Node2D>();             //already evaluated
 
             //add the start node to OPEN
             openList.Add(startNode);
@@ -87,7 +87,7 @@ namespace redd096
                 #region before heap optimization
                 /*
                 //Current = node in OPEN with the lowest F cost
-                Node currentNode = openList[0];
+                Node2D currentNode = openList[0];
                 for (int i = 1; i < openList.Count; i++)
                 {
                     //if F cost is lower or is the same but H cost is lower
@@ -105,7 +105,7 @@ namespace redd096
 
                 //Current = node in OPEN with the lowest F cost
                 //remove Current from OPEN and add to CLOSED
-                Node currentNode = openList.RemoveFirst();      //all optimized with heap
+                Node2D currentNode = openList.RemoveFirst();                //all optimized with heap
                 closedList.Add(currentNode);
 
                 //path has been found, return it
@@ -113,7 +113,7 @@ namespace redd096
                     return RetracePath(startNode, currentNode);
 
                 //foreach Neighbour of the Current node
-                foreach (Node neighbour in Grid.GetNeighbours(currentNode))
+                foreach (Node2D neighbour in Grid.GetNeighbours(currentNode))
                 {
                     //if Neighbour is not walkable or is in CLOSED
                     if (!neighbour.isWalkable || closedList.Contains(neighbour))
@@ -146,8 +146,8 @@ namespace redd096
                 startNode.hCost = GetDistance(startNode, targetNode);
 
                 //find the walkable node nearest to target point
-                Node nearestNode = startNode;
-                foreach (Node node in closedList)
+                Node2D nearestNode = startNode;
+                foreach (Node2D node in closedList)
                 {
                     if (node.isWalkable && node.hCost < nearestNode.hCost)  //if walkable and nearest to target point
                     {
@@ -177,7 +177,7 @@ namespace redd096
         /// <summary>
         /// Calculate distance between 2 nodes
         /// </summary>
-        int GetDistance(Node nodeA, Node nodeB)
+        int GetDistance(Node2D nodeA, Node2D nodeB)
         {
             /* 
              * 
@@ -212,12 +212,12 @@ namespace redd096
         /// <summary>
         /// Retrace path from start to end
         /// </summary>
-        List<Node> RetracePath(Node startNode, Node endNode)
+        List<Node2D> RetracePath(Node2D startNode, Node2D endNode)
         {
-            List<Node> path = new List<Node>();
+            List<Node2D> path = new List<Node2D>();
 
             //start from end waypoint
-            Node currentNode = endNode;
+            Node2D currentNode = endNode;
 
             //while not reached start waypoint
             while (currentNode != startNode)

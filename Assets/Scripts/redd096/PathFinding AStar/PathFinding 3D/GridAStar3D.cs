@@ -9,14 +9,14 @@ namespace redd096
 
     using UnityEditor;
 
-    [CustomEditor(typeof(GridAStar), true)]
-    public class GridAStarEditor : Editor
+    [CustomEditor(typeof(GridAStar3D), true)]
+    public class GridAStar3DEditor : Editor
     {
-        private GridAStar gridAStar;
+        private GridAStar3D gridAStar;
 
         private void OnEnable()
         {
-            gridAStar = target as GridAStar;
+            gridAStar = target as GridAStar3D;
         }
 
         public override void OnInspectorGUI()
@@ -41,13 +41,10 @@ namespace redd096
 
     #endregion
 
-    [AddComponentMenu("redd096/Path Finding A Star/Grid A Star")]
-    public class GridAStar : MonoBehaviour
+    [AddComponentMenu("redd096/Path Finding A Star/Grid A Star 3D")]
+    public class GridAStar3D : MonoBehaviour
     {
         #region variables
-
-        [Header("Use Z instead of Y")]
-        [SerializeField] protected bool useZ = true;
 
         [Header("Layer Mask Unwalkable")]
         [SerializeField] protected LayerMask unwalkableMask = default;
@@ -62,7 +59,7 @@ namespace redd096
         [SerializeField] protected float alphaNodes = 0.3f;
 
         //grid
-        Node[,] grid;
+        Node3D[,] grid;
 
         float nodeRadius;
         float overlapRadius;
@@ -92,15 +89,12 @@ namespace redd096
         {
             //draw area
             Gizmos.color = Color.cyan;
-            if (useZ)
-                Gizmos.DrawWireCube(GridWorldPosition, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));      //use z
-            else
-                Gizmos.DrawWireCube(GridWorldPosition, new Vector3(gridWorldSize.x, gridWorldSize.y, 1));      //or y
+            Gizmos.DrawWireCube(GridWorldPosition, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));
 
             //draw every node in grid
             if (grid != null)
             {
-                foreach (Node node in grid)
+                foreach (Node3D node in grid)
                 {
                     //set color if walkable or not
                     Gizmos.color = new Color(1, 1, 1, alphaNodes) * (node.isWalkable ? Color.green : Color.red);
@@ -126,10 +120,8 @@ namespace redd096
         void CreateGrid()
         {
             //reset grid and find bottom left world position
-            grid = new Node[gridSize.x, gridSize.y];
-            Vector3 worldBottomLeft = useZ ?
-                GridWorldPosition + (Vector3.left * gridWorldSize.x / 2) + (Vector3.back * gridWorldSize.y / 2) :      //use z
-                GridWorldPosition + (Vector3.left * gridWorldSize.x / 2) + (Vector3.down * gridWorldSize.y / 2);       //or y
+            grid = new Node3D[gridSize.x, gridSize.y];
+            Vector3 worldBottomLeft = GridWorldPosition + (Vector3.left * gridWorldSize.x / 2) + (Vector3.back * gridWorldSize.y / 2);
 
             //create grid
             for (int x = 0; x < gridSize.x; x++)
@@ -137,21 +129,18 @@ namespace redd096
                 for (int y = 0; y < gridSize.y; y++)
                 {
                     //find world position and if walkable
-                    Vector3 worldPosition = useZ ?
-                        worldBottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.forward * (y * nodeDiameter + nodeRadius) :     //use z
-                        worldBottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.up * (y * nodeDiameter + nodeRadius);           //or y
+                    Vector3 worldPosition = worldBottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.forward * (y * nodeDiameter + nodeRadius);
 
                     //set new node in grid
-                    grid[x, y] = new Node(IsWalkable(worldPosition), worldPosition, x, y);
+                    grid[x, y] = new Node3D(IsWalkable(worldPosition), worldPosition, x, y);
                 }
             }
         }
 
         protected virtual bool IsWalkable(Vector3 worldPosition)
         {
-            return useZ ?
-                gameObject.scene.GetPhysicsScene().OverlapSphere(worldPosition, overlapRadius, new Collider[1], unwalkableMask, QueryTriggerInteraction.UseGlobal) <= 0 :   //use 3d (z)
-                gameObject.scene.GetPhysicsScene2D().OverlapCircle(worldPosition, overlapRadius, unwalkableMask) == false;                                                  //or 2d (y)
+            //overlap sphere
+            return gameObject.scene.GetPhysicsScene().OverlapSphere(worldPosition, overlapRadius, new Collider[1], unwalkableMask, QueryTriggerInteraction.UseGlobal) <= 0;
         }
 
         #endregion
@@ -164,9 +153,9 @@ namespace redd096
             return grid != null;
         }
 
-        public List<Node> GetNeighbours(Node node)
+        public List<Node3D> GetNeighbours(Node3D node)
         {
-            List<Node> neighbours = new List<Node>();
+            List<Node3D> neighbours = new List<Node3D>();
 
             for (int x = -1; x <= 1; x++)
             {
@@ -191,16 +180,14 @@ namespace redd096
             return neighbours;
         }
 
-        public Node NodeFromWorldPosition(Vector3 worldPosition)
+        public Node3D NodeFromWorldPosition(Vector3 worldPosition)
         {
             //be sure to get right result also if grid doesn't start at [0,0]
             worldPosition -= GridWorldPosition;
 
             //find percent
             float percentX = (worldPosition.x + gridWorldSize.x / 2) / gridWorldSize.x;
-            float percentY = useZ ?
-                (worldPosition.z + gridWorldSize.y / 2) / gridWorldSize.y :     //use z
-                (worldPosition.y + gridWorldSize.y / 2) / gridWorldSize.y;      //or y
+            float percentY = (worldPosition.z + gridWorldSize.y / 2) / gridWorldSize.y;     //use Z position
             percentX = Mathf.Clamp01(percentX);
             percentY = Mathf.Clamp01(percentY);
 
@@ -218,10 +205,8 @@ namespace redd096
             if (worldPosition.x < GridWorldPosition.x - (gridWorldSize.x * 0.5f) || worldPosition.x > GridWorldPosition.x + (gridWorldSize.x * 0.5f))
                 return false;
 
-            //outside down or up (if useZ, use back or forward)
-            if (useZ && worldPosition.z < GridWorldPosition.z - (gridWorldSize.y * 0.5f) || worldPosition.z > GridWorldPosition.z + (gridWorldSize.y * 0.5f))
-                return false;
-            else if (useZ == false && worldPosition.y < GridWorldPosition.y - (gridWorldSize.y * 0.5f) || worldPosition.y > GridWorldPosition.y + (gridWorldSize.y * 0.5f))
+            //outside back or forward
+            if (worldPosition.z < GridWorldPosition.z - (gridWorldSize.y * 0.5f) || worldPosition.z > GridWorldPosition.z + (gridWorldSize.y * 0.5f))
                 return false;
 
             //else is inside

@@ -6,7 +6,7 @@ using System;
 
 namespace redd096
 {
-    public class Heap<T> where T : IHeapItem<T>
+    public class Heap3D<T> where T : IHeapItem3D<T>
     {
         T[] items;
         int currentItemCount;
@@ -16,7 +16,7 @@ namespace redd096
         /// Constructor, set array size
         /// </summary>
         /// <param name="maxHeapSize"></param>
-        public Heap(int maxHeapSize)
+        public Heap3D(int maxHeapSize)
         {
             items = new T[maxHeapSize];
         }
@@ -171,7 +171,7 @@ namespace redd096
         #endregion
     }
 
-    public interface IHeapItem<T> : IComparable<T>
+    public interface IHeapItem3D<T> : IComparable<T>
     {
         int HeapIndex { get; set; }
     }

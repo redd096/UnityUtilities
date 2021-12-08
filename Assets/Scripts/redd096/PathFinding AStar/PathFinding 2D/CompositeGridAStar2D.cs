@@ -3,11 +3,11 @@ using UnityEngine;
 
 namespace redd096
 {
-    [AddComponentMenu("redd096/Path Finding A Star/Composite Grid A Star")]
-    public class CompositeGridAStar : GridAStar
+    [AddComponentMenu("redd096/Path Finding A Star/Composite Grid A Star 2D")]
+    public class CompositeGridAStar2D : GridAStar2D
     {
-        List<GridAStar> gridsAStar = new List<GridAStar>();
-        Vector3 gridWorldPosition;
+        List<GridAStar2D> gridsAStar = new List<GridAStar2D>();
+        Vector2 gridWorldPosition;
 
         float leftCompositeGrid;
         float rightCompositeGrid;
@@ -15,7 +15,7 @@ namespace redd096
         float downCompositeGrid;
 
         //return setted position
-        public override Vector3 GridWorldPosition => gridWorldPosition;
+        public override Vector2 GridWorldPosition => gridWorldPosition;
 
         protected override void SetGridSize()
         {
@@ -25,10 +25,10 @@ namespace redd096
             base.SetGridSize();
         }
 
-        protected override bool IsWalkable(Vector3 worldPosition)
+        protected override bool IsWalkable(Vector2 worldPosition)
         {
             //check is walkable, only if inside one of the grids in the array
-            foreach (GridAStar gridAStar in gridsAStar)
+            foreach (GridAStar2D gridAStar in gridsAStar)
             {
                 if (gridAStar.IsInsideGrid(worldPosition))
                     return base.IsWalkable(worldPosition);
@@ -46,7 +46,7 @@ namespace redd096
             gridWorldSize = Vector2.zero;
 
             //find every grid in scene
-            foreach (GridAStar gridAStar in FindObjectsOfType<GridAStar>())
+            foreach (GridAStar2D gridAStar in FindObjectsOfType<GridAStar2D>())
             {
                 //remove self
                 if (gridAStar == this)
@@ -66,22 +66,22 @@ namespace redd096
             UpdateGridWorldSize();
         }
 
-        void SetGridExtremes(GridAStar gridAStar)
+        void SetGridExtremes(GridAStar2D gridAStar)
         {
             //set points same as on grid parameter
             leftCompositeGrid = gridAStar.GridWorldPosition.x - (gridAStar.GridWorldSize.x / 2);
             rightCompositeGrid = gridAStar.GridWorldPosition.x + (gridAStar.GridWorldSize.x / 2);
-            upCompositeGrid = (useZ ? gridAStar.GridWorldPosition.z : gridAStar.GridWorldPosition.y) + (gridAStar.GridWorldSize.y / 2);
-            downCompositeGrid = (useZ ? gridAStar.GridWorldPosition.z : gridAStar.GridWorldPosition.y) - (gridAStar.GridWorldSize.y / 2);
+            upCompositeGrid = gridAStar.GridWorldPosition.y + (gridAStar.GridWorldSize.y / 2);
+            downCompositeGrid = gridAStar.GridWorldPosition.y - (gridAStar.GridWorldSize.y / 2);
         }
 
-        void UpdateGridExtremes(GridAStar gridAStar)
+        void UpdateGridExtremes(GridAStar2D gridAStar)
         {
             //calculate points on grid parameter
             float left = gridAStar.GridWorldPosition.x - (gridAStar.GridWorldSize.x / 2);
             float right = gridAStar.GridWorldPosition.x + (gridAStar.GridWorldSize.x / 2);
-            float up = (useZ ? gridAStar.GridWorldPosition.z : gridAStar.GridWorldPosition.y) + (gridAStar.GridWorldSize.y / 2);
-            float down = (useZ ? gridAStar.GridWorldPosition.z : gridAStar.GridWorldPosition.y) - (gridAStar.GridWorldSize.y / 2);
+            float up = gridAStar.GridWorldPosition.y + (gridAStar.GridWorldSize.y / 2);
+            float down = gridAStar.GridWorldPosition.y - (gridAStar.GridWorldSize.y / 2);
 
             //check if update current points
             if (left < leftCompositeGrid)
@@ -98,8 +98,8 @@ namespace redd096
         {
             //set world center of the grid
             gridWorldPosition =
-                Vector3.right * (rightCompositeGrid - (rightCompositeGrid - leftCompositeGrid) * 0.5f)                              //x
-                + (useZ ? Vector3.forward : Vector3.up) * (upCompositeGrid - (upCompositeGrid - downCompositeGrid) * 0.5f);         //z or y
+                Vector2.right * (rightCompositeGrid - (rightCompositeGrid - leftCompositeGrid) * 0.5f)  //x
+                + Vector2.up * (upCompositeGrid - (upCompositeGrid - downCompositeGrid) * 0.5f);        //y
 
             //set grid world size
             gridWorldSize = new Vector2(rightCompositeGrid - leftCompositeGrid, upCompositeGrid - downCompositeGrid);

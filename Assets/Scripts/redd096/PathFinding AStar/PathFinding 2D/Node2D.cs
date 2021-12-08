@@ -2,11 +2,11 @@
 
 namespace redd096
 {
-    public class Node : IHeapItem<Node>
+    public class Node2D : IHeapItem2D<Node2D>
     {
         //variables constructor
         public bool isWalkable;
-        public Vector3 worldPosition;
+        public Vector2 worldPosition;
         public Vector2Int gridPosition;
 
         //variables path finding
@@ -15,9 +15,9 @@ namespace redd096
         public int fCost => gCost + hCost;      //sum of G cost and H cost
 
         //used to retrace path
-        public Node parentNode;
+        public Node2D parentNode;
 
-        public Node(bool isWalkable, Vector3 worldPosition, int x, int y)
+        public Node2D(bool isWalkable, Vector2 worldPosition, int x, int y)
         {
             this.isWalkable = isWalkable;
             this.worldPosition = worldPosition;
@@ -28,7 +28,7 @@ namespace redd096
 
         public int HeapIndex { get; set; }
 
-        public int CompareTo(Node nodeToCompare)
+        public int CompareTo(Node2D nodeToCompare)
         {
             //compare F Cost, if equals, compare H Cost
             int compare = fCost.CompareTo(nodeToCompare.fCost);
