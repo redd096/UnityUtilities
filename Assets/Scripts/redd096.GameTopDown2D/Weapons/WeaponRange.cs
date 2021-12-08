@@ -25,9 +25,9 @@ namespace redd096.GameTopDown2D
 
         [Header("Ammo")]
         public bool hasAmmo = true;
-        /*[OnValueChanged("ChangedMaxAmmo")]*/ [CanShow("hasAmmo")] [Min(0)] public int maxAmmo = 32;
-        [CanShow("hasAmmo")] [ReadOnly] public int currentAmmo = 32;
-        [CanShow("hasAmmo")] public float delayReload = 1;
+        /*[OnValueChanged("ChangedMaxAmmo")]*/ [CanEnable("hasAmmo")] [Min(0)] public int maxAmmo = 32;
+        [ReadOnly] public int currentAmmo = 32;
+        [CanEnable("hasAmmo")] public float delayReload = 1;
 
         [Header("DEBUG")]
         [SerializeField] bool drawDebug = false;

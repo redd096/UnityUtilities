@@ -17,9 +17,9 @@ namespace redd096.GameTopDown2D
 
         [Header("On Pick Camera Shake")]
         [SerializeField] bool cameraShakeOnPick = true;
-        [CanShow("cameraShakeOnPick")] [SerializeField] bool customShakeOnPick = false;
-        [CanShow("cameraShakeOnPick", "customShakeOnPick")] [SerializeField] float shakeDurationOnPick = 1;
-        [CanShow("cameraShakeOnPick", "customShakeOnPick")] [SerializeField] float shakeAmountOnPick = 0.7f;
+        [CanEnable("cameraShakeOnPick")] [SerializeField] bool customShakeOnPick = false;
+        [CanEnable("cameraShakeOnPick", "customShakeOnPick")] [SerializeField] float shakeDurationOnPick = 1;
+        [CanEnable("cameraShakeOnPick", "customShakeOnPick")] [SerializeField] float shakeAmountOnPick = 0.7f;
 
         [Header("On Drop")]
         [SerializeField] InstantiatedGameObjectStruct gameObjectOnDrop = default;
@@ -28,9 +28,9 @@ namespace redd096.GameTopDown2D
 
         [Header("On Drop Camera Shake")]
         [SerializeField] bool cameraShakeOnDrop = true;
-        [CanShow("cameraShakeOnDrop")] [SerializeField] bool customShakeOnDrop = false;
-        [CanShow("cameraShakeOnDrop", "customShakeOnDrop")] [SerializeField] float shakeDurationOnDrop = 1;
-        [CanShow("cameraShakeOnDrop", "customShakeOnDrop")] [SerializeField] float shakeAmountOnDrop = 0.7f;
+        [CanEnable("cameraShakeOnDrop")] [SerializeField] bool customShakeOnDrop = false;
+        [CanEnable("cameraShakeOnDrop", "customShakeOnDrop")] [SerializeField] float shakeDurationOnDrop = 1;
+        [CanEnable("cameraShakeOnDrop", "customShakeOnDrop")] [SerializeField] float shakeAmountOnDrop = 0.7f;
 
         void OnEnable()
         {

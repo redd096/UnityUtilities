@@ -14,9 +14,9 @@ namespace redd096.GameTopDown2D
 
         [Header("Blink - Default get component in children")]
         [SerializeField] bool blinkOnGetDamage = true;
-        [CanShow("blinkOnGetDamage")] [SerializeField] SpriteRenderer[] spritesToUse = default;
-        [CanShow("blinkOnGetDamage")] [SerializeField] Material blinkMaterial = default;
-        [CanShow("blinkOnGetDamage")] [SerializeField] float blinkDuration = 0.2f;
+        [CanEnable("blinkOnGetDamage")] [SerializeField] SpriteRenderer[] spritesToUse = default;
+        [CanEnable("blinkOnGetDamage")] [SerializeField] Material blinkMaterial = default;
+        [CanEnable("blinkOnGetDamage")] [SerializeField] float blinkDuration = 0.2f;
 
         [Header("On Get Damage")]
         [SerializeField] InstantiatedGameObjectStruct gameObjectOnGetDamage = default;

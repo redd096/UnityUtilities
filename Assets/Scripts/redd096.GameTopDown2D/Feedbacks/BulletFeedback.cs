@@ -35,9 +35,9 @@ namespace redd096.GameTopDown2D
         [SerializeField] bool cameraShakeOnHitSomethingThatDestroyBullet = false;
         [SerializeField] bool cameraShakeOnAutoDestruction = false;
         [SerializeField] bool cameraShakeOnDestroy = false;
-        [CanShow("cameraShakeOnHit", "cameraShakeOnHitSomethingThatDestroyBullet", "cameraShakeOnAutoDestruction", "cameraShakeOnDestroy", checkAND = false)] [SerializeField] bool customShake = false;
-        [CanShow("cameraShakeOnHit", "cameraShakeOnHitSomethingThatDestroyBullet", "cameraShakeOnAutoDestruction", "cameraShakeOnDestroy", checkAND = false)] [SerializeField] float shakeDuration = 1;
-        [CanShow("cameraShakeOnHit", "cameraShakeOnHitSomethingThatDestroyBullet", "cameraShakeOnAutoDestruction", "cameraShakeOnDestroy", checkAND = false)] [SerializeField] float shakeAmount = 0.7f;
+        [CanEnable("cameraShakeOnHit", "cameraShakeOnHitSomethingThatDestroyBullet", "cameraShakeOnAutoDestruction", "cameraShakeOnDestroy", checkAND = false)] [SerializeField] bool customShake = false;
+        [CanEnable("cameraShakeOnHit", "cameraShakeOnHitSomethingThatDestroyBullet", "cameraShakeOnAutoDestruction", "cameraShakeOnDestroy", checkAND = false)] [SerializeField] float shakeDuration = 1;
+        [CanEnable("cameraShakeOnHit", "cameraShakeOnHitSomethingThatDestroyBullet", "cameraShakeOnAutoDestruction", "cameraShakeOnDestroy", checkAND = false)] [SerializeField] float shakeAmount = 0.7f;
 
         void OnEnable()
         {

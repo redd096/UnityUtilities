@@ -23,9 +23,9 @@ namespace redd096.GameTopDown2D
 
         [Header("On Shoot Camera Shake")]
         [SerializeField] bool cameraShake = true;
-        [CanShow("cameraShake")] [SerializeField] bool customShake = false;
-        [CanShow("cameraShake", "customShake")] [SerializeField] float shakeDuration = 1;
-        [CanShow("cameraShake", "customShake")] [SerializeField] float shakeAmount = 0.7f;
+        [CanEnable("cameraShake")] [SerializeField] bool customShake = false;
+        [CanEnable("cameraShake", "customShake")] [SerializeField] float shakeDuration = 1;
+        [CanEnable("cameraShake", "customShake")] [SerializeField] float shakeAmount = 0.7f;
 
         [Header("On Press Attack - barrel by default is transform")]
         [SerializeField] Transform barrelOnPress = default;

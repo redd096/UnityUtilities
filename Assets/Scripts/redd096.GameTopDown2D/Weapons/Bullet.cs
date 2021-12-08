@@ -25,15 +25,15 @@ namespace redd096.GameTopDown2D
 
         [Header("Area Damage")]
         [SerializeField] bool doAreaDamage = false;
-        [Tooltip("Damage others in radius area")] [CanShow("doAreaDamage")] [SerializeField] [Min(0)] float radiusAreaDamage = 0;
-        [CanShow("doAreaDamage")] [SerializeField] bool ignoreShieldAreaDamage = false;
-        [Tooltip("Is possible to damage owner with area damage?")] [CanShow("doAreaDamage")] [SerializeField] bool areaCanDamageWhoShoot = false;
-        [Tooltip("Is possible to damage again who hit this bullet?")] [CanShow("doAreaDamage")] [SerializeField] bool areaCanDamageWhoHit = false;
-        [Tooltip("Do knockback also to who hit in area?")] [CanShow("doAreaDamage")] [SerializeField] bool knockbackAlsoInArea = true;
+        [Tooltip("Damage others in radius area")] [CanEnable("doAreaDamage")] [SerializeField] [Min(0)] float radiusAreaDamage = 0;
+        [CanEnable("doAreaDamage")] [SerializeField] bool ignoreShieldAreaDamage = false;
+        [Tooltip("Is possible to damage owner with area damage?")] [CanEnable("doAreaDamage")] [SerializeField] bool areaCanDamageWhoShoot = false;
+        [Tooltip("Is possible to damage again who hit this bullet?")] [CanEnable("doAreaDamage")] [SerializeField] bool areaCanDamageWhoHit = false;
+        [Tooltip("Do knockback also to who hit in area?")] [CanEnable("doAreaDamage")] [SerializeField] bool knockbackAlsoInArea = true;
 
         [Header("Timer Autodestruction (0 = no autodestruction)")]
         [SerializeField] public float delayAutodestruction = 0;
-        [CanShow("doAreaDamage")] [SerializeField] bool doAreaDamageAlsoOnAutoDestruction = true;
+        [CanEnable("doAreaDamage")] [SerializeField] bool doAreaDamageAlsoOnAutoDestruction = true;
 
         [Header("DEBUG")]
         [SerializeField] bool drawDebug = false;
