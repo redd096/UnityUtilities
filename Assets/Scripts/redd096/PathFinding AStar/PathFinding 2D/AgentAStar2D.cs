@@ -10,8 +10,8 @@ namespace redd096
 
         [Header("Collider Agent")]
         [SerializeField] ETypeOverlap typeOverlap = ETypeOverlap.box;
-        [EnableIf("typeOverlap", ETypeOverlap.box)] Vector2 sizeCollider = Vector2.one;
-        [EnableIf("typeOverlap", ETypeOverlap.circle)] float radiusCollider = 1;
+        [EnableIf("typeOverlap", ETypeOverlap.box)] [SerializeField] Vector2 sizeCollider = Vector2.one;
+        [EnableIf("typeOverlap", ETypeOverlap.circle)] [SerializeField] float radiusCollider = 1;
 
         [Header("DEBUG")]
         [SerializeField] bool drawDebug = false;
