@@ -7,6 +7,8 @@ namespace redd096
     public class CompositeGridAStar3D : GridAStar3D
     {
         [Header("Composite")]
+        [Tooltip("If the node we want to reach makes the agent overlap with a node outside of every grid, we want our agent to move anyway? Then set true.\n" +
+            "Or maybe we prefer to calculate it like a wall? Then set false")]
         [SerializeField] bool agentCanOverlapNodesOutsideGrids = true;
 
         List<GridAStar3D> gridsAStar = new List<GridAStar3D>();
