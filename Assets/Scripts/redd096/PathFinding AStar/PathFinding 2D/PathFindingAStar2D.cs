@@ -31,9 +31,10 @@ namespace redd096
         /// </summary>
         /// <param name="startPosition"></param>
         /// <param name="targetPosition"></param>
+        /// <param name="agent"></param>
         /// <param name="returnNearestPointToTarget">if no path to target position, return path to nearest point</param>
         /// <returns></returns>
-        public List<Node2D> FindPath(Vector2 startPosition, Vector2 targetPosition, bool returnNearestPointToTarget = true)
+        public List<Node2D> FindPath(Vector2 startPosition, Vector2 targetPosition, AgentAStar2D agent = null, bool returnNearestPointToTarget = true)
         {
             /*
              * OPEN - the set of nodes to be evaluated
@@ -115,8 +116,12 @@ namespace redd096
                 //foreach Neighbour of the Current node
                 foreach (Node2D neighbour in Grid.GetNeighbours(currentNode))
                 {
-                    //if Neighbour is not walkable or is in CLOSED
+                    //if Neighbour is not walkable or is in CLOSED, skip to next Neighbour
                     if (!neighbour.isWalkable || closedList.Contains(neighbour))
+                        continue;
+
+                    //if using agent and can't move on this node, skip to next Neighbour
+                    if (agent && !agent.CanMoveOnThisNode(neighbour, Grid))
                         continue;
 
                     //get distance to Neighbour
@@ -151,13 +156,15 @@ namespace redd096
                 {
                     if (node.isWalkable && node.hCost < nearestNode.hCost)  //if walkable and nearest to target point
                     {
-                        nearestNode = node;
+                        //only if not using an agent, or if agent can move on this node
+                        if (agent == null || agent.CanMoveOnThisNode(node, Grid))
+                            nearestNode = node;
                     }
                 }
 
                 //find path only if nearest node is not the start node
                 if (startNode != nearestNode)
-                    return FindPath(startNode.worldPosition, nearestNode.worldPosition, false);
+                    return FindPath(startNode.worldPosition, nearestNode.worldPosition, agent, false);
             }
 
             //if there is no path, return null

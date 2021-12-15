@@ -66,6 +66,7 @@ namespace redd096
         Vector2Int gridSize;
 
         //properties
+        public Vector2Int GridSize => gridSize;
         public int MaxSize => gridSize.x * gridSize.y;
         public virtual Vector3 GridWorldPosition => transform.position;
         public Vector2 GridWorldSize => gridWorldSize;
@@ -132,27 +133,37 @@ namespace redd096
                     Vector3 worldPosition = worldBottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.forward * (y * nodeDiameter + nodeRadius);
 
                     //set new node in grid
-                    grid[x, y] = new Node3D(IsWalkable(worldPosition), worldPosition, x, y);
+                    grid[x, y] = new Node3D(IsWalkable(worldPosition, out bool agentCanOverlap), agentCanOverlap, worldPosition, x, y);
                 }
             }
         }
 
-        protected virtual bool IsWalkable(Vector3 worldPosition)
+        protected virtual bool IsWalkable(Vector3 worldPosition, out bool agentCanOverlap)
         {
-            //overlap sphere
-            return gameObject.scene.GetPhysicsScene().OverlapSphere(worldPosition, overlapRadius, new Collider[1], unwalkableMask, QueryTriggerInteraction.UseGlobal) <= 0;
+            //overlap sphere (agent can overlap only on walkable nodes)
+            agentCanOverlap = gameObject.scene.GetPhysicsScene().OverlapSphere(worldPosition, overlapRadius, new Collider[1], unwalkableMask, QueryTriggerInteraction.UseGlobal) <= 0;
+            return agentCanOverlap;
         }
 
         #endregion
 
         #region public API
 
+        /// <summary>
+        /// Is grid created or is null?
+        /// </summary>
+        /// <returns></returns>
         public bool IsGridCreated()
         {
             //return if the grid was being created
             return grid != null;
         }
 
+        /// <summary>
+        /// Get nodes around the node passed as parameter
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
         public List<Node3D> GetNeighbours(Node3D node)
         {
             List<Node3D> neighbours = new List<Node3D>();
@@ -180,6 +191,11 @@ namespace redd096
             return neighbours;
         }
 
+        /// <summary>
+        /// Get node from world position
+        /// </summary>
+        /// <param name="worldPosition"></param>
+        /// <returns></returns>
         public Node3D NodeFromWorldPosition(Vector3 worldPosition)
         {
             //be sure to get right result also if grid doesn't start at [0,0]
@@ -199,6 +215,11 @@ namespace redd096
             return grid[x, y];
         }
 
+        /// <summary>
+        /// Is world position inside the grid?
+        /// </summary>
+        /// <param name="worldPosition"></param>
+        /// <returns></returns>
         public bool IsInsideGrid(Vector3 worldPosition)
         {
             //outside left or right
@@ -211,6 +232,16 @@ namespace redd096
 
             //else is inside
             return true;
+        }
+
+        /// <summary>
+        /// Get node at grid position
+        /// </summary>
+        /// <param name="gridPosition"></param>
+        /// <returns></returns>
+        public Node3D GetNodeByCoordinates(int x, int y)
+        {
+            return grid[x, y];
         }
 
         #endregion

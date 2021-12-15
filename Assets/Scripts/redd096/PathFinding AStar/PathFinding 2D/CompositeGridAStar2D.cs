@@ -6,6 +6,9 @@ namespace redd096
     [AddComponentMenu("redd096/Path Finding A Star/Composite Grid A Star 2D")]
     public class CompositeGridAStar2D : GridAStar2D
     {
+        [Header("Composite")]
+        [SerializeField] bool agentCanOverlapNodesOutsideGrids = true;
+
         List<GridAStar2D> gridsAStar = new List<GridAStar2D>();
         Vector2 gridWorldPosition;
 
@@ -25,16 +28,17 @@ namespace redd096
             base.SetGridSize();
         }
 
-        protected override bool IsWalkable(Vector2 worldPosition)
+        protected override bool IsWalkable(Vector2 worldPosition, out bool agentCanOverlap)
         {
             //check is walkable, only if inside one of the grids in the array
             foreach (GridAStar2D gridAStar in gridsAStar)
             {
                 if (gridAStar.IsInsideGrid(worldPosition))
-                    return base.IsWalkable(worldPosition);
+                    return base.IsWalkable(worldPosition, out agentCanOverlap);
             }
 
-            //else return false if outside of any grid
+            //else return false if outside of any grid (but if setted, agent can overlap because is not a really wall, just is not walkable)
+            agentCanOverlap = agentCanOverlapNodesOutsideGrids;
             return false;
         }
 
