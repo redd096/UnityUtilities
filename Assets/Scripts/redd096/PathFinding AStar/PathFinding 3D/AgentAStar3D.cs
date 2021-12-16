@@ -9,6 +9,7 @@ namespace redd096
         enum ETypeOverlap { sphere, box }
 
         [Header("Collider Agent")]
+        [SerializeField] Vector3 offset = Vector3.zero;
         [SerializeField] ETypeOverlap typeOverlap = ETypeOverlap.box;
         [EnableIf("typeOverlap", ETypeOverlap.box)] [SerializeField] Vector3 sizeCollider = Vector3.one;
         [EnableIf("typeOverlap", ETypeOverlap.sphere)] [SerializeField] float radiusCollider = 1;
@@ -32,12 +33,12 @@ namespace redd096
                 //draw box overlap
                 if (typeOverlap == ETypeOverlap.box)
                 {
-                    Gizmos.DrawWireCube(transform.position, sizeCollider);
+                    Gizmos.DrawWireCube(transform.position + offset, sizeCollider);
                 }
                 //draw circle overlap
                 else
                 {
-                    Gizmos.DrawWireSphere(transform.position, radiusCollider);
+                    Gizmos.DrawWireSphere(transform.position + offset, radiusCollider);
                 }
 
                 Gizmos.color = Color.white;
@@ -73,10 +74,10 @@ namespace redd096
         {
             //calculate nodes
             CalculateNodes(
-                transform.position.x - sizeCollider.x,
-                transform.position.x + sizeCollider.x,
-                transform.position.z + sizeCollider.z,
-                transform.position.z - sizeCollider.z);
+                (transform.position + offset).x - sizeCollider.x,
+                (transform.position + offset).x + sizeCollider.x,
+                (transform.position + offset).z + sizeCollider.z,
+                (transform.position + offset).z - sizeCollider.z);
 
             //check every node
             for (int x = leftNode.gridPosition.x; x <= rightNode.gridPosition.x; x++)
@@ -96,10 +97,10 @@ namespace redd096
         {
             //calculate nodes
             CalculateNodes(
-                transform.position.x - radiusCollider,
-                transform.position.x + radiusCollider,
-                transform.position.z + radiusCollider,
-                transform.position.z - radiusCollider);
+                (transform.position + offset).x - radiusCollider,
+                (transform.position + offset).x + radiusCollider,
+                (transform.position + offset).z + radiusCollider,
+                (transform.position + offset).z - radiusCollider);
 
             //check every node
             for (int x = leftNode.gridPosition.x; x <= rightNode.gridPosition.x; x++)

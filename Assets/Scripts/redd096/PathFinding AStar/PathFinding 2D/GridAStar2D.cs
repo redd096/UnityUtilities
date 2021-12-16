@@ -99,8 +99,8 @@ namespace redd096
                 {
                     //set color if walkable or not
                     Gizmos.color = new Color(1, 1, 1, alphaNodes) * (node.isWalkable ? Color.green : Color.red);
-                    //Gizmos.DrawSphere(node.worldPosition, nodeRadius);
-                    Gizmos.DrawCube(node.worldPosition, Vector2.one * (nodeDiameter - 0.1f));
+                    //Gizmos.DrawSphere(node.worldPosition, overlapRadius);
+                    Gizmos.DrawCube(node.worldPosition, Vector2.one * overlapDiameter);
                 }
             }
         }
