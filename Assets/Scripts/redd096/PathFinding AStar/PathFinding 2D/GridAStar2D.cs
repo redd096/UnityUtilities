@@ -80,12 +80,6 @@ namespace redd096
                 UpdateGrid();
         }
 
-        public void UpdateGrid()
-        {
-            SetGridSize();
-            CreateGrid();
-        }
-
         void OnDrawGizmosSelected()
         {
             //draw area
@@ -148,6 +142,15 @@ namespace redd096
         #endregion
 
         #region public API
+
+        /// <summary>
+        /// Recreate grid (set which node is walkable and which not)
+        /// </summary>
+        public void UpdateGrid()
+        {
+            SetGridSize();
+            CreateGrid();
+        }
 
         /// <summary>
         /// Is grid created or is null?

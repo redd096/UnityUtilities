@@ -10,6 +10,7 @@
 //prima di far partire di nuovo la coroutine conviene aspettare che finisca quella precedente, anche se rimane indietro, e magari non ha le posizioni aggiornate?
 
 using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 
 namespace redd096
@@ -20,11 +21,19 @@ namespace redd096
         [Header("Default use Find Object of Type")]
         public GridAStar2D Grid = default;
 
+        [Header("Delay when multiple objects call to Update Grid")]
+        [SerializeField] float delayBeforeUpdateGrid = 0.2f;
+
+        //vars
+        Coroutine updateGridCoroutine;
+
         void Awake()
         {
             if (Grid == null)
                 Grid = FindObjectOfType<GridAStar2D>();
         }
+
+        #region public API
 
         /// <summary>
         /// Find path from one point to another
@@ -172,12 +181,34 @@ namespace redd096
         }
 
         /// <summary>
-        /// Update grid at runtime
+        /// Update grid. There is a delay before updates in case multiple objects call at same time. If you don't want delays, call UpdateGridImmediatly() instead
         /// </summary>
         public void UpdateGrid()
         {
+            //start timer to Update Grid. If timer is already running, do nothing (update will be already call)
+            if (updateGridCoroutine == null)
+            {
+                updateGridCoroutine = StartCoroutine(UpdateGridCoroutine());
+            }
+        }
+
+        /// <summary>
+        /// Update grid immediatly, without delays
+        /// </summary>
+        public void UpdateGridImmediatly()
+        {
+            //stop timer (to be sure is not updated two times)
+            if (updateGridCoroutine != null)
+            {
+                StopCoroutine(updateGridCoroutine);
+                updateGridCoroutine = null;
+            }
+
+            //and update immediatly grid
             Grid.UpdateGrid();
         }
+
+        #endregion
 
         #region private API
 
@@ -238,6 +269,18 @@ namespace redd096
             path.Reverse();
 
             return path;
+        }
+
+        IEnumerator UpdateGridCoroutine()
+        {
+            //wait delay
+            yield return new WaitForSeconds(delayBeforeUpdateGrid);
+
+            //then update grid
+            if (Grid)
+                Grid.UpdateGrid();
+
+            updateGridCoroutine = null;
         }
 
         #endregion
