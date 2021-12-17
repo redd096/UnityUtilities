@@ -79,10 +79,10 @@ namespace redd096
         {
             //calculate nodes
             CalculateNodes(
-                (transform.position + offset).x - halfCollider.x,
-                (transform.position + offset).x + halfCollider.x,
-                (transform.position + offset).z + halfCollider.z,
-                (transform.position + offset).z - halfCollider.z);
+                (node.worldPosition + offset).x - halfCollider.x,
+                (node.worldPosition + offset).x + halfCollider.x,
+                (node.worldPosition + offset).z + halfCollider.z,
+                (node.worldPosition + offset).z - halfCollider.z);
 
             //check every node
             for (int x = leftNode.gridPosition.x; x <= rightNode.gridPosition.x; x++)
@@ -102,10 +102,10 @@ namespace redd096
         {
             //calculate nodes
             CalculateNodes(
-                (transform.position + offset).x - radiusCollider,
-                (transform.position + offset).x + radiusCollider,
-                (transform.position + offset).z + radiusCollider,
-                (transform.position + offset).z - radiusCollider);
+                (node.worldPosition + offset).x - radiusCollider,
+                (node.worldPosition + offset).x + radiusCollider,
+                (node.worldPosition + offset).z + radiusCollider,
+                (node.worldPosition + offset).z - radiusCollider);
 
             //check every node
             for (int x = leftNode.gridPosition.x; x <= rightNode.gridPosition.x; x++)
@@ -113,7 +113,7 @@ namespace redd096
                 for (int y = backNode.gridPosition.y; y <= forwardNode.gridPosition.y; y++)
                 {
                     //if inside radius
-                    if (Vector3.Distance(transform.position, grid.GetNodeByCoordinates(x, y).worldPosition) <= radiusCollider)
+                    if (Vector3.Distance(node.worldPosition, grid.GetNodeByCoordinates(x, y).worldPosition) <= radiusCollider)
                     {
                         //if agent can not move through, return false
                         if (grid.GetNodeByCoordinates(x, y).agentCanMoveThrough == false)
