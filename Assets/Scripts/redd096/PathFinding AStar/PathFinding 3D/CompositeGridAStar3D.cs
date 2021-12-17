@@ -30,17 +30,17 @@ namespace redd096
             base.SetGridSize();
         }
 
-        protected override bool IsWalkable(Vector3 worldPosition, out bool agentCanOverlap)
+        protected override bool IsWalkable(Vector3 worldPosition, out bool agentCanMoveThrough)
         {
             //check is walkable, only if inside one of the grids in the array
             foreach (GridAStar3D gridAStar in gridsAStar)
             {
                 if (gridAStar.IsInsideGrid(worldPosition))
-                    return base.IsWalkable(worldPosition, out agentCanOverlap);
+                    return base.IsWalkable(worldPosition, out agentCanMoveThrough);
             }
 
-            //else return false if outside of any grid (but if setted, agent can overlap because is not a really wall, just is not walkable)
-            agentCanOverlap = agentCanOverlapNodesOutsideGrids;
+            //else return false if outside of any grid (but if setted, agent can move through because is not a really wall, just is not walkable)
+            agentCanMoveThrough = agentCanOverlapNodesOutsideGrids;
             return false;
         }
 

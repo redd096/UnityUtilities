@@ -133,16 +133,16 @@ namespace redd096
                     Vector2 worldPosition = worldBottomLeft + Vector2.right * (x * nodeDiameter + nodeRadius) + Vector2.up * (y * nodeDiameter + nodeRadius);
 
                     //set new node in grid
-                    grid[x, y] = new Node2D(IsWalkable(worldPosition, out bool agentCanOverlap), agentCanOverlap, worldPosition, x, y);
+                    grid[x, y] = new Node2D(IsWalkable(worldPosition, out bool agentCanMoveThrough), agentCanMoveThrough, worldPosition, x, y);
                 }
             }
         }
 
-        protected virtual bool IsWalkable(Vector2 worldPosition, out bool agentCanOverlap)
+        protected virtual bool IsWalkable(Vector2 worldPosition, out bool agentCanMoveThrough)
         {
-            //overlap circle (agent can overlap only on walkable nodes)
-            agentCanOverlap = gameObject.scene.GetPhysicsScene2D().OverlapCircle(worldPosition, overlapRadius, unwalkableMask) == false;
-            return agentCanOverlap;
+            //overlap circle (agent can move through only on walkable nodes)
+            agentCanMoveThrough = gameObject.scene.GetPhysicsScene2D().OverlapCircle(worldPosition, overlapRadius, unwalkableMask) == false;
+            return agentCanMoveThrough;
         }
 
         #endregion

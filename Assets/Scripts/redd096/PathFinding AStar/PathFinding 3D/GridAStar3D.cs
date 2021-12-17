@@ -133,16 +133,16 @@ namespace redd096
                     Vector3 worldPosition = worldBottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.forward * (y * nodeDiameter + nodeRadius);
 
                     //set new node in grid
-                    grid[x, y] = new Node3D(IsWalkable(worldPosition, out bool agentCanOverlap), agentCanOverlap, worldPosition, x, y);
+                    grid[x, y] = new Node3D(IsWalkable(worldPosition, out bool agentCanMoveThrough), agentCanMoveThrough, worldPosition, x, y);
                 }
             }
         }
 
-        protected virtual bool IsWalkable(Vector3 worldPosition, out bool agentCanOverlap)
+        protected virtual bool IsWalkable(Vector3 worldPosition, out bool agentCanMoveThrough)
         {
-            //overlap sphere (agent can overlap only on walkable nodes)
-            agentCanOverlap = gameObject.scene.GetPhysicsScene().OverlapSphere(worldPosition, overlapRadius, new Collider[1], unwalkableMask, QueryTriggerInteraction.UseGlobal) <= 0;
-            return agentCanOverlap;
+            //overlap sphere (agent can move through only on walkable nodes)
+            agentCanMoveThrough = gameObject.scene.GetPhysicsScene().OverlapSphere(worldPosition, overlapRadius, new Collider[1], unwalkableMask, QueryTriggerInteraction.UseGlobal) <= 0;
+            return agentCanMoveThrough;
         }
 
         #endregion

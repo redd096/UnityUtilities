@@ -6,19 +6,23 @@ namespace redd096
     [AddComponentMenu("redd096/Path Finding A Star/Agent A Star 3D")]
     public class AgentAStar3D : MonoBehaviour
     {
-        enum ETypeOverlap { sphere, box }
+        enum ETypeCollider { sphere, box }
 
         [Header("Collider Agent")]
         [SerializeField] Vector3 offset = Vector3.zero;
-        [SerializeField] ETypeOverlap typeOverlap = ETypeOverlap.box;
-        [EnableIf("typeOverlap", ETypeOverlap.box)] [SerializeField] Vector3 sizeCollider = Vector3.one;
-        [EnableIf("typeOverlap", ETypeOverlap.sphere)] [SerializeField] float radiusCollider = 1;
+        [SerializeField] ETypeCollider typeCollider = ETypeCollider.box;
+        [EnableIf("typeCollider", ETypeCollider.box)] [SerializeField] Vector3 sizeCollider = Vector3.one;
+        [EnableIf("typeCollider", ETypeCollider.sphere)] [SerializeField] float radiusCollider = 1;
 
         [Header("DEBUG")]
         [SerializeField] bool drawDebug = false;
 
+        //vars
         Node3D node;
         GridAStar3D grid;
+        Vector3 halfCollider;
+
+        //nodes to calculate
         Node3D leftNode;
         Node3D rightNode;
         Node3D forwardNode;
@@ -30,12 +34,12 @@ namespace redd096
             {
                 Gizmos.color = Color.cyan;
 
-                //draw box overlap
-                if (typeOverlap == ETypeOverlap.box)
+                //draw box
+                if (typeCollider == ETypeCollider.box)
                 {
                     Gizmos.DrawWireCube(transform.position + offset, sizeCollider);
                 }
-                //draw circle overlap
+                //draw sphere
                 else
                 {
                     Gizmos.DrawWireSphere(transform.position + offset, radiusCollider);
@@ -46,7 +50,7 @@ namespace redd096
         }
 
         /// <summary>
-        /// Agent can move on this node or overlap with some wall?
+        /// Agent can move on this node or hit some wall?
         /// </summary>
         /// <param name="node"></param>
         /// <param name="nodes"></param>
@@ -55,37 +59,38 @@ namespace redd096
         {
             this.node = node;
             this.grid = grid;
+            halfCollider = sizeCollider * 0.5f;
 
-            //overlap box
-            if (typeOverlap == ETypeOverlap.box)
+            //box
+            if (typeCollider == ETypeCollider.box)
             {
-                return OverlapBox();
+                return CanMove_Box();
             }
-            //overlap sphere
+            //sphere
             else
             {
-                return OverlapSphere();
+                return CanMove_Sphere();
             }
         }
 
         #region private API
 
-        bool OverlapBox()
+        bool CanMove_Box()
         {
             //calculate nodes
             CalculateNodes(
-                (transform.position + offset).x - sizeCollider.x,
-                (transform.position + offset).x + sizeCollider.x,
-                (transform.position + offset).z + sizeCollider.z,
-                (transform.position + offset).z - sizeCollider.z);
+                (transform.position + offset).x - halfCollider.x,
+                (transform.position + offset).x + halfCollider.x,
+                (transform.position + offset).z + halfCollider.z,
+                (transform.position + offset).z - halfCollider.z);
 
             //check every node
             for (int x = leftNode.gridPosition.x; x <= rightNode.gridPosition.x; x++)
             {
                 for (int y = backNode.gridPosition.y; y <= forwardNode.gridPosition.y; y++)
                 {
-                    //if agent can not overlap, return false
-                    if (grid.GetNodeByCoordinates(x, y).agentCanOverlap == false)
+                    //if agent can not move through, return false
+                    if (grid.GetNodeByCoordinates(x, y).agentCanMoveThrough == false)
                         return false;
                 }
             }
@@ -93,7 +98,7 @@ namespace redd096
             return true;
         }
 
-        bool OverlapSphere()
+        bool CanMove_Sphere()
         {
             //calculate nodes
             CalculateNodes(
@@ -110,8 +115,8 @@ namespace redd096
                     //if inside radius
                     if (Vector3.Distance(transform.position, grid.GetNodeByCoordinates(x, y).worldPosition) <= radiusCollider)
                     {
-                        //if agent can not overlap, return false
-                        if (grid.GetNodeByCoordinates(x, y).agentCanOverlap == false)
+                        //if agent can not move through, return false
+                        if (grid.GetNodeByCoordinates(x, y).agentCanMoveThrough == false)
                             return false;
                     }
                 }

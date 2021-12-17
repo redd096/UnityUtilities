@@ -6,7 +6,7 @@ namespace redd096
     {
         //variables constructor
         public bool isWalkable;
-        public bool agentCanOverlap;            //used by agentAStar
+        public bool agentCanMoveThrough;        //used by agentAStar
         public Vector2 worldPosition;
         public Vector2Int gridPosition;
 
@@ -18,10 +18,10 @@ namespace redd096
         //used to retrace path
         public Node2D parentNode;
 
-        public Node2D(bool isWalkable, bool agentCanOverlap, Vector2 worldPosition, int x, int y)
+        public Node2D(bool isWalkable, bool agentCanMoveThrough, Vector2 worldPosition, int x, int y)
         {
             this.isWalkable = isWalkable;
-            this.agentCanOverlap = agentCanOverlap;
+            this.agentCanMoveThrough = agentCanMoveThrough;
             this.worldPosition = worldPosition;
             this.gridPosition = new Vector2Int(x, y);
         }
