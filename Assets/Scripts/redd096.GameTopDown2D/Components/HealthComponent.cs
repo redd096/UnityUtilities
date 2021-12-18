@@ -17,21 +17,13 @@ namespace redd096.GameTopDown2D
 
         //events
         public System.Action onGetDamage { get; set; }
-        public System.Action<Redd096Main> onDie { get; set; }
+        public System.Action<HealthComponent> onDie { get; set; }
         public System.Action onGetHealth { get; set; }
-
-        Redd096Main owner;
 
         void OnValidate()
         {
             //set default health
             CurrentHealth = MaxHealth;
-        }
-
-        void Awake()
-        {
-            //get references
-            owner = GetComponent<Redd096Main>();
         }
 
         /// <summary>
@@ -68,7 +60,7 @@ namespace redd096.GameTopDown2D
             alreadyDead = true;
 
             //call event
-            onDie?.Invoke(owner);
+            onDie?.Invoke(this);
 
             //destroy object
             Destroy(gameObject);

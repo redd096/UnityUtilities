@@ -59,7 +59,7 @@ namespace redd096.GameTopDown2D
             }
         }
 
-        void OnDie(Redd096Main whoDied)
+        void OnDie(HealthComponent whoDied)
         {
             //save weapon to destroy
             GameObject weaponToDestroy = CurrentWeapon ? CurrentWeapon.gameObject : null;

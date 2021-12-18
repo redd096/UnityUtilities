@@ -31,8 +31,6 @@ namespace redd096.GameTopDown2D
 		InteractableBASE[] possibleInteractables;
 		InteractableBASE nearestInteractable;
 
-		Redd096Main owner;
-
         void OnDrawGizmos()
         {
 			//draw area interactable
@@ -42,12 +40,6 @@ namespace redd096.GameTopDown2D
 				Gizmos.DrawWireSphere(transform.position, radiusInteract);
 				Gizmos.color = Color.white;
 			}
-        }
-
-        void Awake()
-		{
-			//get references
-			owner = GetComponent<Redd096Main>();
         }
 
         void OnEnable()
@@ -157,7 +149,7 @@ namespace redd096.GameTopDown2D
 		public void Interact()
         {
 			if (nearestInteractable)
-				nearestInteractable.Interact(owner);
+				nearestInteractable.Interact(this);
         }
 
 		/// <summary>

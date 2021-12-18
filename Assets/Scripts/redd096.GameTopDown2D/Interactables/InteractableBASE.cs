@@ -9,6 +9,6 @@ namespace redd096.GameTopDown2D
         /// When someone interact with this object
         /// </summary>
         /// <param name="whoInteract"></param>
-        public abstract void Interact(Redd096Main whoInteract);
+        public abstract void Interact(InteractComponent whoInteract);
     }
 }

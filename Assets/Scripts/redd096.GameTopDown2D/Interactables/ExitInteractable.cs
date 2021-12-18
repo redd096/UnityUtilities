@@ -108,7 +108,7 @@ namespace redd096.GameTopDown2D
         /// When someone interact with this object
         /// </summary>
         /// <param name="whoInteract"></param>
-        public override void Interact(Redd096Main whoInteract)
+        public override void Interact(InteractComponent whoInteract)
         {
             //only if is open
             if (isOpen == false)
@@ -129,12 +129,15 @@ namespace redd096.GameTopDown2D
 
         #region events
 
-        void OnEnemyDie(Redd096Main enemy)
+        void OnEnemyDie(HealthComponent enemy)
         {
             //when an enemy died, remove from the list
-            Character enemyCharacter = enemy as Character;
-            if (enemies.Contains(enemyCharacter))
-                enemies.Remove(enemyCharacter);
+            Character enemyCharacter = enemy.GetComponent<Character>();
+            if (enemyCharacter)
+            {
+                if (enemies.Contains(enemyCharacter))
+                    enemies.Remove(enemyCharacter);
+            }
 
             //do checks
             DoCheck();
