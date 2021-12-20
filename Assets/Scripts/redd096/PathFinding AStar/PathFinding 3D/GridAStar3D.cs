@@ -41,6 +41,9 @@ namespace redd096
 
     #endregion
 
+    /// <summary>
+    /// Grid used for pathfinding
+    /// </summary>
     [AddComponentMenu("redd096/Path Finding A Star/Grid A Star 3D")]
     public class GridAStar3D : MonoBehaviour
     {
@@ -160,6 +163,25 @@ namespace redd096
         }
 
         /// <summary>
+        /// Is world position inside the grid?
+        /// </summary>
+        /// <param name="worldPosition"></param>
+        /// <returns></returns>
+        public bool IsInsideGrid(Vector3 worldPosition)
+        {
+            //outside left or right
+            if (worldPosition.x < GridWorldPosition.x - (gridWorldSize.x * 0.5f) || worldPosition.x > GridWorldPosition.x + (gridWorldSize.x * 0.5f))
+                return false;
+
+            //outside back or forward
+            if (worldPosition.z < GridWorldPosition.z - (gridWorldSize.y * 0.5f) || worldPosition.z > GridWorldPosition.z + (gridWorldSize.y * 0.5f))
+                return false;
+
+            //else is inside
+            return true;
+        }
+
+        /// <summary>
         /// Get nodes around the node passed as parameter
         /// </summary>
         /// <param name="node"></param>
@@ -196,7 +218,7 @@ namespace redd096
         /// </summary>
         /// <param name="worldPosition"></param>
         /// <returns></returns>
-        public Node3D NodeFromWorldPosition(Vector3 worldPosition)
+        public Node3D GetNodeFromWorldPosition(Vector3 worldPosition)
         {
             //be sure to get right result also if grid doesn't start at [0,0]
             worldPosition -= GridWorldPosition;
@@ -213,25 +235,6 @@ namespace redd096
 
             //return node
             return grid[x, y];
-        }
-
-        /// <summary>
-        /// Is world position inside the grid?
-        /// </summary>
-        /// <param name="worldPosition"></param>
-        /// <returns></returns>
-        public bool IsInsideGrid(Vector3 worldPosition)
-        {
-            //outside left or right
-            if (worldPosition.x < GridWorldPosition.x - (gridWorldSize.x * 0.5f) || worldPosition.x > GridWorldPosition.x + (gridWorldSize.x * 0.5f))
-                return false;
-
-            //outside back or forward
-            if (worldPosition.z < GridWorldPosition.z - (gridWorldSize.y * 0.5f) || worldPosition.z > GridWorldPosition.z + (gridWorldSize.y * 0.5f))
-                return false;
-
-            //else is inside
-            return true;
         }
 
         /// <summary>

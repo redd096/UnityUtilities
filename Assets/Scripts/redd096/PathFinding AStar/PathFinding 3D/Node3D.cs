@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace redd096
 {
@@ -17,6 +18,9 @@ namespace redd096
 
         //used to retrace path
         public Node3D parentNode;
+
+        //other variables
+        public List<ObstacleAStar3D> obstaclesOnThisNode = new List<ObstacleAStar3D>();
 
         public Node3D(bool isWalkable, bool agentCanMoveThrough, Vector3 worldPosition, int x, int y)
         {

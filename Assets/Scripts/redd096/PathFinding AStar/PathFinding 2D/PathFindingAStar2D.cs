@@ -15,6 +15,9 @@ using UnityEngine;
 
 namespace redd096
 {
+    /// <summary>
+    /// Call this to calculate a path using pathfinding or to update the grid
+    /// </summary>
     [AddComponentMenu("redd096/Path Finding A Star/Path Finding A Star 2D")]
     public class PathFindingAStar2D : MonoBehaviour
     {
@@ -83,8 +86,8 @@ namespace redd096
                 Grid.UpdateGrid();
 
             //get nodes from world position
-            Node2D startNode = Grid.NodeFromWorldPosition(startPosition);
-            Node2D targetNode = Grid.NodeFromWorldPosition(targetPosition);
+            Node2D startNode = Grid.GetNodeFromWorldPosition(startPosition);
+            Node2D targetNode = Grid.GetNodeFromWorldPosition(targetPosition);
 
             Heap2D<Node2D> openList = new Heap2D<Node2D>(Grid.MaxSize);     //nodes to be evaluated
             HashSet<Node2D> closedList = new HashSet<Node2D>();             //already evaluated

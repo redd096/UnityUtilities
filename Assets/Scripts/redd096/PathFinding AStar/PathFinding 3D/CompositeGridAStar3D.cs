@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace redd096
 {
+    /// <summary>
+    /// Used to create a single grid using every grid in the scene
+    /// </summary>
     [AddComponentMenu("redd096/Path Finding A Star/Composite Grid A Star 3D")]
     public class CompositeGridAStar3D : GridAStar3D
     {

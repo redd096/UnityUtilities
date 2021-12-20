@@ -3,6 +3,9 @@ using redd096.Attributes;
 
 namespace redd096
 {
+    /// <summary>
+    /// Used to know size of the agent. When call PathFinding you can pass it as parameter
+    /// </summary>
     [AddComponentMenu("redd096/Path Finding A Star/Agent A Star 2D")]
     public class AgentAStar2D : MonoBehaviour
     {
