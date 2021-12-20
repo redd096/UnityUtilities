@@ -28,7 +28,8 @@ namespace redd096
             if (GUILayout.Button("Update Nodes"))
             {
                 //update nodes
-                gridAStar.UpdateGrid();
+                gridAStar.BuildGrid();
+                gridAStar.UpdateObstaclesPosition(FindObjectsOfType<ObstacleAStar3D>());
 
                 //repaint scene and set undo
                 SceneView.RepaintAll();
@@ -73,6 +74,7 @@ namespace redd096
         public int MaxSize => gridSize.x * gridSize.y;
         public virtual Vector3 GridWorldPosition => transform.position;
         public Vector2 GridWorldSize => gridWorldSize;
+        public float NodeRadius => nodeRadius;
 
         #endregion
 
@@ -80,13 +82,7 @@ namespace redd096
         {
             //create grid
             if (updateOnAwake && IsGridCreated() == false)
-                UpdateGrid();
-        }
-
-        public void UpdateGrid()
-        {
-            SetGridSize();
-            CreateGrid();
+                BuildGrid();
         }
 
         void OnDrawGizmosSelected()
@@ -101,7 +97,7 @@ namespace redd096
                 foreach (Node3D node in grid)
                 {
                     //set color if walkable or not
-                    Gizmos.color = new Color(1, 1, 1, alphaNodes) * (node.isWalkable ? Color.green : Color.red);
+                    Gizmos.color = new Color(1, 1, 1, alphaNodes) * (node.isWalkable ? (node.obstaclesOnThisNode.Count <= 0 ? Color.green : Color.magenta) : Color.red);
                     //Gizmos.DrawSphere(node.worldPosition, overlapRadius);
                     Gizmos.DrawCube(node.worldPosition, Vector3.one * overlapDiameter);
                 }
@@ -153,6 +149,15 @@ namespace redd096
         #region public API
 
         /// <summary>
+        /// Recreate grid (set which node is walkable and which not)
+        /// </summary>
+        public void BuildGrid()
+        {
+            SetGridSize();
+            CreateGrid();
+        }
+
+        /// <summary>
         /// Is grid created or is null?
         /// </summary>
         /// <returns></returns>
@@ -160,6 +165,20 @@ namespace redd096
         {
             //return if the grid was being created
             return grid != null;
+        }
+
+        /// <summary>
+        /// Update obstacles position on the grid
+        /// </summary>
+        /// <param name="obstacles"></param>
+        public void UpdateObstaclesPosition(ObstacleAStar3D[] obstacles)
+        {
+            //update position of every obstacle
+            if (obstacles != null)
+            {
+                foreach (ObstacleAStar3D obstacle in obstacles)
+                    obstacle.UpdatePositionOnGrid(this);
+            }
         }
 
         /// <summary>
@@ -245,6 +264,56 @@ namespace redd096
         public Node3D GetNodeByCoordinates(int x, int y)
         {
             return grid[x, y];
+        }
+
+        /// <summary>
+        /// From a start node, calculate node at the extremes of a box
+        /// </summary>
+        /// <param name="startNode">start node</param>
+        /// <param name="leftBack">left back of the box</param>
+        /// <param name="rightForward">right forward of the box</param>
+        /// <param name="leftNode"></param>
+        /// <param name="rightNode"></param>
+        /// <param name="backNode"></param>
+        /// <param name="forwardNode"></param>
+        public void GetNodesExtremesOfABox(Node3D startNode, Vector3 leftBack, Vector3 rightForward, out Node3D leftNode, out Node3D rightNode, out Node3D backNode, out Node3D forwardNode)
+        {
+            //set left node
+            leftNode = startNode;
+            for (int x = startNode.gridPosition.x - 1; x >= 0; x--)
+            {
+                if (grid[x, startNode.gridPosition.y].worldPosition.x + nodeRadius >= leftBack.x)
+                    leftNode = grid[x, startNode.gridPosition.y];
+                else
+                    break;
+            }
+            //set right node
+            rightNode = startNode;
+            for (int x = startNode.gridPosition.x + 1; x < gridSize.x; x++)
+            {
+                if (grid[x, startNode.gridPosition.y].worldPosition.x - nodeRadius <= rightForward.x)
+                    rightNode = grid[x, startNode.gridPosition.y];
+                else
+                    break;
+            }
+            //set up node
+            forwardNode = startNode;
+            for (int y = startNode.gridPosition.y + 1; y < gridSize.y; y++)
+            {
+                if (grid[startNode.gridPosition.x, y].worldPosition.z - nodeRadius <= rightForward.y)
+                    forwardNode = grid[startNode.gridPosition.x, y];
+                else
+                    break;
+            }
+            //set down node
+            backNode = startNode;
+            for (int y = startNode.gridPosition.y - 1; y >= 0; y--)
+            {
+                if (grid[startNode.gridPosition.x, y].worldPosition.z + nodeRadius >= leftBack.y)
+                    backNode = grid[startNode.gridPosition.x, y];
+                else
+                    break;
+            }
         }
 
         #endregion

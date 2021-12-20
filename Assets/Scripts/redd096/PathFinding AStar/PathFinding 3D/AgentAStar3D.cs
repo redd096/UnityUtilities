@@ -17,6 +17,9 @@ namespace redd096
         [EnableIf("typeCollider", ETypeCollider.box)] [SerializeField] Vector3 sizeCollider = Vector3.one;
         [EnableIf("typeCollider", ETypeCollider.sphere)] [SerializeField] float radiusCollider = 1;
 
+        [Header("If this object is an obstacle, ignore self (default get from this gameObject)")]
+        [SerializeField] ObstacleAStar3D obstacleAStar = default;
+
         [Header("DEBUG")]
         [SerializeField] bool drawDebug = false;
 
@@ -52,6 +55,13 @@ namespace redd096
             }
         }
 
+        void Awake()
+        {
+            //get references
+            if (obstacleAStar == null)
+                obstacleAStar = GetComponent<ObstacleAStar3D>();
+        }
+
         /// <summary>
         /// Agent can move on this node or hit some wall?
         /// </summary>
@@ -85,19 +95,21 @@ namespace redd096
         bool CanMove_Box()
         {
             //calculate nodes
-            CalculateNodes(
-                (node.worldPosition + offset).x - halfCollider.x,
-                (node.worldPosition + offset).x + halfCollider.x,
-                (node.worldPosition + offset).z + halfCollider.z,
-                (node.worldPosition + offset).z - halfCollider.z);
+            grid.GetNodesExtremesOfABox(node,
+                new Vector3(node.worldPosition.x + offset.x - halfCollider.x, 0, node.worldPosition.z + offset.z - halfCollider.z),
+                new Vector2(node.worldPosition.x + offset.x + halfCollider.x, node.worldPosition.z + offset.z + halfCollider.z),
+                out leftNode, out rightNode, out backNode, out forwardNode);
 
             //check every node
+            Node3D nodeToCheck;
             for (int x = leftNode.gridPosition.x; x <= rightNode.gridPosition.x; x++)
             {
                 for (int y = backNode.gridPosition.y; y <= forwardNode.gridPosition.y; y++)
                 {
-                    //if agent can not move through, return false
-                    if (grid.GetNodeByCoordinates(x, y).agentCanMoveThrough == false)
+                    nodeToCheck = grid.GetNodeByCoordinates(x, y);
+
+                    //if agent can not move through OR there are obstacles, return false
+                    if (nodeToCheck.agentCanMoveThrough == false || ThereAreObstacles(nodeToCheck))
                         return false;
                 }
             }
@@ -108,22 +120,24 @@ namespace redd096
         bool CanMove_Sphere()
         {
             //calculate nodes
-            CalculateNodes(
-                (node.worldPosition + offset).x - radiusCollider,
-                (node.worldPosition + offset).x + radiusCollider,
-                (node.worldPosition + offset).z + radiusCollider,
-                (node.worldPosition + offset).z - radiusCollider);
+            grid.GetNodesExtremesOfABox(node,
+                new Vector3(node.worldPosition.x + offset.x - radiusCollider, 0, node.worldPosition.z + offset.z - radiusCollider),
+                new Vector2(node.worldPosition.x + offset.x + radiusCollider, node.worldPosition.z + offset.z + radiusCollider),
+                out leftNode, out rightNode, out backNode, out forwardNode);
 
             //check every node
+            Node3D nodeToCheck;
             for (int x = leftNode.gridPosition.x; x <= rightNode.gridPosition.x; x++)
             {
                 for (int y = backNode.gridPosition.y; y <= forwardNode.gridPosition.y; y++)
                 {
+                    nodeToCheck = grid.GetNodeByCoordinates(x, y);
+
                     //if inside radius
-                    if (Vector3.Distance(node.worldPosition, grid.GetNodeByCoordinates(x, y).worldPosition) <= radiusCollider)
+                    if (Vector3.Distance(node.worldPosition, nodeToCheck.worldPosition) <= radiusCollider)
                     {
-                        //if agent can not move through, return false
-                        if (grid.GetNodeByCoordinates(x, y).agentCanMoveThrough == false)
+                        //if agent can not move through OR there are obstacles, return false
+                        if (nodeToCheck.agentCanMoveThrough == false || ThereAreObstacles(nodeToCheck))
                             return false;
                     }
                 }
@@ -132,44 +146,24 @@ namespace redd096
             return true;
         }
 
-        void CalculateNodes(float left, float right, float forward, float back)
+        bool ThereAreObstacles(Node3D nodeToCheck)
         {
-            //set left node
-            leftNode = node;
-            for (int x = node.gridPosition.x; x >= 0; x--)
+            //if there are obstacles
+            if (nodeToCheck.obstaclesOnThisNode.Count > 0)
             {
-                if (grid.GetNodeByCoordinates(x, node.gridPosition.y).worldPosition.x >= left)
-                    leftNode = grid.GetNodeByCoordinates(x, node.gridPosition.y);
-                else
-                    break;
+                //if there is only one obstacle and is self, return false
+                if (obstacleAStar)
+                {
+                    if (nodeToCheck.obstaclesOnThisNode.Count == 1 && nodeToCheck.obstaclesOnThisNode.Contains(obstacleAStar))
+                        return false;
+                }
+
+                //if there are others obstacles, return true
+                return true;
             }
-            //set right node
-            rightNode = node;
-            for (int x = node.gridPosition.x; x < grid.GridSize.x; x++)
-            {
-                if (grid.GetNodeByCoordinates(x, node.gridPosition.y).worldPosition.x <= right)
-                    rightNode = grid.GetNodeByCoordinates(x, node.gridPosition.y);
-                else
-                    break;
-            }
-            //set up node
-            forwardNode = node;
-            for (int y = node.gridPosition.y; y < grid.GridSize.y; y++)
-            {
-                if (grid.GetNodeByCoordinates(node.gridPosition.x, y).worldPosition.z <= forward)
-                    forwardNode = grid.GetNodeByCoordinates(node.gridPosition.x, y);
-                else
-                    break;
-            }
-            //set down node
-            backNode = node;
-            for (int y = node.gridPosition.y; y >= 0; y--)
-            {
-                if (grid.GetNodeByCoordinates(node.gridPosition.x, y).worldPosition.z >= back)
-                    backNode = grid.GetNodeByCoordinates(node.gridPosition.x, y);
-                else
-                    break;
-            }
+
+            //if there aren't obstacles, return false
+            return false;
         }
 
         #endregion

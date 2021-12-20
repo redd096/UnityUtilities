@@ -28,7 +28,8 @@ namespace redd096
             if (GUILayout.Button("Update Nodes"))
             {
                 //update nodes
-                gridAStar.UpdateGrid();
+                gridAStar.BuildGrid();
+                gridAStar.UpdateObstaclesPosition(FindObjectsOfType<ObstacleAStar2D>());
 
                 //repaint scene and set undo
                 SceneView.RepaintAll();
@@ -73,6 +74,7 @@ namespace redd096
         public int MaxSize => gridSize.x * gridSize.y;
         public virtual Vector2 GridWorldPosition => transform.position;
         public Vector2 GridWorldSize => gridWorldSize;
+        public float NodeRadius => nodeRadius;
 
         #endregion
 
@@ -80,7 +82,7 @@ namespace redd096
         {
             //create grid
             if (updateOnAwake && IsGridCreated() == false)
-                UpdateGrid();
+                BuildGrid();
         }
 
         void OnDrawGizmosSelected()
@@ -95,7 +97,7 @@ namespace redd096
                 foreach (Node2D node in grid)
                 {
                     //set color if walkable or not
-                    Gizmos.color = new Color(1, 1, 1, alphaNodes) * (node.isWalkable ? Color.green : Color.red);
+                    Gizmos.color = new Color(1, 1, 1, alphaNodes) * (node.isWalkable ? (node.obstaclesOnThisNode.Count <= 0 ? Color.green : Color.magenta) : Color.red);
                     //Gizmos.DrawSphere(node.worldPosition, overlapRadius);
                     Gizmos.DrawCube(node.worldPosition, Vector2.one * overlapDiameter);
                 }
@@ -149,7 +151,7 @@ namespace redd096
         /// <summary>
         /// Recreate grid (set which node is walkable and which not)
         /// </summary>
-        public void UpdateGrid()
+        public void BuildGrid()
         {
             SetGridSize();
             CreateGrid();
@@ -163,6 +165,20 @@ namespace redd096
         {
             //return if the grid was being created
             return grid != null;
+        }
+
+        /// <summary>
+        /// Update obstacles position on the grid
+        /// </summary>
+        /// <param name="obstacles"></param>
+        public void UpdateObstaclesPosition(ObstacleAStar2D[] obstacles)
+        {
+            //update position of every obstacle
+            if(obstacles != null)
+            {
+                foreach (ObstacleAStar2D obstacle in obstacles)
+                    obstacle.UpdatePositionOnGrid(this);
+            }    
         }
 
         /// <summary>
@@ -248,6 +264,56 @@ namespace redd096
         public Node2D GetNodeByCoordinates(int x, int y)
         {
             return grid[x, y];
+        }
+
+        /// <summary>
+        /// From a start node, calculate node at the extremes of a box
+        /// </summary>
+        /// <param name="startNode">start node</param>
+        /// <param name="leftDown">left down of the box</param>
+        /// <param name="rightUp">right up of the box</param>
+        /// <param name="leftNode"></param>
+        /// <param name="rightNode"></param>
+        /// <param name="downNode"></param>
+        /// <param name="upNode"></param>
+        public void GetNodesExtremesOfABox(Node2D startNode, Vector2 leftDown, Vector2 rightUp, out Node2D leftNode, out Node2D rightNode, out Node2D downNode, out Node2D upNode)
+        {
+            //set left node
+            leftNode = startNode;
+            for (int x = startNode.gridPosition.x - 1; x >= 0; x--)
+            {
+                if (grid[x, startNode.gridPosition.y].worldPosition.x + nodeRadius >= leftDown.x)
+                    leftNode = grid[x, startNode.gridPosition.y];
+                else
+                    break;
+            }
+            //set right node
+            rightNode = startNode;
+            for (int x = startNode.gridPosition.x + 1; x < gridSize.x; x++)
+            {
+                if (grid[x, startNode.gridPosition.y].worldPosition.x - nodeRadius <= rightUp.x)
+                    rightNode = grid[x, startNode.gridPosition.y];
+                else
+                    break;
+            }
+            //set up node
+            upNode = startNode;
+            for (int y = startNode.gridPosition.y + 1; y < gridSize.y; y++)
+            {
+                if (grid[startNode.gridPosition.x, y].worldPosition.y - nodeRadius <= rightUp.y)
+                    upNode = grid[startNode.gridPosition.x, y];
+                else
+                    break;
+            }
+            //set down node
+            downNode = startNode;
+            for (int y = startNode.gridPosition.y - 1; y >= 0; y--)
+            {
+                if (grid[startNode.gridPosition.x, y].worldPosition.y + nodeRadius >= leftDown.y)
+                    downNode = grid[startNode.gridPosition.x, y];
+                else
+                    break;
+            }
         }
 
         #endregion
