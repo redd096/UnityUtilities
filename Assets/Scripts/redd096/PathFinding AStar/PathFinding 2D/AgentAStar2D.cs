@@ -60,13 +60,17 @@ namespace redd096
         /// <returns></returns>
         public bool CanMoveOnThisNode(Node2D node, GridAStar2D grid)
         {
+            if (node == null || grid == null)
+                return false;
+
+            //set vars
             this.node = node;
             this.grid = grid;
-            halfCollider = sizeCollider * 0.5f;
 
             //box
             if (typeCollider == ETypeCollider.box)
             {
+                halfCollider = sizeCollider * 0.5f;
                 return CanMove_Box();
             }
             //circle
