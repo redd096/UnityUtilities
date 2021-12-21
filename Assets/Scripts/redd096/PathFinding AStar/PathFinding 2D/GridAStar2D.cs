@@ -270,19 +270,19 @@ namespace redd096
         /// From a start node, calculate node at the extremes of a box
         /// </summary>
         /// <param name="startNode">start node</param>
-        /// <param name="leftDown">left down of the box</param>
-        /// <param name="rightUp">right up of the box</param>
+        /// <param name="center">center of the box</param>
+        /// <param name="halfSize">half size of the box</param>
         /// <param name="leftNode"></param>
         /// <param name="rightNode"></param>
         /// <param name="downNode"></param>
         /// <param name="upNode"></param>
-        public void GetNodesExtremesOfABox(Node2D startNode, Vector2 leftDown, Vector2 rightUp, out Node2D leftNode, out Node2D rightNode, out Node2D downNode, out Node2D upNode)
+        public void GetNodesExtremesOfABox(Node2D startNode, Vector2 center, Vector2 halfSize, out Node2D leftNode, out Node2D rightNode, out Node2D downNode, out Node2D upNode)
         {
             //set left node
             leftNode = startNode;
             for (int x = startNode.gridPosition.x - 1; x >= 0; x--)
             {
-                if (grid[x, startNode.gridPosition.y].worldPosition.x + nodeRadius >= leftDown.x)
+                if (grid[x, startNode.gridPosition.y].worldPosition.x + nodeRadius >= (center - halfSize).x)
                     leftNode = grid[x, startNode.gridPosition.y];
                 else
                     break;
@@ -291,7 +291,7 @@ namespace redd096
             rightNode = startNode;
             for (int x = startNode.gridPosition.x + 1; x < gridSize.x; x++)
             {
-                if (grid[x, startNode.gridPosition.y].worldPosition.x - nodeRadius <= rightUp.x)
+                if (grid[x, startNode.gridPosition.y].worldPosition.x - nodeRadius <= (center + halfSize).x)
                     rightNode = grid[x, startNode.gridPosition.y];
                 else
                     break;
@@ -300,7 +300,7 @@ namespace redd096
             upNode = startNode;
             for (int y = startNode.gridPosition.y + 1; y < gridSize.y; y++)
             {
-                if (grid[startNode.gridPosition.x, y].worldPosition.y - nodeRadius <= rightUp.y)
+                if (grid[startNode.gridPosition.x, y].worldPosition.y - nodeRadius <= (center + halfSize).y)
                     upNode = grid[startNode.gridPosition.x, y];
                 else
                     break;
@@ -309,7 +309,7 @@ namespace redd096
             downNode = startNode;
             for (int y = startNode.gridPosition.y - 1; y >= 0; y--)
             {
-                if (grid[startNode.gridPosition.x, y].worldPosition.y + nodeRadius >= leftDown.y)
+                if (grid[startNode.gridPosition.x, y].worldPosition.y + nodeRadius >= (center - halfSize).y)
                     downNode = grid[startNode.gridPosition.x, y];
                 else
                     break;

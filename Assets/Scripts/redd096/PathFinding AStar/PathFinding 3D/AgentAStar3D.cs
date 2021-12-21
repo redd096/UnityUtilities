@@ -95,10 +95,7 @@ namespace redd096
         bool CanMove_Box()
         {
             //calculate nodes
-            grid.GetNodesExtremesOfABox(node,
-                new Vector3(node.worldPosition.x + offset.x - halfCollider.x, 0, node.worldPosition.z + offset.z - halfCollider.z),
-                new Vector2(node.worldPosition.x + offset.x + halfCollider.x, node.worldPosition.z + offset.z + halfCollider.z),
-                out leftNode, out rightNode, out backNode, out forwardNode);
+            grid.GetNodesExtremesOfABox(node, node.worldPosition + offset, halfCollider, out leftNode, out rightNode, out backNode, out forwardNode);
 
             //check every node
             Node3D nodeToCheck;
@@ -120,10 +117,7 @@ namespace redd096
         bool CanMove_Sphere()
         {
             //calculate nodes
-            grid.GetNodesExtremesOfABox(node,
-                new Vector3(node.worldPosition.x + offset.x - radiusCollider, 0, node.worldPosition.z + offset.z - radiusCollider),
-                new Vector2(node.worldPosition.x + offset.x + radiusCollider, node.worldPosition.z + offset.z + radiusCollider),
-                out leftNode, out rightNode, out backNode, out forwardNode);
+            grid.GetNodesExtremesOfABox(node, node.worldPosition + offset, Vector3.one * radiusCollider, out leftNode, out rightNode, out backNode, out forwardNode);
 
             //check every node
             Node3D nodeToCheck;

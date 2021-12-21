@@ -70,14 +70,9 @@ namespace redd096
                 if (col == null)
                     continue;
 
-                //set node for this collider
-                node = grid.GetNodeFromWorldPosition(col.bounds.center);
-
                 //calculate nodes
-                grid.GetNodesExtremesOfABox(node,
-                    new Vector2(col.bounds.center.x - col.bounds.extents.x, col.bounds.center.z - col.bounds.extents.z),
-                    new Vector2(col.bounds.center.x + col.bounds.extents.x, col.bounds.center.z + col.bounds.extents.z),
-                    out leftNode, out rightNode, out backNode, out forwardNode);
+                node = grid.GetNodeFromWorldPosition(col.bounds.center);
+                grid.GetNodesExtremesOfABox(node, col.bounds.center, col.bounds.extents, out leftNode, out rightNode, out backNode, out forwardNode);
 
                 //check every node
                 Node3D nodeToCheck;
