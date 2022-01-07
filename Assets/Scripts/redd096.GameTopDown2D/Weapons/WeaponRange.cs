@@ -24,10 +24,10 @@ namespace redd096.GameTopDown2D
         public float BulletSpeed = 10;
 
         [Header("Ammo")]
-        public bool hasAmmo = true;
-        /*[OnValueChanged("ChangedMaxAmmo")]*/ [CanEnable("hasAmmo")] [Min(0)] public int maxAmmo = 32;
-        [ReadOnly] public int currentAmmo = 32;
-        [CanEnable("hasAmmo")] public float delayReload = 1;
+        public bool HasAmmo = true;
+        /*[OnValueChanged("ChangedMaxAmmo")]*/ [CanEnable("hasAmmo")] [Min(0)] public int MaxAmmo = 32;
+        [ReadOnly] public int CurrentAmmo = 32;
+        [CanEnable("hasAmmo")] public float ReloadDelay = 1;
 
         [Header("DEBUG")]
         [SerializeField] bool drawDebug = false;
@@ -58,18 +58,19 @@ namespace redd096.GameTopDown2D
         public System.Action onReleaseAttack { get; set; }
         public System.Action onStartReload { get; set; }
         public System.Action onEndReload { get; set; }
+        public System.Action onAbortReload { get; set; }
 
         private void OnValidate()
         {
             //use instead of attribute OnValueChanged
-            if (currentAmmo != maxAmmo)
+            if (CurrentAmmo != MaxAmmo)
                 ChangedMaxAmmo();
         }
 
         void ChangedMaxAmmo()
         {
             //when change max ammo, reset current ammo (used by editor)
-            currentAmmo = maxAmmo;
+            CurrentAmmo = MaxAmmo;
         }
 
         public override void PressAttack()
@@ -107,7 +108,7 @@ namespace redd096.GameTopDown2D
         public void Reload()
         {
             //do only if this weapon has ammo, and is not full
-            if (hasAmmo && currentAmmo < maxAmmo)
+            if (HasAmmo && CurrentAmmo < MaxAmmo)
             {
                 //call event
                 onStartReload?.Invoke();
@@ -125,6 +126,9 @@ namespace redd096.GameTopDown2D
             {
                 StopCoroutine(reloadCoroutine);
                 reloadCoroutine = null;
+
+                //call event
+                onAbortReload?.Invoke();
             }
         }
 
@@ -136,10 +140,10 @@ namespace redd096.GameTopDown2D
         void Shoot()
         {
             //if this weapon has ammo
-            if (hasAmmo)
+            if (HasAmmo)
             {
                 //if there are not enough ammos, start reload instead of shoot
-                if (currentAmmo <= 0)
+                if (CurrentAmmo <= 0)
                 {
                     Reload();
                     return;
@@ -147,7 +151,7 @@ namespace redd096.GameTopDown2D
                 //else remove ammos
                 else
                 {
-                    currentAmmo--;
+                    CurrentAmmo--;
                     AbortReload();  //be sure is not reloading
                 }
             }
@@ -230,10 +234,10 @@ namespace redd096.GameTopDown2D
         IEnumerator ReloadCoroutine()
         {
             //wait
-            yield return new WaitForSeconds(delayReload);
+            yield return new WaitForSeconds(ReloadDelay);
 
             //then reload ammos
-            currentAmmo = maxAmmo;
+            CurrentAmmo = MaxAmmo;
 
             //call event
             onEndReload?.Invoke();
