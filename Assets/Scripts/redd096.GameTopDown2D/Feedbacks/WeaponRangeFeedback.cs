@@ -29,10 +29,10 @@ namespace redd096.GameTopDown2D
 
         [Header("On Shoot Gamepad Vibration")]
         [SerializeField] bool gamepadVibration = false;
-        [SerializeField] bool customVibration = false;
-        [EnableIf("customVibration")] [SerializeField] float vibrationDuration = 0.1f;
-        [EnableIf("customVibration")] [SerializeField] float lowFrequency = 0.5f;
-        [EnableIf("customVibration")] [SerializeField] float highFrequency = 0.8f;
+        [CanEnable("gamepadVibration")] [SerializeField] bool customVibration = false;
+        [CanEnable("gamepadVibration", "customVibration")] [SerializeField] float vibrationDuration = 0.1f;
+        [CanEnable("gamepadVibration", "customVibration")] [SerializeField] float lowFrequency = 0.5f;
+        [CanEnable("gamepadVibration", "customVibration")] [SerializeField] float highFrequency = 0.8f;
 
         [Header("On Press Attack - barrel by default is transform")]
         [SerializeField] Transform barrelOnPress = default;
@@ -44,6 +44,11 @@ namespace redd096.GameTopDown2D
         [SerializeField] bool updateAmmoOnPick = true;
         [SerializeField] bool updateAmmoOnShoot = true;
         [SerializeField] bool updateAmmoOnReload = true;
+
+        [Header("On Reload")]
+        [SerializeField] InstantiatedGameObjectStruct gameObjectOnReload = default;
+        [SerializeField] ParticleSystem particlesOnReload = default;
+        [SerializeField] AudioClass audioOnReload = default;
 
         //deactive on release attack
         GameObject instantiatedGameObjectOnPress;
@@ -65,6 +70,7 @@ namespace redd096.GameTopDown2D
                 weaponRange.onShoot += OnShoot;
                 weaponRange.onPressAttack += OnPressAttack;
                 weaponRange.onReleaseAttack += OnReleaseAttack;
+                weaponRange.onStartReload += OnStartReload;
                 weaponRange.onEndReload += OnEndReload;
             }
         }
@@ -79,6 +85,7 @@ namespace redd096.GameTopDown2D
                 weaponRange.onShoot -= OnShoot;
                 weaponRange.onPressAttack -= OnPressAttack;
                 weaponRange.onReleaseAttack -= OnReleaseAttack;
+                weaponRange.onStartReload -= OnStartReload;
                 weaponRange.onEndReload -= OnEndReload;
             }
         }
@@ -175,6 +182,14 @@ namespace redd096.GameTopDown2D
                 Pooling.Destroy(instantiatedParticlesOnPress.gameObject);
             if (instantiatedAudioOnPress)
                 Pooling.Destroy(instantiatedAudioOnPress.gameObject);
+        }
+
+        void OnStartReload()
+        {
+            //instantiate vfx and sfx
+            InstantiateGameObjectManager.instance.Play(gameObjectOnReload, transform.position, transform.rotation);
+            ParticlesManager.instance.Play(particlesOnReload, transform.position, transform.rotation);
+            SoundManager.instance.Play(audioOnReload, transform.position);
         }
 
         void OnEndReload()
