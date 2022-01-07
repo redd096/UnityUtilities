@@ -6,7 +6,8 @@ namespace redd096
     [AddComponentMenu("redd096/Singletons/Scene Loader")]
     public class SceneLoader : Singleton<SceneLoader>
     {
-        [SerializeField] bool lockMouse = true;
+        [SerializeField] bool changeCursorLockMode = true;
+        [SerializeField] CursorLockMode lockModeOnResume = CursorLockMode.Confined;
 
         /// <summary>
         /// Resume time and hide cursor
@@ -20,7 +21,7 @@ namespace redd096
             Time.timeScale = 1;
 
             //enable player input and hide cursor
-            if (lockMouse) LockMouse(CursorLockMode.Locked);
+            if (changeCursorLockMode) LockMouse(lockModeOnResume);
         }
 
         /// <summary>
@@ -35,7 +36,7 @@ namespace redd096
             Time.timeScale = 0;
 
             //disable player input and show cursor
-            if (lockMouse) LockMouse(CursorLockMode.None);
+            if (changeCursorLockMode) LockMouse(CursorLockMode.None);
         }
 
         /// <summary>
@@ -56,7 +57,7 @@ namespace redd096
         public void ReloadScene()
         {
             //show cursor and set timeScale to 1
-            if (lockMouse) LockMouse(CursorLockMode.None);
+            if (changeCursorLockMode) LockMouse(CursorLockMode.None);
             Time.timeScale = 1;
 
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
@@ -68,7 +69,7 @@ namespace redd096
         public void LoadScene(string scene)
         {
             //show cursor and set timeScale to 1
-            if (lockMouse) LockMouse(CursorLockMode.None);
+            if (changeCursorLockMode) LockMouse(CursorLockMode.None);
             Time.timeScale = 1;
 
             //load new scene
@@ -81,7 +82,7 @@ namespace redd096
         public void LoadNextScene()
         {
             //show cursor and set timeScale to 1
-            if (lockMouse) LockMouse(CursorLockMode.None);
+            if (changeCursorLockMode) LockMouse(CursorLockMode.None);
             Time.timeScale = 1;
 
             //load next scene
@@ -102,7 +103,7 @@ namespace redd096
         public void LockMouse(CursorLockMode lockMode)
         {
             Cursor.lockState = lockMode;
-            Cursor.visible = lockMode != CursorLockMode.Locked;
+            Cursor.visible = lockMode == CursorLockMode.None;
         }
     }
 }

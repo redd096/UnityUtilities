@@ -37,22 +37,35 @@ namespace redd096.GameTopDown2D
             if (aimSprite == null || aimComponent == null)
                 return;
 
-            //if mouse free, and using mouse
-            if (mouseFree && playerInput && playerInput.currentControlScheme == mouseSchemeName)
+            //if using mouse
+            if (playerInput && playerInput.currentControlScheme == mouseSchemeName)
             {
-                aimSprite.transform.position = aimComponent.AimPositionNotNormalized;                                           //set current position
+                //if mouse free
+                if (mouseFree)
+                {
+                    aimSprite.transform.position = aimComponent.AimPositionNotNormalized;                                           //set current position
+                }
+                //else check distance
+                else
+                {
+                    float distance = Vector2.Distance(transform.position, aimComponent.AimPositionNotNormalized);
+
+                    if (distance > maxDistance)
+                        aimSprite.transform.position = (Vector2)transform.position + aimComponent.AimDirectionInput * maxDistance;  //max distance
+                    else if (distance < minDistance)
+                        aimSprite.transform.position = (Vector2)transform.position + aimComponent.AimDirectionInput * minDistance;  //min distance
+                    else
+                        aimSprite.transform.position = aimComponent.AimPositionNotNormalized;                                       //current distance
+                }
             }
-            //else, check distance
+            //if NOT using mouse
             else
             {
-                float distance = Vector2.Distance(transform.position, aimComponent.AimPositionNotNormalized);
+                //from 0 to 1, from min to max (gamepad input is from 0 to 1, so removing transform.position we will get that value)
+                float value = Mathf.Lerp(minDistance, maxDistance, (aimComponent.AimPositionNotNormalized - (Vector2)transform.position).magnitude);
 
-                if (distance > maxDistance)
-                    aimSprite.transform.position = (Vector2)transform.position + aimComponent.AimDirectionInput * maxDistance;  //max distance
-                else if (distance < minDistance)
-                    aimSprite.transform.position = (Vector2)transform.position + aimComponent.AimDirectionInput * minDistance;  //min distance
-                else
-                    aimSprite.transform.position = aimComponent.AimPositionNotNormalized;                                       //current distance
+                //set position
+                aimSprite.transform.position = (Vector2)transform.position + aimComponent.AimDirectionInput * value;
             }
         }
     }
