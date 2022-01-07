@@ -3,8 +3,8 @@ using UnityEngine.InputSystem;
 
 namespace redd096.GameTopDown2D
 {
-    [AddComponentMenu("redd096/.GameTopDown2D/Feedbacks/Aim Feedback")]
-    public class AimFeedback : MonoBehaviour
+    [AddComponentMenu("redd096/.GameTopDown2D/Feedbacks/Crosshair Feedback")]
+    public class CrosshairFeedback : MonoBehaviour
     {
         [Header("Necessary Components - default get in parent")]
         [SerializeField] AimComponent aimComponent = default;
