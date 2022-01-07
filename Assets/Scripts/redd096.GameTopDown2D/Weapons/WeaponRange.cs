@@ -56,6 +56,8 @@ namespace redd096.GameTopDown2D
         public System.Action onShoot { get; set; }
         public System.Action onPressAttack { get; set; }
         public System.Action onReleaseAttack { get; set; }
+        public System.Action onStartReload { get; set; }
+        public System.Action onEndReload { get; set; }
 
         private void OnValidate()
         {
@@ -75,8 +77,6 @@ namespace redd096.GameTopDown2D
             //check rate of fire
             if (Time.time > timeForNextShot)
             {
-                timeForNextShot = Time.time + RateOfFire;
-
                 //shoot
                 Shoot();
 
@@ -109,6 +109,9 @@ namespace redd096.GameTopDown2D
             //do only if this weapon has ammo, and is not full
             if (hasAmmo && currentAmmo < maxAmmo)
             {
+                //call event
+                onStartReload?.Invoke();
+
                 //start reload coroutine
                 if (reloadCoroutine == null)
                     reloadCoroutine = StartCoroutine(ReloadCoroutine());
@@ -146,12 +149,11 @@ namespace redd096.GameTopDown2D
                 {
                     currentAmmo--;
                     AbortReload();  //be sure is not reloading
-
-                    //update ammo UI
-                    //if (Owner && Owner.CharacterType == Character.ECharacterType.Player)
-                    //    GameManager.instance.uiManager.SetAmmoText(currentAmmo);
                 }
             }
+
+            //update rate of fire
+            timeForNextShot = Time.time + RateOfFire;
 
             //shoot every bullet
             if (BarrelSimultaneously)
@@ -217,8 +219,6 @@ namespace redd096.GameTopDown2D
                 //check rate of fire
                 if (Time.time > timeForNextShot)
                 {
-                    timeForNextShot = Time.time + RateOfFire;
-
                     //shoot
                     Shoot();
                 }
@@ -235,9 +235,8 @@ namespace redd096.GameTopDown2D
             //then reload ammos
             currentAmmo = maxAmmo;
 
-            //update ammo UI
-            //if (Owner && Owner.CharacterType == Character.ECharacterType.Player)
-            //    GameManager.instance.uiManager.SetAmmoText(currentAmmo);
+            //call event
+            onEndReload?.Invoke();
 
             reloadCoroutine = null;
         }

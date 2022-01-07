@@ -33,6 +33,11 @@ namespace redd096.GameTopDown2D
         [SerializeField] ParticleSystem particlesOnPress = default;
         [SerializeField] AudioClass audioOnPress = default;
 
+        [Header("Ammo")]
+        [SerializeField] bool updateAmmoOnPick = true;
+        [SerializeField] bool updateAmmoOnShoot = true;
+        [SerializeField] bool updateAmmoOnReload = true;
+
         //deactive on release attack
         GameObject instantiatedGameObjectOnPress;
         ParticleSystem instantiatedParticlesOnPress;
@@ -48,10 +53,12 @@ namespace redd096.GameTopDown2D
             //add events
             if (weaponRange)
             {
+                weaponRange.onPickWeapon += OnPickWeapon;
                 weaponRange.onInstantiateBullet += OnInstantiateBullet;
                 weaponRange.onShoot += OnShoot;
                 weaponRange.onPressAttack += OnPressAttack;
                 weaponRange.onReleaseAttack += OnReleaseAttack;
+                weaponRange.onEndReload += OnEndReload;
             }
         }
 
@@ -60,14 +67,26 @@ namespace redd096.GameTopDown2D
             //remove events
             if (weaponRange)
             {
+                weaponRange.onPickWeapon -= OnPickWeapon;
                 weaponRange.onInstantiateBullet -= OnInstantiateBullet;
                 weaponRange.onShoot -= OnShoot;
                 weaponRange.onPressAttack -= OnPressAttack;
                 weaponRange.onReleaseAttack -= OnReleaseAttack;
+                weaponRange.onEndReload -= OnEndReload;
             }
         }
 
         #region private API
+
+        void OnPickWeapon()
+        {
+            //update ammo UI
+            if (updateAmmoOnPick)
+            {
+                //if (weaponRange && weaponRange.Owner && weaponRange.Owner.CharacterType == Character.ECharacterType.Player)
+                //    GameManager.instance.uiManager.SetAmmoText(weaponRange.currentAmmo);
+            }
+        }
 
         void OnInstantiateBullet(Transform barrel)
         {
@@ -105,6 +124,13 @@ namespace redd096.GameTopDown2D
                 else
                     CameraShake.instance.StartShake();
             }
+
+            //update ammo UI
+            if (updateAmmoOnShoot)
+            {
+                //if (weaponRange && weaponRange.Owner && weaponRange.Owner.CharacterType == Character.ECharacterType.Player)
+                //    GameManager.instance.uiManager.SetAmmoText(weaponRange.currentAmmo);
+            }
         }
 
         void OnPressAttack()
@@ -132,6 +158,16 @@ namespace redd096.GameTopDown2D
                 Pooling.Destroy(instantiatedParticlesOnPress.gameObject);
             if (instantiatedAudioOnPress)
                 Pooling.Destroy(instantiatedAudioOnPress.gameObject);
+        }
+
+        void OnEndReload()
+        {
+            //update ammo UI
+            if (updateAmmoOnReload)
+            {
+                //if (weaponRange && weaponRange.Owner && weaponRange.Owner.CharacterType == Character.ECharacterType.Player)
+                //    GameManager.instance.uiManager.SetAmmoText(weaponRange.currentAmmo);
+            }
         }
 
         #endregion
