@@ -38,6 +38,9 @@ namespace redd096
         //blackboard to save vars to use in differents tasks
         Dictionary<string, object> blackboard = new Dictionary<string, object>();
 
+        //events
+        public System.Action<string> onSetState { get; set; }
+
         void Start()
         {
             //start with first state
@@ -76,6 +79,9 @@ namespace redd096
             {
                 EnterState();
             }
+
+            //call event
+            onSetState?.Invoke(CurrentState != null ? CurrentState.StateName : "");
         }
 
         #region private API
