@@ -34,7 +34,7 @@ namespace redd096.GameTopDown2D
         [ReadOnly] public float CurrentSpeed;                   //CurrentVelocity.magnitude
 
         //events
-        public System.Action onChangeMovementDirection { get; set; }
+        public System.Action<bool> onChangeMovementDirection { get; set; }
 
         //private
         Vector2 desiredVelocity;              //when moves, set it as input direction * speed (used to move this object, will be reset in every frame)
@@ -69,7 +69,7 @@ namespace redd096.GameTopDown2D
                 IsMovingRight = CheckIsMovingRight();
 
                 //call event
-                onChangeMovementDirection?.Invoke();
+                onChangeMovementDirection?.Invoke(IsMovingRight);
             }
 
             //do movement
