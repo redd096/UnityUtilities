@@ -10,7 +10,7 @@ namespace redd096.GameTopDown2D
     {
         [Header("Range Weapon")]
         [Tooltip("Keep pressed or click?")] public bool Automatic = true;
-        public float RateOfFire = 0.2f;
+        [Tooltip("Delay between shots")] public float RateOfFire = 0.2f;
         [Tooltip("Push back when shoot")] public float Recoil = 1;
         [Tooltip("Rotate random the shot when instantiated")] public float NoiseAccuracy = 10;
 
@@ -118,7 +118,7 @@ namespace redd096.GameTopDown2D
         public void AbortReload()
         {
             //stop reload coroutine if running
-            if(reloadCoroutine != null)
+            if (reloadCoroutine != null)
             {
                 StopCoroutine(reloadCoroutine);
                 reloadCoroutine = null;
@@ -133,10 +133,10 @@ namespace redd096.GameTopDown2D
         void Shoot()
         {
             //if this weapon has ammo
-            if(hasAmmo)
+            if (hasAmmo)
             {
                 //if there are not enough ammos, start reload instead of shoot
-                if(currentAmmo <= 0)
+                if (currentAmmo <= 0)
                 {
                     Reload();
                     return;
@@ -146,6 +146,10 @@ namespace redd096.GameTopDown2D
                 {
                     currentAmmo--;
                     AbortReload();  //be sure is not reloading
+
+                    //update ammo UI
+                    //if (Owner && Owner.CharacterType == Character.ECharacterType.Player)
+                    //    GameManager.instance.uiManager.SetAmmoText(currentAmmo);
                 }
             }
 
@@ -183,7 +187,7 @@ namespace redd096.GameTopDown2D
             Vector2 direction = Quaternion.AngleAxis(randomNoiseAccuracy, Vector3.forward) * barrel.right;                                  //direction with noise
 
             //draw debug
-            if(drawDebug)
+            if (drawDebug)
                 Debug.DrawLine(barrel.position, (Vector2)barrel.position + direction, Color.red, 1);
 
             //instantiate bullet
@@ -230,6 +234,10 @@ namespace redd096.GameTopDown2D
 
             //then reload ammos
             currentAmmo = maxAmmo;
+
+            //update ammo UI
+            //if (Owner && Owner.CharacterType == Character.ECharacterType.Player)
+            //    GameManager.instance.uiManager.SetAmmoText(currentAmmo);
 
             reloadCoroutine = null;
         }

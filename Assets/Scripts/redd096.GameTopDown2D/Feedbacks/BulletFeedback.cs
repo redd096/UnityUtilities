@@ -42,7 +42,7 @@ namespace redd096.GameTopDown2D
         void OnEnable()
         {
             //get references
-            if(bullet == null)
+            if (bullet == null)
                 bullet = GetComponentInParent<Bullet>();
 
             //add events

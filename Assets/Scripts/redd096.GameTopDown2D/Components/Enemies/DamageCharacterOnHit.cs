@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using redd096.Attributes;
 
 namespace redd096.GameTopDown2D
 {
@@ -8,13 +7,13 @@ namespace redd096.GameTopDown2D
     public class DamageCharacterOnHit : MonoBehaviour
     {
         [Header("Do Damage On Hit?")]
-        [SerializeField] bool isActive = true;
+        public bool IsActive = true;
 
         [Header("Damage")]
-        [CanEnable("isActive")] [SerializeField] List<Character.ECharacterType> charactersToHit = new List<Character.ECharacterType>() { Character.ECharacterType.Player };
-        [CanEnable("isActive")] [SerializeField] float damage = 10;
-        [CanEnable("isActive")] [SerializeField] float pushForce = 10;
-        [Tooltip("Necessary for on collision stay, to not call damage every frame")] [CanEnable("isActive")] [SerializeField] float delayBetweenAttacks = 1;
+        [SerializeField] List<Character.ECharacterType> charactersToHit = new List<Character.ECharacterType>() { Character.ECharacterType.Player };
+        [SerializeField] float damage = 10;
+        [SerializeField] float pushForce = 10;
+        [Tooltip("Necessary for on collision stay, to not call damage every frame")] [SerializeField] float delayBetweenAttacks = 1;
 
         //events
         public System.Action onHit { get; set; }
@@ -30,9 +29,6 @@ namespace redd096.GameTopDown2D
 
         void OnCollisionEnter2D(Collision2D collision)
         {
-            if (isActive == false)
-                return;
-
             //check if hit character and is not already in the list
             Character hitCharacter = collision.gameObject.GetComponentInParent<Character>();
             if (hitCharacter && hits.ContainsKey(hitCharacter) == false)
@@ -50,9 +46,6 @@ namespace redd096.GameTopDown2D
 
         void OnCollisionStay2D(Collision2D collision)
         {
-            if (isActive == false)
-                return;
-
             //check if hit character and is in the list
             Character hitCharacter = collision.gameObject.GetComponentInParent<Character>();
             if (hitCharacter && hits.ContainsKey(hitCharacter))
@@ -68,10 +61,7 @@ namespace redd096.GameTopDown2D
 
         void OnCollisionExit2D(Collision2D collision)
         {
-            if (isActive == false)
-                return;
-
-            //check if hit character and is in the list
+            //check if exit hit character and is in the list
             Character hitCharacter = collision.gameObject.GetComponentInParent<Character>();
             if (hitCharacter && hits.ContainsKey(hitCharacter))
             {
@@ -82,8 +72,11 @@ namespace redd096.GameTopDown2D
 
         void OnHit(Collision2D collision, Character hitCharacter)
         {
+            if (IsActive == false)
+                return;
+
             //if there is no character, do nothing
-            if(hitCharacter == null)
+            if (hitCharacter == null)
             {
                 //and remove from the list
                 if (hits.ContainsKey(hitCharacter))
@@ -97,7 +90,7 @@ namespace redd096.GameTopDown2D
 
             //do damage and push back
             if (hitCharacter.GetSavedComponent<HealthComponent>())
-                hitCharacter.GetSavedComponent<HealthComponent>().GetDamage(damage);
+                hitCharacter.GetSavedComponent<HealthComponent>().GetDamage(damage, character, collision.GetContact(0).point);
 
             if (hitCharacter && hitCharacter.GetSavedComponent<MovementComponent>())
                 hitCharacter.GetSavedComponent<MovementComponent>().PushInDirection(((Vector2)hitCharacter.transform.position - collision.GetContact(0).point).normalized, pushForce);

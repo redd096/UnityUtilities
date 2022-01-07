@@ -15,7 +15,7 @@ namespace redd096.GameTopDown2D
         void OnEnable()
         {
             //get references
-            if(component == null) component = GetComponentInParent<AimComponent>();
+            if (component == null) component = GetComponentInParent<AimComponent>();
             if (spritesToFlip == null || spritesToFlip.Length <= 0) spritesToFlip = GetComponentsInChildren<SpriteRenderer>();
 
             //add events
@@ -34,7 +34,7 @@ namespace redd096.GameTopDown2D
         {
             //flip right or left
             foreach (SpriteRenderer sprite in spritesToFlip)
-                if(sprite)
+                if (sprite)
                     sprite.flipX = (defaultLookRight && isLookingRight == false) || (defaultLookRight == false && isLookingRight);
         }
     }

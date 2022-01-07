@@ -15,7 +15,7 @@ namespace redd096.GameTopDown2D
         void OnEnable()
         {
             //get references
-            if(weaponBASE == null) weaponBASE = GetComponentInParent<WeaponBASE>();
+            if (weaponBASE == null) weaponBASE = GetComponentInParent<WeaponBASE>();
             if (objectPivot == null) objectPivot = transform;
         }
 

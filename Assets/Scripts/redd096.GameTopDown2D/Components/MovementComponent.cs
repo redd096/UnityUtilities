@@ -23,7 +23,7 @@ namespace redd096.GameTopDown2D
         [Header("Necessary Components (by default get from this gameObject)")]
         [SerializeField] CollisionComponent collisionComponent = default;
         [Tooltip("When collide in every direction, can move everywhere")] [SerializeField] bool tempFixCollisionComponent = true;
-        [EnableIf("movementMode", EMovementModes.Rigidbody)] [SerializeField] Rigidbody2D rb = default;
+        [ShowIf("movementMode", EMovementModes.Rigidbody)] [SerializeField] Rigidbody2D rb = default;
 
         [Header("DEBUG")]
         [ReadOnly] public bool IsMovingRight = true;            //check if moving right

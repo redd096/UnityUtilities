@@ -23,8 +23,8 @@ namespace redd096.GameTopDown2D
         [SerializeField] ParticleSystem particlesOnGetDamage = default;
         [SerializeField] AudioClass audioOnGetDamage = default;
 
-        [Header("On Die")]
-        [SerializeField] InstantiatedGameObjectStruct gameObjectOnDie = default;
+        [Header("On Die (instantiate every element in array)")]
+        [SerializeField] InstantiatedGameObjectStruct[] gameObjectsOnDie = default;
         [SerializeField] ParticleSystem particlesOnDie = default;
         [SerializeField] AudioClass audioOnDie = default;
 
@@ -42,7 +42,7 @@ namespace redd096.GameTopDown2D
         void OnEnable()
         {
             //get references
-            if(component == null) component = GetComponentInParent<HealthComponent>();
+            if (component == null) component = GetComponentInParent<HealthComponent>();
             if (spritesToUse == null || spritesToUse.Length <= 0) spritesToUse = GetComponentsInChildren<SpriteRenderer>();
 
             //add events
@@ -94,7 +94,9 @@ namespace redd096.GameTopDown2D
         void OnDie(HealthComponent whoDied)
         {
             //instantiate vfx and sfx
-            InstantiateGameObjectManager.instance.Play(gameObjectOnDie, transform.position, transform.rotation);
+            foreach (InstantiatedGameObjectStruct goOnDie in gameObjectsOnDie)
+                InstantiateGameObjectManager.instance.Play(goOnDie, transform.position, transform.rotation);    //instantiate every element in array
+
             ParticlesManager.instance.Play(particlesOnDie, transform.position, transform.rotation);
             SoundManager.instance.Play(audioOnDie, transform.position);
         }

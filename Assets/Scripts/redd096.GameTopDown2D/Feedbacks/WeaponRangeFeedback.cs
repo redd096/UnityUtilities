@@ -36,12 +36,12 @@ namespace redd096.GameTopDown2D
         //deactive on release attack
         GameObject instantiatedGameObjectOnPress;
         ParticleSystem instantiatedParticlesOnPress;
-        AudioSource instantiatedAudioOnPress;        
+        AudioSource instantiatedAudioOnPress;
 
         void OnEnable()
         {
             //get references
-            if(weaponRange == null) weaponRange = GetComponentInParent<WeaponRange>();
+            if (weaponRange == null) weaponRange = GetComponentInParent<WeaponRange>();
             if (mainBarrel == null) mainBarrel = transform;
             if (barrelOnPress == null) barrelOnPress = transform;
 

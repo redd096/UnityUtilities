@@ -58,7 +58,7 @@ namespace redd096.GameTopDown2D
         private void Awake()
         {
             //get references
-            if(movementComponent == null)
+            if (movementComponent == null)
                 movementComponent = GetComponent<MovementComponent>();
 
             if (movementComponent == null)
@@ -166,7 +166,7 @@ namespace redd096.GameTopDown2D
                 alreadyHit.Add(hitMain);
 
                 //if hit something, do damage and push back
-                if (hitMain.GetSavedComponent<HealthComponent>()) hitMain.GetSavedComponent<HealthComponent>().GetDamage(damage);
+                if (hitMain.GetSavedComponent<HealthComponent>()) hitMain.GetSavedComponent<HealthComponent>().GetDamage(damage, owner, collision.GetContact(0).point, ignoreShield);
                 if (hitMain && hitMain.GetSavedComponent<MovementComponent>()) hitMain.GetSavedComponent<MovementComponent>().PushInDirection(direction, knockBack);
             }
 
@@ -216,7 +216,7 @@ namespace redd096.GameTopDown2D
                     hits.Add(hitMain);
 
                     //do damage
-                    if (hitMain.GetSavedComponent<HealthComponent>()) hitMain.GetSavedComponent<HealthComponent>().GetDamage(damage);
+                    if (hitMain.GetSavedComponent<HealthComponent>()) hitMain.GetSavedComponent<HealthComponent>().GetDamage(damage, owner, transform.position, ignoreShieldAreaDamage);
 
                     //and knockback if necessary
                     if (knockbackAlsoInArea && hitMain && hitMain.GetSavedComponent<MovementComponent>())

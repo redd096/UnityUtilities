@@ -30,6 +30,11 @@ namespace redd096.GameTopDown2D
         {
             Owner = owner;
 
+            //if is a range weapon and is picked from Player, update ammo UI
+            //if (this is WeaponRange weaponRange)
+            //    if (Owner && Owner.CharacterType == Character.ECharacterType.Player)
+            //        GameManager.instance.uiManager.SetAmmoText(weaponRange.currentAmmo);
+
             //call event
             onPickWeapon?.Invoke();
         }
@@ -48,7 +53,7 @@ namespace redd096.GameTopDown2D
             onDropWeapon?.Invoke();
 
             //destroy weapon, if setted
-            if(destroyWeaponOnDrop)
+            if (destroyWeaponOnDrop)
                 Destroy(gameObject);
         }
 

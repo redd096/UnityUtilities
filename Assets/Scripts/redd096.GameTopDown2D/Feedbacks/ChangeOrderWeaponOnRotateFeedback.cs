@@ -18,7 +18,7 @@ namespace redd096.GameTopDown2D
         void OnEnable()
         {
             //get referemces
-            if(weaponBASE == null) weaponBASE = GetComponentInParent<WeaponBASE>();
+            if (weaponBASE == null) weaponBASE = GetComponentInParent<WeaponBASE>();
             if (spritesToUse == null || spritesToUse.Length <= 0) spritesToUse = GetComponentsInChildren<SpriteRenderer>();
 
             //add events
