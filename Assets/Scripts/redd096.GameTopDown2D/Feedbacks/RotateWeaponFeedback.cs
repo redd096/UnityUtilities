@@ -10,6 +10,7 @@ namespace redd096.GameTopDown2D
 
         [Header("Pivot - default is this transform")]
         [SerializeField] Transform objectPivot = default;
+        [Tooltip("By default this weapon is looking to the right?")] [SerializeField] bool defaultLookRight = true;
 
         void OnEnable()
         {
@@ -32,8 +33,8 @@ namespace redd096.GameTopDown2D
                 Vector2 aimDirection = weaponBASE.Owner.GetSavedComponent<AimComponent>().AimDirectionInput;
                 Quaternion rotation = Quaternion.LookRotation(Vector3.forward, Quaternion.AngleAxis(90, Vector3.forward) * aimDirection);
 
-                //when rotate to left, rotate 180 updown
-                if (aimDirection.x < 0)
+                //when rotate to opposite direction (from default), rotate 180 updown
+                if ((defaultLookRight && aimDirection.x < 0) || (defaultLookRight == false && aimDirection.x > 0))
                 {
                     rotation *= Quaternion.AngleAxis(180, Vector3.right);
                 }
