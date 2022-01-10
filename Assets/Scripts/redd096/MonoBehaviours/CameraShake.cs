@@ -19,7 +19,7 @@ namespace redd096
 		[Tooltip("If another shake is already running, stop it and start new one")] [SerializeField] bool overwriteShake = true;
 
 		Coroutine shakeCoroutine;
-		Vector3 originalPos;
+		Transform cameraParent;
 
 		void Awake()
 		{
@@ -31,28 +31,45 @@ namespace redd096
 			{
 				camTransform = Camera.main.transform;
 			}
+
+			//set cam parent
+			if (camTransform)
+			{
+				cameraParent = new GameObject("Camera Parent (camera shake)").transform;
+				cameraParent.SetParent(camTransform.parent);                //set same parent (if camera was child of something)
+				cameraParent.localPosition = Vector3.zero;                  //set start local position
+				camTransform.SetParent(cameraParent);                       //set camera parent
+			}
+			else
+			{
+				Debug.LogWarning("There is no camera for camera shake");
+			}
 		}
 
 		IEnumerator ShakeCoroutine(float duration, float amount)
 		{
+			//reset position
+			if (cameraParent)
+				cameraParent.localPosition = Vector3.zero;
+
 			//set shake duration
 			float shake = Time.time + duration;
 
 			//shake
 			while (shake > Time.time && Time.timeScale > 0)
 			{
-				//stop if there is no camera
-				if (camTransform == null)
+				//stop if there is no camera parent
+				if (cameraParent == null)
 					break;
 
-				camTransform.localPosition = originalPos + Random.insideUnitSphere * amount;
+				cameraParent.localPosition = Random.insideUnitSphere * amount;
 
 				yield return null;
 			}
 
 			//then reset to original position
-			if (camTransform)
-				camTransform.localPosition = originalPos;
+			if (cameraParent)
+				cameraParent.localPosition = Vector3.zero;
 
 			shakeCoroutine = null;
 		}
@@ -72,10 +89,6 @@ namespace redd096
 		/// </summary>
 		public void StartShake(float duration, float amount)
 		{
-			//set start position if no shake is running
-			if (shakeCoroutine == null && camTransform)
-				originalPos = camTransform.localPosition;
-
 			//do only if there is not another shake, or can overwrite it
 			if (shakeCoroutine == null || overwriteShake)
 			{
