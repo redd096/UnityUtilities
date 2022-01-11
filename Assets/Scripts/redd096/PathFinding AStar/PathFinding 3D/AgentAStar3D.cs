@@ -26,7 +26,6 @@ namespace redd096
         //vars
         Node3D node;
         GridAStar3D grid;
-        Vector3 halfCollider;
 
         //nodes to calculate
         Node3D leftNode;
@@ -80,7 +79,6 @@ namespace redd096
             //box
             if (typeCollider == ETypeCollider.box)
             {
-                halfCollider = sizeCollider * 0.5f;
                 return CanMove_Box();
             }
             //sphere
@@ -95,7 +93,7 @@ namespace redd096
         bool CanMove_Box()
         {
             //calculate nodes
-            grid.GetNodesExtremesOfABox(node, node.worldPosition + offset, halfCollider, out leftNode, out rightNode, out backNode, out forwardNode);
+            grid.GetNodesExtremesOfABox(node, node.worldPosition + offset, sizeCollider * 0.5f, out leftNode, out rightNode, out backNode, out forwardNode);
 
             //check every node
             Node3D nodeToCheck;

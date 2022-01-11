@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using redd096.Attributes;
 
 namespace redd096
 {
@@ -9,19 +10,56 @@ namespace redd096
     [AddComponentMenu("redd096/Path Finding A Star/Obstacle A Star 3D")]
     public class ObstacleAStar3D : MonoBehaviour
     {
+        enum ETypeCollider { sphere, box }
+
+        [Header("Obstacle")]
+        [SerializeField] bool useCustomCollider = true;
+        [Tooltip("Obstacle is on the node only when totally inside (reach at least center of the node) or just by touching it?")] [SerializeField] bool takeNodeAlsoIfNotTotallyInside = true;
+
         [Header("Colliders to use - default get in childrens")]
-        [SerializeField] Collider[] collidersToUse = default;
+        [CanEnable("useCustomCollider", NOT = true)] [SerializeField] Collider[] collidersToUse = default;
+
+        [Header("Custom Collider")]
+        [CanEnable("useCustomCollider")] [SerializeField] Vector3 offset = Vector3.zero;
+        [CanEnable("useCustomCollider")] [SerializeField] ETypeCollider typeCollider = ETypeCollider.box;
+        [CanEnable("useCustomCollider")] [ShowIf("typeCollider", ETypeCollider.box)] [SerializeField] Vector3 sizeCollider = Vector3.one;
+        [CanEnable("useCustomCollider")] [ShowIf("typeCollider", ETypeCollider.sphere)] [SerializeField] float radiusCollider = 1;
+
+        [Header("DEBUG")]
+        [SerializeField] bool drawCustomCollider = false;
 
         //vars
-        Node3D node;
         GridAStar3D grid;
-        List<Node3D> nodesPosition = new List<Node3D>();
+        List<Node3D> nodesPosition = new List<Node3D>();    //nodes with this obstacle
 
         //nodes to calculate
+        Node3D centerNode;
         Node3D leftNode;
         Node3D rightNode;
         Node3D forwardNode;
         Node3D backNode;
+
+        void OnDrawGizmos()
+        {
+            //draw custom collider
+            if (drawCustomCollider)
+            {
+                Gizmos.color = Color.cyan;
+
+                //draw box
+                if (typeCollider == ETypeCollider.box)
+                {
+                    Gizmos.DrawWireCube(transform.position + offset, sizeCollider);
+                }
+                //draw sphere
+                else
+                {
+                    Gizmos.DrawWireSphere(transform.position + offset, radiusCollider);
+                }
+
+                Gizmos.color = Color.white;
+            }
+        }
 
         void Awake()
         {
@@ -29,6 +67,8 @@ namespace redd096
             if (collidersToUse == null || collidersToUse.Length <= 0)
                 collidersToUse = GetComponentsInChildren<Collider>();
         }
+
+        #region public API
 
         /// <summary>
         /// Calculate new position on the grid and update nodes
@@ -47,9 +87,10 @@ namespace redd096
             SetNewNodes();
         }
 
-        #region private API
-
-        void RemoveFromPreviousNodes()
+        /// <summary>
+        /// Remove from current nodes
+        /// </summary>
+        public void RemoveFromPreviousNodes()
         {
             //remove this from previous nodes
             foreach (Node3D node in nodesPosition)
@@ -62,7 +103,89 @@ namespace redd096
             nodesPosition.Clear();
         }
 
-        void SetNewNodes()
+        /// <summary>
+        /// Calculate new position on the grid and add to new nodes (is better use UpdatePositionOnGrid to set grid and remove from previous nodes)
+        /// </summary>
+        public void SetNewNodes()
+        {
+            //set nodes using box or circle
+            if (useCustomCollider)
+            {
+                if (typeCollider == ETypeCollider.box)
+                    SetNodesUsingBox();
+                else
+                    SetNodesUsingCircle();
+            }
+            //else set nodes using colliders
+            else
+            {
+                SetNodesUsingColliders();
+            }
+        }
+
+        #endregion
+
+        #region private API
+
+        void SetNodesUsingBox()
+        {
+            //calculate nodes
+            //use an offset to check if node is inside also if collider not reach center of the node (add grid.NodeRadius in the half size)
+            float offsetToTakeNode = takeNodeAlsoIfNotTotallyInside ? grid.NodeRadius : 0;
+            centerNode = grid.GetNodeFromWorldPosition(transform.position + offset);
+            grid.GetNodesExtremesOfABox(centerNode, transform.position + offset, (sizeCollider * 0.5f) + (Vector3.one * offsetToTakeNode), out leftNode, out rightNode, out backNode, out forwardNode);
+
+            //check every node
+            Node3D nodeToCheck;
+            for (int x = leftNode.gridPosition.x; x <= rightNode.gridPosition.x; x++)
+            {
+                for (int y = backNode.gridPosition.y; y <= forwardNode.gridPosition.y; y++)
+                {
+                    nodeToCheck = grid.GetNodeByCoordinates(x, y);
+
+                    //set it
+                    if (nodeToCheck.obstaclesOnThisNode.Contains(this) == false)
+                        nodeToCheck.obstaclesOnThisNode.Add(this);
+
+                    //and add to the list
+                    if (nodesPosition.Contains(nodeToCheck) == false)
+                        nodesPosition.Add(nodeToCheck);
+                }
+            }
+        }
+
+        void SetNodesUsingCircle()
+        {
+            //calculate nodes
+            //use an offset to check if node is inside also if collider not reach center of the node (add grid.NodeRadius in the half size)
+            float offsetToTakeNode = takeNodeAlsoIfNotTotallyInside ? grid.NodeRadius : 0;
+            centerNode = grid.GetNodeFromWorldPosition(transform.position + offset);
+            grid.GetNodesExtremesOfABox(centerNode, transform.position + offset, (Vector3.one * radiusCollider) + (Vector3.one * offsetToTakeNode), out leftNode, out rightNode, out backNode, out forwardNode);
+
+            //check every node
+            Node3D nodeToCheck;
+            for (int x = leftNode.gridPosition.x; x <= rightNode.gridPosition.x; x++)
+            {
+                for (int y = backNode.gridPosition.y; y <= forwardNode.gridPosition.y; y++)
+                {
+                    nodeToCheck = grid.GetNodeByCoordinates(x, y);
+
+                    //if inside radius (+ node radius offset)
+                    if (Vector3.Distance(centerNode.worldPosition, nodeToCheck.worldPosition) <= radiusCollider + offsetToTakeNode)
+                    {
+                        //set it
+                        if (nodeToCheck.obstaclesOnThisNode.Contains(this) == false)
+                            nodeToCheck.obstaclesOnThisNode.Add(this);
+
+                        //and add to the list
+                        if (nodesPosition.Contains(nodeToCheck) == false)
+                            nodesPosition.Add(nodeToCheck);
+                    }
+                }
+            }
+        }
+
+        void SetNodesUsingColliders()
         {
             //foreach collider
             foreach (Collider col in collidersToUse)
@@ -71,23 +194,21 @@ namespace redd096
                     continue;
 
                 //calculate nodes
-                node = grid.GetNodeFromWorldPosition(col.bounds.center);
-                grid.GetNodesExtremesOfABox(node, col.bounds.center, col.bounds.extents, out leftNode, out rightNode, out backNode, out forwardNode);
+                //use an offset to check if node is inside also if collider not reach center of the node (add grid.NodeRadius in the half size)
+                float offsetToTakeNode = takeNodeAlsoIfNotTotallyInside ? grid.NodeRadius : 0;
+                centerNode = grid.GetNodeFromWorldPosition(col.bounds.center);
+                grid.GetNodesExtremesOfABox(centerNode, col.bounds.center, col.bounds.extents + (Vector3.one * offsetToTakeNode), out leftNode, out rightNode, out backNode, out forwardNode);
 
                 //check every node
                 Node3D nodeToCheck;
-                Vector3 offsetNodeToCheck = Vector3.zero;
                 for (int x = leftNode.gridPosition.x; x <= rightNode.gridPosition.x; x++)
                 {
                     for (int y = backNode.gridPosition.y; y <= forwardNode.gridPosition.y; y++)
                     {
-                        //use an offset to check if node is inside also if collider not reach center of the node
                         nodeToCheck = grid.GetNodeByCoordinates(x, y);
-                        if (nodeToCheck.gridPosition.x != node.gridPosition.x) offsetNodeToCheck.x = nodeToCheck.gridPosition.x > node.gridPosition.x ? -grid.NodeRadius : grid.NodeRadius;
-                        if (nodeToCheck.gridPosition.y != node.gridPosition.y) offsetNodeToCheck.z = nodeToCheck.gridPosition.y > node.gridPosition.y ? -grid.NodeRadius : grid.NodeRadius;
 
-                        //if node is inside collider
-                        if (Vector3.Distance(col.ClosestPoint(nodeToCheck.worldPosition + offsetNodeToCheck), nodeToCheck.worldPosition + offsetNodeToCheck) < Mathf.Epsilon)
+                        //if node is inside collider (+ node radius offset)
+                        if (Vector3.Distance(col.ClosestPoint(nodeToCheck.worldPosition), nodeToCheck.worldPosition) < Mathf.Epsilon + offsetToTakeNode)
                         {
                             //set it
                             if (nodeToCheck.obstaclesOnThisNode.Contains(this) == false)

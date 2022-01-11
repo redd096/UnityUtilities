@@ -26,7 +26,6 @@ namespace redd096
         //vars
         Node2D node;
         GridAStar2D grid;
-        Vector2 halfCollider;
 
         //nodes to calculate
         Node2D leftNode;
@@ -80,7 +79,6 @@ namespace redd096
             //box
             if (typeCollider == ETypeCollider.box)
             {
-                halfCollider = sizeCollider * 0.5f;
                 return CanMove_Box();
             }
             //circle
@@ -95,7 +93,7 @@ namespace redd096
         bool CanMove_Box()
         {
             //calculate nodes
-            grid.GetNodesExtremesOfABox(node, node.worldPosition + offset, halfCollider, out leftNode, out rightNode, out downNode, out upNode);
+            grid.GetNodesExtremesOfABox(node, node.worldPosition + offset, sizeCollider * 0.5f, out leftNode, out rightNode, out downNode, out upNode);
 
             //check every node
             Node2D nodeToCheck;
