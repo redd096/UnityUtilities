@@ -107,15 +107,14 @@ namespace redd096.GameTopDown2D
 
         public void Reload()
         {
-            //do only if this weapon has ammo, and is not full
-            if (HasAmmo && CurrentAmmo < MaxAmmo)
+            //do only if this weapon has ammo, and is not full (and is not already reloading)
+            if (HasAmmo && CurrentAmmo < MaxAmmo && reloadCoroutine == null)
             {
                 //call event
                 onStartReload?.Invoke();
 
                 //start reload coroutine
-                if (reloadCoroutine == null)
-                    reloadCoroutine = StartCoroutine(ReloadCoroutine());
+                reloadCoroutine = StartCoroutine(ReloadCoroutine());
             }
         }
 
@@ -188,6 +187,9 @@ namespace redd096.GameTopDown2D
         /// <param name="barrel"></param>
         void InstantiateBullet(Transform barrel)
         {
+            if (BulletPrefab == null)
+                return;
+
             //create random noise in accuracy
             float randomNoiseAccuracy = Random.Range(-NoiseAccuracy, NoiseAccuracy);
             Vector2 direction = Quaternion.AngleAxis(randomNoiseAccuracy, Vector3.forward) * barrel.right;                                  //direction with noise

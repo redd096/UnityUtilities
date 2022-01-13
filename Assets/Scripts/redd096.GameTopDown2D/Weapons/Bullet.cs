@@ -86,16 +86,30 @@ namespace redd096.GameTopDown2D
         /// <param name="direction"></param>
         public void Init(WeaponRange weapon, Character owner, Vector2 direction)
         {
+            //set weapon and initialize with it
+            this.weapon = weapon;
+            Init(owner, direction, weapon.Damage, weapon.BulletSpeed);
+        }
+
+        /// <summary>
+        /// Initialize bullet without using a WeaponRange
+        /// </summary>
+        /// <param name="owner"></param>
+        /// <param name="direction"></param>
+        /// <param name="damage"></param>
+        /// <param name="bulletSpeed"></param>
+        /// <param name="delayAutoDestruction"></param>
+        public void Init(Character owner, Vector2 direction, float damage, float bulletSpeed, float delayAutodestruction = 0)
+        {
             //reset vars
             alreadyDead = false;
             alreadyHit.Clear();
 
             this.direction = direction;
-            this.damage = weapon.Damage;
-            this.bulletSpeed = weapon.BulletSpeed;
+            this.damage = damage;
+            this.bulletSpeed = bulletSpeed;
 
             this.owner = owner;
-            this.weapon = weapon;
             ownerType = owner ? (int)owner.CharacterType : -1;  //if is not a character, set type to -1
 
             //ignore every collision with owner
@@ -113,6 +127,10 @@ namespace redd096.GameTopDown2D
                     foreach (Collider2D bulletCol in GetComponentsInChildren<Collider2D>())
                         Physics2D.IgnoreCollision(bulletCol, weaponCol);
             }
+
+            //if passed autodestruction is greater then 0, use it. Else keep bullet delay
+            if (delayAutodestruction > Mathf.Epsilon)
+                this.delayAutodestruction = delayAutodestruction;
 
             //autodestruction coroutine
             if (delayAutodestruction > 0)
