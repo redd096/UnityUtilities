@@ -228,6 +228,18 @@ namespace redd096.GameTopDown2D
         }
 
         /// <summary>
+        /// Set movement to position using custom speed
+        /// </summary>
+        /// <param name="positionToReach"></param>
+        /// <param name="newSpeed"></param>
+        public void MoveTo(Vector2 positionToReach, float newSpeed)
+        {
+            //save last input direction + set movement
+            MoveDirectionInput = (positionToReach - (Vector2)transform.position).normalized;
+            desiredVelocity = MoveDirectionInput * newSpeed;
+        }
+
+        /// <summary>
         /// Push in direction
         /// </summary>
         /// <param name="pushDirection"></param>
