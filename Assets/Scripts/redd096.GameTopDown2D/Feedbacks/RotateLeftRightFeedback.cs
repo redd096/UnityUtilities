@@ -6,7 +6,7 @@ namespace redd096.GameTopDown2D
     public class RotateLeftRightFeedback : MonoBehaviour
     {
         [Header("Necessary Components - default get in parent")]
-        [SerializeField] AimComponent component;
+        [SerializeField] AimComponent aimComponent;
 
         [Header("Default this transform")]
         [SerializeField] Transform objectToRotate = default;
@@ -23,22 +23,22 @@ namespace redd096.GameTopDown2D
         void OnEnable()
         {
             //get references
-            if (component == null) component = GetComponentInParent<AimComponent>();
+            if (aimComponent == null) aimComponent = GetComponentInParent<AimComponent>();
             if (objectToRotate == null) objectToRotate = transform;
 
             //add events
-            if (component)
+            if (aimComponent)
             {
-                component.onChangeAimDirection += OnChangeAimDirection;
-                OnChangeAimDirection(component.IsLookingRight);     //set default rotation
+                aimComponent.onChangeAimDirection += OnChangeAimDirection;
+                OnChangeAimDirection(aimComponent.IsLookingRight);     //set default rotation
             }
         }
 
         void OnDisable()
         {
             //remove events
-            if (component)
-                component.onChangeAimDirection -= OnChangeAimDirection;
+            if (aimComponent)
+                aimComponent.onChangeAimDirection -= OnChangeAimDirection;
         }
 
         void OnChangeAimDirection(bool isLookingRight)

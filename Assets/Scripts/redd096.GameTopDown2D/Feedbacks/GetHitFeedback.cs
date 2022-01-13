@@ -10,7 +10,7 @@ namespace redd096.GameTopDown2D
     public class GetHitFeedback : MonoBehaviour
     {
         [Header("Necessary Components - default get in parent")]
-        [SerializeField] HealthComponent component;
+        [SerializeField] HealthComponent healthComponent;
 
         [Header("Blink - Default get component in children")]
         [SerializeField] bool blinkOnGetDamage = true;
@@ -50,25 +50,25 @@ namespace redd096.GameTopDown2D
         void OnEnable()
         {
             //get references
-            if (component == null) component = GetComponentInParent<HealthComponent>();
+            if (healthComponent == null) healthComponent = GetComponentInParent<HealthComponent>();
             if (spritesToUse == null || spritesToUse.Length <= 0) spritesToUse = GetComponentsInChildren<SpriteRenderer>();
             if (selfCharacter == null) selfCharacter = GetComponentInParent<Character>();
 
             //add events
-            if (component)
+            if (healthComponent)
             {
-                component.onGetDamage += OnGetDamage;
-                component.onDie += OnDie;
+                healthComponent.onGetDamage += OnGetDamage;
+                healthComponent.onDie += OnDie;
             }
         }
 
         void OnDisable()
         {
             //remove events
-            if (component)
+            if (healthComponent)
             {
-                component.onGetDamage -= OnGetDamage;
-                component.onDie -= OnDie;
+                healthComponent.onGetDamage -= OnGetDamage;
+                healthComponent.onDie -= OnDie;
             }
         }
 
