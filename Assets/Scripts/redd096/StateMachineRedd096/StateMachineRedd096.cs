@@ -253,16 +253,17 @@ namespace redd096
         /// <summary>
         /// Get element from blackboard
         /// </summary>
+        /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
         /// <returns></returns>
-        public object GetBlackboardElement(string key)
+        public T GetBlackboardElement<T>(string key)
         {
             //return element from blackboard
             if (blackboard.ContainsKey(key))
-                return blackboard[key];
+                return (T)blackboard[key];
 
             //if there is no key, return null
-            return null;
+            return default;
         }
 
         #endregion
