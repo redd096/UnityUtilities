@@ -11,7 +11,7 @@ namespace redd096.Attributes
 #if UNITY_EDITOR
 
     [CustomPropertyDrawer(typeof(OnValueChangedAttribute))]
-    public class OnChangedCallAttributePropertyDrawer : PropertyDrawer
+    public class OnValueChangedDrawer : PropertyDrawer
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
