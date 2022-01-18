@@ -46,6 +46,9 @@ namespace redd096.Attributes
 
     #endregion
 
+    /// <summary>
+    /// Attribute to show button in inspector
+    /// </summary>
     [AttributeUsage(AttributeTargets.Method)]
     public class ButtonAttribute : Attribute
     {

@@ -120,7 +120,9 @@ namespace redd096.Attributes
 
     #endregion
 
-    //attribute
+    /// <summary>
+    /// Attribute to show variable only if comparison return true
+    /// </summary>
     public class ShowIfAttribute : PropertyAttribute
     {
         /// <summary>

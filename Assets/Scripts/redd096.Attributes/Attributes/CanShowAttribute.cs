@@ -71,7 +71,9 @@ namespace redd096.Attributes
 
     #endregion
 
-    //attribute
+    /// <summary>
+    /// Attribute to show variable only if specific values are true
+    /// </summary>
     public class CanShowAttribute : PropertyAttribute
     {
         /// <summary>

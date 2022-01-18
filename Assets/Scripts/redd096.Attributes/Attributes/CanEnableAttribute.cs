@@ -67,7 +67,9 @@ namespace redd096.Attributes
 
     #endregion
 
-    //attribute
+    /// <summary>
+    /// Attribute to show writable variable only if specific values are true
+    /// </summary>
     public class CanEnableAttribute : PropertyAttribute
     {
         /// <summary>

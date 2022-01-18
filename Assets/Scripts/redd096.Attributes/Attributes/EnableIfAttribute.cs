@@ -116,7 +116,9 @@ namespace redd096.Attributes
 
     #endregion
 
-    //attribute
+    /// <summary>
+    /// Attribute to show variable writable only if comparison return true
+    /// </summary>
     public class EnableIfAttribute : PropertyAttribute
     {
         /// <summary>
