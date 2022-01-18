@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace redd096.Attributes
 {
     #region editor
 
 #if UNITY_EDITOR
-
-    using UnityEditor;
 
     [CustomPropertyDrawer(typeof(ShowIfAttribute))]
     public class ShowIfDrawer : PropertyDrawer
@@ -41,7 +42,7 @@ namespace redd096.Attributes
         {
             ShowIfAttribute showIf = attribute as ShowIfAttribute;
 
-            SerializedProperty comparedProperty = property.serializedObject.FindProperty(showIf.propertyA);
+            SerializedProperty comparedProperty = property.FindCorrectProperty(showIf.propertyA);
 
             //compare property based on propertyType
             if (comparedProperty.propertyType == SerializedPropertyType.Boolean)

@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace redd096.Attributes
 {
     #region editor
 
 #if UNITY_EDITOR
-
-    using UnityEditor;
 
     [CustomPropertyDrawer(typeof(EnableIfAttribute))]
     public class EnableIfDrawer : PropertyDrawer
@@ -37,7 +38,7 @@ namespace redd096.Attributes
         {
             EnableIfAttribute enableIf = attribute as EnableIfAttribute;
 
-            SerializedProperty comparedProperty = property.serializedObject.FindProperty(enableIf.propertyA);
+            SerializedProperty comparedProperty = property.FindCorrectProperty(enableIf.propertyA);
 
             //compare property based on propertyType
             if (comparedProperty.propertyType == SerializedPropertyType.Boolean)

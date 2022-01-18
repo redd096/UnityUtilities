@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Reflection;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace redd096.Attributes
 {
     #region editor
 
 #if UNITY_EDITOR
-
-    using UnityEditor;
 
     [CanEditMultipleObjects]
     [CustomEditor(typeof(MonoBehaviour), true)]
@@ -19,10 +20,10 @@ namespace redd096.Attributes
             base.OnInspectorGUI();
 
             //get the type of monobehaviour
-            var type = target.GetType();
+            Type type = target.GetType();
 
             //get every method inside this
-            foreach (var method in type.GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.DeclaredOnly))
+            foreach (MethodInfo method in type.GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.DeclaredOnly))
             {
                 //make sure it is decorated by our custom attribute
                 ButtonAttribute buttonAttribute = method.GetCustomAttribute<ButtonAttribute>(true);
