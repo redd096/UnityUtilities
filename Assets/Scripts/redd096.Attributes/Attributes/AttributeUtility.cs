@@ -42,9 +42,9 @@ namespace redd096.Attributes
             if (i < 0)
                 return null;
 
-            //if not contains data, then this property is already an array, find a property inside this
+            //if finish with "Array" without data[index], then this property is already an array, find a property inside this
             path = path.Substring(0, i);
-            if (path.Contains("data[") == false)
+            if (path.Substring(i - 5, 5) == "Array")
                 return property;
 
             //else find the property containing variableName
