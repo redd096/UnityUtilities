@@ -137,6 +137,13 @@ namespace redd096
             }
         }
 
+        protected virtual bool IsWalkable(Vector2 worldPosition, out bool agentCanMoveThrough)
+        {
+            //overlap circle (agent can move through only on walkable nodes)
+            agentCanMoveThrough = gameObject.scene.GetPhysicsScene2D().OverlapCircle(worldPosition, overlapRadius, unwalkableMask) == false;
+            return agentCanMoveThrough;
+        }
+
         void SetNeighbours()
         {
             //set neighbours for every node
@@ -166,13 +173,6 @@ namespace redd096
                     }
                 }
             }
-        }
-
-        protected virtual bool IsWalkable(Vector2 worldPosition, out bool agentCanMoveThrough)
-        {
-            //overlap circle (agent can move through only on walkable nodes)
-            agentCanMoveThrough = gameObject.scene.GetPhysicsScene2D().OverlapCircle(worldPosition, overlapRadius, unwalkableMask) == false;
-            return agentCanMoveThrough;
         }
 
         #endregion

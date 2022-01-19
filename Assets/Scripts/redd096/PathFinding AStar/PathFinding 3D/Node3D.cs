@@ -20,6 +20,7 @@ namespace redd096
         public Node3D parentNode;
 
         //other variables
+        public List<Node3D> neighbours = new List<Node3D>();
         public List<ObstacleAStar3D> obstaclesOnThisNode = new List<ObstacleAStar3D>();
 
         public Node3D(bool isWalkable, bool agentCanMoveThrough, Vector3 worldPosition, int x, int y)

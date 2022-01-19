@@ -32,6 +32,7 @@ namespace redd096
         Node3D rightNode;
         Node3D forwardNode;
         Node3D backNode;
+        Node3D nodeToCheck;
 
         void OnDrawGizmos()
         {
@@ -96,7 +97,6 @@ namespace redd096
             grid.GetNodesExtremesOfABox(node, node.worldPosition + offset, sizeCollider * 0.5f, out leftNode, out rightNode, out backNode, out forwardNode);
 
             //check every node
-            Node3D nodeToCheck;
             for (int x = leftNode.gridPosition.x; x <= rightNode.gridPosition.x; x++)
             {
                 for (int y = backNode.gridPosition.y; y <= forwardNode.gridPosition.y; y++)
@@ -118,7 +118,6 @@ namespace redd096
             grid.GetNodesExtremesOfABox(node, node.worldPosition + offset, Vector3.one * radiusCollider, out leftNode, out rightNode, out backNode, out forwardNode);
 
             //check every node
-            Node3D nodeToCheck;
             for (int x = leftNode.gridPosition.x; x <= rightNode.gridPosition.x; x++)
             {
                 for (int y = backNode.gridPosition.y; y <= forwardNode.gridPosition.y; y++)
@@ -143,10 +142,10 @@ namespace redd096
             //if there are obstacles
             if (nodeToCheck.obstaclesOnThisNode.Count > 0)
             {
-                //if there is only one obstacle and is self, return false
+                //if there is self obstacle, return false
                 if (obstacleAStar)
                 {
-                    if (nodeToCheck.obstaclesOnThisNode.Count == 1 && nodeToCheck.obstaclesOnThisNode.Contains(obstacleAStar))
+                    if (nodeToCheck.obstaclesOnThisNode.Contains(obstacleAStar))
                         return false;
                 }
 
