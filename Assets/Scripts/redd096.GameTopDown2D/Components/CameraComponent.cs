@@ -27,16 +27,12 @@ namespace redd096.GameTopDown2D
             if (healthComponent == null) healthComponent = GetComponent<HealthComponent>();
 
             //set cam parent
-            if (cameraToControl)
+            if (cameraToControl && cameraParent == null)
             {
                 cameraParent = new GameObject("Camera Parent (camera component)").transform;
                 cameraParent.SetParent(cameraToControl.transform.parent);               //set same parent (if camera was child of something)
                 cameraParent.localPosition = cameraToControl.transform.localPosition;   //set start local position
                 cameraToControl.transform.SetParent(cameraParent);					    //set camera parent
-            }
-            else
-            {
-                Debug.LogWarning("There is no camera to control for Camera Component");
             }
 
             //add events

@@ -95,7 +95,7 @@ namespace redd096.GameTopDown2D
         bool IsInsideShieldArea(Vector2 point)
         {
             //check if inside box
-            if (point.x > downLeft.x && point.x < upRight.x          //horizontal
+            if (point.x > downLeft.x && point.x < upRight.x         //horizontal
                 && point.y > downLeft.y && point.y < upRight.y)     //vertical
             {
                 return true;

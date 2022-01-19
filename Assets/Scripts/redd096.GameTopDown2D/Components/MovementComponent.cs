@@ -37,7 +37,10 @@ namespace redd096.GameTopDown2D
         public System.Action<bool> onChangeMovementDirection { get; set; }
 
         //private
-        Vector2 desiredVelocity;              //when moves, set it as input direction * speed (used to move this object, will be reset in every frame)
+        Vector2 desiredVelocity;                //when moves, set it as input direction * speed (used to move this object, will be reset in every frame)
+        Vector2 calculatedVelocity;             //desiredVelocity + DesiredPushForce
+        Vector2 newPosition;                    //new position when Move
+        Vector2 newPushForce;                   //new push force when Drag
 
         void Update()
         {
@@ -109,7 +112,7 @@ namespace redd096.GameTopDown2D
         Vector2 CalculateVelocity()
         {
             //input + push
-            Vector2 velocity = desiredVelocity + DesiredPushForce;
+            calculatedVelocity = desiredVelocity + DesiredPushForce;
 
             if (collisionComponent)
             {
@@ -119,24 +122,24 @@ namespace redd096.GameTopDown2D
                     || collisionComponent.IsHitting(CollisionComponent.EDirectionEnum.up) == false || collisionComponent.IsHitting(CollisionComponent.EDirectionEnum.down) == false)
                 {
                     //check if hit horizontal
-                    if (collisionComponent.IsHitting(CollisionComponent.EDirectionEnum.right) && velocity.x > 0)
-                        velocity.x = 0;
-                    else if (collisionComponent.IsHitting(CollisionComponent.EDirectionEnum.left) && velocity.x < 0)
-                        velocity.x = 0;
+                    if (collisionComponent.IsHitting(CollisionComponent.EDirectionEnum.right) && calculatedVelocity.x > 0)
+                        calculatedVelocity.x = 0;
+                    else if (collisionComponent.IsHitting(CollisionComponent.EDirectionEnum.left) && calculatedVelocity.x < 0)
+                        calculatedVelocity.x = 0;
 
                     //check if hit vertical
-                    if (collisionComponent.IsHitting(CollisionComponent.EDirectionEnum.up) && velocity.y > 0)
-                        velocity.y = 0;
-                    else if (collisionComponent.IsHitting(CollisionComponent.EDirectionEnum.down) && velocity.y < 0)
-                        velocity.y = 0;
+                    if (collisionComponent.IsHitting(CollisionComponent.EDirectionEnum.up) && calculatedVelocity.y > 0)
+                        calculatedVelocity.y = 0;
+                    else if (collisionComponent.IsHitting(CollisionComponent.EDirectionEnum.down) && calculatedVelocity.y < 0)
+                        calculatedVelocity.y = 0;
                 }
             }
 
             //clamp at max speed
             if (maxSpeed >= 0)
-                velocity = Vector2.ClampMagnitude(velocity, maxSpeed);
+                calculatedVelocity = Vector2.ClampMagnitude(calculatedVelocity, maxSpeed);
 
-            return velocity;
+            return calculatedVelocity;
         }
 
         bool CheckIsMovingRight()
@@ -161,7 +164,7 @@ namespace redd096.GameTopDown2D
             //or move with transform (if there is collision component, calculate reachable position, else just move to new position)
             else if (movementMode == EMovementModes.Transform)
             {
-                Vector2 newPosition = transform.position + (Vector3)CurrentVelocity * (updateMode == EUpdateModes.Update ? Time.deltaTime : Time.fixedDeltaTime);
+                newPosition = transform.position + (Vector3)CurrentVelocity * (updateMode == EUpdateModes.Update ? Time.deltaTime : Time.fixedDeltaTime);
 
                 //calculate reachable position
                 if (collisionComponent)
@@ -184,7 +187,7 @@ namespace redd096.GameTopDown2D
         Vector2 CalculateNewPushForce()
         {
             //remove push force (direction * drag * delta)
-            Vector2 newPushForce = DesiredPushForce - ((dragBasedOnVelocity ? DesiredPushForce : DesiredPushForce.normalized) * drag * (updateMode == EUpdateModes.Update ? Time.deltaTime : Time.fixedDeltaTime));
+            newPushForce = DesiredPushForce - ((dragBasedOnVelocity ? DesiredPushForce : DesiredPushForce.normalized) * drag * (updateMode == EUpdateModes.Update ? Time.deltaTime : Time.fixedDeltaTime));
 
             //clamp it
             if (DesiredPushForce.x >= 0 && newPushForce.x < 0 || DesiredPushForce.x <= 0 && newPushForce.x > 0)
