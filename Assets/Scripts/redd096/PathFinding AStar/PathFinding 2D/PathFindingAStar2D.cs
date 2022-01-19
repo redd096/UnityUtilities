@@ -96,12 +96,13 @@ namespace redd096
             //add the start node to OPEN
             openList.Add(startNode);
 
+            Node2D currentNode;
             while (openList.Count > 0)
             {
                 #region before heap optimization
                 /*
                 //Current = node in OPEN with the lowest F cost
-                Node2D currentNode = openList[0];
+                currentNode = openList[0];
                 for (int i = 1; i < openList.Count; i++)
                 {
                     //if F cost is lower or is the same but H cost is lower
@@ -119,7 +120,7 @@ namespace redd096
 
                 //Current = node in OPEN with the lowest F cost
                 //remove Current from OPEN and add to CLOSED
-                Node2D currentNode = openList.RemoveFirst();                //all optimized with heap
+                currentNode = openList.RemoveFirst();                       //all optimized with heap
                 closedList.Add(currentNode);
 
                 //path has been found, return it
@@ -127,7 +128,7 @@ namespace redd096
                     return RetracePath(startNode, currentNode);
 
                 //foreach Neighbour of the Current node
-                foreach (Node2D neighbour in Grid.GetNeighbours(currentNode))
+                foreach (Node2D neighbour in currentNode.neighbours)
                 {
                     //if Neighbour is not walkable or is in CLOSED, skip to next Neighbour
                     if (!neighbour.isWalkable || closedList.Contains(neighbour))

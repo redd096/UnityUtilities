@@ -87,12 +87,15 @@ namespace redd096
         /// <param name="item"></param>
         void SortDown(T item)
         {
+            int childIndexLeft;
+            int childIndexRight;
+            int swapIndex;
+
             while (true)
             {
                 //left one, right two
-                int childIndexLeft = item.HeapIndex * 2 + 1;
-                int childIndexRight = item.HeapIndex * 2 + 2;
-                int swapIndex;
+                childIndexLeft = item.HeapIndex * 2 + 1;
+                childIndexRight = item.HeapIndex * 2 + 2;
 
                 //if child left didn't reach Count, try to swap it
                 if (childIndexLeft < currentItemCount)

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace redd096
 {
@@ -124,15 +123,47 @@ namespace redd096
             Vector2 worldBottomLeft = GridWorldPosition + (Vector2.left * gridWorldSize.x / 2) + (Vector2.down * gridWorldSize.y / 2);
 
             //create grid
+            Vector2 worldPosition;
             for (int x = 0; x < gridSize.x; x++)
             {
                 for (int y = 0; y < gridSize.y; y++)
                 {
                     //find world position and if walkable
-                    Vector2 worldPosition = worldBottomLeft + Vector2.right * (x * nodeDiameter + nodeRadius) + Vector2.up * (y * nodeDiameter + nodeRadius);
+                    worldPosition = worldBottomLeft + Vector2.right * (x * nodeDiameter + nodeRadius) + Vector2.up * (y * nodeDiameter + nodeRadius);
 
                     //set new node in grid
                     grid[x, y] = new Node2D(IsWalkable(worldPosition, out bool agentCanMoveThrough), agentCanMoveThrough, worldPosition, x, y);
+                }
+            }
+        }
+
+        void SetNeighbours()
+        {
+            //set neighbours for every node
+            int checkX;
+            int checkY;
+            foreach (Node2D node in grid)
+            {
+                node.neighbours.Clear();
+
+                for (int x = -1; x <= 1; x++)
+                {
+                    for (int y = -1; y <= 1; y++)
+                    {
+                        //this is the node we are using as parameter
+                        if (x == 0 && y == 0)
+                            continue;
+
+                        //find grid position
+                        checkX = node.gridPosition.x + x;
+                        checkY = node.gridPosition.y + y;
+
+                        //if that position is inside the grid, add to neighbours
+                        if (checkX >= 0 && checkX < gridSize.x && checkY >= 0 && checkY < gridSize.y)
+                        {
+                            node.neighbours.Add(grid[checkX, checkY]);
+                        }
+                    }
                 }
             }
         }
@@ -155,6 +186,7 @@ namespace redd096
         {
             SetGridSize();
             CreateGrid();
+            SetNeighbours();
         }
 
         /// <summary>
@@ -174,11 +206,12 @@ namespace redd096
         public void UpdateObstaclesPosition(ObstacleAStar2D[] obstacles)
         {
             //update position of every obstacle
-            if(obstacles != null)
+            if (obstacles != null)
             {
                 foreach (ObstacleAStar2D obstacle in obstacles)
-                    obstacle.UpdatePositionOnGrid(this);
-            }    
+                    if (obstacle)
+                        obstacle.UpdatePositionOnGrid(this);
+            }
         }
 
         /// <summary>
@@ -198,38 +231,6 @@ namespace redd096
 
             //else is inside
             return true;
-        }
-
-        /// <summary>
-        /// Get nodes around the node passed as parameter
-        /// </summary>
-        /// <param name="node"></param>
-        /// <returns></returns>
-        public List<Node2D> GetNeighbours(Node2D node)
-        {
-            List<Node2D> neighbours = new List<Node2D>();
-
-            for (int x = -1; x <= 1; x++)
-            {
-                for (int y = -1; y <= 1; y++)
-                {
-                    //this is the node we are using as parameter
-                    if (x == 0 && y == 0)
-                        continue;
-
-                    //find grid position
-                    int checkX = node.gridPosition.x + x;
-                    int checkY = node.gridPosition.y + y;
-
-                    //if that position is inside the grid, add to neighbours
-                    if (checkX >= 0 && checkX < gridSize.x && checkY >= 0 && checkY < gridSize.y)
-                    {
-                        neighbours.Add(grid[checkX, checkY]);
-                    }
-                }
-            }
-
-            return neighbours;
         }
 
         /// <summary>

@@ -169,8 +169,7 @@ namespace redd096.GameTopDown2D
             //or shoot one bullet from random barrel
             else
             {
-                Transform barrel = Barrels[Random.Range(0, Barrels.Length)];
-                InstantiateBullet(barrel);
+                InstantiateBullet(Barrels[Random.Range(0, Barrels.Length)]);
             }
 
             //pushback owner
