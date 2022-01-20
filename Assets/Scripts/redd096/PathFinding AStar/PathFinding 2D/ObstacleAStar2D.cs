@@ -54,6 +54,19 @@ namespace redd096
             }
         }
 
+        void Update()
+        {
+            //update obstacle position
+            if (PathFindingAStar2D.instance)
+                PathFindingAStar2D.instance.UpdateObstaclePositionOnGrid(this);
+        }
+
+        void OnDisable()
+        {
+            //remove obstacle from grid
+            RemoveFromPreviousNodes();
+        }
+
         #region public API
 
         /// <summary>
