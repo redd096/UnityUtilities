@@ -10,6 +10,7 @@ namespace redd096
         #region protected
 
         protected StateMachineRedd096 stateMachine;
+        protected bool isTaskActive;
 
         protected Transform transformTask => stateMachine ? stateMachine.transform : transform;     //as transform use statemachine if possible, else use this task
 
@@ -52,10 +53,10 @@ namespace redd096
         /// <summary>
         /// Called every time enter in this task
         /// </summary>
-        public virtual void OnEnterTask() { }
+        public virtual void OnEnterTask() { isTaskActive = true; }
         /// <summary>
         /// Called every time exit from this task
         /// </summary>
-        public virtual void OnExitTask() { }
+        public virtual void OnExitTask() { isTaskActive = false; }
     }
 }
