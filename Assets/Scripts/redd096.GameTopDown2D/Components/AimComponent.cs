@@ -44,9 +44,29 @@ namespace redd096.GameTopDown2D
         #region public API
 
         /// <summary>
+        /// Set aim in direction
+        /// </summary>
+        /// <param name="aimDirection"></param>
+        public void AimInDirection(Vector2 aimDirection)
+        {
+            //set direction aim
+            AimPositionNotNormalized = (Vector2)transform.position + aimDirection;
+            AimDirectionInput = aimDirection.normalized;
+
+            //set if change aim direction
+            if (IsLookingRight != CheckIsLookingRight())
+            {
+                IsLookingRight = CheckIsLookingRight();
+
+                //call event
+                onChangeAimDirection?.Invoke(IsLookingRight);
+            }
+        }
+
+        /// <summary>
         /// Set aim at position
         /// </summary>
-        /// <param name="aimPosition">aim not normalized</param>
+        /// <param name="aimPosition"></param>
         public void AimAt(Vector2 aimPosition)
         {
             //set direction aim
