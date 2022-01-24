@@ -10,6 +10,7 @@ namespace redd096.GameTopDown2D
 	public class CollisionComponent : MonoBehaviour
 	{
 		enum EUpdateModes { Update, FixedUpdate, Coroutine }
+		enum ETriggerResponse { Collision, Trigger, Ignore }
 		public enum EDirectionEnum { up, right, left, down }
 
 		[Header("Check Raycasts")]
@@ -18,8 +19,9 @@ namespace redd096.GameTopDown2D
 		[Tooltip("Number of rays cast for every side horizontally")] [SerializeField] int numberOfHorizontalRays = 4;
 		[Tooltip("Number of rays cast for every side vertically")] [SerializeField] int numberOfVerticalRays = 4;
 		[Tooltip("A small value to accomodate for edge cases")] [SerializeField] float offsetRays = 0.01f;
+		[Tooltip("Layers that raycasts ignore but call trigger event")] [SerializeField] LayerMask layersToTrigger = default;
 		[Tooltip("Layers that raycasts ignore")] [SerializeField] LayerMask layersToIgnore = default;
-		[Tooltip("Ignore trigger colliders")] [SerializeField] bool ignoreTriggers = true;
+		[Tooltip("When raycast hit trigger collider, calculate as normal collider? Or call trigger event? Or just ignore")] [SerializeField] ETriggerResponse triggerResponse = ETriggerResponse.Trigger;
 
 		[Header("Necessary Components (by default get in children)")]
 		[SerializeField] BoxCollider2D boxCollider = default;
@@ -30,6 +32,14 @@ namespace redd096.GameTopDown2D
 		//[ShowNativeProperty] bool IsHittingLeft => leftHits.Count > 0;
 		//[ShowNativeProperty] bool IsHittingUp => upHits.Count > 0;
 		//[ShowNativeProperty] bool IsHittingDown => downHits.Count > 0;
+
+		//events
+		public System.Action<RaycastHit2D> onCollisionEnter { get; set; }
+		public System.Action<RaycastHit2D> onCollisionStay { get; set; }
+		public System.Action<Collider2D> onCollisionExit { get; set; }
+		public System.Action<RaycastHit2D> onTriggerEnter { get; set; }
+		public System.Action<RaycastHit2D> onTriggerStay { get; set; }
+		public System.Action<Collider2D> onTriggerExit { get; set; }
 
 		//hits
 		List<RaycastHit2D> rightHits = new List<RaycastHit2D>();
@@ -47,6 +57,10 @@ namespace redd096.GameTopDown2D
 		float downBounds;
 		float rightBounds;
 		float leftBounds;
+
+		//used for events
+		Dictionary<Collider2D, RaycastHit2D> currentCollisions = new Dictionary<Collider2D, RaycastHit2D>();
+		List<Collider2D> previousCollisions = new List<Collider2D>();
 
 		//for debug
 		float drawDebugDuration = -1;
@@ -210,14 +224,21 @@ namespace redd096.GameTopDown2D
 				//for every hit, be sure to not hit self
 				if (hit && hit.collider != boxCollider)
 				{
-					//be sure to hit colliders not trigger, or ignore triggers is disabled
-					if (hit.collider.isTrigger == false || ignoreTriggers == false)
+					//be sure to hit colliders not trigger, or trigger response is not Ignore
+					if (hit.collider.isTrigger == false || triggerResponse != ETriggerResponse.Ignore)
 					{
-						//calculate nearest hit
-						if (hit.distance < distanceToNearest)
+						//save for events
+						if (currentCollisions.ContainsKey(hit.collider) == false)
+							currentCollisions.Add(hit.collider, hit);
+
+						//calculate nearest hit, only if not in trigger layer
+						if (IsTriggerEvent(hit.collider) == false)
 						{
-							distanceToNearest = hit.distance;
-							nearest = hit;
+							if (hit.distance < distanceToNearest)
+							{
+								distanceToNearest = hit.distance;
+								nearest = hit;
+							}
 						}
 					}
 				}
@@ -235,6 +256,47 @@ namespace redd096.GameTopDown2D
 				Debug.DrawRay(originPoint, direction * distance, color);                        //else show at every update
 		}
 
+		void CheckCollisionEvents()
+		{
+			//call Enter or Stay
+			foreach (Collider2D col in currentCollisions.Keys)
+			{
+				if (previousCollisions.Contains(col) == false)
+				{
+					if (IsTriggerEvent(col))
+						onTriggerEnter?.Invoke(currentCollisions[col]);     //trigger enter
+					else
+						onCollisionEnter?.Invoke(currentCollisions[col]);   //collision enter
+				}
+				else
+				{
+					if (IsTriggerEvent(col))
+						onTriggerStay?.Invoke(currentCollisions[col]);      //trigger stay
+					else
+						onCollisionStay?.Invoke(currentCollisions[col]);    //collision stay
+				}
+			}
+
+			//call Exit
+			foreach (Collider2D col in previousCollisions)
+			{
+				if (currentCollisions.ContainsKey(col) == false)
+				{
+					if (IsTriggerEvent(col))
+						onTriggerExit?.Invoke(col);                         //trigger exit
+					else
+						onCollisionExit?.Invoke(col);                       //collision exit
+				}
+			}
+		}
+
+		bool IsTriggerEvent(Collider2D col)
+		{
+			//if add layer to this layermask, and layermask remain equals, then layermask contains this layer
+			return layersToTrigger == (layersToTrigger | (1 << col.gameObject.layer))       //if is in layer trigger
+				|| (col.isTrigger && triggerResponse == ETriggerResponse.Trigger);          //or is trigger collider and response is Trigger
+		}
+
 		#endregion
 
 		#region public API
@@ -248,10 +310,19 @@ namespace redd096.GameTopDown2D
 			if (CheckComponents() == false)
 				return;
 
+			//reset current collisions (to recreate this frame)
+			currentCollisions.Clear();
+
 			//check collisions
 			UpdateBounds();
 			CheckCollisionsHorizontal();
 			CheckCollisionsVertical();
+
+			//check events (collision enter, stay, exit)
+			CheckCollisionEvents();
+
+			//copy collisions in another list for next frame checks
+			previousCollisions = new List<Collider2D>(currentCollisions.Keys);
 		}
 
 		/// <summary>
