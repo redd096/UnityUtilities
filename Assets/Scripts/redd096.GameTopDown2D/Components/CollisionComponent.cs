@@ -10,7 +10,6 @@ namespace redd096.GameTopDown2D
 	public class CollisionComponent : MonoBehaviour
 	{
 		enum EUpdateModes { Update, FixedUpdate, Coroutine }
-		enum ETriggerResponse { Collision, Trigger, Ignore }
 		public enum EDirectionEnum { up, right, left, down }
 
 		[Header("Check Raycasts")]
@@ -19,9 +18,7 @@ namespace redd096.GameTopDown2D
 		[Tooltip("Number of rays cast for every side horizontally")] [SerializeField] int numberOfHorizontalRays = 4;
 		[Tooltip("Number of rays cast for every side vertically")] [SerializeField] int numberOfVerticalRays = 4;
 		[Tooltip("A small value to accomodate for edge cases")] [SerializeField] float offsetRays = 0.01f;
-		[Tooltip("Layers that raycasts ignore but call trigger event")] [SerializeField] LayerMask layersToTrigger = default;
 		[Tooltip("Layers that raycasts ignore")] [SerializeField] LayerMask layersToIgnore = default;
-		[Tooltip("When raycast hit trigger collider, calculate as normal collider? Or call trigger event? Or just ignore")] [SerializeField] ETriggerResponse triggerResponse = ETriggerResponse.Trigger;
 
 		[Header("Necessary Components (by default get in children)")]
 		[SerializeField] BoxCollider2D boxCollider = default;
@@ -224,21 +221,17 @@ namespace redd096.GameTopDown2D
 				//for every hit, be sure to not hit self
 				if (hit && hit.collider != boxCollider)
 				{
-					//be sure to hit colliders not trigger, or trigger response is not Ignore
-					if (hit.collider.isTrigger == false || triggerResponse != ETriggerResponse.Ignore)
-					{
-						//save for events
-						if (currentCollisions.ContainsKey(hit.collider) == false)
-							currentCollisions.Add(hit.collider, hit);
+					//save for events
+					if (currentCollisions.ContainsKey(hit.collider) == false)
+						currentCollisions.Add(hit.collider, hit);
 
-						//calculate nearest hit, only if not in trigger layer
-						if (IsTriggerEvent(hit.collider) == false)
+					//calculate nearest hit, only if not trigger collider
+					if (hit.collider.isTrigger == false)
+					{
+						if (hit.distance < distanceToNearest)
 						{
-							if (hit.distance < distanceToNearest)
-							{
-								distanceToNearest = hit.distance;
-								nearest = hit;
-							}
+							distanceToNearest = hit.distance;
+							nearest = hit;
 						}
 					}
 				}
@@ -263,14 +256,14 @@ namespace redd096.GameTopDown2D
 			{
 				if (previousCollisions.Contains(col) == false)
 				{
-					if (IsTriggerEvent(col))
+					if (col.isTrigger)
 						onTriggerEnter?.Invoke(currentCollisions[col]);     //trigger enter
 					else
 						onCollisionEnter?.Invoke(currentCollisions[col]);   //collision enter
 				}
 				else
 				{
-					if (IsTriggerEvent(col))
+					if (col.isTrigger)
 						onTriggerStay?.Invoke(currentCollisions[col]);      //trigger stay
 					else
 						onCollisionStay?.Invoke(currentCollisions[col]);    //collision stay
@@ -282,19 +275,12 @@ namespace redd096.GameTopDown2D
 			{
 				if (currentCollisions.ContainsKey(col) == false)
 				{
-					if (IsTriggerEvent(col))
+					if (col.isTrigger)
 						onTriggerExit?.Invoke(col);                         //trigger exit
 					else
 						onCollisionExit?.Invoke(col);                       //collision exit
 				}
 			}
-		}
-
-		bool IsTriggerEvent(Collider2D col)
-		{
-			//if add layer to this layermask, and layermask remain equals, then layermask contains this layer
-			return layersToTrigger == (layersToTrigger | (1 << col.gameObject.layer))       //if is in layer trigger
-				|| (col.isTrigger && triggerResponse == ETriggerResponse.Trigger);          //or is trigger collider and response is Trigger
 		}
 
 		#endregion
