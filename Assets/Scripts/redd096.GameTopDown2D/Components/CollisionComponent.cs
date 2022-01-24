@@ -11,6 +11,7 @@ namespace redd096.GameTopDown2D
 	{
 		enum EUpdateModes { Update, FixedUpdate, Coroutine }
 		public enum EDirectionEnum { up, right, left, down }
+		public enum ECollisionResponse { Collision, Trigger, Ignore }
 
 		[Header("Check Raycasts")]
 		[Tooltip("Check collisions on Update or FixedUpdate?")] [SerializeField] EUpdateModes updateMode = EUpdateModes.Coroutine;
@@ -20,8 +21,8 @@ namespace redd096.GameTopDown2D
 		[Tooltip("A small value to accomodate for edge cases")] [SerializeField] float offsetRays = 0.01f;
 		[Tooltip("Layers that raycasts ignore")] [SerializeField] LayerMask layersToIgnore = default;
 
-		[Header("Necessary Components (by default get in children)")]
-		[SerializeField] BoxCollider2D boxCollider = default;
+		[Header("Necessary Components (by default get in children) ONLY BOX AND CIRCLE")]
+		[SerializeField] Collider2D selfCollider = default;
 
 		[Header("DEBUG")]
 		[SerializeField] bool drawDebugInPlay = false;
@@ -48,6 +49,10 @@ namespace redd096.GameTopDown2D
 		Vector2 centerBounds;
 		float horizontalExtents;
 		float verticalExtents;
+
+		//circle bounds
+		CircleCollider2D selfCircleCollider;
+		float radiusSelfCollider;
 
 		//bounds limits
 		float upBounds;
@@ -128,15 +133,21 @@ namespace redd096.GameTopDown2D
 
 		bool CheckComponents()
 		{
-			//be sure to have a box collider
-			if (boxCollider == null)
+			//be sure to have a collider
+			if (selfCollider == null)
 			{
-				boxCollider = GetComponentInChildren<BoxCollider2D>();
+				selfCollider = GetComponentInChildren<Collider2D>();
 
-				if (boxCollider == null)
+				if (selfCollider == null)
 				{
-					Debug.LogWarning("Miss BoxCollider on " + name);
+					Debug.LogWarning("Miss Collider on " + name);
 					return false;
+				}
+
+				//set if is a circle collider
+				if (selfCollider is CircleCollider2D)
+				{
+					selfCircleCollider = selfCollider as CircleCollider2D;
 				}
 			}
 
@@ -219,19 +230,23 @@ namespace redd096.GameTopDown2D
 			foreach (RaycastHit2D hit in Physics2D.RaycastAll(originPoint, direction, distance, ~layersToIgnore))
 			{
 				//for every hit, be sure to not hit self
-				if (hit && hit.collider != boxCollider)
+				if (hit && hit.collider != selfCollider)
 				{
 					//save for events
 					if (currentCollisions.ContainsKey(hit.collider) == false)
 						currentCollisions.Add(hit.collider, hit);
 
 					//calculate nearest hit, only if self collider is not trigger and doesn't hit trigger collider
-					if (boxCollider.isTrigger == false && hit.collider.isTrigger == false)
+					if (selfCollider.isTrigger == false && hit.collider.isTrigger == false)
 					{
 						if (hit.distance < distanceToNearest)
 						{
-							distanceToNearest = hit.distance;
-							nearest = hit;
+							//if using circle collider, be sure is inside radius
+							if (selfCircleCollider == null || Vector2.Distance(hit.point, centerBounds) < radiusSelfCollider)
+							{
+								distanceToNearest = hit.distance;
+								nearest = hit;
+							}
 						}
 					}
 				}
@@ -256,14 +271,14 @@ namespace redd096.GameTopDown2D
 			{
 				if (previousCollisions.Contains(col) == false)
 				{
-					if (col.isTrigger || boxCollider.isTrigger)
+					if (col.isTrigger || selfCollider.isTrigger)
 						onTriggerEnter?.Invoke(currentCollisions[col]);     //trigger enter
 					else
 						onCollisionEnter?.Invoke(currentCollisions[col]);   //collision enter
 				}
 				else
 				{
-					if (col.isTrigger || boxCollider.isTrigger)
+					if (col.isTrigger || selfCollider.isTrigger)
 						onTriggerStay?.Invoke(currentCollisions[col]);      //trigger stay
 					else
 						onCollisionStay?.Invoke(currentCollisions[col]);    //collision stay
@@ -275,7 +290,7 @@ namespace redd096.GameTopDown2D
 			{
 				if (col && currentCollisions.ContainsKey(col) == false)
 				{
-					if (col.isTrigger || boxCollider.isTrigger)
+					if (col.isTrigger || selfCollider.isTrigger)
 						onTriggerExit?.Invoke(col);                         //trigger exit
 					else
 						onCollisionExit?.Invoke(col);                       //collision exit
@@ -321,9 +336,15 @@ namespace redd096.GameTopDown2D
 				return;
 
 			//update bounds
-			centerBounds = boxCollider.bounds.center;
-			verticalExtents = boxCollider.bounds.extents.y;
-			horizontalExtents = boxCollider.bounds.extents.x;
+			centerBounds = selfCollider.bounds.center;
+			verticalExtents = selfCollider.bounds.extents.y;
+			horizontalExtents = selfCollider.bounds.extents.x;
+
+			//if circle, get radius
+			if (selfCircleCollider)
+			{
+				radiusSelfCollider = selfCircleCollider.radius;
+			}
 
 			//bounds limits
 			upBounds = centerBounds.y + verticalExtents;
@@ -482,6 +503,38 @@ namespace redd096.GameTopDown2D
 				default:
 					return 0;
 			}
+		}
+
+		/// <summary>
+		/// Return every collision event received in this frame. This return both collision and trigger events
+		/// </summary>
+		/// <returns></returns>
+		public RaycastHit2D[] GetCurrentCollisions()
+		{
+			return new List<RaycastHit2D>(currentCollisions.Values).ToArray();
+		}
+
+		/// <summary>
+		/// Get if can hit this collider. Return will be "Ignore" if can't hit, "Trigger" if can call a trigger event, "Collision" if can call a collision event
+		/// </summary>
+		/// <param name="col"></param>
+		/// <returns></returns>
+		public ECollisionResponse CanHit(Collider2D col)
+		{
+			//ignore if collider is null or is self collider
+			if (col == null || selfCollider == null || col == selfCollider)
+				return ECollisionResponse.Ignore;
+
+			//ignore if in layer to ignore
+			if (layersToIgnore == (layersToIgnore | (1 << col.gameObject.layer)))
+				return ECollisionResponse.Ignore;
+
+			//if collider or self is trigger, return trigger
+			if (col.isTrigger || selfCollider.isTrigger)
+				return ECollisionResponse.Trigger;
+
+			//else return collision
+			return ECollisionResponse.Collision;
 		}
 
 		#endregion
