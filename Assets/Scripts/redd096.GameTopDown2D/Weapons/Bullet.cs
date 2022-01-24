@@ -41,11 +41,12 @@ namespace redd096.GameTopDown2D
         [ReadOnly] [SerializeField] float damage = 0;
         [ReadOnly] [SerializeField] float bulletSpeed = 0;
 
-        Character owner;
+        [HideInInspector] public Character Owner;
         WeaponRange weapon;
         int ownerType;
         bool alreadyDead;
         List<Redd096Main> alreadyHit = new List<Redd096Main>();
+        List<Redd096Main> alreadyHitsDamageInArea = new List<Redd096Main>();
 
         Coroutine autodestructionCoroutine;
 
@@ -99,7 +100,7 @@ namespace redd096.GameTopDown2D
         /// <param name="damage"></param>
         /// <param name="bulletSpeed"></param>
         /// <param name="delayAutoDestruction"></param>
-        public void Init(Character owner, Vector2 direction, float damage, float bulletSpeed, float delayAutodestruction = 0)
+        public void Init(Character owner, Vector2 direction, float damage, float bulletSpeed, float autodestruction = 0)
         {
             //reset vars
             alreadyDead = false;
@@ -109,13 +110,13 @@ namespace redd096.GameTopDown2D
             this.damage = damage;
             this.bulletSpeed = bulletSpeed;
 
-            this.owner = owner;
-            ownerType = owner ? (int)owner.CharacterType : -1;  //if is not a character, set type to -1
+            this.Owner = owner;
+            ownerType = Owner ? (int)Owner.CharacterType : -1;  //if is not a character, set type to -1
 
             //ignore every collision with owner
-            if (owner)
+            if (Owner)
             {
-                foreach (Collider2D ownerCol in owner.GetComponentsInChildren<Collider2D>())
+                foreach (Collider2D ownerCol in Owner.GetComponentsInChildren<Collider2D>())
                     foreach (Collider2D bulletCol in GetComponentsInChildren<Collider2D>())
                         Physics2D.IgnoreCollision(bulletCol, ownerCol);
             }
@@ -129,8 +130,8 @@ namespace redd096.GameTopDown2D
             }
 
             //if passed autodestruction is greater then 0, use it. Else keep bullet delay
-            if (delayAutodestruction > Mathf.Epsilon)
-                this.delayAutodestruction = delayAutodestruction;
+            if (autodestruction > Mathf.Epsilon)
+                delayAutodestruction = autodestruction;
 
             //autodestruction coroutine
             if (delayAutodestruction > 0)
@@ -173,7 +174,7 @@ namespace redd096.GameTopDown2D
 
             //if friendly fire is disabled, be sure to not hit same type of character
             if (friendlyFire == false
-                && hitMain is Character && ((int)((Character)hitMain).CharacterType == ownerType))
+                && hitMain is Character hitCharacter && (int)hitCharacter.CharacterType == ownerType)
                 return;
 
             //call event
@@ -212,26 +213,27 @@ namespace redd096.GameTopDown2D
         void DamageInArea(Redd096Main hit)
         {
             //be sure to not hit again the same
-            List<Redd096Main> hits = new List<Redd096Main>();
+            alreadyHitsDamageInArea.Clear();
 
             //be sure to not hit owner (if necessary)
-            if (areaCanDamageWhoShoot == false && owner)
-                hits.Add(owner);
+            if (areaCanDamageWhoShoot == false && Owner)
+                alreadyHitsDamageInArea.Add(Owner);
 
             //be sure to not hit who was already hit by bullet (if necessary)
             if (areaCanDamageWhoHit == false && hit != null)
-                hits.Add(hit);
+                alreadyHitsDamageInArea.Add(hit);
 
             //find every object damageable in area
+            Redd096Main hitMain;
             foreach (Collider2D col in Physics2D.OverlapCircleAll(transform.position, radiusAreaDamage))
             {
-                Redd096Main hitMain = col.GetComponentInParent<Redd096Main>();
+                hitMain = col.GetComponentInParent<Redd096Main>();
 
-                if (hitMain != null && hits.Contains(hitMain) == false                      //be sure hit something and is not already hitted
                     && ContainsLayer(layersToIgnore, hitMain.gameObject.layer) == false     //be sure is not in layers to ignore
                     && (ignoreTriggers == false || col.isTrigger == false))                 //be sure is not enabled ignoreTriggers, or is not trigger
+                if (hitMain != null && alreadyHitsDamageInArea.Contains(hitMain) == false                                       //be sure hit something and is not already hitted
                 {
-                    hits.Add(hitMain);
+                    alreadyHitsDamageInArea.Add(hitMain);
 
                     //do damage
                     if (hitMain.GetSavedComponent<HealthComponent>()) hitMain.GetSavedComponent<HealthComponent>().GetDamage(damage, owner, transform.position, ignoreShieldAreaDamage);
