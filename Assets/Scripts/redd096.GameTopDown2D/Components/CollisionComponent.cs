@@ -273,7 +273,7 @@ namespace redd096.GameTopDown2D
 			//call Exit
 			foreach (Collider2D col in previousCollisions)
 			{
-				if (currentCollisions.ContainsKey(col) == false)
+				if (col && currentCollisions.ContainsKey(col) == false)
 				{
 					if (col.isTrigger || boxCollider.isTrigger)
 						onTriggerExit?.Invoke(col);                         //trigger exit
