@@ -252,9 +252,9 @@ namespace redd096.GameTopDown2D
         {
             //reset previous push or add new one to it
             if (resetPreviousPush)
-                DesiredPushForce = pushDirection * pushForce;
+                DesiredPushForce = pushDirection.normalized * pushForce;
             else
-                DesiredPushForce += pushDirection * pushForce;
+                DesiredPushForce += pushDirection.normalized * pushForce;
         }
 
         #endregion
