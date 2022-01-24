@@ -397,11 +397,11 @@ namespace redd096.GameTopDown2D
 						desiredPosition.y = hit.point.y - (bounds - transform.position.y);
 					}
 
-					//add to hits, to save hitting this way
-					if (direction == EDirectionEnum.right) rightHits.Add(hit);
-					else if (direction == EDirectionEnum.left) leftHits.Add(hit);
-					else if (direction == EDirectionEnum.up) upHits.Add(hit);
-					else if (direction == EDirectionEnum.down) downHits.Add(hit);
+					////add to hits, to save hitting this way
+					//if (direction == EDirectionEnum.right) rightHits.Add(hit);
+					//else if (direction == EDirectionEnum.left) leftHits.Add(hit);
+					//else if (direction == EDirectionEnum.up) upHits.Add(hit);
+					//else if (direction == EDirectionEnum.down) downHits.Add(hit);
 				}
 			}
 
