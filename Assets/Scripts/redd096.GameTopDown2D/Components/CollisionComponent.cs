@@ -225,8 +225,8 @@ namespace redd096.GameTopDown2D
 					if (currentCollisions.ContainsKey(hit.collider) == false)
 						currentCollisions.Add(hit.collider, hit);
 
-					//calculate nearest hit, only if not trigger collider
-					if (hit.collider.isTrigger == false)
+					//calculate nearest hit, only if self collider is not trigger and doesn't hit trigger collider
+					if (boxCollider.isTrigger == false && hit.collider.isTrigger == false)
 					{
 						if (hit.distance < distanceToNearest)
 						{
@@ -256,14 +256,14 @@ namespace redd096.GameTopDown2D
 			{
 				if (previousCollisions.Contains(col) == false)
 				{
-					if (col.isTrigger)
+					if (col.isTrigger || boxCollider.isTrigger)
 						onTriggerEnter?.Invoke(currentCollisions[col]);     //trigger enter
 					else
 						onCollisionEnter?.Invoke(currentCollisions[col]);   //collision enter
 				}
 				else
 				{
-					if (col.isTrigger)
+					if (col.isTrigger || boxCollider.isTrigger)
 						onTriggerStay?.Invoke(currentCollisions[col]);      //trigger stay
 					else
 						onCollisionStay?.Invoke(currentCollisions[col]);    //collision stay
@@ -275,7 +275,7 @@ namespace redd096.GameTopDown2D
 			{
 				if (currentCollisions.ContainsKey(col) == false)
 				{
-					if (col.isTrigger)
+					if (col.isTrigger || boxCollider.isTrigger)
 						onTriggerExit?.Invoke(col);                         //trigger exit
 					else
 						onCollisionExit?.Invoke(col);                       //collision exit
