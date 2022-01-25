@@ -19,11 +19,16 @@ namespace redd096.GameTopDown2D
         [SerializeField] bool mouseFree = true;
         [SerializeField] string mouseSchemeName = "KeyboardAndMouse";
 
+        [Header("If using canvas Screen Space - default is main camera")]
+        [SerializeField] bool isScreenSpace = true;
+        [SerializeField] Camera cam = default;
+
         void OnEnable()
         {
             //get references
             if (aimComponent == null) aimComponent = GetComponentInParent<AimComponent>();
             if (playerInput == null) playerInput = GetComponentInParent<PlayerInput>();
+            if (cam == null) cam = Camera.main;
         }
 
         void Update()
@@ -43,7 +48,7 @@ namespace redd096.GameTopDown2D
                 //if mouse free
                 if (mouseFree)
                 {
-                    aimSprite.transform.position = aimComponent.AimPositionNotNormalized;                                           //set current position
+                    aimSprite.transform.position = GetPosition(aimComponent.AimPositionNotNormalized);                                              //set current position
                 }
                 //else check distance
                 else
@@ -51,11 +56,11 @@ namespace redd096.GameTopDown2D
                     float distance = Vector2.Distance(transform.position, aimComponent.AimPositionNotNormalized);
 
                     if (distance > maxDistance)
-                        aimSprite.transform.position = (Vector2)transform.position + aimComponent.AimDirectionInput * maxDistance;  //max distance
+                        aimSprite.transform.position = GetPosition((Vector2)transform.position + aimComponent.AimDirectionInput * maxDistance);     //max distance
                     else if (distance < minDistance)
-                        aimSprite.transform.position = (Vector2)transform.position + aimComponent.AimDirectionInput * minDistance;  //min distance
+                        aimSprite.transform.position = GetPosition((Vector2)transform.position + aimComponent.AimDirectionInput * minDistance);     //min distance
                     else
-                        aimSprite.transform.position = aimComponent.AimPositionNotNormalized;                                       //current distance
+                        aimSprite.transform.position = GetPosition(aimComponent.AimPositionNotNormalized);                                          //current distance
                 }
             }
             //if NOT using mouse
@@ -65,8 +70,16 @@ namespace redd096.GameTopDown2D
                 float value = Mathf.Lerp(minDistance, maxDistance, (aimComponent.AimPositionNotNormalized - (Vector2)transform.position).magnitude);
 
                 //set position
-                aimSprite.transform.position = (Vector2)transform.position + aimComponent.AimDirectionInput * value;
+                aimSprite.transform.position = GetPosition((Vector2)transform.position + aimComponent.AimDirectionInput * value);
             }
+        }
+
+        Vector2 GetPosition(Vector2 worldPosition)
+        {
+            if (isScreenSpace)
+                return cam.WorldToScreenPoint(worldPosition);
+            else
+                return worldPosition;
         }
     }
 }
