@@ -6,7 +6,7 @@ using redd096.Attributes;
 namespace redd096.GameTopDown2D
 {
     [AddComponentMenu("redd096/.GameTopDown2D/Interactables/Exit Interactable")]
-    public class ExitInteractable : InteractableBASE
+    public class ExitInteractable : MonoBehaviour, IInteractable
     {
         [Header("Rules to Open")]
         [Tooltip("Check there are no enemies in scene")] [SerializeField] bool checkNoEnemiesInScene = true;
@@ -19,6 +19,10 @@ namespace redd096.GameTopDown2D
         /*[ShowNonSerializedField]*/
         [ReadOnly] bool isOpen;
         public bool IsOpen => isOpen;
+
+        public Vector2 position => transform.position;  //interface
+
+        [Button] public void ForceExit() { ChangeExitState(); }
 
         //events
         public System.Action onOpen { get; set; }
@@ -69,7 +73,7 @@ namespace redd096.GameTopDown2D
                     if (player.GetSavedComponent<WeaponComponent>())
                     {
                         player.GetSavedComponent<WeaponComponent>().onChangeWeapon += OnPlayerChangeWeapon;
-                        players.Add(player);
+                        players.Add(player);    //and add to the list
                     }
                 }
             }
@@ -108,7 +112,7 @@ namespace redd096.GameTopDown2D
         /// When someone interact with this object
         /// </summary>
         /// <param name="whoInteract"></param>
-        public override void Interact(InteractComponent whoInteract)
+        public void Interact(InteractComponent whoInteract)
         {
             //only if is open
             if (isOpen == false)

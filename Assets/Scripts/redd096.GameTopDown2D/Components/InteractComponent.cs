@@ -21,28 +21,29 @@ namespace redd096.GameTopDown2D
 		[SerializeField] bool drawDebug = false;
 
 		//events
-		public System.Action<InteractableBASE> onFoundInteractable { get; set; }
-		public System.Action<InteractableBASE> onLostInteractable { get; set; }
+		public System.Action<IInteractable> onFoundInteractable { get; set; }
+		public System.Action<IInteractable> onLostInteractable { get; set; }
 
 		//update mode
 		Coroutine updateCoroutine;
 
 		//interactables
-		InteractableBASE[] possibleInteractables;
-		InteractableBASE nearestInteractable;
+		List<IInteractable> possibleInteractables = new List<IInteractable>();
+		IInteractable nearestInteractable;
+		IInteractable previousNearestInteractable;
 
-        void OnDrawGizmos()
-        {
+		void OnDrawGizmos()
+		{
 			//draw area interactable
-            if(drawDebug)
-            {
+			if (drawDebug)
+			{
 				Gizmos.color = Color.cyan;
 				Gizmos.DrawWireSphere(transform.position, radiusInteract);
 				Gizmos.color = Color.white;
 			}
-        }
+		}
 
-        void OnEnable()
+		void OnEnable()
 		{
 			//start coroutine
 			if (updateMode == EUpdateModes.Coroutine)
@@ -83,92 +84,100 @@ namespace redd096.GameTopDown2D
 			}
 		}
 
-        #region private API
+		#region private API
 
-		InteractableBASE FindNearest()
-        {
+		void FindNearest(out IInteractable nearest)
+		{
+			float distance = Mathf.Infinity;
+			nearest = null;
+
 			if (possibleInteractables == null)
-				return null;
+				return;
 
 			//find nearest
-			float distance = Mathf.Infinity;
-			InteractableBASE nearest = null;
-			foreach(InteractableBASE interactable in possibleInteractables)
-            {
-				if(Vector2.Distance(interactable.transform.position, transform.position) < distance)
-                {
-					distance = Vector2.Distance(interactable.transform.position, transform.position);
+			foreach (IInteractable interactable in possibleInteractables)
+			{
+				if (Vector2.Distance(interactable.position, transform.position) < distance)
+				{
+					distance = Vector2.Distance(interactable.position, transform.position);
 					nearest = interactable;
 				}
-            }
+			}
+		}
 
-			return nearest;
-        }
+		#endregion
 
-        #endregion
+		#region public API
 
-        #region public API
-
-        /// <summary>
-        /// Find every interactable in area and nearest one
-        /// </summary>
-        public void FindInteractables()
+		/// <summary>
+		/// Find every interactable in area and nearest one
+		/// </summary>
+		public void FindInteractables()
 		{
 			//find every interactable in area
-			List<InteractableBASE> list = new List<InteractableBASE>();
-			foreach(Collider2D col in Physics2D.OverlapCircleAll(transform.position, radiusInteract, ~layersToIgnore))
-            {
-				InteractableBASE interactable = col.GetComponentInParent<InteractableBASE>();
-				if(interactable)
-                {
-					list.Add(interactable);
-                }
-            }
+			possibleInteractables.Clear();
+			IInteractable interactable;
+			foreach (Collider2D col in Physics2D.OverlapCircleAll(transform.position, radiusInteract, ~layersToIgnore))
+			{
+				interactable = col.GetComponentInParent<IInteractable>();
+				if (interactable != null)
+				{
+					possibleInteractables.Add(interactable);
+				}
+			}
 
-			//set interactables and find nearest
-			possibleInteractables = list.ToArray();
-			InteractableBASE nearest = FindNearest();
+			//find nearest
+			FindNearest(out nearestInteractable);
 
-			if(nearest != nearestInteractable)
+			if (previousNearestInteractable != nearestInteractable)
 			{
 				//call events
-				if (nearestInteractable)
-					onLostInteractable?.Invoke(nearestInteractable);
+				if (previousNearestInteractable != null)
+					onLostInteractable?.Invoke(previousNearestInteractable);
 
-				if(nearest)
-					onFoundInteractable?.Invoke(nearest);
+				if (nearestInteractable != null)
+					onFoundInteractable?.Invoke(nearestInteractable);
 
-				//and set nearest interactable
-				nearestInteractable = nearest;
-            }
+				//and save previous nearest interactable
+				previousNearestInteractable = nearestInteractable;
+			}
 		}
 
 		/// <summary>
 		/// Interact with nearest interactable
 		/// </summary>
 		public void Interact()
-        {
-			if (nearestInteractable)
+		{
+			if (nearestInteractable != null)
 				nearestInteractable.Interact(this);
-        }
+		}
 
 		/// <summary>
 		/// Return nearest interactable
 		/// </summary>
 		/// <returns></returns>
-		public InteractableBASE GetNearestInteractable()
-        {
+		public IInteractable GetNearestInteractable()
+		{
 			return nearestInteractable;
-        }
+		}
 
 		/// <summary>
-		/// Return a list of every possible interactable
+		/// Return previous nearest interactable
 		/// </summary>
 		/// <returns></returns>
-		public InteractableBASE[] GetEveryPossibleInteractable()
-        {
-			return possibleInteractables;
-        }
+		public IInteractable GetPreviousNearestInteractable()
+		{
+			return previousNearestInteractable;
+		}
+
+		/// <summary>
+		/// Return array of every possible interactable
+		/// </summary>
+		/// <returns></returns>
+		public IInteractable[] GetEveryPossibleInteractable()
+		{
+			return possibleInteractables.ToArray();
+		}
 
 		#endregion
 	}
