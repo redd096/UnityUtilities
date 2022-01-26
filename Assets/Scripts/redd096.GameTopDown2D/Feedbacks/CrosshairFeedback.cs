@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
+//using NaughtyAttributes;
+using redd096.Attributes;
 
 namespace redd096.GameTopDown2D
 {
@@ -20,8 +22,8 @@ namespace redd096.GameTopDown2D
         [SerializeField] string mouseSchemeName = "KeyboardAndMouse";
 
         [Header("If using canvas Screen Space - default is main camera")]
-        [SerializeField] bool isScreenSpace = true;
-        [SerializeField] Camera cam = default;
+        [Tooltip("Set if moving something in screen space (canvas) or world space")] [SerializeField] bool isScreenSpace = true;
+        [CanEnable("isScreenSpace")] [SerializeField] Camera cam = default;
 
         void OnEnable()
         {
