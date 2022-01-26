@@ -190,7 +190,7 @@ namespace redd096.GameTopDown2D
 
             //if there is already a weapon equipped, drop it
             if (CurrentWeapons[index] != null)
-                DropWeapon(index);
+                DropWeapon(index, false);
 
             //pick weapon
             CurrentWeapons[index] = weapon;
@@ -237,7 +237,7 @@ namespace redd096.GameTopDown2D
         /// <summary>
         /// Drop Weapon at index
         /// </summary>
-        public void DropWeapon(int index)
+        public void DropWeapon(int index, bool updateIndexEquippedWeapon = true)
         {
             if (CurrentWeapons == null || index >= CurrentWeapons.Length)
                 return;
@@ -257,7 +257,8 @@ namespace redd096.GameTopDown2D
             CurrentWeapons[index] = null;
 
             //set index equipped weapon
-            UpdateIndexEquippedWeapon();
+            if (updateIndexEquippedWeapon)
+                UpdateIndexEquippedWeapon();
 
             //call event
             onDropWeapon?.Invoke();
