@@ -60,10 +60,26 @@ namespace redd096.GameTopDown2D
         public System.Action onEndReload { get; set; }
         public System.Action onAbortReload { get; set; }
 
+#if UNITY_EDITOR
         void ChangedMaxAmmo()
         {
             //when change max ammo, reset current ammo (used by editor)
             CurrentAmmo = MaxAmmo;
+        }
+#endif
+
+        protected virtual void OnDisable()
+        {
+            //be sure to stop reload when disable weapon
+            AbortReload();
+        }
+
+        public override void DropWeapon()
+        {
+            base.DropWeapon();
+
+            //be sure to stop reload when dropped
+            AbortReload();
         }
 
         public override void PressAttack()
@@ -222,6 +238,10 @@ namespace redd096.GameTopDown2D
                 }
 
                 yield return null;
+
+                //if finished ammo, wait reloading
+                if (reloadCoroutine != null)
+                    yield return new WaitUntil(() => reloadCoroutine == null);
             }
         }
 

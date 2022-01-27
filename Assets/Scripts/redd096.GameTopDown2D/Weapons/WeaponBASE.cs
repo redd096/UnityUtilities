@@ -26,7 +26,7 @@ namespace redd096.GameTopDown2D
         /// Set owner
         /// </summary>
         /// <param name="owner"></param>
-        public void PickWeapon(Character owner)
+        public virtual void PickWeapon(Character owner)
         {
             Owner = owner;
 
@@ -37,7 +37,7 @@ namespace redd096.GameTopDown2D
         /// <summary>
         /// Remove owner
         /// </summary>
-        public void DropWeapon()
+        public virtual void DropWeapon()
         {
             Owner = null;
 

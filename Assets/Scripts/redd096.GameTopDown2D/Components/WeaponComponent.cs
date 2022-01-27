@@ -152,14 +152,12 @@ namespace redd096.GameTopDown2D
                 if (indexEquippedWeapon < 0)
                     indexEquippedWeapon = CurrentWeapons.Length - 1;
 
-                //if found weapon not null, set it
+                //if found weapon not null
                 if (indexEquippedWeapon < CurrentWeapons.Length)
                 {
                     if (CurrentWeapons[indexEquippedWeapon])
                     {
-                        indexEquippedWeapon = i;
-
-                        //and active
+                        //active it
                         CurrentWeapons[indexEquippedWeapon].transform.position = transform.position;
                         CurrentWeapons[indexEquippedWeapon].gameObject.SetActive(true);
 
@@ -192,7 +190,7 @@ namespace redd096.GameTopDown2D
             if (CurrentWeapons[index] != null)
                 DropWeapon(index, false);
 
-            //pick weapon
+            //pick weapon      
             CurrentWeapons[index] = weapon;
 
             //set owner and parent
@@ -314,29 +312,31 @@ namespace redd096.GameTopDown2D
                 return;
 
             //move to next or previous weapons
-            int i = indexEquippedWeapon + (nextWeapon ? 1 : -1);
-            while (i != indexEquippedWeapon)
+            int newIndex = indexEquippedWeapon;
+            for (int i = 0; i < CurrentWeapons.Length - 1; i++)     //weapons length -1, because one is current weapon
             {
+                newIndex += (nextWeapon ? 1 : -1);
+
                 //if reach array limit, restart
-                if (nextWeapon && i >= CurrentWeapons.Length)
-                    i = 0;
-                else if (nextWeapon == false && i < 0)
-                    i = CurrentWeapons.Length - 1;
+                if (newIndex >= CurrentWeapons.Length)
+                    newIndex = 0;
+                else if (newIndex < 0)
+                    newIndex = CurrentWeapons.Length - 1;
 
                 //if found weapon not null, set it
-                if (i >= 0 && i < CurrentWeapons.Length)
+                if (newIndex < CurrentWeapons.Length)
                 {
-                    if (CurrentWeapons[i])
+                    if (CurrentWeapons[newIndex])
                     {
                         //deactive previous weapon
                         if (indexEquippedWeapon < CurrentWeapons.Length && CurrentWeapons[indexEquippedWeapon])
                             CurrentWeapons[indexEquippedWeapon].gameObject.SetActive(false);
 
                         //and active new one
-                        CurrentWeapons[i].transform.position = transform.position;
-                        CurrentWeapons[i].gameObject.SetActive(true);
+                        CurrentWeapons[newIndex].transform.position = transform.position;
+                        CurrentWeapons[newIndex].gameObject.SetActive(true);
 
-                        indexEquippedWeapon = i;
+                        indexEquippedWeapon = newIndex;
 
                         //call event
                         onChangeWeapon?.Invoke();
