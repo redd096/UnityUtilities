@@ -41,7 +41,7 @@ namespace redd096.GameTopDown2D
         [SerializeField] AudioClass audioOnPress = default;
 
         [Header("Ammo")]
-        [SerializeField] bool updateAmmoOnPick = true;
+        [SerializeField] bool updateAmmoOnEquip = true;
         [SerializeField] bool updateAmmoOnShoot = true;
         [SerializeField] bool updateAmmoOnReload = true;
 
@@ -65,7 +65,7 @@ namespace redd096.GameTopDown2D
             //add events
             if (weaponRange)
             {
-                weaponRange.onPickWeapon += OnPickWeapon;
+                weaponRange.onEquipWeapon += OnEquipWeapon;
                 weaponRange.onInstantiateBullet += OnInstantiateBullet;
                 weaponRange.onShoot += OnShoot;
                 weaponRange.onPressAttack += OnPressAttack;
@@ -80,7 +80,7 @@ namespace redd096.GameTopDown2D
             //remove events
             if (weaponRange)
             {
-                weaponRange.onPickWeapon -= OnPickWeapon;
+                weaponRange.onEquipWeapon -= OnEquipWeapon;
                 weaponRange.onInstantiateBullet -= OnInstantiateBullet;
                 weaponRange.onShoot -= OnShoot;
                 weaponRange.onPressAttack -= OnPressAttack;
@@ -92,10 +92,10 @@ namespace redd096.GameTopDown2D
 
         #region private API
 
-        void OnPickWeapon()
+        void OnEquipWeapon()
         {
             //update ammo UI
-            if (updateAmmoOnPick)
+            if (updateAmmoOnEquip)
             {
                 //if (weaponRange && weaponRange.Owner && weaponRange.Owner.CharacterType == Character.ECharacterType.Player)
                 //    GameManager.instance.uiManager.SetAmmoText(weaponRange.currentAmmo);

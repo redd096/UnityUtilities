@@ -19,6 +19,8 @@ namespace redd096.GameTopDown2D
         //events
         public System.Action onPickWeapon { get; set; }
         public System.Action onDropWeapon { get; set; }
+        public System.Action onEquipWeapon { get; set; }
+        public System.Action onUnequipWeapon { get; set; }
 
         #region public API
 
@@ -50,6 +52,22 @@ namespace redd096.GameTopDown2D
             //destroy weapon, if setted
             if (destroyWeaponOnDrop)
                 Destroy(gameObject);
+        }
+
+        /// <summary>
+        /// Call when equip weapon
+        /// </summary>
+        public void EquipWeapon()
+        {
+            onEquipWeapon?.Invoke();
+        }
+
+        /// <summary>
+        /// Call when unequip weapon
+        /// </summary>
+        public void UnequipWeapon()
+        {
+            onUnequipWeapon?.Invoke();
         }
 
         /// <summary>
