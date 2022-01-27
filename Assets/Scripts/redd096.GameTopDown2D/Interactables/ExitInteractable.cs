@@ -16,13 +16,12 @@ namespace redd096.GameTopDown2D
         [SerializeField] /*[Scene]*/ string sceneToLoad = default;
 
         [Header("DEBUG")]
-        /*[ShowNonSerializedField]*/
-        [ReadOnly] bool isOpen;
+        /*[ShowNonSerializedField]*/ [SerializeField] [ReadOnly] bool isOpen;
         public bool IsOpen => isOpen;
 
         public Vector2 position => transform.position;  //interface
 
-        [Button] public void ForceExit() { ChangeExitState(); }
+        [Button(EnableType = ButtonAttribute.EEnableType.PlayMode)] public void ForceExit() => ChangeExitState();
 
         //events
         public System.Action onOpen { get; set; }
