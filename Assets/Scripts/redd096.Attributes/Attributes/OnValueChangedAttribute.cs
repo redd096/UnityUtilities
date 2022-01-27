@@ -35,10 +35,7 @@ namespace redd096.Attributes
                         //only if with 0 parameters
                         if (method != null && method.GetParameters().Length == 0)
                         {
-                            method.Invoke(property.serializedObject.targetObject, null);
-
-                            //repaint scene
-                            SceneView.RepaintAll();                            
+                            method.Invoke(property.serializedObject.targetObject, null);                  
                         }
                         else
                         {
