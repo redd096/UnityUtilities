@@ -22,6 +22,9 @@ namespace redd096.Attributes
             //if changed something
             if (EditorGUI.EndChangeCheck())
             {
+                //apply modifications, so new value is updated in serialized object
+                property.serializedObject.ApplyModifiedProperties();
+
                 OnValueChangedAttribute at = attribute as OnValueChangedAttribute;
 
                 //in target object, find method with same name and invoke
@@ -35,7 +38,7 @@ namespace redd096.Attributes
                             method.Invoke(property.serializedObject.targetObject, null);
 
                             //repaint scene
-                            SceneView.RepaintAll();
+                            SceneView.RepaintAll();                            
                         }
                         else
                         {
@@ -58,15 +61,15 @@ namespace redd096.Attributes
     /// </summary>
     public class OnValueChangedAttribute : PropertyAttribute
     {
-        public string methodName;
+        public readonly string methodName;
 
         /// <summary>
         /// Attribute to call a method when value is changed
         /// </summary>
-        /// <param name="methodNameNoArguments"></param>
-        public OnValueChangedAttribute(string methodNameNoArguments)
+        /// <param name="methodNameNoParameters"></param>
+        public OnValueChangedAttribute(string methodNameNoParameters)
         {
-            methodName = methodNameNoArguments;
+            methodName = methodNameNoParameters;
         }
     }
 }

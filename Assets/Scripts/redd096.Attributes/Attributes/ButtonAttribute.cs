@@ -34,7 +34,7 @@ namespace redd096.Attributes
                 buttonAttribute = method.GetCustomAttribute<ButtonAttribute>(true);
                 if (buttonAttribute != null)
                 {
-                    //can have only optional parameters
+                    //can have only zero or optional parameters
                     if (method.GetParameters().All(p => p.IsOptional))
                     {
                         //set if button is enabled or disabled
