@@ -8,7 +8,7 @@ namespace redd096
     using UnityEditor;
 
     [CustomPropertyDrawer(typeof(DropdownStateAttribute))]
-    public class DropdownStatePropertyDrawer : PropertyDrawer
+    public class DropdownStateDrawer : PropertyDrawer
     {
         State[] possibleStates;
         string[] statesNames;

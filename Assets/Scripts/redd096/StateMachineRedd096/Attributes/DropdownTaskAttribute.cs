@@ -8,7 +8,7 @@ namespace redd096
     using UnityEditor;
 
     [CustomPropertyDrawer(typeof(DropdownTaskAttribute))]
-    public class DropdownTaskPropertyDrawer : PropertyDrawer
+    public class DropdownTaskDrawer : PropertyDrawer
     {
         BaseTask[] possibleTasks;
         string[] tasksNames;
