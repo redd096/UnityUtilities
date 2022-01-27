@@ -16,8 +16,6 @@ namespace redd096.GameTopDown2D
         [SerializeField] bool destroyWeaponOnDrop = false;
         [ReadOnly] public Character Owner;
 
-        public Vector2 position => transform.position;  //interface
-
         //events
         public System.Action onPickWeapon { get; set; }
         public System.Action onDropWeapon { get; set; }
