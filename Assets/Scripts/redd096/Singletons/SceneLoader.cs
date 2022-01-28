@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
+using redd096.Attributes;
 
 namespace redd096
 {
@@ -7,7 +8,7 @@ namespace redd096
     public class SceneLoader : Singleton<SceneLoader>
     {
         [SerializeField] bool changeCursorLockMode = true;
-        [SerializeField] CursorLockMode lockModeOnResume = CursorLockMode.Confined;
+        [CanEnable("changeCursorLockMode")] [SerializeField] CursorLockMode lockModeOnResume = CursorLockMode.Confined;
 
         /// <summary>
         /// Resume time and hide cursor
