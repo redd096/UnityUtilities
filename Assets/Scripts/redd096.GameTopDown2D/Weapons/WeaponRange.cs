@@ -39,17 +39,8 @@ namespace redd096.GameTopDown2D
 
         //bullets
         Pooling<Bullet> bulletsPooling = new Pooling<Bullet>();
-        GameObject bulletsParent;
-        GameObject BulletsParent
-        {
-            get
-            {
-                if (bulletsParent == null)
-                    bulletsParent = new GameObject("Bullets Parent");
-
-                return bulletsParent;
-            }
-        }
+        Transform _bulletsParent;
+        Transform BulletsParent { get { if (_bulletsParent == null) _bulletsParent = new GameObject(name + "'s Bullets Parent").transform; return _bulletsParent; } }
 
         //events
         public System.Action<Transform> onInstantiateBullet { get; set; }
@@ -207,7 +198,7 @@ namespace redd096.GameTopDown2D
                 Debug.DrawLine(barrel.position, (Vector2)barrel.position + direction, Color.red, 1);
 
             //instantiate bullet
-            Bullet bullet = bulletsPooling.Instantiate(BulletPrefab, BulletsParent.transform);
+            Bullet bullet = bulletsPooling.Instantiate(BulletPrefab, BulletsParent);
             bullet.transform.position = barrel.position;
             bullet.transform.rotation = Quaternion.LookRotation(Vector3.forward, Quaternion.AngleAxis(90, Vector3.forward) * direction);    //rotate direction to left, to use right as forward
 
