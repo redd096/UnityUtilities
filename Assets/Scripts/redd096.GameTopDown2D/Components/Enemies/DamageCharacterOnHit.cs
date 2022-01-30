@@ -9,6 +9,9 @@ namespace redd096.GameTopDown2D
         [Header("Do Damage On Hit?")]
         [SerializeField] bool isActive = true;
 
+        [Header("Necessary Components - default get from this gameObject")]
+        [SerializeField] CollisionComponent collisionComponent = default;
+
         [Header("Damage")]
         [SerializeField] List<Character.ECharacterType> charactersToHit = new List<Character.ECharacterType>() { Character.ECharacterType.Player };
         [SerializeField] float damage = 10;
@@ -31,14 +34,46 @@ namespace redd096.GameTopDown2D
             selfCharacter = GetComponent<Character>();
         }
 
-        void OnCollisionEnter2D(Collision2D collision)
+        void OnEnable()
+        {
+            //get references
+            if (collisionComponent == null)
+                collisionComponent = GetComponent<CollisionComponent>();
+
+            //if collision component has update mode to None, set to Coroutine
+            if (isActive && collisionComponent && collisionComponent.UpdateMode == CollisionComponent.EUpdateModes.None)
+            {
+                collisionComponent.UpdateMode = CollisionComponent.EUpdateModes.Coroutine;
+            }
+
+            //add events
+            if (collisionComponent)
+            {
+                collisionComponent.onCollisionEnter += OnRDCollisionEnter;
+                collisionComponent.onCollisionStay += OnRDCollisionStay;
+                collisionComponent.onCollisionExit += OnRDCollisionExit;
+            }
+        }
+
+        void OnDisable()
+        {
+            //remove events
+            if (collisionComponent)
+            {
+                collisionComponent.onCollisionEnter -= OnRDCollisionEnter;
+                collisionComponent.onCollisionStay -= OnRDCollisionStay;
+                collisionComponent.onCollisionExit -= OnRDCollisionExit;
+            }
+        }
+
+        void OnRDCollisionEnter(RaycastHit2D collision)
         {
             //do nothing if deactivated (use boolean because the unity toggle doesn't work with collision enter)
             if (isActive == false)
                 return;
 
             //check if hit character and is not already in the list
-            hitCharacter = collision.gameObject.GetComponentInParent<Character>();
+            hitCharacter = collision.transform.GetComponentInParent<Character>();
             if (hitCharacter && hits.ContainsKey(hitCharacter) == false)
             {
                 //check can damage
@@ -52,14 +87,14 @@ namespace redd096.GameTopDown2D
             }
         }
 
-        void OnCollisionStay2D(Collision2D collision)
+        void OnRDCollisionStay(RaycastHit2D collision)
         {
             //do nothing if deactivated (use boolean because the unity toggle doesn't work with collision enter)
             if (isActive == false)
                 return;
 
             //check if hit character and is in the list
-            hitCharacter = collision.gameObject.GetComponentInParent<Character>();
+            hitCharacter = collision.transform.GetComponentInParent<Character>();
             if (hitCharacter && hits.ContainsKey(hitCharacter))
             {
                 //damage after delay
@@ -71,14 +106,14 @@ namespace redd096.GameTopDown2D
             }
         }
 
-        void OnCollisionExit2D(Collision2D collision)
+        void OnRDCollisionExit(Collider2D collision)
         {
             //do nothing if deactivated (use boolean because the unity toggle doesn't work with collision enter)
             if (isActive == false)
                 return;
 
             //check if exit hit character and is in the list
-            hitCharacter = collision.gameObject.GetComponentInParent<Character>();
+            hitCharacter = collision.transform.GetComponentInParent<Character>();
             if (hitCharacter && hits.ContainsKey(hitCharacter))
             {
                 //remove from the list
@@ -86,7 +121,7 @@ namespace redd096.GameTopDown2D
             }
         }
 
-        void OnHit(Collision2D collision, Character hit)
+        void OnHit(RaycastHit2D collision, Character hit)
         {
             //if can't do damage, return, but continue to check if enter or exit collision
             if (canDoDamage == false)
@@ -107,10 +142,10 @@ namespace redd096.GameTopDown2D
 
             //do damage and push back
             if (hit.GetSavedComponent<HealthComponent>())
-                hit.GetSavedComponent<HealthComponent>().GetDamage(damage, selfCharacter, collision.GetContact(0).point);
+                hit.GetSavedComponent<HealthComponent>().GetDamage(damage, selfCharacter, collision.point);
 
             if (hit && hit.GetSavedComponent<MovementComponent>())
-                hit.GetSavedComponent<MovementComponent>().PushInDirection(((Vector2)hit.transform.position - collision.GetContact(0).point).normalized, pushForce);
+                hit.GetSavedComponent<MovementComponent>().PushInDirection(((Vector2)hit.transform.position - collision.point).normalized, pushForce);
         }
 
         /// <summary>
