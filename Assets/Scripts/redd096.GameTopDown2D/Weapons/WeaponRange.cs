@@ -25,6 +25,7 @@ namespace redd096.GameTopDown2D
 
         [Header("Ammo")]
         public bool HasAmmo = true;
+        /*[Dropdown("GetAllAmmoTypes")]*/ [CanEnable("HasAmmo")] public string AmmoType = "NONE";
         [OnValueChanged("ChangedMaxAmmo")] [CanEnable("HasAmmo")] [Min(0)] public int MaxAmmo = 32;
         [ReadOnly] public int CurrentAmmo = 32;
         [CanEnable("HasAmmo")] public float ReloadDelay = 1;
@@ -50,12 +51,33 @@ namespace redd096.GameTopDown2D
         public System.Action onStartReload { get; set; }
         public System.Action onEndReload { get; set; }
         public System.Action onAbortReload { get; set; }
+        public System.Action onNoAmmoToReload { get; set; }
 
 #if UNITY_EDITOR
         void ChangedMaxAmmo()
         {
             //when change max ammo, reset current ammo (used by editor)
             CurrentAmmo = MaxAmmo;
+        }
+
+        string[] GetAllAmmoTypes()
+        {
+            //get guid to every ammo in project
+            string[] guids = UnityEditor.AssetDatabase.FindAssets("t:prefab");
+            System.Collections.Generic.List<string> values = new System.Collections.Generic.List<string>();
+
+            //default is no type of ammo
+            values.Add("NONE");
+
+            //return array with loaded assets
+            Ammo ammo;
+            for (int i = 0; i < guids.Length; i++)
+            {
+                ammo = UnityEditor.AssetDatabase.LoadAssetAtPath<Ammo>(UnityEditor.AssetDatabase.GUIDToAssetPath(guids[i]));
+                if (ammo) values.Add(ammo.AmmoType);
+            }
+
+            return values.ToArray();
         }
 #endif
 
@@ -110,11 +132,20 @@ namespace redd096.GameTopDown2D
             //do only if this weapon has ammo, and is not full (and is not already reloading)
             if (HasAmmo && CurrentAmmo < MaxAmmo && reloadCoroutine == null)
             {
-                //call event
-                onStartReload?.Invoke();
+                //only if type NONE (so not use real ammos) or owner has ammo of this type
+                if (AmmoType == "NONE" || (Owner && Owner.GetSavedComponent<AdvancedWeaponComponent>() && Owner.GetSavedComponent<AdvancedWeaponComponent>().GetCurrentAmmo(AmmoType) > 0))
+                {
+                    //call event
+                    onStartReload?.Invoke();
 
-                //start reload coroutine
-                reloadCoroutine = StartCoroutine(ReloadCoroutine());
+                    //start reload coroutine
+                    reloadCoroutine = StartCoroutine(ReloadCoroutine());
+                }
+                //if type is not NONE and there aren't ammo to reload, call event
+                else if (AmmoType != "NONE")
+                {
+                    onNoAmmoToReload?.Invoke();
+                }
             }
         }
 
@@ -229,10 +260,6 @@ namespace redd096.GameTopDown2D
                 }
 
                 yield return null;
-
-                //if finished ammo, wait reloading
-                if (reloadCoroutine != null)
-                    yield return new WaitUntil(() => reloadCoroutine == null);
             }
         }
 
@@ -241,8 +268,22 @@ namespace redd096.GameTopDown2D
             //wait
             yield return new WaitForSeconds(ReloadDelay);
 
-            //then reload ammos
-            CurrentAmmo = MaxAmmo;
+            //then reload all ammos if type is NONE
+            if (AmmoType == "NONE")
+            {
+                CurrentAmmo = MaxAmmo;
+            }
+            //or reload using owner ammos
+            else if (Owner && Owner.GetSavedComponent<AdvancedWeaponComponent>())
+            {
+                int necessaryAmmo = MaxAmmo - CurrentAmmo;
+
+                //max ammo or owner ammo if not reach max
+                CurrentAmmo = Mathf.Min(CurrentAmmo + Owner.GetSavedComponent<AdvancedWeaponComponent>().GetCurrentAmmo(AmmoType), MaxAmmo);
+
+                //remove ammo from owner (if owner has not total ammo, will be set to 0)
+                Owner.GetSavedComponent<AdvancedWeaponComponent>().AddAmmo(AmmoType, -necessaryAmmo);
+            }
 
             //call event
             onEndReload?.Invoke();
