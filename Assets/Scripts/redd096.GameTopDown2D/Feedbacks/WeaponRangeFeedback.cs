@@ -50,6 +50,12 @@ namespace redd096.GameTopDown2D
         [SerializeField] ParticleSystem particlesOnReload = default;
         [SerializeField] AudioClass audioOnReload = default;
 
+        [Header("On No Ammo To Reload - reload barrel by default is transform")]
+        [SerializeField] Transform reloadBarrel = default;
+        [SerializeField] InstantiatedGameObjectStruct gameObjectOnNoAmmoToReload = default;
+        [SerializeField] ParticleSystem particlesOnNoAmmoToReload = default;
+        [SerializeField] AudioClass audioOnNoAmmoToReload = default;
+
         //deactive on release attack
         GameObject instantiatedGameObjectOnPress;
         ParticleSystem instantiatedParticlesOnPress;
@@ -72,6 +78,7 @@ namespace redd096.GameTopDown2D
                 weaponRange.onReleaseAttack += OnReleaseAttack;
                 weaponRange.onStartReload += OnStartReload;
                 weaponRange.onEndReload += OnEndReload;
+                weaponRange.onNoAmmoToReload += OnNoAmmoToReload;
             }
         }
 
@@ -87,6 +94,7 @@ namespace redd096.GameTopDown2D
                 weaponRange.onReleaseAttack -= OnReleaseAttack;
                 weaponRange.onStartReload -= OnStartReload;
                 weaponRange.onEndReload -= OnEndReload;
+                weaponRange.onNoAmmoToReload -= OnNoAmmoToReload;
             }
         }
 
@@ -190,9 +198,15 @@ namespace redd096.GameTopDown2D
         void OnStartReload()
         {
             //instantiate vfx and sfx
-            InstantiateGameObjectManager.instance.Play(gameObjectOnReload, transform.position, transform.rotation);
-            ParticlesManager.instance.Play(particlesOnReload, transform.position, transform.rotation);
+            GameObject instantiatedGameObject = InstantiateGameObjectManager.instance.Play(gameObjectOnReload, transform.position, transform.rotation);
+            ParticleSystem instantiatedParticles = ParticlesManager.instance.Play(particlesOnReload, transform.position, transform.rotation);
             SoundManager.instance.Play(audioOnReload, transform.position);
+
+            //set parent to vfx
+            if (instantiatedGameObject)
+                instantiatedGameObject.transform.SetParent(transform);
+            if (instantiatedParticles)
+                instantiatedParticles.transform.SetParent(transform);
         }
 
         void OnEndReload()
@@ -203,6 +217,20 @@ namespace redd096.GameTopDown2D
                 //if (weaponRange && weaponRange.Owner && weaponRange.Owner.CharacterType == Character.ECharacterType.Player)
                 //    GameManager.instance.uiManager.SetAmmoText(weaponRange.currentAmmo);
             }
+        }
+
+        void OnNoAmmoToReload()
+        {
+            //instantiate vfx and sfx
+            GameObject instantiatedGameObject = InstantiateGameObjectManager.instance.Play(gameObjectOnNoAmmoToReload, reloadBarrel.position, reloadBarrel.rotation);
+            ParticleSystem instantiatedParticles = ParticlesManager.instance.Play(particlesOnNoAmmoToReload, reloadBarrel.position, reloadBarrel.rotation);
+            SoundManager.instance.Play(audioOnNoAmmoToReload, reloadBarrel.position);
+
+            //set parent to vfx
+            if (instantiatedGameObject)
+                instantiatedGameObject.transform.SetParent(reloadBarrel);
+            if (instantiatedParticles)
+                instantiatedParticles.transform.SetParent(reloadBarrel);
         }
 
         #endregion

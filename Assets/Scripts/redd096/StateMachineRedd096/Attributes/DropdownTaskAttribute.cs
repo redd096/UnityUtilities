@@ -77,7 +77,7 @@ namespace redd096
         {
             //get owner of the property
             Component owner = property.serializedObject.targetObject as Component;
-            if(owner)
+            if (owner)
             {
                 //get tasks in children
                 Component[] components = owner.GetComponentsInChildren(((DropdownTaskAttribute)attribute).TaskType);
@@ -85,8 +85,8 @@ namespace redd096
                 //set arrays for dropdown
                 if (components != null && components.Length > 0)
                 {
-                    possibleTasks = new BaseTask[components.Length +1];
-                    tasksNames = new string[possibleTasks.Length +1];
+                    possibleTasks = new BaseTask[components.Length + 1];
+                    tasksNames = new string[possibleTasks.Length + 1];
 
                     //set NONE as first task
                     possibleTasks[0] = null;
@@ -94,8 +94,8 @@ namespace redd096
 
                     for (int i = 0; i < components.Length; i++)
                     {
-                        possibleTasks[i +1] = components[i] as BaseTask;
-                        tasksNames[i +1] = possibleTasks[i +1].TaskName;
+                        possibleTasks[i + 1] = components[i] as BaseTask;
+                        tasksNames[i + 1] = possibleTasks[i + 1].TaskName;
                     }
 
                     return;
@@ -110,7 +110,7 @@ namespace redd096
         int GetSelectedIndex(SerializedProperty property)
         {
             //return current index
-            for(int i = 0; i < possibleTasks.Length; i++)
+            for (int i = 0; i < possibleTasks.Length; i++)
             {
                 if (possibleTasks[i] == property.objectReferenceValue)
                     return i;

@@ -10,7 +10,7 @@ namespace redd096.GameTopDown2D
 
         [Header("Default this transform")]
         [SerializeField] Transform objectToRotate = default;
-        [Tooltip("By default these sprites are looking to the right?")] [SerializeField] bool defaultLookRight = true;
+        [Tooltip("By default this object is looking to the right?")] [SerializeField] bool defaultLookRight = true;
 
         bool lookRight;
 

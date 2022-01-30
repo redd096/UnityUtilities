@@ -14,11 +14,8 @@ namespace redd096.GameTopDown2D
         [Header("Run when speed > this value")]
         [SerializeField] float valueToRun = 0.1f;
 
-        [Header("Animations - play by state name or set bool parameter")]
-        [SerializeField] bool playStateName = true;
-        [CanEnable("playStateName")] [SerializeField] string idleAnimation = "Idle";
-        [CanEnable("playStateName")] [SerializeField] string runAnimation = "Run";
-        [CanEnable("playStateName", NOT = true)] [SerializeField] string boolName = "IsRunning";
+        [Header("Animator parameters")]
+        [SerializeField] string boolName = "IsRunning";
 
         bool isRunning;
 
@@ -38,10 +35,7 @@ namespace redd096.GameTopDown2D
                     isRunning = true;
 
                     //set animator
-                    if (playStateName)
-                        anim.Play(runAnimation);
-                    else
-                        anim.SetBool(boolName, true);
+                    anim.SetBool(boolName, true);
                 }
                 //back to idle
                 else if (movementComponent.CurrentSpeed <= valueToRun && isRunning)
@@ -49,10 +43,7 @@ namespace redd096.GameTopDown2D
                     isRunning = false;
 
                     //set animator
-                    if (playStateName)
-                        anim.Play(idleAnimation);
-                    else
-                        anim.SetBool(boolName, false);
+                    anim.SetBool(boolName, false);
                 }
             }
         }

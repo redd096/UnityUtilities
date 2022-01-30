@@ -28,7 +28,7 @@ namespace redd096
 
             //show dropdown to select and set property
             if (possibleStates != null && possibleStates.Length > 0)
-            {                
+            {
                 property.intValue = EditorGUI.Popup(dropdownRect, property.intValue, statesNames);
             }
             //else show NONE and don't set anything

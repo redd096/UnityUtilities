@@ -32,6 +32,16 @@ namespace redd096.GameTopDown2D
         [CanEnable("cameraShakeOnDrop", "customShakeOnDrop")] [SerializeField] float shakeDurationOnDrop = 1;
         [CanEnable("cameraShakeOnDrop", "customShakeOnDrop")] [SerializeField] float shakeAmountOnDrop = 0.7f;
 
+        [Header("On Equip")]
+        [SerializeField] InstantiatedGameObjectStruct gameObjectOnEquip = default;
+        [SerializeField] ParticleSystem particlesOnEquip = default;
+        [SerializeField] AudioClass audioOnEquip = default;
+
+        [Header("On Unequip")]
+        [SerializeField] InstantiatedGameObjectStruct gameObjectOnUnequip = default;
+        [SerializeField] ParticleSystem particlesOnUnequip = default;
+        [SerializeField] AudioClass audioOnUnequip = default;
+
         void OnEnable()
         {
             //get references
@@ -43,6 +53,8 @@ namespace redd096.GameTopDown2D
             {
                 weaponBASE.onPickWeapon += OnPickWeapon;
                 weaponBASE.onDropWeapon += OnDropWeapon;
+                weaponBASE.onEquipWeapon += OnEquipWeapon;
+                weaponBASE.onUnequipWeapon += OnUnequipWeapon;
             }
         }
 
@@ -53,6 +65,8 @@ namespace redd096.GameTopDown2D
             {
                 weaponBASE.onPickWeapon -= OnPickWeapon;
                 weaponBASE.onDropWeapon -= OnDropWeapon;
+                weaponBASE.onEquipWeapon -= OnEquipWeapon;
+                weaponBASE.onUnequipWeapon -= OnUnequipWeapon;
             }
         }
 
@@ -92,6 +106,22 @@ namespace redd096.GameTopDown2D
                 else
                     CameraShake.instance.StartShake();
             }
+        }
+
+        void OnEquipWeapon()
+        {
+            //instantiate vfx and sfx
+            InstantiateGameObjectManager.instance.Play(gameObjectOnEquip, transform.position, transform.rotation);
+            ParticlesManager.instance.Play(particlesOnEquip, transform.position, transform.rotation);
+            SoundManager.instance.Play(audioOnEquip, transform.position);
+        }
+
+        void OnUnequipWeapon()
+        {
+            //instantiate vfx and sfx
+            InstantiateGameObjectManager.instance.Play(gameObjectOnUnequip, transform.position, transform.rotation);
+            ParticlesManager.instance.Play(particlesOnUnequip, transform.position, transform.rotation);
+            SoundManager.instance.Play(audioOnUnequip, transform.position);
         }
 
         #endregion
