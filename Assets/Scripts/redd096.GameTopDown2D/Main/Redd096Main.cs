@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace redd096.GameTopDown2D
 {
+    [SelectionBase]
     [AddComponentMenu("redd096/.GameTopDown2D/Main/redd096Main")]
     public class Redd096Main : MonoBehaviour
     {
