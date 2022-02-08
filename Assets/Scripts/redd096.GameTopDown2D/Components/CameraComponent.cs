@@ -12,13 +12,20 @@ namespace redd096.GameTopDown2D
 
         [Header("Update camera position to follow this object")]
         [SerializeField] bool updatePosition = true;
+        [Tooltip("Use LateUpdate or Update to move the camera?")] [CanEnable("updatePosition")] [SerializeField] bool useLateUpdate = true;
         [CanEnable("updatePosition")] [SerializeField] Vector3 offsetPosition = new Vector3(0, 0, -10);
+
+        [Header("Clamp camera position to pixelsPerUnit")]
+        [SerializeField] bool usePixelClamp = false;
+        [CanEnable("usePixelClamp")] [SerializeField] float pixelsPerUnit = 16;
 
         [Header("Drop Camera On Death (necessary HealthComponent - default get from this gameObject)")]
         [SerializeField] bool dropCameraOnDeath = true;
         [CanEnable("dropCameraOnDeath")] [SerializeField] HealthComponent healthComponent = default;
 
         Transform cameraParent;
+        Vector3 movement;
+        Vector3 oldPosition;
 
         void OnEnable()
         {
@@ -54,8 +61,25 @@ namespace redd096.GameTopDown2D
         void Update()
         {
             //update camera position if necessary
-            if (updatePosition && cameraParent)
-                cameraParent.position = transform.position + offsetPosition;
+            if (updatePosition && useLateUpdate == false)
+            {
+                if (cameraParent)
+                {
+                    MoveCamera();
+                }
+            }
+        }
+
+        void LateUpdate()
+        {
+            //update camera position if necessary
+            if (updatePosition && useLateUpdate)
+            {
+                if (cameraParent)
+                {
+                    MoveCamera();
+                }
+            }
         }
 
         void OnDie(HealthComponent whoDied)
@@ -74,5 +98,33 @@ namespace redd096.GameTopDown2D
                 }
             }
         }
+
+        #region private API
+
+        void MoveCamera()
+        {
+            //move camera clamped to pixelPerUnit
+            if (usePixelClamp)
+            {
+                movement = (transform.position + offsetPosition) - cameraParent.position;   //calculate movement
+                movement = PixelClamp(movement);                                            //clamp movement to pixelPerUnit
+                oldPosition = PixelClamp(cameraParent.position);                            //clamp old position to pixelsPerUnit
+
+                cameraParent.position = oldPosition + movement;                             //set new position using clamped values
+            }
+            //just move camera to position + offset
+            else
+            {
+                cameraParent.position = transform.position + offsetPosition;
+            }
+        }
+
+        Vector3 PixelClamp(Vector3 position)
+        {
+            //round position * pixelsPerUnit, then divide by pixelsPerUnit
+            return new Vector3(Mathf.RoundToInt(position.x * pixelsPerUnit), Mathf.RoundToInt(position.y * pixelsPerUnit), Mathf.RoundToInt(position.z * pixelsPerUnit)) / pixelsPerUnit;
+        }
+
+        #endregion
     }
 }
