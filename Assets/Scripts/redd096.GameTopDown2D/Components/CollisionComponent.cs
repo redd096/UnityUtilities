@@ -257,20 +257,20 @@ namespace redd096.GameTopDown2D
 				//for every hit, be sure to not hit self and be sure to not hit colliders to ignore
 				if (hit && hit.collider != selfCollider && collidersToIgnore.Contains(hit.collider) == false)
 				{
-					//save for events
-					if (saveCollisionForEvents && currentCollisions.ContainsKey(hit.collider) == false)
+					//if using circle collider, be sure is inside radius
+					if (circleCollider == null || Vector2.Distance(hit.point, centerBounds) < radiusSelfCollider)
 					{
-						currentCollisions.Add(hit.collider, hit);
-						savedHitsForEvent.Add(hit.collider);    //save in a list, so we know which colliders hits with this function
-					}
-
-					//calculate nearest hit, only if self collider is not trigger and doesn't hit trigger collider
-					if (selfCollider.isTrigger == false && hit.collider.isTrigger == false)
-					{
-						if (nearestHit == false || hit.distance < nearestHit.distance)
+						//save for events
+						if (saveCollisionForEvents && currentCollisions.ContainsKey(hit.collider) == false)
 						{
-							//if using circle collider, be sure is inside radius
-							if (circleCollider == null || Vector2.Distance(hit.point, centerBounds) < radiusSelfCollider)
+							currentCollisions.Add(hit.collider, hit);
+							savedHitsForEvent.Add(hit.collider);    //save in a list, so we know which colliders hits with this function
+						}
+
+						//calculate nearest hit, only if self collider is not trigger and doesn't hit trigger collider
+						if (selfCollider.isTrigger == false && hit.collider.isTrigger == false)
+						{
+							if (nearestHit == false || hit.distance < nearestHit.distance)
 							{
 								nearestHit = hit;
 							}
