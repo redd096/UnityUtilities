@@ -39,7 +39,7 @@ namespace redd096.PathFinding3D
         /// <param name="func">function to call when finish processing path. Will pass the path as a list of node</param>
         /// <param name="agent"></param>
         /// <param name="returnNearestPointToTarget">if no path to target position, return path to nearest point</param>
-        public void FindPath(Vector3 startPosition, Vector3 targetPosition, System.Action<List<Node3D>> func, AgentAStar3D agent = null, bool returnNearestPointToTarget = true)
+        public void FindPath(Vector3 startPosition, Vector3 targetPosition, System.Action<List<Vector3>> func, AgentAStar3D agent = null, bool returnNearestPointToTarget = true)
         {
             //start processing path or add to queue
             ProcessPath(startPosition, targetPosition, func, agent, returnNearestPointToTarget);
@@ -257,7 +257,7 @@ namespace redd096.PathFinding3D
         /// <summary>
         /// Retrace path from start to end
         /// </summary>
-        List<Node3D> RetracePath(Node3D startNode, Node3D endNode)
+        List<Vector3> RetracePath(Node3D startNode, Node3D endNode)
         {
             List<Node3D> path = new List<Node3D>();
 
@@ -275,7 +275,28 @@ namespace redd096.PathFinding3D
             //reverse list to get from start to end
             path.Reverse();
 
-            return path;
+            return SimplifyPath(path);
+        }
+
+        List<Vector3> SimplifyPath(List<Node3D> path)
+        {
+            List<Vector3> waypoints = new List<Vector3>();
+            Vector2Int oldDirection = Vector2Int.zero;
+
+            //calculate direction between every node in the path
+            Vector2Int newDirection;
+            for (int i = 1; i < path.Count; i++)
+            {
+                //if direction is different, add this node position to the path
+                newDirection = path[i - 1].gridPosition - path[i].gridPosition;
+                if (newDirection != oldDirection)
+                {
+                    waypoints.Add(path[i].worldPosition);
+                    oldDirection = newDirection;
+                }
+            }
+
+            return waypoints;
         }
 
         IEnumerator UpdateObstaclePositionOnGridCoroutine()

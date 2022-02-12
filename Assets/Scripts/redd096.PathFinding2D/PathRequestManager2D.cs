@@ -11,11 +11,11 @@ namespace redd096.PathFinding2D
         {
             public Vector2 startPosition;
             public Vector2 targetPosition;
-            public System.Action<List<Node2D>> func;
+            public System.Action<List<Vector2>> func;
             public AgentAStar2D agent;
             public bool returnNearestPointToTarget;
 
-            public PathRequestStruct(Vector2 startPosition, Vector2 targetPosition, System.Action<List<Node2D>> func, AgentAStar2D agent, bool returnNearestPointToTarget)
+            public PathRequestStruct(Vector2 startPosition, Vector2 targetPosition, System.Action<List<Vector2>> func, AgentAStar2D agent, bool returnNearestPointToTarget)
             {
                 this.startPosition = startPosition;
                 this.targetPosition = targetPosition;
@@ -29,7 +29,7 @@ namespace redd096.PathFinding2D
         PathRequestStruct currentPathRequest;
         bool isProcessingPath;
 
-        protected void ProcessPath(Vector2 startPosition, Vector2 targetPosition, System.Action<List<Node2D>> func, AgentAStar2D agent, bool returnNearestPointToTarget)
+        protected void ProcessPath(Vector2 startPosition, Vector2 targetPosition, System.Action<List<Vector2>> func, AgentAStar2D agent, bool returnNearestPointToTarget)
         {
             //add path request to queue
             PathRequestStruct pathRequest = new PathRequestStruct(startPosition, targetPosition, func, agent, returnNearestPointToTarget);
@@ -39,7 +39,7 @@ namespace redd096.PathFinding2D
             TryProcessNext();
         }
 
-        protected void OnFinishProcessingPath(List<Node2D> path)
+        protected void OnFinishProcessingPath(List<Vector2> path)
         {
             //call function passing the path as parameter
             currentPathRequest.func?.Invoke(path);
