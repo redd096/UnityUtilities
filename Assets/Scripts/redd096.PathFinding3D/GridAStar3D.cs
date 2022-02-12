@@ -73,6 +73,7 @@ namespace redd096.PathFinding3D
 
         [Header("Gizmos")]
         [SerializeField] protected bool drawGizmos = false;
+        [SerializeField] protected bool drawObstacles = false;
         [SerializeField] protected float alphaNodes = 0.3f;
 
         //grid
@@ -111,8 +112,8 @@ namespace redd096.PathFinding3D
                 {
                     foreach (Node3D node in grid)
                     {
-                        //set color if walkable or not
-                        Gizmos.color = new Color(1, 1, 1, alphaNodes) * (node.isWalkable ? (node.obstaclesOnThisNode.Count <= 0 ? Color.green : Color.magenta) : Color.red);
+                        //set color if walkable or not (red = not walkable, green = walkable, magenta = walkable but with obstacles)
+                        Gizmos.color = new Color(1, 1, 1, alphaNodes) * (node.isWalkable ? (drawObstacles && node.GetObstaclesOnThisNode().Count > 0 ? Color.magenta : Color.green) : Color.red);
                         //Gizmos.DrawSphere(node.worldPosition, overlapRadius);
                         Gizmos.DrawCube(node.worldPosition, Vector3.one * (nodeDiameter - 0.1f));
                     }

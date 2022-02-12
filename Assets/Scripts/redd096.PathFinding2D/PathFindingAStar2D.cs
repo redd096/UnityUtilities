@@ -34,15 +34,20 @@ namespace redd096.PathFinding2D
         /// <summary>
         /// Find path from one point to another
         /// </summary>
-        /// <param name="startPosition"></param>
-        /// <param name="targetPosition"></param>
-        /// <param name="func">function to call when finish processing path. Will pass the path as a list of node</param>
-        /// <param name="agent"></param>
-        /// <param name="returnNearestPointToTarget">if no path to target position, return path to nearest point</param>
-        public void FindPath(Vector2 startPosition, Vector2 targetPosition, System.Action<List<Vector2>> func, AgentAStar2D agent = null, bool returnNearestPointToTarget = true)
+        /// <param name="pathRequest"></param>
+        public void FindPath(PathRequest pathRequest)
         {
             //start processing path or add to queue
-            ProcessPath(startPosition, targetPosition, func, agent, returnNearestPointToTarget);
+            RequestPath(pathRequest);
+        }
+
+        /// <summary>
+        /// Remove request from queue. If request isn't in queue, or is already processing, return false
+        /// </summary>
+        /// <param name="pathRequest"></param>
+        public bool CancelRequest(PathRequest pathRequest)
+        {
+            return RemoveRequestFromQueue(pathRequest);
         }
 
         /// <summary>
@@ -64,7 +69,7 @@ namespace redd096.PathFinding2D
 
         #region private API
 
-        protected override IEnumerator FindPathCoroutine(Vector2 startPosition, Vector2 targetPosition, AgentAStar2D agent, bool returnNearestPointToTarget)
+        protected override IEnumerator FindPathCoroutine(PathRequest pathRequest)
         {
             /*
              * OPEN - the set of nodes to be evaluated
@@ -104,8 +109,8 @@ namespace redd096.PathFinding2D
                 Grid.BuildGrid();
 
             //get nodes from world position
-            Node2D startNode = Grid.GetNodeFromWorldPosition(startPosition);
-            Node2D targetNode = Grid.GetNodeFromWorldPosition(targetPosition);
+            Node2D startNode = Grid.GetNodeFromWorldPosition(pathRequest.startPosition);
+            Node2D targetNode = Grid.GetNodeFromWorldPosition(pathRequest.targetPosition);
 
             Heap2D<Node2D> openList = new Heap2D<Node2D>(Grid.MaxSize);     //nodes to be evaluated
             HashSet<Node2D> closedList = new HashSet<Node2D>();             //already evaluated
@@ -156,7 +161,7 @@ namespace redd096.PathFinding2D
                         continue;
 
                     //if using agent and can't move on this node, skip to next Neighbour
-                    if (agent && !agent.CanMoveOnThisNode(neighbour, Grid))
+                    if (pathRequest.agent && !pathRequest.agent.CanMoveOnThisNode(neighbour, Grid))
                         continue;
 
                     //get distance to Neighbour
@@ -184,10 +189,10 @@ namespace redd096.PathFinding2D
             //if found path, return it
             if (pathSuccess)
             {
-                OnFinishProcessingPath(RetracePath(startNode, currentNode));
+                OnFinishProcessingPath(new Path(RetracePath(startNode, currentNode)));
             }
             //if no path, but can return nearest point
-            else if (returnNearestPointToTarget)
+            else if (pathRequest.returnNearestPointToTarget)
             {
                 //set start node because the start is not setted
                 startNode.hCost = GetDistance(startNode, targetNode);
@@ -199,7 +204,7 @@ namespace redd096.PathFinding2D
                     if (node.isWalkable && node.hCost < nearestNode.hCost)  //if walkable and nearest to target point
                     {
                         //only if not using an agent, or if agent can move on this node
-                        if (agent == null || agent.CanMoveOnThisNode(node, Grid))
+                        if (pathRequest.agent == null || pathRequest.agent.CanMoveOnThisNode(node, Grid))
                             nearestNode = node;
                     }
                 }
@@ -208,7 +213,7 @@ namespace redd096.PathFinding2D
                 if (startNode != nearestNode)
                 {
                     pathSuccess = true;
-                    yield return FindPathCoroutine(startNode.worldPosition, nearestNode.worldPosition, agent, false);
+                    yield return FindPathCoroutine(new PathRequest(startNode.worldPosition, nearestNode.worldPosition, pathRequest.func, pathRequest.agent, false));
                 }
             }
 
@@ -272,12 +277,20 @@ namespace redd096.PathFinding2D
                 currentNode = currentNode.parentNode;
             }
 
-            //reverse list to get from start to end
-            path.Reverse();
+            //simplify path (before reverse, to be sure to take last node in a direction)
+            List<Vector2> vectorPath = SimplifyPath(path);
 
-            return SimplifyPath(path);
+            //reverse list to get from start to end
+            vectorPath.Reverse();
+
+            return vectorPath;
         }
 
+        /// <summary>
+        /// Return path as a list of Vector, and pass only nodes when change direction
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         List<Vector2> SimplifyPath(List<Node2D> path)
         {
             List<Vector2> waypoints = new List<Vector2>();
@@ -299,6 +312,10 @@ namespace redd096.PathFinding2D
             return waypoints;
         }
 
+        /// <summary>
+        /// Update every position of every obstacle in queue
+        /// </summary>
+        /// <returns></returns>
         IEnumerator UpdateObstaclePositionOnGridCoroutine()
         {
             while (obstaclesQueue.Count > 0)

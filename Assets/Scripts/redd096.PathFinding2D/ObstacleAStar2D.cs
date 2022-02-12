@@ -18,8 +18,16 @@ namespace redd096.PathFinding2D
         [EnableIf("typeCollider", ETypeCollider.box)] [SerializeField] Vector2 sizeCollider = Vector2.one;
         [EnableIf("typeCollider", ETypeCollider.circle)] [SerializeField] float radiusCollider = 1;
 
+        [Header("Type Obstacle (set unwalkable or add penalty)")]
+        [SerializeField] bool setUnwalkable = false;
+        [SerializeField] bool addPenalty = true;
+        [CanEnable("addPenalty")] [SerializeField] int penalty = 1;
+
         [Header("DEBUG")]
         [SerializeField] bool drawDebug = false;
+
+        public bool IsUnwalkable => setUnwalkable;
+        public int AddPenalty => addPenalty ? penalty : 0;
 
         //vars
         GridAStar2D grid;
@@ -94,8 +102,8 @@ namespace redd096.PathFinding2D
             //remove this from previous nodes
             foreach (Node2D node in nodesPosition)
             {
-                if (node != null && node.obstaclesOnThisNode.Contains(this))
-                    node.obstaclesOnThisNode.Remove(this);
+                if (node != null)
+                    node.RemoveObstacle(this);
             }
 
             //clear list
@@ -136,8 +144,8 @@ namespace redd096.PathFinding2D
                     nodeToCheck = grid.GetNodeByCoordinates(x, y);
 
                     //set it
-                    if (nodeToCheck.obstaclesOnThisNode.Contains(this) == false)
-                        nodeToCheck.obstaclesOnThisNode.Add(this);
+                    if (nodeToCheck != null)
+                        nodeToCheck.AddObstacle(this);
 
                     //and add to the list
                     if (nodesPosition.Contains(nodeToCheck) == false)
@@ -164,8 +172,8 @@ namespace redd096.PathFinding2D
                     if (Vector2.Distance(centerNode.worldPosition, nodeToCheck.worldPosition) <= radiusCollider + grid.NodeRadius)
                     {
                         //set it
-                        if (nodeToCheck.obstaclesOnThisNode.Contains(this) == false)
-                            nodeToCheck.obstaclesOnThisNode.Add(this);
+                        if (nodeToCheck != null)
+                            nodeToCheck.AddObstacle(this);
 
                         //and add to the list
                         if (nodesPosition.Contains(nodeToCheck) == false)

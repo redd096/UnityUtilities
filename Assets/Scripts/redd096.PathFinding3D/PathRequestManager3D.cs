@@ -4,43 +4,84 @@ using UnityEngine;
 
 namespace redd096.PathFinding3D
 {
+    #region classes
+
+    public class PathRequest
+    {
+        public Vector3 startPosition;
+        public Vector3 targetPosition;
+        public System.Action<Path> func;
+        public AgentAStar3D agent;
+        public bool returnNearestPointToTarget;
+
+        /// <summary>
+        /// Struct used to request a path to PathFinding
+        /// </summary>
+        /// <param name="startPosition"></param>
+        /// <param name="targetPosition"></param>
+        /// <param name="func">function to call when finish processing path. Will pass the path as parameter</param>
+        /// <param name="agent"></param>
+        /// <param name="returnNearestPointToTarget">if no path to target position, return path to nearest point</param>
+        public PathRequest(Vector3 startPosition, Vector3 targetPosition, System.Action<Path> func, AgentAStar3D agent, bool returnNearestPointToTarget = true)
+        {
+            this.startPosition = startPosition;
+            this.targetPosition = targetPosition;
+            this.func = func;
+            this.agent = agent;
+            this.returnNearestPointToTarget = returnNearestPointToTarget;
+        }
+    }
+
+    public class Path
+    {
+        public List<Vector3> vectorPath;
+
+        /// <summary>
+        /// Struct used to pass found path
+        /// </summary>
+        /// <param name="vectorPath"></param>
+        public Path(List<Vector3> vectorPath)
+        {
+            this.vectorPath = vectorPath;
+        }
+    }
+
+    #endregion
+
     [AddComponentMenu("redd096/Path Finding A Star/Path Request Manager A Star 3D")]
     public abstract class PathRequestManagerAStar3D : MonoBehaviour
     {
-        struct PathRequestStruct
-        {
-            public Vector3 startPosition;
-            public Vector3 targetPosition;
-            public System.Action<List<Vector3>> func;
-            public AgentAStar3D agent;
-            public bool returnNearestPointToTarget;
-
-            public PathRequestStruct(Vector3 startPosition, Vector3 targetPosition, System.Action<List<Vector3>> func, AgentAStar3D agent, bool returnNearestPointToTarget)
-            {
-                this.startPosition = startPosition;
-                this.targetPosition = targetPosition;
-                this.func = func;
-                this.agent = agent;
-                this.returnNearestPointToTarget = returnNearestPointToTarget;
-            }
-        }
-
-        List<PathRequestStruct> pathRequestQueue = new List<PathRequestStruct>();
-        PathRequestStruct currentPathRequest;
+        List<PathRequest> pathRequestQueue = new List<PathRequest>();
+        PathRequest currentPathRequest;
         bool isProcessingPath;
 
-        protected void ProcessPath(Vector3 startPosition, Vector3 targetPosition, System.Action<List<Vector3>> func, AgentAStar3D agent, bool returnNearestPointToTarget)
+        protected bool RemoveRequestFromQueue(PathRequest pathRequest)
+        {
+            //remove request from queue
+            if (pathRequestQueue.Contains(pathRequest))
+            {
+                pathRequestQueue.Remove(pathRequest);
+                return true;
+            }
+
+            return false;
+        }
+
+        protected void RequestPath(PathRequest pathRequest)
         {
             //add path request to queue
-            PathRequestStruct pathRequest = new PathRequestStruct(startPosition, targetPosition, func, agent, returnNearestPointToTarget);
             pathRequestQueue.Add(pathRequest);
 
             //if is the first request, process it
             TryProcessNext();
         }
 
-        protected void OnFinishProcessingPath(List<Vector3> path)
+        protected void OnFinishProcessingPath(Path path)
         {
+            //if called from agent, call is finished to process path
+            if (currentPathRequest.agent)
+                currentPathRequest.agent.OnFinishProcessingPath(currentPathRequest);
+
             //call function passing the path as parameter
             currentPathRequest.func?.Invoke(path);
             isProcessingPath = false;
@@ -57,10 +98,10 @@ namespace redd096.PathFinding3D
                 currentPathRequest = pathRequestQueue[0];
                 pathRequestQueue.RemoveAt(0);
                 isProcessingPath = true;
-                StartCoroutine(FindPathCoroutine(currentPathRequest.startPosition, currentPathRequest.targetPosition, currentPathRequest.agent, currentPathRequest.returnNearestPointToTarget));
+                StartCoroutine(FindPathCoroutine(currentPathRequest));
             }
         }
 
-        protected abstract IEnumerator FindPathCoroutine(Vector3 startPosition, Vector3 targetPosition, AgentAStar3D agent, bool returnNearestPointToTarget);
+        protected abstract IEnumerator FindPathCoroutine(PathRequest pathRequest);
     }
 }

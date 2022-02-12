@@ -6,11 +6,14 @@ namespace redd096.PathFinding2D
     public class Node2D : IHeapItem2D<Node2D>
     {
         //variables constructor
-        public bool isWalkable;
+        bool isNodeWalkable;
         public bool agentCanMoveThrough;        //used by agentAStar
         public Vector2 worldPosition;
         public Vector2Int gridPosition;
         public int movementPenalty;
+
+        //property is walkable, to check also obstacles
+        public bool isWalkable => isNodeWalkable && obstaclesNotWalkable.Count <= 0;
 
         //variables path finding
         public int gCost;                       //distance from start point
@@ -22,11 +25,12 @@ namespace redd096.PathFinding2D
 
         //other variables
         public List<Node2D> neighbours = new List<Node2D>();
-        public List<ObstacleAStar2D> obstaclesOnThisNode = new List<ObstacleAStar2D>();
+        List<ObstacleAStar2D> obstaclesOnThisNode = new List<ObstacleAStar2D>();
+        List<ObstacleAStar2D> obstaclesNotWalkable = new List<ObstacleAStar2D>();
 
         public Node2D(bool isWalkable, bool agentCanMoveThrough, Vector2 worldPosition, int x, int y, int movementPenalty)
         {
-            this.isWalkable = isWalkable;
+            this.isNodeWalkable = isWalkable;
             this.agentCanMoveThrough = agentCanMoveThrough;
             this.worldPosition = worldPosition;
             this.gridPosition = new Vector2Int(x, y);
@@ -46,6 +50,72 @@ namespace redd096.PathFinding2D
 
             //return negative value to check if lower
             return -compare;
+        }
+
+        #endregion
+
+        #region obstacles
+
+        /// <summary>
+        /// Add obstacle to node (set unwalkable or add penalty)
+        /// </summary>
+        /// <param name="obstacle"></param>
+        public void AddObstacle(ObstacleAStar2D obstacle)
+        {
+            //add obstacles to the list
+            if (obstaclesOnThisNode.Contains(obstacle) == false)
+                obstaclesOnThisNode.Add(obstacle);
+
+            if (obstacle)
+            {
+                //add to list unwalkable
+                if (obstacle.IsUnwalkable)
+                {
+                    if (obstaclesNotWalkable.Contains(obstacle) == false)
+                        obstaclesNotWalkable.Add(obstacle);
+                }
+                //or add movement penalty
+                else
+                {
+                    movementPenalty += obstacle.AddPenalty;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Remove obstacle from node (reset walkable status or remove penalty)
+        /// </summary>
+        /// <param name="obstacle"></param>
+        public void RemoveObstacle(ObstacleAStar2D obstacle)
+        {
+            //remove obstacles from the list
+            if (obstaclesOnThisNode.Contains(obstacle))
+                obstaclesOnThisNode.Remove(obstacle);
+
+            if (obstacle)
+            {
+                //remove from list unwalkable
+                if (obstacle.IsUnwalkable)
+                {
+                    if (obstaclesNotWalkable.Contains(obstacle))
+                        obstaclesNotWalkable.Remove(obstacle);
+                }
+                //or remove movement penalty
+                else
+                {
+                    movementPenalty -= obstacle.AddPenalty;
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Get obstacles on this node
+        /// </summary>
+        /// <returns></returns>
+        public List<ObstacleAStar2D> GetObstaclesOnThisNode()
+        {
+            return obstaclesOnThisNode;
         }
 
         #endregion
