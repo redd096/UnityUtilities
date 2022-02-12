@@ -25,12 +25,12 @@ namespace redd096.PathFinding2D
         //return setted position
         public override Vector2 GridWorldPosition => gridWorldPosition;
 
-        protected override void SetGridSize()
+        protected override void SetGrid()
         {
             //get every grid in scene and update composite grid
             GetGridsAndUpdateCompositeGrid();
 
-            base.SetGridSize();
+            base.SetGrid();
         }
 
         protected override bool IsWalkable(Vector2 worldPosition, out bool agentCanMoveThrough)

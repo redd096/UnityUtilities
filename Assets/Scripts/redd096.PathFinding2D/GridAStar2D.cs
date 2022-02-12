@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿//miss smooth penalty https://www.youtube.com/watch?v=Tb-rM3wGwv4&list=PLFt_AvWsXl0cq5Umv3pMC9SPnKjfp9eGW&index=7
+
+using UnityEngine;
 
 namespace redd096.PathFinding2D
 {
@@ -47,18 +49,30 @@ namespace redd096.PathFinding2D
     [AddComponentMenu("redd096/Path Finding A Star/Grid A Star 2D")]
     public class GridAStar2D : MonoBehaviour
     {
+        #region structs
+
+        [System.Serializable]
+        public struct TerrainType
+        {
+            public LayerMask TerrainLayer;
+            public int TerrainPenalty;
+        }
+
+        #endregion
+
         #region variables
 
         [Header("Layer Mask Unwalkable")]
         [SerializeField] protected LayerMask unwalkableMask = default;
+        [SerializeField] protected TerrainType[] walkableRegions = default;
 
         [Header("Grid")]
         [SerializeField] protected bool updateOnAwake = true;
         [SerializeField] protected Vector2 gridWorldSize = Vector2.one;
-        [SerializeField] protected float nodeDiameter = 1;
-        [SerializeField] protected float overlapDiameter = 0.9f;
+        [SerializeField] [Min(0.1f)] protected float nodeDiameter = 1;
 
         [Header("Gizmos")]
+        [SerializeField] protected bool drawGizmos = false;
         [SerializeField] protected float alphaNodes = 0.3f;
 
         //grid
@@ -67,9 +81,9 @@ namespace redd096.PathFinding2D
         float nodeRadius;
         float overlapRadius;
         Vector2Int gridSize;
+        protected LayerMask walkableRegionsMask;
 
         //properties
-        public Vector2Int GridSize => gridSize;
         public int MaxSize => gridSize.x * gridSize.y;
         public virtual Vector2 GridWorldPosition => transform.position;
         public Vector2 GridWorldSize => gridWorldSize;
@@ -86,34 +100,44 @@ namespace redd096.PathFinding2D
 
         void OnDrawGizmosSelected()
         {
-            //draw area
-            Gizmos.color = Color.cyan;
-            Gizmos.DrawWireCube(GridWorldPosition, new Vector2(gridWorldSize.x, gridWorldSize.y));
-
-            //draw every node in grid
-            if (grid != null)
+            if (drawGizmos)
             {
-                foreach (Node2D node in grid)
+                //draw area
+                Gizmos.color = Color.cyan;
+                Gizmos.DrawWireCube(GridWorldPosition, new Vector2(gridWorldSize.x, gridWorldSize.y));
+
+                //draw every node in grid
+                if (grid != null)
                 {
-                    //set color if walkable or not
-                    Gizmos.color = new Color(1, 1, 1, alphaNodes) * (node.isWalkable ? (node.obstaclesOnThisNode.Count <= 0 ? Color.green : Color.magenta) : Color.red);
-                    //Gizmos.DrawSphere(node.worldPosition, overlapRadius);
-                    Gizmos.DrawCube(node.worldPosition, Vector2.one * overlapDiameter);
+                    foreach (Node2D node in grid)
+                    {
+                        //set color if walkable or not
+                        Gizmos.color = new Color(1, 1, 1, alphaNodes) * (node.isWalkable ? (node.obstaclesOnThisNode.Count <= 0 ? Color.green : Color.magenta) : Color.red);
+                        //Gizmos.DrawSphere(node.worldPosition, overlapRadius);
+                        Gizmos.DrawCube(node.worldPosition, Vector2.one * (nodeDiameter - 0.1f));
+                    }
                 }
             }
         }
 
         #region create grid
 
-        protected virtual void SetGridSize()
+        protected virtual void SetGrid()
         {
             //set radius for every node
             nodeRadius = nodeDiameter * 0.5f;
-            overlapRadius = overlapDiameter * 0.5f;
+            overlapRadius = nodeRadius - 0.05f;
 
             //set grid size
             gridSize.x = Mathf.RoundToInt(gridWorldSize.x / nodeDiameter);
             gridSize.y = Mathf.RoundToInt(gridWorldSize.y / nodeDiameter);
+
+            //add every walkable regions to a single layer mask, to use when raycast to calculate penalty
+            walkableRegionsMask.value = default;
+            foreach (TerrainType terrain in walkableRegions)
+            {
+                walkableRegionsMask.value = walkableRegionsMask | terrain.TerrainLayer.value;
+            }
         }
 
         void CreateGrid()
@@ -124,15 +148,26 @@ namespace redd096.PathFinding2D
 
             //create grid
             Vector2 worldPosition;
+            bool isWalkable;
+            bool agentCanMoveThrough;
+            int movementPenalty;
             for (int x = 0; x < gridSize.x; x++)
             {
                 for (int y = 0; y < gridSize.y; y++)
                 {
                     //find world position and if walkable
                     worldPosition = worldBottomLeft + Vector2.right * (x * nodeDiameter + nodeRadius) + Vector2.up * (y * nodeDiameter + nodeRadius);
+                    isWalkable = IsWalkable(worldPosition, out agentCanMoveThrough);
+
+                    //if walkable, calculate movement penalty
+                    movementPenalty = 0;
+                    if (isWalkable)
+                    {
+                        CalculateMovementPenalty(worldPosition, out movementPenalty);
+                    }
 
                     //set new node in grid
-                    grid[x, y] = new Node2D(IsWalkable(worldPosition, out bool agentCanMoveThrough), agentCanMoveThrough, worldPosition, x, y);
+                    grid[x, y] = new Node2D(isWalkable, agentCanMoveThrough, worldPosition, x, y, movementPenalty);
                 }
             }
         }
@@ -142,6 +177,28 @@ namespace redd096.PathFinding2D
             //overlap circle (agent can move through only on walkable nodes)
             agentCanMoveThrough = gameObject.scene.GetPhysicsScene2D().OverlapCircle(worldPosition, overlapRadius, unwalkableMask) == false;
             return agentCanMoveThrough;
+        }
+
+        void CalculateMovementPenalty(Vector2 worldPosition, out int movementPenalty)
+        {
+            //raycast to check terrain
+            RaycastHit2D hit;
+            movementPenalty = 0;
+            if (hit = Physics2D.Raycast((Vector3)worldPosition - Vector3.forward, Vector3.forward, 1.1f, walkableRegionsMask))
+            {
+                int hittedLayer = hit.collider.gameObject.layer;
+
+                //find terrain inside walkable regions
+                foreach (TerrainType region in walkableRegions)
+                {
+                    if (region.TerrainLayer == (region.TerrainLayer | (1 << hittedLayer)))  //if this region contains layer
+                    {
+                        //set this terrain movement penalty
+                        movementPenalty = region.TerrainPenalty;
+                        break;
+                    }
+                }
+            }
         }
 
         void SetNeighbours()
@@ -184,7 +241,7 @@ namespace redd096.PathFinding2D
         /// </summary>
         public void BuildGrid()
         {
-            SetGridSize();
+            SetGrid();
             CreateGrid();
             SetNeighbours();
         }

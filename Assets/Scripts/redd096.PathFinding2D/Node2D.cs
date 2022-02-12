@@ -10,6 +10,7 @@ namespace redd096.PathFinding2D
         public bool agentCanMoveThrough;        //used by agentAStar
         public Vector2 worldPosition;
         public Vector2Int gridPosition;
+        public int movementPenalty;
 
         //variables path finding
         public int gCost;                       //distance from start point
@@ -23,12 +24,13 @@ namespace redd096.PathFinding2D
         public List<Node2D> neighbours = new List<Node2D>();
         public List<ObstacleAStar2D> obstaclesOnThisNode = new List<ObstacleAStar2D>();
 
-        public Node2D(bool isWalkable, bool agentCanMoveThrough, Vector2 worldPosition, int x, int y)
+        public Node2D(bool isWalkable, bool agentCanMoveThrough, Vector2 worldPosition, int x, int y, int movementPenalty)
         {
             this.isWalkable = isWalkable;
             this.agentCanMoveThrough = agentCanMoveThrough;
             this.worldPosition = worldPosition;
             this.gridPosition = new Vector2Int(x, y);
+            this.movementPenalty = movementPenalty;
         }
 
         #region heap optimization

@@ -10,6 +10,7 @@ namespace redd096.PathFinding3D
         public bool agentCanMoveThrough;        //used by agentAStar
         public Vector3 worldPosition;
         public Vector2Int gridPosition;
+        public int movementPenalty;
 
         //variables path finding
         public int gCost;                       //distance from start point
@@ -23,12 +24,13 @@ namespace redd096.PathFinding3D
         public List<Node3D> neighbours = new List<Node3D>();
         public List<ObstacleAStar3D> obstaclesOnThisNode = new List<ObstacleAStar3D>();
 
-        public Node3D(bool isWalkable, bool agentCanMoveThrough, Vector3 worldPosition, int x, int y)
+        public Node3D(bool isWalkable, bool agentCanMoveThrough, Vector3 worldPosition, int x, int y, int movementPenalty)
         {
             this.isWalkable = isWalkable;
             this.agentCanMoveThrough = agentCanMoveThrough;
             this.worldPosition = worldPosition;
             this.gridPosition = new Vector2Int(x, y);
+            this.movementPenalty = movementPenalty;
         }
 
         #region heap optimization

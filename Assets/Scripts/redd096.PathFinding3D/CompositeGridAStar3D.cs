@@ -25,12 +25,12 @@ namespace redd096.PathFinding3D
         //return setted position
         public override Vector3 GridWorldPosition => gridWorldPosition;
 
-        protected override void SetGridSize()
+        protected override void SetGrid()
         {
             //get every grid in scene and update composite grid
             GetGridsAndUpdateCompositeGrid();
 
-            base.SetGridSize();
+            base.SetGrid();
         }
 
         protected override bool IsWalkable(Vector3 worldPosition, out bool agentCanMoveThrough)
