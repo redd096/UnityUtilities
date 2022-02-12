@@ -25,7 +25,7 @@ namespace redd096.PathFinding2D
             }
         }
 
-        Queue<PathRequestStruct> pathRequestQueue = new Queue<PathRequestStruct>();
+        List<PathRequestStruct> pathRequestQueue = new List<PathRequestStruct>();
         PathRequestStruct currentPathRequest;
         bool isProcessingPath;
 
@@ -33,7 +33,7 @@ namespace redd096.PathFinding2D
         {
             //add path request to queue
             PathRequestStruct pathRequest = new PathRequestStruct(startPosition, targetPosition, func, agent, returnNearestPointToTarget);
-            pathRequestQueue.Enqueue(pathRequest);
+            pathRequestQueue.Add(pathRequest);
 
             //if is the first request, process it
             TryProcessNext();
@@ -54,7 +54,8 @@ namespace redd096.PathFinding2D
             //get next request from queue and start find path
             if (isProcessingPath == false && pathRequestQueue.Count > 0)
             {
-                currentPathRequest = pathRequestQueue.Dequeue();
+                currentPathRequest = pathRequestQueue[0];
+                pathRequestQueue.RemoveAt(0);
                 isProcessingPath = true;
                 StartCoroutine(FindPathCoroutine(currentPathRequest.startPosition, currentPathRequest.targetPosition, currentPathRequest.agent, currentPathRequest.returnNearestPointToTarget));
             }
