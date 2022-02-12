@@ -1,38 +1,38 @@
 ﻿using UnityEngine;
 using redd096.Attributes;
 
-namespace redd096
+namespace redd096.PathFinding2D
 {
     /// <summary>
     /// Used to know size of the agent. When call PathFinding you can pass it as parameter
     /// </summary>
-    [AddComponentMenu("redd096/Path Finding A Star/Agent A Star 3D")]
-    public class AgentAStar3D : MonoBehaviour
+    [AddComponentMenu("redd096/Path Finding A Star/Agent A Star 2D")]
+    public class AgentAStar2D : MonoBehaviour
     {
-        enum ETypeCollider { sphere, box }
+        enum ETypeCollider { circle, box }
 
         [Header("Collider Agent")]
-        [SerializeField] Vector3 offset = Vector3.zero;
+        [SerializeField] Vector2 offset = Vector2.zero;
         [SerializeField] ETypeCollider typeCollider = ETypeCollider.box;
-        [EnableIf("typeCollider", ETypeCollider.box)] [SerializeField] Vector3 sizeCollider = Vector3.one;
-        [EnableIf("typeCollider", ETypeCollider.sphere)] [SerializeField] float radiusCollider = 1;
+        [EnableIf("typeCollider", ETypeCollider.box)] [SerializeField] Vector2 sizeCollider = Vector2.one;
+        [EnableIf("typeCollider", ETypeCollider.circle)] [SerializeField] float radiusCollider = 1;
 
         [Header("If this object is an obstacle, ignore self (default get from this gameObject)")]
-        [SerializeField] ObstacleAStar3D obstacleAStar = default;
+        [SerializeField] ObstacleAStar2D obstacleAStar = default;
 
         [Header("DEBUG")]
         [SerializeField] bool drawDebug = false;
 
         //vars
-        Node3D node;
-        GridAStar3D grid;
+        Node2D node;
+        GridAStar2D grid;
 
         //nodes to calculate
-        Node3D leftNode;
-        Node3D rightNode;
-        Node3D forwardNode;
-        Node3D backNode;
-        Node3D nodeToCheck;
+        Node2D leftNode;
+        Node2D rightNode;
+        Node2D upNode;
+        Node2D downNode;
+        Node2D nodeToCheck;
 
         void OnDrawGizmos()
         {
@@ -43,12 +43,12 @@ namespace redd096
                 //draw box
                 if (typeCollider == ETypeCollider.box)
                 {
-                    Gizmos.DrawWireCube(transform.position + offset, sizeCollider);
+                    Gizmos.DrawWireCube((Vector2)transform.position + offset, sizeCollider);
                 }
-                //draw sphere
+                //draw circle
                 else
                 {
-                    Gizmos.DrawWireSphere(transform.position + offset, radiusCollider);
+                    Gizmos.DrawWireSphere((Vector2)transform.position + offset, radiusCollider);
                 }
 
                 Gizmos.color = Color.white;
@@ -59,7 +59,7 @@ namespace redd096
         {
             //get references
             if (obstacleAStar == null)
-                obstacleAStar = GetComponent<ObstacleAStar3D>();
+                obstacleAStar = GetComponent<ObstacleAStar2D>();
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace redd096
         /// <param name="node"></param>
         /// <param name="nodes"></param>
         /// <returns></returns>
-        public bool CanMoveOnThisNode(Node3D node, GridAStar3D grid)
+        public bool CanMoveOnThisNode(Node2D node, GridAStar2D grid)
         {
             if (node == null || grid == null)
                 return false;
@@ -82,10 +82,10 @@ namespace redd096
             {
                 return CanMove_Box();
             }
-            //sphere
+            //circle
             else
             {
-                return CanMove_Sphere();
+                return CanMove_Circle();
             }
         }
 
@@ -94,12 +94,12 @@ namespace redd096
         bool CanMove_Box()
         {
             //calculate nodes
-            grid.GetNodesExtremesOfABox(node, node.worldPosition + offset, sizeCollider * 0.5f, out leftNode, out rightNode, out backNode, out forwardNode);
+            grid.GetNodesExtremesOfABox(node, node.worldPosition + offset, sizeCollider * 0.5f, out leftNode, out rightNode, out downNode, out upNode);
 
             //check every node
             for (int x = leftNode.gridPosition.x; x <= rightNode.gridPosition.x; x++)
             {
-                for (int y = backNode.gridPosition.y; y <= forwardNode.gridPosition.y; y++)
+                for (int y = downNode.gridPosition.y; y <= upNode.gridPosition.y; y++)
                 {
                     nodeToCheck = grid.GetNodeByCoordinates(x, y);
 
@@ -112,20 +112,20 @@ namespace redd096
             return true;
         }
 
-        bool CanMove_Sphere()
+        bool CanMove_Circle()
         {
             //calculate nodes
-            grid.GetNodesExtremesOfABox(node, node.worldPosition + offset, Vector3.one * radiusCollider, out leftNode, out rightNode, out backNode, out forwardNode);
+            grid.GetNodesExtremesOfABox(node, node.worldPosition + offset, Vector2.one * radiusCollider, out leftNode, out rightNode, out downNode, out upNode);
 
             //check every node
             for (int x = leftNode.gridPosition.x; x <= rightNode.gridPosition.x; x++)
             {
-                for (int y = backNode.gridPosition.y; y <= forwardNode.gridPosition.y; y++)
+                for (int y = downNode.gridPosition.y; y <= upNode.gridPosition.y; y++)
                 {
                     nodeToCheck = grid.GetNodeByCoordinates(x, y);
 
                     //if inside radius
-                    if (Vector3.Distance(node.worldPosition, nodeToCheck.worldPosition) <= radiusCollider)
+                    if (Vector2.Distance(node.worldPosition, nodeToCheck.worldPosition) <= radiusCollider)
                     {
                         //if agent can not move through OR there are obstacles, return false
                         if (nodeToCheck.agentCanMoveThrough == false || ThereAreObstacles(nodeToCheck))
@@ -137,7 +137,7 @@ namespace redd096
             return true;
         }
 
-        bool ThereAreObstacles(Node3D nodeToCheck)
+        bool ThereAreObstacles(Node2D nodeToCheck)
         {
             //if there are obstacles
             if (nodeToCheck.obstaclesOnThisNode.Count > 0)

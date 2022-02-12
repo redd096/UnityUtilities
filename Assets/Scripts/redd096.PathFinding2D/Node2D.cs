@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace redd096
+namespace redd096.PathFinding2D
 {
-    public class Node3D : IHeapItem3D<Node3D>
+    public class Node2D : IHeapItem2D<Node2D>
     {
         //variables constructor
         public bool isWalkable;
         public bool agentCanMoveThrough;        //used by agentAStar
-        public Vector3 worldPosition;
+        public Vector2 worldPosition;
         public Vector2Int gridPosition;
 
         //variables path finding
@@ -17,13 +17,13 @@ namespace redd096
         public int fCost => gCost + hCost;      //sum of G cost and H cost
 
         //used to retrace path
-        public Node3D parentNode;
+        public Node2D parentNode;
 
         //other variables
-        public List<Node3D> neighbours = new List<Node3D>();
-        public List<ObstacleAStar3D> obstaclesOnThisNode = new List<ObstacleAStar3D>();
+        public List<Node2D> neighbours = new List<Node2D>();
+        public List<ObstacleAStar2D> obstaclesOnThisNode = new List<ObstacleAStar2D>();
 
-        public Node3D(bool isWalkable, bool agentCanMoveThrough, Vector3 worldPosition, int x, int y)
+        public Node2D(bool isWalkable, bool agentCanMoveThrough, Vector2 worldPosition, int x, int y)
         {
             this.isWalkable = isWalkable;
             this.agentCanMoveThrough = agentCanMoveThrough;
@@ -35,7 +35,7 @@ namespace redd096
 
         public int HeapIndex { get; set; }
 
-        public int CompareTo(Node3D nodeToCompare)
+        public int CompareTo(Node2D nodeToCompare)
         {
             //compare F Cost, if equals, compare H Cost
             int compare = fCost.CompareTo(nodeToCompare.fCost);

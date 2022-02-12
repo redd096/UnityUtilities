@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace redd096
+namespace redd096.PathFinding2D
 {
     /// <summary>
     /// Used to create a single grid using every grid in the scene

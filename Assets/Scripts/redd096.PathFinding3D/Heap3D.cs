@@ -4,9 +4,9 @@
 
 using System;
 
-namespace redd096
+namespace redd096.PathFinding3D
 {
-    public class Heap2D<T> where T : IHeapItem2D<T>
+    public class Heap3D<T> where T : IHeapItem3D<T>
     {
         T[] items;
         int currentItemCount;
@@ -16,7 +16,7 @@ namespace redd096
         /// Constructor, set array size
         /// </summary>
         /// <param name="maxHeapSize"></param>
-        public Heap2D(int maxHeapSize)
+        public Heap3D(int maxHeapSize)
         {
             items = new T[maxHeapSize];
         }
@@ -174,7 +174,7 @@ namespace redd096
         #endregion
     }
 
-    public interface IHeapItem2D<T> : IComparable<T>
+    public interface IHeapItem3D<T> : IComparable<T>
     {
         int HeapIndex { get; set; }
     }

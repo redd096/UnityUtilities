@@ -4,29 +4,29 @@ using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
 
-namespace redd096
+namespace redd096.PathFinding3D
 {
     /// <summary>
     /// Call this to calculate a path using pathfinding or to update the grid
     /// </summary>
-    [AddComponentMenu("redd096/Path Finding A Star/Path Finding A Star 2D")]
-    public class PathFindingAStar2D : PathRequestManagerAStar2D
+    [AddComponentMenu("redd096/Path Finding A Star/Path Finding A Star 3D")]
+    public class PathFindingAStar3D : PathRequestManagerAStar3D
     {
-        public static PathFindingAStar2D instance;
+        public static PathFindingAStar3D instance;
 
         [Header("Default use Find Object of Type")]
-        public GridAStar2D Grid = default;
+        public GridAStar3D Grid = default;
 
         //obstacles
         Coroutine updateObstaclePositionOnGridCoroutine;
-        Queue<ObstacleAStar2D> obstaclesQueue = new Queue<ObstacleAStar2D>();
+        Queue<ObstacleAStar3D> obstaclesQueue = new Queue<ObstacleAStar3D>();
 
         void Awake()
         {
             instance = this;
 
             if (Grid == null)
-                Grid = FindObjectOfType<GridAStar2D>();
+                Grid = FindObjectOfType<GridAStar3D>();
         }
 
         #region public API
@@ -39,7 +39,7 @@ namespace redd096
         /// <param name="func">function to call when finish processing path. Will pass the path as a list of node</param>
         /// <param name="agent"></param>
         /// <param name="returnNearestPointToTarget">if no path to target position, return path to nearest point</param>
-        public void FindPath(Vector2 startPosition, Vector2 targetPosition, System.Action<List<Node2D>> func, AgentAStar2D agent = null, bool returnNearestPointToTarget = true)
+        public void FindPath(Vector3 startPosition, Vector3 targetPosition, System.Action<List<Node3D>> func, AgentAStar3D agent = null, bool returnNearestPointToTarget = true)
         {
             //start processing path or add to queue
             ProcessPath(startPosition, targetPosition, func, agent, returnNearestPointToTarget);
@@ -49,7 +49,7 @@ namespace redd096
         /// Update obstacle position on the grid (used for pathfinding)
         /// </summary>
         /// <param name="obstacle"></param>
-        public void UpdateObstaclePositionOnGrid(ObstacleAStar2D obstacle)
+        public void UpdateObstaclePositionOnGrid(ObstacleAStar3D obstacle)
         {
             //add to queue
             if (obstaclesQueue.Contains(obstacle) == false)
@@ -64,7 +64,7 @@ namespace redd096
 
         #region private API
 
-        protected override IEnumerator FindPathCoroutine(Vector2 startPosition, Vector2 targetPosition, AgentAStar2D agent, bool returnNearestPointToTarget)
+        protected override IEnumerator FindPathCoroutine(Vector3 startPosition, Vector3 targetPosition, AgentAStar3D agent, bool returnNearestPointToTarget)
         {
             /*
              * OPEN - the set of nodes to be evaluated
@@ -104,16 +104,16 @@ namespace redd096
                 Grid.BuildGrid();
 
             //get nodes from world position
-            Node2D startNode = Grid.GetNodeFromWorldPosition(startPosition);
-            Node2D targetNode = Grid.GetNodeFromWorldPosition(targetPosition);
+            Node3D startNode = Grid.GetNodeFromWorldPosition(startPosition);
+            Node3D targetNode = Grid.GetNodeFromWorldPosition(targetPosition);
 
-            Heap2D<Node2D> openList = new Heap2D<Node2D>(Grid.MaxSize);     //nodes to be evaluated
-            HashSet<Node2D> closedList = new HashSet<Node2D>();             //already evaluated
+            Heap3D<Node3D> openList = new Heap3D<Node3D>(Grid.MaxSize);     //nodes to be evaluated
+            HashSet<Node3D> closedList = new HashSet<Node3D>();             //already evaluated
 
             //add the start node to OPEN
             openList.Add(startNode);
 
-            Node2D currentNode = null;
+            Node3D currentNode = null;
             bool pathSuccess = false;
             while (openList.Count > 0)
             {
@@ -138,7 +138,7 @@ namespace redd096
 
                 //Current = node in OPEN with the lowest F cost
                 //remove Current from OPEN and add to CLOSED
-                currentNode = openList.RemoveFirst();                       //all optimized with heap
+                currentNode = openList.RemoveFirst();                //all optimized with heap
                 closedList.Add(currentNode);
 
                 //path has been found, return it
@@ -149,7 +149,7 @@ namespace redd096
                 }
 
                 //foreach Neighbour of the Current node
-                foreach (Node2D neighbour in currentNode.neighbours)
+                foreach (Node3D neighbour in currentNode.neighbours)
                 {
                     //if Neighbour is not walkable or is in CLOSED, skip to next Neighbour
                     if (!neighbour.isWalkable || closedList.Contains(neighbour))
@@ -193,8 +193,8 @@ namespace redd096
                 startNode.hCost = GetDistance(startNode, targetNode);
 
                 //find the walkable node nearest to target point
-                Node2D nearestNode = startNode;
-                foreach (Node2D node in closedList)
+                Node3D nearestNode = startNode;
+                foreach (Node3D node in closedList)
                 {
                     if (node.isWalkable && node.hCost < nearestNode.hCost)  //if walkable and nearest to target point
                     {
@@ -222,7 +222,7 @@ namespace redd096
         /// <summary>
         /// Calculate distance between 2 nodes
         /// </summary>
-        int GetDistance(Node2D nodeA, Node2D nodeB)
+        int GetDistance(Node3D nodeA, Node3D nodeB)
         {
             /* 
              * 
@@ -257,12 +257,12 @@ namespace redd096
         /// <summary>
         /// Retrace path from start to end
         /// </summary>
-        List<Node2D> RetracePath(Node2D startNode, Node2D endNode)
+        List<Node3D> RetracePath(Node3D startNode, Node3D endNode)
         {
-            List<Node2D> path = new List<Node2D>();
+            List<Node3D> path = new List<Node3D>();
 
             //start from end waypoint
-            Node2D currentNode = endNode;
+            Node3D currentNode = endNode;
 
             //while not reached start waypoint
             while (currentNode != startNode)
@@ -283,7 +283,7 @@ namespace redd096
             while (obstaclesQueue.Count > 0)
             {
                 //get obstacle from queue and update its position
-                ObstacleAStar2D obstacle = obstaclesQueue.Dequeue();
+                ObstacleAStar3D obstacle = obstaclesQueue.Dequeue();
                 if (obstacle)
                     obstacle.UpdatePositionOnGrid(Grid);
 

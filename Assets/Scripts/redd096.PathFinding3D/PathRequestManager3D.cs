@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace redd096
+namespace redd096.PathFinding3D
 {
     [AddComponentMenu("redd096/Path Finding A Star/Path Request Manager A Star 3D")]
     public abstract class PathRequestManagerAStar3D : MonoBehaviour
