@@ -105,6 +105,8 @@ namespace redd096.PathFinding2D
                 {
                     nodeToCheck = grid.GetNodeByCoordinates(x, y);
 
+                    ////if agent can not move through OR there are obstacles, return false
+                    //if (nodeToCheck.agentCanMoveThrough == false || ThereAreObstacles(nodeToCheck))
                     //if agent can not move through, return false
                     if (nodeToCheck.agentCanMoveThrough == false)
                         return false;
@@ -129,6 +131,8 @@ namespace redd096.PathFinding2D
                     //if inside radius
                     if (Vector2.Distance(node.worldPosition, nodeToCheck.worldPosition) <= radiusCollider)
                     {
+                        ////if agent can not move through OR there are obstacles, return false
+                        //if (nodeToCheck.agentCanMoveThrough == false || ThereAreObstacles(nodeToCheck))
                         //if agent can not move through, return false
                         if (nodeToCheck.agentCanMoveThrough == false)
                             return false;
@@ -137,6 +141,26 @@ namespace redd096.PathFinding2D
             }
 
             return true;
+        }
+
+        bool ThereAreObstacles(Node2D nodeToCheck)
+        {
+            //if there are obstacles
+            if (nodeToCheck.GetObstaclesOnThisNode().Count > 0)
+            {
+                //if there is self obstacle, return false
+                if (obstacleAStar)
+                {
+                    if (nodeToCheck.GetObstaclesOnThisNode().Contains(obstacleAStar))
+                        return false;
+                }
+
+                //if there are others obstacles, return true
+                return true;
+            }
+
+            //if there aren't obstacles, return false
+            return false;
         }
 
         #endregion
