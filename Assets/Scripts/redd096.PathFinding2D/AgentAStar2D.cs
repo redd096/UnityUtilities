@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using redd096.Attributes;
 
 namespace redd096.PathFinding2D
@@ -156,6 +157,27 @@ namespace redd096.PathFinding2D
             //if there aren't obstacles, return false
             return false;
         }
+
+        #endregion
+
+        #region public API
+
+        /// <summary>
+        /// Calculate path, then call function passing the path as parameter
+        /// </summary>
+        /// <param name="startPosition"></param>
+        /// <param name="targetPosition"></param>
+        /// <param name="func">function to call when finish processing path. Will pass the path as parameter</param>
+        public void FindPath(Vector2 startPosition, Vector2 targetPosition, System.Action<List<Vector2>> func)
+        {
+            //call find path on Path Finding
+            if (PathFindingAStar2D.instance)
+                PathFindingAStar2D.instance.FindPath(startPosition, targetPosition, func, this);
+        }
+
+        //TODO
+        //manca funzione IsDone per sapere se sta calcolando un percorso o se è a posto
+        //manca la funzione per interrompere l'ultima richiesta. NB che dovrebbe esserci una sola richiesta per agent, quindi quando chiama FindPath si potrebbe mettere che interrompe se ce n'era già una richiesta
 
         #endregion
     }

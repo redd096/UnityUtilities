@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using redd096.Attributes;
 
 namespace redd096.PathFinding3D
@@ -155,6 +156,23 @@ namespace redd096.PathFinding3D
 
             //if there aren't obstacles, return false
             return false;
+        }
+
+        #endregion
+
+        #region public API
+
+        /// <summary>
+        /// Calculate path, then call function passing the path as parameter
+        /// </summary>
+        /// <param name="startPosition"></param>
+        /// <param name="targetPosition"></param>
+        /// <param name="func">function to call when finish processing path. Will pass the path as parameter</param>
+        public void FindPath(Vector3 startPosition, Vector3 targetPosition, System.Action<List<Vector3>> func)
+        {
+            //call find path on Path Finding
+            if (PathFindingAStar3D.instance)
+                PathFindingAStar3D.instance.FindPath(startPosition, targetPosition, func, this);
         }
 
         #endregion
