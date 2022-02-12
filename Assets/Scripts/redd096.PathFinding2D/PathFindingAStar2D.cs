@@ -160,7 +160,7 @@ namespace redd096.PathFinding2D
                         continue;
 
                     //get distance to Neighbour
-                    int newCostToNeighbour = currentNode.gCost + GetDistance(currentNode, neighbour);
+                    int newCostToNeighbour = currentNode.gCost + GetDistance(currentNode, neighbour) + neighbour.movementPenalty;   //+ movement penalty
 
                     //if new path to Neighbour is shorter or Neighbour is not in OPEN
                     if (newCostToNeighbour < neighbour.gCost || !openList.Contains(neighbour))
