@@ -23,7 +23,7 @@ namespace redd096.GameTopDown2D
 
         [Header("If using canvas Screen Space - default is main camera")]
         [Tooltip("Set if moving something in screen space (canvas) or world space")] [SerializeField] bool isScreenSpace = true;
-        [CanEnable("isScreenSpace")] [SerializeField] Camera cam = default;
+        [EnableIf("isScreenSpace")] [SerializeField] Camera cam = default;
 
         void OnEnable()
         {

@@ -14,9 +14,9 @@ namespace redd096.GameTopDown2D
 
         [Header("Blink - Default get component in children")]
         [SerializeField] bool blinkOnGetDamage = true;
-        [CanEnable("blinkOnGetDamage")] [SerializeField] SpriteRenderer[] spritesToUse = default;
-        [CanEnable("blinkOnGetDamage")] [SerializeField] Material blinkMaterial = default;
-        [CanEnable("blinkOnGetDamage")] [SerializeField] float blinkDuration = 0.2f;
+        [EnableIf("blinkOnGetDamage")] [SerializeField] SpriteRenderer[] spritesToUse = default;
+        [EnableIf("blinkOnGetDamage")] [SerializeField] Material blinkMaterial = default;
+        [EnableIf("blinkOnGetDamage")] [SerializeField] float blinkDuration = 0.2f;
 
         [Header("On Get Damage")]
         [SerializeField] InstantiatedGameObjectStruct gameObjectOnGetDamage = default;
@@ -25,10 +25,10 @@ namespace redd096.GameTopDown2D
 
         [Header("On Get Damage Gamepad Vibration")]
         [SerializeField] bool gamepadVibration = false;
-        [CanEnable("gamepadVibration")] [SerializeField] bool customVibration = false;
-        [CanEnable("gamepadVibration", "customVibration")] [SerializeField] float vibrationDuration = 0.1f;
-        [CanEnable("gamepadVibration", "customVibration")] [SerializeField] float lowFrequency = 0.5f;
-        [CanEnable("gamepadVibration", "customVibration")] [SerializeField] float highFrequency = 0.8f;
+        [EnableIf("gamepadVibration")] [SerializeField] bool customVibration = false;
+        [EnableIf("gamepadVibration", "customVibration")] [SerializeField] float vibrationDuration = 0.1f;
+        [EnableIf("gamepadVibration", "customVibration")] [SerializeField] float lowFrequency = 0.5f;
+        [EnableIf("gamepadVibration", "customVibration")] [SerializeField] float highFrequency = 0.8f;
 
         [Header("On Die (instantiate every element in array)")]
         [SerializeField] InstantiatedGameObjectStruct[] gameObjectsOnDie = default;

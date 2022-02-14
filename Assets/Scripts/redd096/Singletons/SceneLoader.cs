@@ -8,7 +8,7 @@ namespace redd096
     public class SceneLoader : Singleton<SceneLoader>
     {
         [SerializeField] bool changeCursorLockMode = true;
-        [CanEnable("changeCursorLockMode")] [SerializeField] CursorLockMode lockModeOnResume = CursorLockMode.Confined;
+        [EnableIf("changeCursorLockMode")] [SerializeField] CursorLockMode lockModeOnResume = CursorLockMode.Confined;
 
         /// <summary>
         /// Resume time and hide cursor

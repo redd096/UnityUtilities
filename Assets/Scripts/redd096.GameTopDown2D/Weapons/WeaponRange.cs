@@ -25,10 +25,10 @@ namespace redd096.GameTopDown2D
 
         [Header("Ammo")]
         public bool HasAmmo = true;
-        /*[Dropdown("GetAllAmmoTypes")]*/ [CanEnable("HasAmmo")] public string AmmoType = "NONE";
-        [OnValueChanged("ChangedMaxAmmo")] [CanEnable("HasAmmo")] [Min(0)] public int MaxAmmo = 32;
+        /*[Dropdown("GetAllAmmoTypes")]*/ [EnableIf("HasAmmo")] public string AmmoType = "NONE";
+        [OnValueChanged("ChangedMaxAmmo")] [EnableIf("HasAmmo")] [Min(0)] public int MaxAmmo = 32;
         [ReadOnly] public int CurrentAmmo = 32;
-        [CanEnable("HasAmmo")] public float ReloadDelay = 1;
+        [EnableIf("HasAmmo")] public float ReloadDelay = 1;
 
         [Header("DEBUG")]
         [SerializeField] bool drawDebug = false;

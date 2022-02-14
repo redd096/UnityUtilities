@@ -12,16 +12,16 @@ namespace redd096.GameTopDown2D
 
         [Header("Update camera position to follow this object")]
         [SerializeField] bool updatePosition = true;
-        [Tooltip("Use LateUpdate or Update to move the camera?")] [CanEnable("updatePosition")] [SerializeField] bool useLateUpdate = true;
-        [CanEnable("updatePosition")] [SerializeField] Vector3 offsetPosition = new Vector3(0, 0, -10);
+        [Tooltip("Use LateUpdate or Update to move the camera?")] [EnableIf("updatePosition")] [SerializeField] bool useLateUpdate = true;
+        [EnableIf("updatePosition")] [SerializeField] Vector3 offsetPosition = new Vector3(0, 0, -10);
 
         [Header("Clamp camera position to pixelsPerUnit")]
         [SerializeField] bool usePixelClamp = false;
-        [CanEnable("usePixelClamp")] [SerializeField] float pixelsPerUnit = 16;
+        [EnableIf("usePixelClamp")] [SerializeField] float pixelsPerUnit = 16;
 
         [Header("Drop Camera On Death (necessary HealthComponent - default get from this gameObject)")]
         [SerializeField] bool dropCameraOnDeath = true;
-        [CanEnable("dropCameraOnDeath")] [SerializeField] HealthComponent healthComponent = default;
+        [EnableIf("dropCameraOnDeath")] [SerializeField] HealthComponent healthComponent = default;
 
         Transform cameraParent;
         Vector3 movement;

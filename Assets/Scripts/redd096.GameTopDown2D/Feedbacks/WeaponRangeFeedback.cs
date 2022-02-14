@@ -23,16 +23,16 @@ namespace redd096.GameTopDown2D
 
         [Header("On Shoot Camera Shake")]
         [SerializeField] bool cameraShake = true;
-        [CanEnable("cameraShake")] [SerializeField] bool customShake = false;
-        [CanEnable("cameraShake", "customShake")] [SerializeField] float shakeDuration = 1;
-        [CanEnable("cameraShake", "customShake")] [SerializeField] float shakeAmount = 0.7f;
+        [EnableIf("cameraShake")] [SerializeField] bool customShake = false;
+        [EnableIf("cameraShake", "customShake")] [SerializeField] float shakeDuration = 1;
+        [EnableIf("cameraShake", "customShake")] [SerializeField] float shakeAmount = 0.7f;
 
         [Header("On Shoot Gamepad Vibration")]
         [SerializeField] bool gamepadVibration = false;
-        [CanEnable("gamepadVibration")] [SerializeField] bool customVibration = false;
-        [CanEnable("gamepadVibration", "customVibration")] [SerializeField] float vibrationDuration = 0.1f;
-        [CanEnable("gamepadVibration", "customVibration")] [SerializeField] float lowFrequency = 0.5f;
-        [CanEnable("gamepadVibration", "customVibration")] [SerializeField] float highFrequency = 0.8f;
+        [EnableIf("gamepadVibration")] [SerializeField] bool customVibration = false;
+        [EnableIf("gamepadVibration", "customVibration")] [SerializeField] float vibrationDuration = 0.1f;
+        [EnableIf("gamepadVibration", "customVibration")] [SerializeField] float lowFrequency = 0.5f;
+        [EnableIf("gamepadVibration", "customVibration")] [SerializeField] float highFrequency = 0.8f;
 
         [Header("On Press Attack - barrel by default is transform")]
         [SerializeField] Transform barrelOnPress = default;

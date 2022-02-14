@@ -40,76 +40,110 @@ namespace redd096.Attributes
 
         bool CanShow(SerializedProperty property)
         {
-            ShowIfAttribute showIf = attribute as ShowIfAttribute;
+            ShowIfAttribute at = attribute as ShowIfAttribute;
 
-            SerializedProperty comparedProperty = property.FindCorrectProperty(showIf.propertyA);
+            //compare property
+            if (at.comparing)
+            {
+                SerializedProperty comparedProperty = property.FindCorrectProperty(at.propertyA);
 
-            //compare property based on propertyType
-            if (comparedProperty.propertyType == SerializedPropertyType.Boolean)
-                return CompareBool(showIf, comparedProperty.boolValue);
-            else if (comparedProperty.propertyType == SerializedPropertyType.Enum)
-                return CompareInt(showIf, comparedProperty.enumValueIndex);
-            else if (comparedProperty.propertyType == SerializedPropertyType.Integer)
-                return CompareInt(showIf, comparedProperty.intValue);
-            else if (comparedProperty.propertyType == SerializedPropertyType.Float)
-                return CompareFloat(showIf, comparedProperty.floatValue);
+                //compare property based on propertyType
+                if (comparedProperty.propertyType == SerializedPropertyType.Boolean)
+                    return CompareEqual(at, comparedProperty.boolValue);
+                else if (comparedProperty.propertyType == SerializedPropertyType.Enum)
+                    return CompareEqual(at, comparedProperty.enumValueIndex);
+                else if (comparedProperty.propertyType == SerializedPropertyType.Integer)
+                    return CompareInt(at, comparedProperty.intValue);
+                else if (comparedProperty.propertyType == SerializedPropertyType.Float)
+                    return CompareFloat(at, comparedProperty.floatValue);
+                else if (comparedProperty.propertyType == SerializedPropertyType.String)
+                    return CompareEqual(at, comparedProperty.stringValue);
 
-            return false;
+                return false;
+            }
+            //or normally check every value
+            else
+            {
+                return CheckValues(at, property);
+            }
         }
 
-        bool CompareBool(ShowIfAttribute showIf, bool comparedProperty)
+        bool CheckValues(ShowIfAttribute at, SerializedProperty property)
+        {
+            //foreach value to check
+            foreach (string value in at.values)
+            {
+                bool check = property.FindCorrectProperty(value).boolValue;
+
+                //if check AND, when find one false, return false
+                if (at.conditionOperator == ShowIfAttribute.EConditionOperator.AND && check == false)
+                {
+                    return false;
+                }
+                //if check OR, when find one true, return true
+                else if (at.conditionOperator == ShowIfAttribute.EConditionOperator.OR && check)
+                {
+                    return true;
+                }
+            }
+
+            //else return if check is AND, cause it mean every value is true if check AND, or every value is false if check OR
+            return at.conditionOperator == ShowIfAttribute.EConditionOperator.AND;
+        }
+
+        bool CompareEqual<T>(ShowIfAttribute at, T comparedProperty)
         {
             //equal
-            if (showIf.comparisonType == ShowIfAttribute.EComparisonType.isEqual)
-                return comparedProperty == (bool)showIf.valueToCompare;
+            if (at.comparisonType == ShowIfAttribute.EComparisonType.isEqual)
+                return comparedProperty.Equals((T)at.valueToCompare);
             //not equal
-            else if (showIf.comparisonType == ShowIfAttribute.EComparisonType.isNotEqual)
-                return comparedProperty != (bool)showIf.valueToCompare;
+            else if (at.comparisonType == ShowIfAttribute.EComparisonType.isNotEqual)
+                return comparedProperty.Equals((T)at.valueToCompare) == false;
             else
                 return false;
         }
 
-        bool CompareInt(ShowIfAttribute showIf, int comparedProperty)
+        bool CompareInt(ShowIfAttribute at, int comparedProperty)
         {
             //compare property A and value
-            switch (showIf.comparisonType)
+            switch (at.comparisonType)
             {
                 case ShowIfAttribute.EComparisonType.isEqual:
-                    return comparedProperty == (int)showIf.valueToCompare;
+                    return comparedProperty == (int)at.valueToCompare;
                 case ShowIfAttribute.EComparisonType.isNotEqual:
-                    return comparedProperty != (int)showIf.valueToCompare;
+                    return comparedProperty != (int)at.valueToCompare;
                 case ShowIfAttribute.EComparisonType.isGreater:
-                    return comparedProperty > (int)showIf.valueToCompare;
+                    return comparedProperty > (int)at.valueToCompare;
                 case ShowIfAttribute.EComparisonType.isGreaterEqual:
-                    return comparedProperty >= (int)showIf.valueToCompare;
+                    return comparedProperty >= (int)at.valueToCompare;
                 case ShowIfAttribute.EComparisonType.isLower:
-                    return comparedProperty < (int)showIf.valueToCompare;
+                    return comparedProperty < (int)at.valueToCompare;
                 case ShowIfAttribute.EComparisonType.isLowerEqual:
-                    return comparedProperty <= (int)showIf.valueToCompare;
+                    return comparedProperty <= (int)at.valueToCompare;
                 default:
-                    return comparedProperty == (int)showIf.valueToCompare;
+                    return comparedProperty == (int)at.valueToCompare;
             }
         }
 
-        bool CompareFloat(ShowIfAttribute showIf, float comparedProperty)
+        bool CompareFloat(ShowIfAttribute at, float comparedProperty)
         {
             //compare property A and value
-            switch (showIf.comparisonType)
+            switch (at.comparisonType)
             {
                 case ShowIfAttribute.EComparisonType.isEqual:
-                    return Mathf.Abs(comparedProperty - (float)showIf.valueToCompare) <= floatingPoint;
+                    return Mathf.Abs(comparedProperty - (float)at.valueToCompare) <= floatingPoint;
                 case ShowIfAttribute.EComparisonType.isNotEqual:
-                    return comparedProperty != (float)showIf.valueToCompare;
+                    return comparedProperty != (float)at.valueToCompare;
                 case ShowIfAttribute.EComparisonType.isGreater:
-                    return comparedProperty > (float)showIf.valueToCompare;
+                    return comparedProperty > (float)at.valueToCompare;
                 case ShowIfAttribute.EComparisonType.isGreaterEqual:
-                    return comparedProperty >= (float)showIf.valueToCompare;
+                    return comparedProperty >= (float)at.valueToCompare;
                 case ShowIfAttribute.EComparisonType.isLower:
-                    return comparedProperty < (float)showIf.valueToCompare;
+                    return comparedProperty < (float)at.valueToCompare;
                 case ShowIfAttribute.EComparisonType.isLowerEqual:
-                    return comparedProperty <= (float)showIf.valueToCompare;
+                    return comparedProperty <= (float)at.valueToCompare;
                 default:
-                    return Mathf.Abs(comparedProperty - (float)showIf.valueToCompare) <= floatingPoint;
+                    return Mathf.Abs(comparedProperty - (float)at.valueToCompare) <= floatingPoint;
             }
         }
 
@@ -121,32 +155,55 @@ namespace redd096.Attributes
     #endregion
 
     /// <summary>
-    /// Attribute to show variable only if comparison return true
+    /// Attribute to show variable only if condition is true
     /// </summary>
     public class ShowIfAttribute : PropertyAttribute
     {
-        /// <summary>
-        /// How to compare variables (default is Equal)
-        /// </summary>
-        public EComparisonType comparisonType = EComparisonType.isEqual;
+        public readonly bool comparing;
 
+        //check every value
+        public readonly string[] values;
+        public readonly EConditionOperator conditionOperator;
+
+        //compare value
         public readonly string propertyA;
         public readonly object valueToCompare;
+        public readonly EComparisonType comparisonType;
 
-        /// <summary>
-        /// Attribute to show variable only if comparison return true
-        /// </summary>
-        /// <param name="propertyA"></param>
-        /// <param name="valueToCompare"></param>
-        public ShowIfAttribute(string propertyA, object valueToCompare)
+        public ShowIfAttribute(params string[] values)
         {
+            comparing = false;
+
+            //by default condition is AND
+            conditionOperator = EConditionOperator.AND;
+            this.values = values;
+        }
+
+        public ShowIfAttribute(EConditionOperator conditionOperator, params string[] values)
+        {
+            comparing = false;
+
+            this.conditionOperator = conditionOperator;
+            this.values = values;
+        }
+
+        public ShowIfAttribute(string propertyA, object valueToCompare, EComparisonType comparisonType = EComparisonType.isEqual)
+        {
+            comparing = true;
+
             this.propertyA = propertyA;
             this.valueToCompare = valueToCompare;
+            this.comparisonType = comparisonType;
         }
 
         public enum EComparisonType
         {
             isEqual, isNotEqual, isGreater, isGreaterEqual, isLower, isLowerEqual
+        }
+
+        public enum EConditionOperator
+        {
+            AND, OR
         }
     }
 }
