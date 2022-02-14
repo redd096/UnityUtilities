@@ -12,15 +12,17 @@ namespace redd096.PathFinding2D
         enum ETypeCollider { circle, box }
 
         [Header("Collider Agent")]
-        [SerializeField] Vector2 offset = Vector2.zero;
-        [SerializeField] ETypeCollider typeCollider = ETypeCollider.box;
-        [EnableIf("typeCollider", ETypeCollider.box)] [SerializeField] Vector2 sizeCollider = Vector2.one;
-        [EnableIf("typeCollider", ETypeCollider.circle)] [SerializeField] float radiusCollider = 1;
+        [SerializeField] bool useCustomCollider = false;
+        [HideIf("useCustomCollider")] [SerializeField] Collider2D[] colliders = default;
+        [ShowIf("useCustomCollider")] [SerializeField] Vector2 offset = Vector2.zero;
+        [ShowIf("useCustomCollider")] [SerializeField] ETypeCollider typeCollider = ETypeCollider.box;
+        [ShowIf("useCustomCollider")] [EnableIf("typeCollider", ETypeCollider.box)] [SerializeField] Vector2 sizeCollider = Vector2.one;
+        [ShowIf("useCustomCollider")] [EnableIf("typeCollider", ETypeCollider.circle)] [SerializeField] float radiusCollider = 1;
 
         [Header("If this object is an obstacle, ignore self (default get from this gameObject)")]
         [SerializeField] ObstacleAStar2D obstacleAStar = default;
 
-        [Header("DEBUG")]
+        [Header("DEBUG (only custom collider)")]
         [SerializeField] bool drawDebug = false;
 
         //vars
@@ -38,7 +40,7 @@ namespace redd096.PathFinding2D
 
         void OnDrawGizmos()
         {
-            if (drawDebug)
+            if (drawDebug && useCustomCollider)
             {
                 Gizmos.color = Color.cyan;
 
@@ -60,8 +62,8 @@ namespace redd096.PathFinding2D
         void Awake()
         {
             //get references
-            if (obstacleAStar == null)
-                obstacleAStar = GetComponent<ObstacleAStar2D>();
+            if (obstacleAStar == null) obstacleAStar = GetComponent<ObstacleAStar2D>();
+            if (colliders == null || colliders.Length <= 0) colliders = GetComponentsInChildren<Collider2D>();
         }
 
         /// <summary>
@@ -79,15 +81,23 @@ namespace redd096.PathFinding2D
             this.node = node;
             this.grid = grid;
 
-            //box
-            if (typeCollider == ETypeCollider.box)
+            if (useCustomCollider)
             {
-                return CanMove_Box();
+                //box
+                if (typeCollider == ETypeCollider.box)
+                {
+                    return CanMove_Box();
+                }
+                //circle
+                else
+                {
+                    return CanMove_Circle();
+                }
             }
-            //circle
+            //else use colliders
             else
             {
-                return CanMove_Circle();
+                return CanMove_Colliders();
             }
         }
 
@@ -136,6 +146,40 @@ namespace redd096.PathFinding2D
                         //if agent can not move through, return false
                         if (nodeToCheck.agentCanMoveThrough == false)
                             return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        bool CanMove_Colliders()
+        {
+            //foreach collider
+            foreach (Collider2D col in colliders)
+            {
+                if (col == null)
+                    continue;
+
+                //calculate nodes
+                grid.GetNodesExtremesOfABox(node, col.bounds.center, col.bounds.extents, out leftNode, out rightNode, out downNode, out upNode);
+
+                //check every node
+                for (int x = leftNode.gridPosition.x; x <= rightNode.gridPosition.x; x++)
+                {
+                    for (int y = downNode.gridPosition.y; y <= upNode.gridPosition.y; y++)
+                    {
+                        nodeToCheck = grid.GetNodeByCoordinates(x, y);
+
+                        //if inside collider
+                        if (Vector2.Distance(col.ClosestPoint(nodeToCheck.worldPosition), nodeToCheck.worldPosition) < Mathf.Epsilon)
+                        {
+                            ////if agent can not move through OR there are obstacles, return false
+                            //if (nodeToCheck.agentCanMoveThrough == false || ThereAreObstacles(nodeToCheck))
+                            //if agent can not move through, return false
+                            if (nodeToCheck.agentCanMoveThrough == false)
+                                return false;
+                        }
                     }
                 }
             }

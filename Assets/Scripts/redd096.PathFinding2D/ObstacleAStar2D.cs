@@ -13,17 +13,19 @@ namespace redd096.PathFinding2D
         enum ETypeCollider { circle, box }
 
         [Header("Collider Obstacle")]
-        [SerializeField] Vector2 offset = Vector2.zero;
-        [SerializeField] ETypeCollider typeCollider = ETypeCollider.box;
-        [EnableIf("typeCollider", ETypeCollider.box)] [SerializeField] Vector2 sizeCollider = Vector2.one;
-        [EnableIf("typeCollider", ETypeCollider.circle)] [SerializeField] float radiusCollider = 1;
+        [SerializeField] bool useCustomCollider = true;
+        [HideIf("useCustomCollider")] [SerializeField] Collider2D[] colliders = default;
+        [ShowIf("useCustomCollider")] [SerializeField] Vector2 offset = Vector2.zero;
+        [ShowIf("useCustomCollider")] [SerializeField] ETypeCollider typeCollider = ETypeCollider.box;
+        [ShowIf("useCustomCollider")] [EnableIf("typeCollider", ETypeCollider.box)] [SerializeField] Vector2 sizeCollider = Vector2.one;
+        [ShowIf("useCustomCollider")] [EnableIf("typeCollider", ETypeCollider.circle)] [SerializeField] float radiusCollider = 1;
 
         [Header("Type Obstacle (set unwalkable or add penalty)")]
         [SerializeField] bool setUnwalkable = false;
         [SerializeField] bool addPenalty = true;
-        [CanEnable("addPenalty")] [SerializeField] int penalty = 1;
+        [EnableIf("addPenalty")] [SerializeField] int penalty = 1;
 
-        [Header("DEBUG")]
+        [Header("DEBUG (only custom collider)")]
         [SerializeField] bool drawDebug = false;
 
         public bool IsUnwalkable => setUnwalkable;
@@ -43,7 +45,7 @@ namespace redd096.PathFinding2D
 
         void OnDrawGizmos()
         {
-            if (drawDebug)
+            if (drawDebug && useCustomCollider)
             {
                 Gizmos.color = Color.cyan;
 
@@ -60,6 +62,13 @@ namespace redd096.PathFinding2D
 
                 Gizmos.color = Color.white;
             }
+        }
+
+        void Awake()
+        {
+            //get references
+            if (colliders == null || colliders.Length <= 0)
+                colliders = GetComponentsInChildren<Collider2D>();
         }
 
         void Update()
@@ -119,10 +128,18 @@ namespace redd096.PathFinding2D
                 return;
 
             //set nodes using box or circle
-            if (typeCollider == ETypeCollider.box)
-                SetNodesUsingBox();
+            if (useCustomCollider)
+            {
+                if (typeCollider == ETypeCollider.box)
+                    SetNodesUsingBox();
+                else
+                    SetNodesUsingCircle();
+            }
+            //or using colliders
             else
-                SetNodesUsingCircle();
+            {
+                SetNodesUsingColliders();
+            }
         }
 
         #endregion
@@ -183,42 +200,41 @@ namespace redd096.PathFinding2D
             }
         }
 
-        //void SetNodesUsingColliders()
-        //{
-        //    //foreach collider
-        //    foreach (Collider2D col in GetComponentsInChildren<Collider2D>())
-        //    {
-        //        if (col == null)
-        //            continue;
-        //
-        //        //calculate nodes
-        //        //use an offset to check if node is inside also if collider not reach center of the node (add grid.NodeRadius in the half size)
-        //        centerNode = grid.GetNodeFromWorldPosition(col.bounds.center);
-        //        grid.GetNodesExtremesOfABox(centerNode, col.bounds.center, (Vector2)col.bounds.extents + (Vector2.one * grid.NodeRadius), out leftNode, out rightNode, out downNode, out upNode);
-        //
-        //        //check every node
-        //        Node2D nodeToCheck;
-        //        for (int x = leftNode.gridPosition.x; x <= rightNode.gridPosition.x; x++)
-        //        {
-        //            for (int y = downNode.gridPosition.y; y <= upNode.gridPosition.y; y++)
-        //            {
-        //                nodeToCheck = grid.GetNodeByCoordinates(x, y);
-        //
-        //                //if node is inside collider (+ node radius offset)
-        //                if (Vector2.Distance(col.ClosestPoint(nodeToCheck.worldPosition), nodeToCheck.worldPosition) < Mathf.Epsilon + grid.NodeRadius)
-        //                {
-        //                    //set it
-        //                    if (nodeToCheck.obstaclesOnThisNode.Contains(this) == false)
-        //                        nodeToCheck.obstaclesOnThisNode.Add(this);
-        //
-        //                    //and add to the list
-        //                    if (nodesPosition.Contains(nodeToCheck) == false)
-        //                        nodesPosition.Add(nodeToCheck);
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
+        void SetNodesUsingColliders()
+        {
+            //foreach collider
+            foreach (Collider2D col in colliders)
+            {
+                if (col == null)
+                    continue;
+
+                //calculate nodes
+                //use an offset to check if node is inside also if collider not reach center of the node (add grid.NodeRadius in the half size)
+                centerNode = grid.GetNodeFromWorldPosition(col.bounds.center);
+                grid.GetNodesExtremesOfABox(centerNode, col.bounds.center, (Vector2)col.bounds.extents + (Vector2.one * grid.NodeRadius), out leftNode, out rightNode, out downNode, out upNode);
+
+                //check every node
+                for (int x = leftNode.gridPosition.x; x <= rightNode.gridPosition.x; x++)
+                {
+                    for (int y = downNode.gridPosition.y; y <= upNode.gridPosition.y; y++)
+                    {
+                        nodeToCheck = grid.GetNodeByCoordinates(x, y);
+
+                        //if node is inside collider (+ node radius offset)
+                        if (Vector2.Distance(col.ClosestPoint(nodeToCheck.worldPosition), nodeToCheck.worldPosition) < Mathf.Epsilon + grid.NodeRadius)
+                        {
+                            //set it
+                            if (nodeToCheck != null)
+                                nodeToCheck.AddObstacle(this);
+
+                            //and add to the list
+                            if (nodesPosition.Contains(nodeToCheck) == false)
+                                nodesPosition.Add(nodeToCheck);
+                        }
+                    }
+                }
+            }
+        }
 
         #endregion
     }
