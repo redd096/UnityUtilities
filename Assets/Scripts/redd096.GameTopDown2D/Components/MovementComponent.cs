@@ -22,7 +22,6 @@ namespace redd096.GameTopDown2D
 
         [Header("Necessary Components (by default get from this gameObject)")]
         [SerializeField] CollisionComponent collisionComponent = default;
-        [Tooltip("When collide in every direction, can move everywhere")] [SerializeField] bool tempFixCollisionComponent = true;
         [ShowIf("movementMode", EMovementModes.Rigidbody)] [SerializeField] Rigidbody2D rb = default;
 
         [Header("DEBUG")]
@@ -116,23 +115,17 @@ namespace redd096.GameTopDown2D
 
             if (collisionComponent)
             {
-                //be sure fix is not enabled, or is not hitting every 4 directions
-                if (tempFixCollisionComponent == false
-                    || collisionComponent.IsHitting(CollisionComponent.EDirectionEnum.right) == false || collisionComponent.IsHitting(CollisionComponent.EDirectionEnum.left) == false
-                    || collisionComponent.IsHitting(CollisionComponent.EDirectionEnum.up) == false || collisionComponent.IsHitting(CollisionComponent.EDirectionEnum.down) == false)
-                {
-                    //check if hit horizontal
-                    if (collisionComponent.IsHitting(CollisionComponent.EDirectionEnum.right) && calculatedVelocity.x > 0)
-                        calculatedVelocity.x = 0;
-                    else if (collisionComponent.IsHitting(CollisionComponent.EDirectionEnum.left) && calculatedVelocity.x < 0)
-                        calculatedVelocity.x = 0;
+                //check if hit horizontal
+                if (collisionComponent.IsHitting(CollisionComponent.EDirectionEnum.right) && calculatedVelocity.x > 0)
+                    calculatedVelocity.x = 0;
+                else if (collisionComponent.IsHitting(CollisionComponent.EDirectionEnum.left) && calculatedVelocity.x < 0)
+                    calculatedVelocity.x = 0;
 
-                    //check if hit vertical
-                    if (collisionComponent.IsHitting(CollisionComponent.EDirectionEnum.up) && calculatedVelocity.y > 0)
-                        calculatedVelocity.y = 0;
-                    else if (collisionComponent.IsHitting(CollisionComponent.EDirectionEnum.down) && calculatedVelocity.y < 0)
-                        calculatedVelocity.y = 0;
-                }
+                //check if hit vertical
+                if (collisionComponent.IsHitting(CollisionComponent.EDirectionEnum.up) && calculatedVelocity.y > 0)
+                    calculatedVelocity.y = 0;
+                else if (collisionComponent.IsHitting(CollisionComponent.EDirectionEnum.down) && calculatedVelocity.y < 0)
+                    calculatedVelocity.y = 0;
             }
 
             //clamp at max speed
