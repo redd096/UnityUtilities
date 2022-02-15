@@ -20,8 +20,8 @@ namespace redd096.GameTopDown2D
         public string AmmoType => ammoType;
 
         //events
-        public System.Action onPickAmmo { get; set; }
-        public System.Action onFailPickAmmo { get; set; }
+        public System.Action<Ammo> onPickAmmo { get; set; }
+        public System.Action<Ammo> onFailPickAmmo { get; set; }
 
         Character whoHit;
         AdvancedWeaponComponent whoHitWeaponComponent;
@@ -73,7 +73,7 @@ namespace redd096.GameTopDown2D
                     //if full of ammo, can't pick, call fail event
                     if (whoHitWeaponComponent.IsFullOfAmmo(ammoType) && canPickAlsoIfFull == false)
                     {
-                        onFailPickAmmo?.Invoke();
+                        onFailPickAmmo?.Invoke(this);
                     }
                     //else, pick and add quantity
                     else
@@ -81,7 +81,7 @@ namespace redd096.GameTopDown2D
                         whoHitWeaponComponent.AddAmmo(ammoType, quantity);
 
                         //call event
-                        onPickAmmo?.Invoke();
+                        onPickAmmo?.Invoke(this);
 
                         //destroy this gameObject
                         alreadyUsed = true;

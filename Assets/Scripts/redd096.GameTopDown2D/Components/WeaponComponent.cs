@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 //using NaughtyAttributes;
-using redd096.Attributes;
 
 namespace redd096.GameTopDown2D
 {
@@ -20,9 +19,9 @@ namespace redd096.GameTopDown2D
         [SerializeField] EWeaponOnDeath destroyWeaponOnDeath = EWeaponOnDeath.EveryWeapon;
         [SerializeField] HealthComponent healthComponent = default;
 
-        [Header("DEBUG")]
-        [ReadOnly] public WeaponBASE[] CurrentWeapons = default;    //it will be always the same size of Max Weapons
-        [ReadOnly] [SerializeField] int indexEquippedWeapon = 0;    //it will be always the correct index, or zero
+        //[Header("DEBUG")]
+        /*[ReadOnly]*/ public WeaponBASE[] CurrentWeapons = default;    //it will be always the same size of Max Weapons
+        /*[ReadOnly]*/ [SerializeField] int indexEquippedWeapon = 0;    //it will be always the correct index, or zero
 
         //the equipped weapon
         public WeaponBASE CurrentWeapon => CurrentWeapons != null && indexEquippedWeapon < CurrentWeapons.Length ? CurrentWeapons[indexEquippedWeapon] : null;
@@ -182,7 +181,7 @@ namespace redd096.GameTopDown2D
         /// </summary>
         /// <param name="weapon"></param>
         /// <param name="index"></param>
-        public void PickWeapon(WeaponBASE weapon, int index)
+        public virtual void PickWeapon(WeaponBASE weapon, int index)
         {
             if (CurrentWeapons == null || CurrentWeapons.Length <= 0)
                 return;
@@ -237,7 +236,7 @@ namespace redd096.GameTopDown2D
         /// <summary>
         /// Drop Weapon at index
         /// </summary>
-        public void DropWeapon(int index, bool updateIndexEquippedWeapon = true)
+        public virtual void DropWeapon(int index, bool updateIndexEquippedWeapon = true)
         {
             if (CurrentWeapons == null || index >= CurrentWeapons.Length)
                 return;
@@ -261,7 +260,7 @@ namespace redd096.GameTopDown2D
             if (updateIndexEquippedWeapon)
                 UpdateIndexEquippedWeapon();
 
-            //call event
+            //call events
             onDropWeapon?.Invoke();
             onChangeWeapon?.Invoke();
         }
@@ -345,7 +344,8 @@ namespace redd096.GameTopDown2D
 
                         indexEquippedWeapon = newIndex;
 
-                        //call event
+                        //call events
+                        onSwitchWeapon?.Invoke();
                         onChangeWeapon?.Invoke();
                         break;
                     }

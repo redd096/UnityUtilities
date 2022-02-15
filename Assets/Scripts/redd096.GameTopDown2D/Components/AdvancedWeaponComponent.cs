@@ -59,8 +59,12 @@ namespace redd096.GameTopDown2D
         [Header("Ammo Limits and Default Ammos")]
         [OnValueChanged("SetDefaultLimitAmmosFromEditorToDictionary")] [SerializeField] AmmoStruct[] defaultLimitAmmos = default;
         [SerializeField] List<AmmoStruct> defaultAmmos = new List<AmmoStruct>();
-        [ReadOnly] [SerializeField] List<DebugAmmoStruct> CurrentLimitAmmosDebug = new List<DebugAmmoStruct>();
-        [ReadOnly] [SerializeField] List<DebugAmmoStruct> CurrentAmmosDebug = new List<DebugAmmoStruct>();
+        /*[ReadOnly] [SerializeField]*/ List<DebugAmmoStruct> CurrentLimitAmmosDebug = new List<DebugAmmoStruct>();
+        /*[ReadOnly] [SerializeField]*/ List<DebugAmmoStruct> CurrentAmmosDebug = new List<DebugAmmoStruct>();
+
+        //events
+        public System.Action onAddAmmo { get; set; }
+        public System.Action onSetLimitAmmo { get; set; }
 
         //ammos - type, number
         Dictionary<string, int> currentLimitAmmos = new Dictionary<string, int>();
@@ -73,6 +77,18 @@ namespace redd096.GameTopDown2D
             //set default ammo limits
             SetDefaultLimitAmmosFromEditorToDictionary();
             SetDefaultAmmoFromEditorToDictionary();
+        }
+
+        public override void PickWeapon(WeaponBASE weapon, int index)
+        {
+            base.PickWeapon(weapon, index);
+
+            //if pick range weapon, add ammo
+            if (weapon is WeaponRange rangeWeapon)
+            {
+                AddAmmo(rangeWeapon.AmmoType, rangeWeapon.AmmoOnPick);
+                rangeWeapon.AmmoOnPick = 0;         //set to 0, so if drop and pick again weapon, do not pick ammo anymore
+            }
         }
 
         #region private API
@@ -143,7 +159,7 @@ namespace redd096.GameTopDown2D
         #region public API
 
         /// <summary>
-        /// Add ammo of type
+        /// Add ammo of type (also negative quantity)
         /// </summary>
         /// <param name="ammoType"></param>
         /// <param name="quantity"></param>
@@ -161,6 +177,9 @@ namespace redd096.GameTopDown2D
                 currentAmmos[ammoType] = currentLimitAmmos[ammoType];
             else if (currentAmmos[ammoType] < 0)
                 currentAmmos[ammoType] = 0;
+
+            //call event
+            onAddAmmo?.Invoke();
 
 #if UNITY_EDITOR
             //update ammos debug in editor
@@ -210,6 +229,9 @@ namespace redd096.GameTopDown2D
 
             //set limit
             currentLimitAmmos[ammoType] = limitAmmo;
+
+            //call event
+            onSetLimitAmmo?.Invoke();
 
 #if UNITY_EDITOR
             //update limit ammos debug in editor
