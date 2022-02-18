@@ -3,28 +3,20 @@ using UnityEngine;
 
 namespace redd096.GameTopDown2D
 {
-    [AddComponentMenu("redd096/.GameTopDown2D/Weapons/Ammo")]
-    public class Ammo : MonoBehaviour
+    [AddComponentMenu("redd096/.GameTopDown2D/Pickables/Pick Up BASE")]
+    public abstract class PickUpBASE : MonoBehaviour, IPickable
     {
         [Header("Necessary Components - default get from this gameObject")]
         [SerializeField] CollisionComponent collisionComponent = default;
 
-        [Header("Ammo")]
-        [SerializeField] string ammoType = "GunAmmo";
-        [SerializeField] int quantity = 1;
-        [Tooltip("Can pick when full of this type of ammo? If true, this object will be destroyed, but no ammo will be added")] [SerializeField] bool canPickAlsoIfFull = false;
-
         [Header("Destroy when instantiated - 0 = no destroy")]
         [SerializeField] float timeBeforeDestroy = 0;
 
-        public string AmmoType => ammoType;
-
         //events
-        public System.Action<Ammo> onPick { get; set; }
-        public System.Action<Ammo> onFailPick { get; set; }
+        public System.Action<PickUpBASE> onPick { get; set; }
+        public System.Action<PickUpBASE> onFailPick { get; set; }
 
-        Character whoHit;
-        AdvancedWeaponComponent whoHitComponent;
+        protected Character whoHit;
         bool alreadyUsed;
 
         void OnEnable()
@@ -37,12 +29,12 @@ namespace redd096.GameTopDown2D
                 StartCoroutine(AutoDestruction());
 
             //get references
-            if (collisionComponent == null)
+            if (collisionComponent == null) 
                 collisionComponent = GetComponent<CollisionComponent>();
 
             //warnings
             if (collisionComponent == null)
-                Debug.LogWarning("Miss CollisionComponent on " + name);
+                Debug.LogWarning("Missing CollisionComponent on " + name);
 
             //add events
             if (collisionComponent)
@@ -71,28 +63,8 @@ namespace redd096.GameTopDown2D
             whoHit = collision.transform.GetComponentInParent<Character>();
             if (whoHit && whoHit.CharacterType == Character.ECharacterType.Player)
             {
-                //and player has weapon component
-                whoHitComponent = whoHit.GetSavedComponent<AdvancedWeaponComponent>();
-                if (whoHitComponent)
-                {
-                    //if full of ammo, can't pick, call fail event
-                    if (whoHitComponent.IsFullOfAmmo(ammoType) && canPickAlsoIfFull == false)
-                    {
-                        onFailPick?.Invoke(this);
-                    }
-                    //else, pick and add quantity
-                    else
-                    {
-                        whoHitComponent.AddAmmo(ammoType, quantity);
-
-                        //call event
-                        onPick?.Invoke(this);
-
-                        //destroy this gameObject
-                        alreadyUsed = true;
-                        Destroy(gameObject);
-                    }
-                }
+                //pick up
+                PickUp();
             }
         }
 
@@ -103,5 +75,27 @@ namespace redd096.GameTopDown2D
             alreadyUsed = true;
             Destroy(gameObject);
         }
+
+        #region protected API
+
+        public abstract void PickUp();
+
+        protected virtual void OnPick()
+        {
+            //call event
+            onPick?.Invoke(this);
+
+            //destroy this gameObject
+            alreadyUsed = true;
+            Destroy(gameObject);
+        }
+
+        protected virtual void OnFailPick()
+        {
+            //call event
+            onFailPick?.Invoke(this);
+        }
+
+        #endregion
     }
 }
