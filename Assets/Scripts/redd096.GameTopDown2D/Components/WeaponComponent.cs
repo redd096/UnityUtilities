@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 //using NaughtyAttributes;
+using redd096.Attributes;
 
 namespace redd096.GameTopDown2D
 {
@@ -19,9 +20,9 @@ namespace redd096.GameTopDown2D
         [SerializeField] EWeaponOnDeath destroyWeaponOnDeath = EWeaponOnDeath.EveryWeapon;
         [SerializeField] HealthComponent healthComponent = default;
 
-        //[Header("DEBUG")]
-        /*[ReadOnly]*/ public WeaponBASE[] CurrentWeapons = default;    //it will be always the same size of Max Weapons
-        /*[ReadOnly]*/ [SerializeField] int indexEquippedWeapon = 0;    //it will be always the correct index, or zero
+        [Header("DEBUG")]
+        [ReadOnly] public WeaponBASE[] CurrentWeapons = default;    //it will be always the same size of Max Weapons
+        [ReadOnly] [SerializeField] int indexEquippedWeapon = 0;    //it will be always the correct index, or zero
 
         //the equipped weapon
         public WeaponBASE CurrentWeapon => CurrentWeapons != null && indexEquippedWeapon < CurrentWeapons.Length ? CurrentWeapons[indexEquippedWeapon] : null;
@@ -32,9 +33,10 @@ namespace redd096.GameTopDown2D
         public System.Action onSwitchWeapon { get; set; }       //called when call Switch Weapon
         public System.Action onChangeWeapon { get; set; }       //called at every pick and every drop. Also when switch weapon
 
-        Character owner;
+        protected Character owner;
         Transform _currentWeaponsParent;
         Transform CurrentWeaponsParent { get { if (_currentWeaponsParent == null) _currentWeaponsParent = new GameObject(name + "'s Weapons").transform; return _currentWeaponsParent; } }
+        public Transform WeaponsParent => CurrentWeaponsParent;
 
         protected virtual void Awake()
         {
@@ -44,8 +46,9 @@ namespace redd096.GameTopDown2D
             //get references
             owner = GetComponent<Character>();
 
-            //instantiate default weapons
-            SetDefaultWeapons();
+            //instantiate default weapons, only if this is not a Player or weapons are not saved in game manager
+            //if (owner == null || owner.CharacterType != Character.ECharacterType.Player || GameManager.instance == null || GameManager.instance.HasStatsSaved() == false)
+                SetDefaultWeapons();
         }
 
         protected virtual void OnEnable()

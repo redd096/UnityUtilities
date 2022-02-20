@@ -70,13 +70,21 @@ namespace redd096.GameTopDown2D
         Dictionary<string, int> currentLimitAmmos = new Dictionary<string, int>();
         Dictionary<string, int> currentAmmos = new Dictionary<string, int>();
 
+        /// <summary>
+        /// Used to read and set immediatly. In game is better to use public functions like GetCurrentAmmo or AddAmmo
+        /// </summary>
+        public Dictionary<string, int> CurrentAmmos_NotSafe { get { return currentAmmos; } set { currentAmmos = value; } }
+
         protected override void Awake()
         {
             base.Awake();
 
             //set default ammo limits
             SetDefaultLimitAmmosFromEditorToDictionary();
-            SetDefaultAmmoFromEditorToDictionary();
+
+            //set ammo from inspector, only if this is not a Player or ammos are not saved in game manager
+            //if (owner == null || owner.CharacterType != Character.ECharacterType.Player || GameManager.instance == null || GameManager.instance.HasStatsSaved() == false)
+                SetDefaultAmmoFromEditorToDictionary();
         }
 
         public override void PickWeapon(WeaponBASE weapon, int index)
