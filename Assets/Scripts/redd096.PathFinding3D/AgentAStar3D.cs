@@ -11,9 +11,9 @@ namespace redd096.PathFinding3D
     {
         enum ETypeCollider { sphere, box }
 
-        [Header("Collider Agent")]
+        [Header("Collider Agent - Only Box And Sphere")]
         [SerializeField] bool useCustomCollider = false;
-        [HideIf("useCustomCollider")] [SerializeField] Collider[] colliders = default;
+        [HideIf("useCustomCollider")] [Tooltip("ONLY BOX AND SPHERE")] [SerializeField] Collider[] colliders = default;
         [ShowIf("useCustomCollider")] [SerializeField] Vector3 offset = Vector3.zero;
         [ShowIf("useCustomCollider")] [SerializeField] ETypeCollider typeCollider = ETypeCollider.box;
         [ShowIf("useCustomCollider")] [EnableIf("typeCollider", ETypeCollider.box)] [SerializeField] Vector3 sizeCollider = Vector3.one;
@@ -30,6 +30,11 @@ namespace redd096.PathFinding3D
         GridAStar3D grid;
         bool isWaitingPath;
         PathRequest lastPathRequest;
+
+        //colliders
+        BoxCollider[] boxColliders;         //for every collider, save which are box
+        SphereCollider[] sphereColliders;   //for every collider, save which are sphere
+        Vector3 offsetUnityCollider;
 
         //nodes to calculate
         Node3D leftNode;
@@ -64,6 +69,15 @@ namespace redd096.PathFinding3D
             //get references
             if (obstacleAStar == null) obstacleAStar = GetComponent<ObstacleAStar3D>();
             if (colliders == null || colliders.Length <= 0) colliders = GetComponentsInChildren<Collider>();
+
+            //colliders can only be box or sphere. Save which are sphere
+            boxColliders = new BoxCollider[colliders.Length];
+            sphereColliders = new SphereCollider[colliders.Length];
+            for (int i = 0; i < colliders.Length; i++)
+            {
+                boxColliders[i] = colliders[i] as BoxCollider;
+                sphereColliders[i] = colliders[i] as SphereCollider;
+            }
         }
 
         /// <summary>
@@ -106,6 +120,7 @@ namespace redd096.PathFinding3D
         bool CanMove_Box()
         {
             //calculate nodes
+            //use node as center, because agent is calculated along the path (not transform.position)
             grid.GetNodesExtremesOfABox(node, node.worldPosition + offset, sizeCollider * 0.5f, out leftNode, out rightNode, out backNode, out forwardNode);
 
             //check every node
@@ -129,6 +144,7 @@ namespace redd096.PathFinding3D
         bool CanMove_Sphere()
         {
             //calculate nodes
+            //use node as center, because agent is calculated along the path (not transform.position)
             grid.GetNodesExtremesOfABox(node, node.worldPosition + offset, Vector3.one * radiusCollider, out leftNode, out rightNode, out backNode, out forwardNode);
 
             //check every node
@@ -156,13 +172,15 @@ namespace redd096.PathFinding3D
         bool CanMove_Colliders()
         {
             //foreach collider
-            foreach (Collider col in colliders)
+            for (int i = 0; i < colliders.Length; i++)
             {
-                if (col == null)
+                if (colliders[i] == null)
                     continue;
 
                 //calculate nodes
-                grid.GetNodesExtremesOfABox(node, col.bounds.center, col.bounds.extents, out leftNode, out rightNode, out backNode, out forwardNode);
+                //use node as center, because agent is calculated along the path (not transform.position)
+                offsetUnityCollider = boxColliders[i] || sphereColliders[i] ? (boxColliders[i] ? boxColliders[i].center : sphereColliders[i].center) : Vector3.zero; //center from box or sphere collider
+                grid.GetNodesExtremesOfABox(node, node.worldPosition + Vector3.Scale(offsetUnityCollider, colliders[i].transform.lossyScale), colliders[i].bounds.extents, out leftNode, out rightNode, out backNode, out forwardNode);
 
                 //check every node
                 for (int x = leftNode.gridPosition.x; x <= rightNode.gridPosition.x; x++)
@@ -172,7 +190,8 @@ namespace redd096.PathFinding3D
                         nodeToCheck = grid.GetNodeByCoordinates(x, y);
 
                         //if inside collider
-                        if (Vector2.Distance(col.ClosestPoint(nodeToCheck.worldPosition), nodeToCheck.worldPosition) < Mathf.Epsilon)
+                        //only box or sphere, can't use same check of ObstacleAStar cause agent is calculated along the path (not transform.position)
+                        if (sphereColliders[i] == null || Vector3.Distance(node.worldPosition, nodeToCheck.worldPosition) <= sphereColliders[i].radius)
                         {
                             ////if agent can not move through OR there are obstacles, return false
                             //if (nodeToCheck.agentCanMoveThrough == false || ThereAreObstacles(nodeToCheck))

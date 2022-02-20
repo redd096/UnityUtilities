@@ -11,9 +11,9 @@ namespace redd096.PathFinding2D
     {
         enum ETypeCollider { circle, box }
 
-        [Header("Collider Agent")]
+        [Header("Collider Agent - Only Box and Circle")]
         [SerializeField] bool useCustomCollider = false;
-        [HideIf("useCustomCollider")] [SerializeField] Collider2D[] colliders = default;
+        [HideIf("useCustomCollider")] [Tooltip("ONLY BOX AND CIRCLE")] [SerializeField] Collider2D[] colliders = default;
         [ShowIf("useCustomCollider")] [SerializeField] Vector2 offset = Vector2.zero;
         [ShowIf("useCustomCollider")] [SerializeField] ETypeCollider typeCollider = ETypeCollider.box;
         [ShowIf("useCustomCollider")] [EnableIf("typeCollider", ETypeCollider.box)] [SerializeField] Vector2 sizeCollider = Vector2.one;
@@ -30,6 +30,7 @@ namespace redd096.PathFinding2D
         GridAStar2D grid;
         bool isWaitingPath;
         PathRequest lastPathRequest;
+        CircleCollider2D[] circleColliders;  //for every collider, save which are circle colliders
 
         //nodes to calculate
         Node2D leftNode;
@@ -64,6 +65,11 @@ namespace redd096.PathFinding2D
             //get references
             if (obstacleAStar == null) obstacleAStar = GetComponent<ObstacleAStar2D>();
             if (colliders == null || colliders.Length <= 0) colliders = GetComponentsInChildren<Collider2D>();
+
+            //colliders can only be box or circle. Save which are circles
+            circleColliders = new CircleCollider2D[colliders.Length];
+            for (int i = 0; i < colliders.Length; i++)
+                circleColliders[i] = colliders[i] as CircleCollider2D;
         }
 
         /// <summary>
@@ -106,6 +112,7 @@ namespace redd096.PathFinding2D
         bool CanMove_Box()
         {
             //calculate nodes
+            //use node as center, because agent is calculated along the path (not transform.position)
             grid.GetNodesExtremesOfABox(node, node.worldPosition + offset, sizeCollider * 0.5f, out leftNode, out rightNode, out downNode, out upNode);
 
             //check every node
@@ -129,6 +136,7 @@ namespace redd096.PathFinding2D
         bool CanMove_Circle()
         {
             //calculate nodes
+            //use node as center, because agent is calculated along the path (not transform.position)
             grid.GetNodesExtremesOfABox(node, node.worldPosition + offset, Vector2.one * radiusCollider, out leftNode, out rightNode, out downNode, out upNode);
 
             //check every node
@@ -156,13 +164,14 @@ namespace redd096.PathFinding2D
         bool CanMove_Colliders()
         {
             //foreach collider
-            foreach (Collider2D col in colliders)
+            for (int i = 0; i < colliders.Length; i++)
             {
-                if (col == null)
+                if (colliders[i] == null)
                     continue;
 
                 //calculate nodes
-                grid.GetNodesExtremesOfABox(node, col.bounds.center, col.bounds.extents, out leftNode, out rightNode, out downNode, out upNode);
+                //use node as center, because agent is calculated along the path (not transform.position)
+                grid.GetNodesExtremesOfABox(node, node.worldPosition + colliders[i].offset * colliders[i].transform.lossyScale, colliders[i].bounds.extents, out leftNode, out rightNode, out downNode, out upNode);
 
                 //check every node
                 for (int x = leftNode.gridPosition.x; x <= rightNode.gridPosition.x; x++)
@@ -172,7 +181,8 @@ namespace redd096.PathFinding2D
                         nodeToCheck = grid.GetNodeByCoordinates(x, y);
 
                         //if inside collider
-                        if (Vector2.Distance(col.ClosestPoint(nodeToCheck.worldPosition), nodeToCheck.worldPosition) < Mathf.Epsilon)
+                        //only box or circle, can't use same check of ObstacleAStar cause agent is calculated along the path (not transform.position)
+                        if (circleColliders[i] == null || Vector2.Distance(node.worldPosition, nodeToCheck.worldPosition) <= circleColliders[i].radius)
                         {
                             ////if agent can not move through OR there are obstacles, return false
                             //if (nodeToCheck.agentCanMoveThrough == false || ThereAreObstacles(nodeToCheck))

@@ -294,20 +294,23 @@ namespace redd096.PathFinding3D
         List<Vector3> SimplifyPath(List<Node3D> path)
         {
             List<Vector3> waypoints = new List<Vector3>();
-            Vector2Int oldDirection = Vector2Int.zero;
+            //Vector2Int oldDirection = Vector2Int.zero;
+            //
+            ////calculate direction between every node in the path
+            //Vector2Int newDirection;
+            //for (int i = 1; i < path.Count; i++)
+            //{
+            //    //if direction is different, add this node position to the path
+            //    newDirection = path[i - 1].gridPosition - path[i].gridPosition;
+            //    if (newDirection != oldDirection)
+            //    {
+            //        waypoints.Add(path[i].worldPosition);
+            //        oldDirection = newDirection;
+            //    }
+            //}
 
-            //calculate direction between every node in the path
-            Vector2Int newDirection;
-            for (int i = 1; i < path.Count; i++)
-            {
-                //if direction is different, add this node position to the path
-                newDirection = path[i - 1].gridPosition - path[i].gridPosition;
-                if (newDirection != oldDirection)
-                {
-                    waypoints.Add(path[i].worldPosition);
-                    oldDirection = newDirection;
-                }
-            }
+            for (int i = 0; i < path.Count; i++)
+                waypoints.Add(path[i].worldPosition);
 
             return waypoints;
         }
