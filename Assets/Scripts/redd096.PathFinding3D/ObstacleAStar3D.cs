@@ -124,9 +124,9 @@ namespace redd096.PathFinding3D
         /// </summary>
         public void SetNewNodes()
         {
-            if (grid == null)
+            //only if active in scene
+            if (gameObject.activeInHierarchy == false || grid == null)
                 return;
-
 
             //set nodes using box or sphere
             if (useCustomCollider)
