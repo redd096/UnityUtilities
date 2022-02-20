@@ -99,7 +99,7 @@ namespace redd096.PathFinding2D
                 BuildGrid();
         }
 
-        void OnDrawGizmosSelected()
+        void OnDrawGizmos()
         {
             if (drawGizmos)
             {
@@ -118,6 +118,8 @@ namespace redd096.PathFinding2D
                         Gizmos.DrawCube(node.worldPosition, Vector2.one * (nodeDiameter - 0.1f));
                     }
                 }
+
+                Gizmos.color = Color.white;
             }
         }
 
