@@ -15,7 +15,7 @@ namespace redd096
         [Header("Start from this Menu")]
         [SerializeField] GameObject startMenu = default;
 
-        [Header("For every menu, from what object start?")]
+        [Header("For every menu, from which object start?")]
         [SerializeField] GameObject[] firstSelectedGameObjects = default;
 
         [Header("When one of these objects is active, can navigate only in its menu")]
