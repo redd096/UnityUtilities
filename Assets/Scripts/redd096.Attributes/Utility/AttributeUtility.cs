@@ -51,6 +51,40 @@ namespace redd096.Attributes
             return property.serializedObject.FindProperty(path);
         }
 
+        /// <summary>
+        /// Return parent of this array
+        /// </summary>
+        /// <param name="property"></param>
+        /// <returns></returns>
+        public static SerializedProperty GetArrayParent(this SerializedProperty property)
+        {
+            //if in array, path will be parentName.Array.data[index].PropertyName (where PropertyName is the name of this property)
+            string path = property.propertyPath;
+            int i = path.LastIndexOf('.');
+
+            //if there is no point, is not an array
+            if (i < 0)
+                return null;
+
+            //move back for two points (between "Array.data" and between "parentName.Array")
+            int index;
+            int j = 0;
+            for (index = i - 1; index >= 0; index--)
+            {
+                if(path[index] == '.')
+                {
+                    j++;
+
+                    if (j == 2)
+                        break;
+                }
+            }
+        
+            //get the path to parent and return it
+            path = path.Substring(0, index);
+            return property.serializedObject.FindProperty(path);
+        }
+
 #endif
     }
 }
