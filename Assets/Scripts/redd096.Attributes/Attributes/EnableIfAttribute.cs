@@ -155,6 +155,9 @@ namespace redd096.Attributes
     /// </summary>
     public class EnableIfAttribute : PropertyAttribute
     {
+        public enum EComparisonType { isEqual, isNotEqual, isGreater, isGreaterEqual, isLower, isLowerEqual }
+        public enum EConditionOperator { AND, OR }
+
         public readonly bool comparing;
 
         //check every value
@@ -190,16 +193,6 @@ namespace redd096.Attributes
             this.propertyA = propertyA;
             this.valueToCompare = valueToCompare;
             this.comparisonType = comparisonType;
-        }
-
-        public enum EComparisonType
-        {
-            isEqual, isNotEqual, isGreater, isGreaterEqual, isLower, isLowerEqual
-        }
-
-        public enum EConditionOperator
-        {
-            AND, OR
         }
     }
 }
