@@ -39,13 +39,13 @@ namespace redd096.Attributes
                     {
                         //set if button is enabled or disabled
                         EditorGUI.BeginDisabledGroup(
-                            buttonAttribute.EnableType == ButtonAttribute.EEnableType.Editor && Application.isPlaying                   //if Editor button, disable when in play mode
-                            || buttonAttribute.EnableType == ButtonAttribute.EEnableType.PlayMode && Application.isPlaying == false);   //if PlayMode button, disable when in editor
+                            buttonAttribute.enableType == ButtonAttribute.EEnableType.Editor && Application.isPlaying                   //if Editor button, disable when in play mode
+                            || buttonAttribute.enableType == ButtonAttribute.EEnableType.PlayMode && Application.isPlaying == false);   //if PlayMode button, disable when in editor
 
                         //if the user clicks the button, invoke the method (show button name or method name)
                         if (GUILayout.Button(string.IsNullOrEmpty(buttonAttribute.buttonName) ? method.Name : buttonAttribute.buttonName))
                         {
-                            object[] defaultParams = method.GetParameters().Select(p => p.DefaultValue).ToArray();
+                            object[] defaultParams = method.GetParameters().Select(p => p.DefaultValue).ToArray();  //pass default parameters, if there are optional parameters
                             IEnumerator methodResult = method.Invoke(target, defaultParams) as IEnumerator;
 
                             //in editor mode set target object and scene dirty to serialize changes to disk
@@ -74,7 +74,7 @@ namespace redd096.Attributes
                     }
                     else
                     {
-                        Debug.LogWarning(typeof(ButtonAttribute).Name + "can invoke only methods with 0 parameters", target);
+                        Debug.LogWarning(typeof(ButtonAttribute).Name + " can't invoke '" + method.Name + "'. It can invoke only methods with 0 or optional parameters", target);
                     }
                 }
             }
@@ -94,19 +94,17 @@ namespace redd096.Attributes
         public enum EEnableType { Always, Editor, PlayMode }
 
         public readonly string buttonName;
+        public readonly EEnableType enableType = EEnableType.Always;
 
-        /// <summary>
-        /// Is button always enabled, only in editor, or only in play mode?
-        /// </summary>
-        public EEnableType EnableType = EEnableType.Always;
-
-        /// <summary>
-        /// Attribute to show button in inspector. Coroutines work only in play mode
-        /// </summary>
-        /// <param name="buttonName">Name of the button (default is method name)</param>
-        public ButtonAttribute(string buttonName = "")
+        public ButtonAttribute(EEnableType enableType = EEnableType.Always)
         {            
+            this.enableType = enableType;
+        }
+
+        public ButtonAttribute(string buttonName, EEnableType enableType = EEnableType.Always)
+        {
             this.buttonName = buttonName;
+            this.enableType = enableType;
         }
     }
 }

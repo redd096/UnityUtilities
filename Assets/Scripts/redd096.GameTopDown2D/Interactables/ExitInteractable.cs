@@ -19,7 +19,7 @@ namespace redd096.GameTopDown2D
         /*[ShowNonSerializedField]*/ [SerializeField] [ReadOnly] bool isOpen;
         public bool IsOpen => isOpen;
 
-        [Button(EnableType = ButtonAttribute.EEnableType.PlayMode)] public void ForceExit() => ChangeExitState();
+        [Button(ButtonAttribute.EEnableType.PlayMode)] public void ForceExit() => ChangeExitState();
 
         //events
         public System.Action onOpen { get; set; }
