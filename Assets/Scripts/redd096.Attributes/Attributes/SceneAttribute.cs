@@ -34,7 +34,7 @@ namespace redd096.Attributes
                 if (property.propertyType == SerializedPropertyType.Integer)
                     property.intValue = index;                
                 else if (property.propertyType == SerializedPropertyType.String)
-                    property.stringValue = scenes[index];
+                    property.stringValue = scenes.Length > 0 ? scenes[index] : "";
             }
             //else show warning
             else
