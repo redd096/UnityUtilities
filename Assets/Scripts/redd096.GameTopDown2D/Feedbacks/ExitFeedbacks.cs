@@ -10,10 +10,7 @@ namespace redd096.GameTopDown2D
 
         [Header("Animator - default get in children")]
         [SerializeField] Animator anim = default;
-        [SerializeField] string closeAnimation = "Close";
-        [SerializeField] string openAnimation = "Open";
-
-        bool isOpen;
+        [SerializeField] string boolParameter = "IsOpen";
 
         void OnEnable()
         {
@@ -24,15 +21,11 @@ namespace redd096.GameTopDown2D
             //add events
             if (interactable)
             {
-                interactable.onOpen += OnOpen;
-                interactable.onClose += OnClose;
+                interactable.onOpen += OnSetState;
+                interactable.onClose += OnSetState;
 
-                //open if interactable is open but animator is still closed
-                if (interactable.IsOpen && isOpen == false)
-                    OnOpen();
-                //or close if is close but animator is still opened
-                else if (interactable.IsOpen == false && isOpen)
-                    OnClose();
+                //set default value
+                OnSetState();
             }
         }
 
@@ -41,30 +34,17 @@ namespace redd096.GameTopDown2D
             //remove events
             if (interactable)
             {
-                interactable.onOpen -= OnOpen;
-                interactable.onClose -= OnClose;
+                interactable.onOpen -= OnSetState;
+                interactable.onClose -= OnSetState;
             }
         }
 
-        void OnOpen()
+        void OnSetState()
         {
-            isOpen = true;
-
-            //move to open animation
+            //move to open or close animation
             if (anim)
             {
-                anim.Play(openAnimation);
-            }
-        }
-
-        void OnClose()
-        {
-            isOpen = false;
-
-            //move to close animation
-            if (anim)
-            {
-                anim.Play(closeAnimation);
+                anim.SetBool(boolParameter, interactable.IsOpen);
             }
         }
     }
