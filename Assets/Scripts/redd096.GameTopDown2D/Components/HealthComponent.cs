@@ -8,7 +8,7 @@ namespace redd096.GameTopDown2D
     {
         [Header("Health")]
         public bool Invincible = false;
-        public float MaxHealth = 100;
+        [OnValueChanged("OnChangeMaxHealth")] public float MaxHealth = 100;
 
         [Header("Friendly Fire")]
         [Range(0f, 1f)] [SerializeField] float percentageDamageWhenHitFromFriend = 0.25f;
@@ -25,10 +25,10 @@ namespace redd096.GameTopDown2D
         Character ownerCharacter;
         Shield shield;
 
-        void OnValidate()
+        void OnChangeMaxHealth()
         {
-            //set default health
-            CurrentHealth = MaxHealth;
+            if (Application.isPlaying == false)
+                CurrentHealth = MaxHealth;
         }
 
         void Awake()

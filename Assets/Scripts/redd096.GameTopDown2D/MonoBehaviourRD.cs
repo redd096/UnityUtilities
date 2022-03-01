@@ -7,18 +7,18 @@ namespace redd096.GameTopDown2D
     {
         CollisionComponent collisionComponent;
 
-        void Awake()
+        protected virtual void Awake()
         {
             //get references
-            if (collisionComponent == null) 
+            if (collisionComponent == null)
                 collisionComponent = GetComponent<CollisionComponent>();
 
             //warnings
-            if (collisionComponent == null) 
+            if (collisionComponent == null)
                 Debug.LogWarning("Miss CollisionComponent on " + name);
         }
 
-        void OnEnable()
+        protected virtual void OnEnable()
         {
             //get references
             if (collisionComponent == null) collisionComponent = GetComponent<CollisionComponent>();
@@ -36,7 +36,7 @@ namespace redd096.GameTopDown2D
             }
         }
 
-        void OnDisable()
+        protected virtual void OnDisable()
         {
             //remove events
             if (collisionComponent)
