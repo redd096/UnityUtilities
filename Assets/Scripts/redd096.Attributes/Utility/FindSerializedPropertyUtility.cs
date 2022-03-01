@@ -4,7 +4,7 @@ using UnityEditor;
 
 namespace redd096.Attributes
 {
-    public static class AttributeUtility
+    public static class FindSerializedPropertyUtility
     {
 #if UNITY_EDITOR
 

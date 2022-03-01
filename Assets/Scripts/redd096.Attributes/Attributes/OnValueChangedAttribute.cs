@@ -28,22 +28,16 @@ namespace redd096.Attributes
                 OnValueChangedAttribute at = attribute as OnValueChangedAttribute;
 
                 //in target object, find method with same name and invoke
-                foreach(MethodInfo method in property.serializedObject.targetObject.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.DeclaredOnly))
-                {
-                    if(method.Name == at.methodName)
-                    {
-                        //only if with 0 parameters
-                        if (method != null && method.GetParameters().Length == 0)
-                        {
-                            method.Invoke(property.serializedObject.targetObject, null);                  
-                        }
-                        else
-                        {
-                            Debug.LogWarning(at.GetType().Name + "can invoke only methods with 0 parameters", property.serializedObject.targetObject);
-                        }
+                MethodInfo method = property.serializedObject.targetObject.GetMethod(at.methodName);
 
-                        break;
-                    }
+                //only if with 0 or only optional parameters
+                if (method != null && method.HasZeroParameterOrOnlyOptional())
+                {
+                    method.Invoke(property.serializedObject.targetObject, method.GetDefaultParameters());
+                }
+                else
+                {
+                    Debug.LogWarning(at.GetType().Name + "can invoke only methods with 0 parameters", property.serializedObject.targetObject);
                 }
             }
         }

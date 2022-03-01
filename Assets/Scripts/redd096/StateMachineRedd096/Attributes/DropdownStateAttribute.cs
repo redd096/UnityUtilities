@@ -19,21 +19,19 @@ namespace redd096
         {
             EditorGUI.BeginProperty(position, label, property);
 
-            if (attribute is DropdownStateAttribute at)
-            {
-                //get states
-                GetStates(property);
+            //get states
+            GetStates(property);
+            DropdownStateAttribute at = attribute as DropdownStateAttribute;
 
-                //show dropdown to select and set property
-                if (possibleStates != null && possibleStates.Length > 0)
-                {
-                    property.intValue = EditorGUI.Popup(position, at.nameValue, property.intValue, statesNames);
-                }
-                //else show NONE and don't set anything
-                else
-                {
-                    EditorGUI.Popup(position, at.nameValue, 0, new string[1] { "NONE" });
-                }
+            //show dropdown to select and set property
+            if (possibleStates != null && possibleStates.Length > 0)
+            {
+                property.intValue = EditorGUI.Popup(position, at.nameValue, property.intValue, statesNames);
+            }
+            //else show NONE and don't set anything
+            else
+            {
+                EditorGUI.Popup(position, at.nameValue, 0, new string[1] { "NONE" });
             }
 
             EditorGUI.EndProperty();

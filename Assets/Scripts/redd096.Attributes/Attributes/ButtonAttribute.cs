@@ -1,11 +1,10 @@
-﻿using System;
-using System.Linq;
+﻿using UnityEngine;
+using System;
+#if UNITY_EDITOR
+using System.Collections;
 using System.Reflection;
-using UnityEngine;
 using UnityEditor.Experimental.SceneManagement;
 using UnityEditor.SceneManagement;
-using System.Collections;
-#if UNITY_EDITOR
 using UnityEditor;
 #endif
 
@@ -23,19 +22,16 @@ namespace redd096.Attributes
         {
             base.OnInspectorGUI();
 
-            //get the type of monobehaviour
-            Type type = target.GetType();
-
-            //get every method inside this
+            //get every method inside monobehaviour
             ButtonAttribute buttonAttribute;
-            foreach (MethodInfo method in type.GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.DeclaredOnly))
+            foreach (MethodInfo method in target.GetMethods())
             {
                 //make sure it is decorated by our custom attribute
                 buttonAttribute = method.GetCustomAttribute<ButtonAttribute>(true);
                 if (buttonAttribute != null)
                 {
                     //can have only zero or optional parameters
-                    if (method.GetParameters().All(p => p.IsOptional))
+                    if (method.HasZeroParameterOrOnlyOptional())
                     {
                         //set if button is enabled or disabled
                         EditorGUI.BeginDisabledGroup(
@@ -45,8 +41,7 @@ namespace redd096.Attributes
                         //if the user clicks the button, invoke the method (show button name or method name)
                         if (GUILayout.Button(string.IsNullOrEmpty(buttonAttribute.buttonName) ? method.Name : buttonAttribute.buttonName))
                         {
-                            object[] defaultParams = method.GetParameters().Select(p => p.DefaultValue).ToArray();  //pass default parameters, if there are optional parameters
-                            IEnumerator methodResult = method.Invoke(target, defaultParams) as IEnumerator;
+                            IEnumerator methodResult = method.Invoke(target, method.GetDefaultParameters()) as IEnumerator;             //pass default values, if there are optional parameters
 
                             //in editor mode set target object and scene dirty to serialize changes to disk
                             if (Application.isPlaying == false)
@@ -74,7 +69,7 @@ namespace redd096.Attributes
                     }
                     else
                     {
-                        Debug.LogWarning(typeof(ButtonAttribute).Name + " can't invoke '" + method.Name + "'. It can invoke only methods with 0 or optional parameters", target);
+                        Debug.LogWarning(buttonAttribute.GetType().Name + " can't invoke '" + method.Name + "'. It can invoke only methods with 0 or optional parameters", target);
                     }
                 }
             }

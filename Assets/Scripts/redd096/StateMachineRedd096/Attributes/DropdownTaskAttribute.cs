@@ -60,7 +60,7 @@ namespace redd096
             //get owner of the property
             Component owner = property.serializedObject.targetObject as Component;
             DropdownTaskAttribute at = attribute as DropdownTaskAttribute;
-            if (owner && at != null)
+            if (owner)
             {
                 //get tasks in children
                 Component[] components = owner.GetComponentsInChildren(at.TaskType);
