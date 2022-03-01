@@ -21,7 +21,7 @@ namespace redd096
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
             //add height to show readonly ref + space for next element in array
-            return base.GetPropertyHeight(property, label) + heightRef + spaceBetweemElements);
+            return base.GetPropertyHeight(property, label) + heightRef + spaceBetweemElements;
         }
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
