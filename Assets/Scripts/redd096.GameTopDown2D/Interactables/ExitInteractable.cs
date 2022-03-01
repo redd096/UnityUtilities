@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-//using NaughtyAttributes;
 using redd096.Attributes;
 
 namespace redd096.GameTopDown2D
@@ -13,21 +12,23 @@ namespace redd096.GameTopDown2D
         [Tooltip("Check every player has weapon")] [SerializeField] bool checkEveryPlayerHasWeapon = true;
 
         [Header("On Interact")]
-        [SerializeField] /*[Scene]*/ string sceneToLoad = default;
+        [SerializeField] [Scene] string sceneToLoad = default;
 
         [Header("DEBUG")]
         /*[ShowNonSerializedField]*/ [SerializeField] [ReadOnly] bool isOpen;
-        public bool IsOpen => isOpen;
 
-        [Button(ButtonAttribute.EEnableType.PlayMode)] public void ForceExit() => ChangeExitState();
+        [Button("Force Exit", ButtonAttribute.EEnableType.PlayMode)] public void ForceExit() => ChangeExitState();
+
+        public bool IsOpen => isOpen;
+        public string SceneToLoad => sceneToLoad;
 
         //events
         public System.Action onOpen { get; set; }
         public System.Action onClose { get; set; }
-        public System.Action onInteract { get; set; }
+        public System.Action<ExitInteractable> onInteract { get; set; }
 
         //necessary for checks
-        List<Character> enemies = new List<Character>();
+        List<SpawnableObject> enemies = new List<SpawnableObject>();
         List<Character> players = new List<Character>();
 
         void OnEnable()
@@ -50,15 +51,14 @@ namespace redd096.GameTopDown2D
             Character[] charactersInScene = FindObjectsOfType<Character>();
 
             //register to every enemy death
+            SpawnableObject spawnableObject;
             foreach (Character enemy in charactersInScene)
             {
                 if (enemy.CharacterType == Character.ECharacterType.AI)
                 {
-                    if (enemy.GetSavedComponent<HealthComponent>())
-                    {
-                        enemy.GetSavedComponent<HealthComponent>().onDie += OnEnemyDie;
-                        enemies.Add(enemy);     //and add to the list
-                    }
+                    spawnableObject = enemy.gameObject.AddComponent<SpawnableObject>();
+                    spawnableObject.onDeactiveObject += OnEnemyDie;
+                    enemies.Add(spawnableObject);   //and add to the list
                 }
             }
 
@@ -70,7 +70,7 @@ namespace redd096.GameTopDown2D
                     if (player.GetSavedComponent<WeaponComponent>())
                     {
                         player.GetSavedComponent<WeaponComponent>().onChangeWeapon += OnPlayerChangeWeapon;
-                        players.Add(player);    //and add to the list
+                        players.Add(player);        //and add to the list
                     }
                 }
             }
@@ -84,23 +84,19 @@ namespace redd096.GameTopDown2D
         /// </summary>
         public void DeactiveExit()
         {
-            //unregister from every enemy death
-            foreach (Character enemy in enemies)
+            //unregister from every enemy
+            foreach (SpawnableObject enemy in enemies)
             {
-                if (enemy.GetSavedComponent<HealthComponent>())
-                {
-                    enemy.GetSavedComponent<HealthComponent>().onDie -= OnEnemyDie;
-                }
+                if (enemy)
+                    enemy.onDeactiveObject -= OnEnemyDie;
             }
             enemies.Clear();
 
-            //unregister from every player change weapon
+            //unregister from every player
             foreach (Character player in players)
             {
-                if (player.GetSavedComponent<WeaponComponent>())
-                {
+                if (player && player.GetSavedComponent<WeaponComponent>())
                     player.GetSavedComponent<WeaponComponent>().onChangeWeapon -= OnPlayerChangeWeapon;
-                }
             }
             players.Clear();
         }
@@ -112,32 +108,31 @@ namespace redd096.GameTopDown2D
         public void Interact(InteractComponent whoInteract)
         {
             //only if is open
-            if (isOpen == false)
-                return;
+            if (isOpen)
+            {
+                //stop this script
+                DeactiveExit();     //stop check open/close
+                isOpen = false;     //can't interact anymore
 
-            //stop this script
-            DeactiveExit();     //stop check open/close
-            isOpen = false;     //can't interact anymore
+                //call event
+                onInteract?.Invoke(this);
 
-            //call event
-            onInteract?.Invoke();
-
-            //change scene
-            SceneLoader.instance.LoadScene(sceneToLoad);
+                //change scene
+                SceneLoader.instance.LoadScene(sceneToLoad);
+            }
         }
 
         #endregion
 
         #region events
 
-        void OnEnemyDie(HealthComponent enemy)
+        void OnEnemyDie(SpawnableObject enemy)
         {
-            //when an enemy died, remove from the list
-            Character enemyCharacter = enemy.GetComponent<Character>();
-            if (enemyCharacter)
+            //when an enemy die, remove from the list
+            if (enemy)
             {
-                if (enemies.Contains(enemyCharacter))
-                    enemies.Remove(enemyCharacter);
+                if (enemies.Contains(enemy))
+                    enemies.Remove(enemy);
             }
 
             //do checks

@@ -29,7 +29,7 @@ namespace redd096.GameTopDown2D
                 StartCoroutine(AutoDestruction());
 
             //get references
-            if (collisionComponent == null) 
+            if (collisionComponent == null)
                 collisionComponent = GetComponent<CollisionComponent>();
 
             //warnings

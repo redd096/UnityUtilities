@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-//using NaughtyAttributes;
 using redd096.Attributes;
 
 namespace redd096.GameTopDown2D
@@ -12,7 +11,7 @@ namespace redd096.GameTopDown2D
         [System.Serializable]
         public class AmmoStruct
         {
-            /*[Dropdown("GetAllAmmoTypes")]*/ public string AmmoType;
+            [Dropdown("GetAllAmmoTypes")] public string AmmoType;
             public int Quantity;
 
             public AmmoStruct(string ammoType, int quantity)
@@ -59,8 +58,10 @@ namespace redd096.GameTopDown2D
         [Header("Ammo Limits and Default Ammos")]
         [OnValueChanged("SetDefaultLimitAmmosFromEditorToDictionary")] [SerializeField] AmmoStruct[] defaultLimitAmmos = default;
         [SerializeField] List<AmmoStruct> defaultAmmos = new List<AmmoStruct>();
-        /*[ReadOnly] [SerializeField]*/ List<DebugAmmoStruct> CurrentLimitAmmosDebug = new List<DebugAmmoStruct>();
-        /*[ReadOnly] [SerializeField]*/ List<DebugAmmoStruct> CurrentAmmosDebug = new List<DebugAmmoStruct>();
+
+        [Header("DEBUG")]
+        [ReadOnly] [SerializeField] List<DebugAmmoStruct> CurrentLimitAmmosDebug = new List<DebugAmmoStruct>();
+        [ReadOnly] [SerializeField] List<DebugAmmoStruct> CurrentAmmosDebug = new List<DebugAmmoStruct>();
 
         //events
         public System.Action onAddAmmo { get; set; }

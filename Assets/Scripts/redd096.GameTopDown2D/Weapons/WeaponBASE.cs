@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-//using NaughtyAttributes;
 using redd096.Attributes;
 
 namespace redd096.GameTopDown2D
@@ -10,11 +9,12 @@ namespace redd096.GameTopDown2D
         [Header("Weapon BASE")]
         public string WeaponName = "Weapon Name";
         public int WeaponPrice = 10;
-        /*[ShowAssetPreview]*/ public Sprite WeaponSprite = default;
+        [ShowAssetPreview] public Sprite WeaponSprite = default;
 
         [Header("DEBUG")]
         [SerializeField] bool destroyWeaponOnDrop = false;
         [ReadOnly] public Character Owner;
+        [HideInInspector] public WeaponBASE WeaponPrefab = default;
 
         //events
         public System.Action onPickWeapon { get; set; }

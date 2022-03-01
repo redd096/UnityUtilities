@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-//using NaughtyAttributes;
 using redd096.Attributes;
 
 namespace redd096.GameTopDown2D
@@ -80,12 +79,17 @@ namespace redd096.GameTopDown2D
             //instantiate and equip default weapons
             if (weaponsPrefabs != null && weaponsPrefabs.Length > 0)
             {
+                WeaponBASE instantiatedWeapon;
                 for (int i = 0; i < CurrentWeapons.Length; i++)
                 {
                     if (i < weaponsPrefabs.Length)
                     {
                         if (weaponsPrefabs[i])
-                            PickWeapon(Instantiate(weaponsPrefabs[i]));
+                        {
+                            instantiatedWeapon = Instantiate(weaponsPrefabs[i]);
+                            instantiatedWeapon.WeaponPrefab = weaponsPrefabs[i];
+                            PickWeapon(instantiatedWeapon);
+                        }
                     }
                     else
                         break;

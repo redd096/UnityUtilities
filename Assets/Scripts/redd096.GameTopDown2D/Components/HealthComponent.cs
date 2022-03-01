@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-//using NaughtyAttributes;
 using redd096.Attributes;
 
 namespace redd096.GameTopDown2D
@@ -15,7 +14,7 @@ namespace redd096.GameTopDown2D
         [Range(0f, 1f)] [SerializeField] float percentageDamageWhenHitFromFriend = 0.25f;
 
         [Header("DEBUG")]
-        /*[ProgressBar("Health", "MaxHealth", EColor.Red)]*/ public float CurrentHealth = 100;
+        [ProgressBar("Health", "MaxHealth", ProgressBarAttribute.EColor.SmoothGreen)] public float CurrentHealth = 100;
         /*[ShowNonSerializedField]*/ [ReadOnly] bool alreadyDead = false;
 
         //events

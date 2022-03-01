@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using UnityEngine;
-//using NaughtyAttributes;
 using redd096.Attributes;
 
 namespace redd096.GameTopDown2D
@@ -24,7 +23,7 @@ namespace redd096.GameTopDown2D
         public float BulletSpeed = 10;
 
         [Header("Ammo - NONE = always full")]
-        /*[Dropdown("GetAllAmmoTypes")]*/ public string AmmoType = "NONE";
+        [Dropdown("GetAllAmmoTypes")] public string AmmoType = "NONE";
         [Tooltip("When pick this weapon for the first time, pick also ammo")] public int AmmoOnPick = 12;
 
         [Header("DEBUG")]
