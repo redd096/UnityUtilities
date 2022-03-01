@@ -1,11 +1,13 @@
 ﻿using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace redd096
 {
     #region editor property drawer
-#if UNITY_EDITOR
 
-    using UnityEditor;
+#if UNITY_EDITOR
 
     [CustomPropertyDrawer(typeof(DropdownTaskAttribute))]
     public class DropdownTaskDrawer : PropertyDrawer
@@ -18,69 +20,50 @@ namespace redd096
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
-            //add height to show readonly ref (if array, add height for every element + a space between elements)
-            return base.GetPropertyHeight(property, label) + (property.isArray ? property.arraySize * (heightRef + spaceBetweemElements) : heightRef + spaceBetweemElements);
+            //add height to show readonly ref + space for next element in array
+            return base.GetPropertyHeight(property, label) + heightRef + spaceBetweemElements);
         }
 
-        public override void OnGUI(Rect rect, SerializedProperty property, GUIContent label)
+        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            EditorGUI.BeginProperty(rect, label, property);
+            EditorGUI.BeginProperty(position, label, property);
 
             //get tasks
             GetTasks(property);
 
-            //show every array element
-            if (property.isArray)
-            {
-                //move down every element to create a column + set height removing space between elements of the array
-                float spaceBetween = rect.height / property.arraySize;
-                float heightSingleElement = rect.height / property.arraySize - (spaceBetweemElements * property.arraySize);
-
-                for (int i = 0; i < property.arraySize; i++)
-                {
-                    SetProperty(new Rect(rect.x, rect.y + spaceBetween * i, rect.width, heightSingleElement), property.GetArrayElementAtIndex(i));
-                }
-            }
-            //else show only a single element (if not array)
-            else
-            {
-                SetProperty(new Rect(rect.x, rect.y, rect.width, rect.height - spaceBetweemElements), property);
-            }
-
-            EditorGUI.EndProperty();
-        }
-
-        void SetProperty(Rect rect, SerializedProperty property)
-        {
             //show dropdown to select and set property
             if (possibleTasks != null && possibleTasks.Length > 0)
             {
                 //get current index
                 int selectedIndex = GetSelectedIndex(property);
 
-                selectedIndex = EditorGUI.Popup(new Rect(rect.x, rect.y, rect.width, rect.height - heightRef), selectedIndex, tasksNames);      //remove height, because will be used for readonly ref
+                selectedIndex = EditorGUI.Popup(new Rect(position.x, position.y, position.width, position.height - heightRef - spaceBetweemElements), selectedIndex, tasksNames);   //remove height, because will be used for readonly ref
                 property.objectReferenceValue = possibleTasks[selectedIndex];
             }
             //else show NONE and don't set anything
             else
             {
-                EditorGUI.Popup(new Rect(rect.x, rect.y, rect.width, rect.height - heightRef), 0, new string[1] { "NONE" });                    //remove height, because will be used for readonly ref
+                EditorGUI.Popup(new Rect(position.x, position.y, position.width, position.height - heightRef - spaceBetweemElements), 0, new string[1] { "NONE" });                 //remove height, because will be used for readonly ref
             }
 
             //show readonly reference
             GUI.enabled = false;
-            EditorGUI.PropertyField(new Rect(rect.x, rect.y + rect.height - heightRef, rect.width, heightRef), property);                       //move bottom (-height) and set height for readonly ref
+            EditorGUI.PropertyField(new Rect(position.x, position.y + position.height - heightRef - spaceBetweemElements, position.width, heightRef), property);                    //move bottom (-height) and set height for readonly ref
             GUI.enabled = true;
+
+            EditorGUI.EndProperty();
+
         }
 
         void GetTasks(SerializedProperty property)
         {
             //get owner of the property
             Component owner = property.serializedObject.targetObject as Component;
-            if (owner)
+            DropdownTaskAttribute at = attribute as DropdownTaskAttribute;
+            if (owner && at != null)
             {
                 //get tasks in children
-                Component[] components = owner.GetComponentsInChildren(((DropdownTaskAttribute)attribute).TaskType);
+                Component[] components = owner.GetComponentsInChildren(at.TaskType);
 
                 //set arrays for dropdown
                 if (components != null && components.Length > 0)
@@ -121,6 +104,7 @@ namespace redd096
     }
 
 #endif
+
     #endregion
 
     //attribute

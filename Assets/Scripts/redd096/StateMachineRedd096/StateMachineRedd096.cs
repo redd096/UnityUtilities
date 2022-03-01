@@ -32,6 +32,7 @@ namespace redd096
     {
         /*[ReorderableList]*/ public State[] States = default;
 
+        [Header("DEBUG")]
         /*[BoxGroup("DEBUG")]*/ [ReadOnly] public State CurrentState = default;
         /*[BoxGroup("DEBUG")]*/ [ReadOnly] [SerializeField] List<string> blackboardDebug = new List<string>();
 
