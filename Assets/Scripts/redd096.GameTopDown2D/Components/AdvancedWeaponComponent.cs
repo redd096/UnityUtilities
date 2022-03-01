@@ -56,7 +56,7 @@ namespace redd096.GameTopDown2D
         #endregion
 
         [Header("Ammo Limits and Default Ammos")]
-        [OnValueChanged("SetDefaultLimitAmmosFromEditorToDictionary")] [SerializeField] AmmoStruct[] defaultLimitAmmos = default;
+        [SerializeField] AmmoStruct[] defaultLimitAmmos = default;
         [SerializeField] List<AmmoStruct> defaultAmmos = new List<AmmoStruct>();
 
         [Header("DEBUG")]
