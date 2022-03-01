@@ -196,17 +196,15 @@ namespace redd096.Attributes
 	{
 		public readonly string valuesName;
 
-		/// <summary>
-		/// Show dropdown of values
-		/// </summary>
-		/// <param name="valuesName">Can be only a Method that return array or DropdownList</param>
 		public DropdownAttribute(string valuesName)
         {
 			this.valuesName = valuesName;
         }
 	}
 
-	public interface IDropdownList : IEnumerable<KeyValuePair<string, object>>
+    #region DropdownList
+
+    public interface IDropdownList : IEnumerable<KeyValuePair<string, object>>
 	{
 	}
 
@@ -245,4 +243,6 @@ namespace redd096.Attributes
 			return result;
 		}
 	}
+
+    #endregion
 }
