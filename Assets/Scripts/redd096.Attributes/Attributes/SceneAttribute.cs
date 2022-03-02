@@ -34,7 +34,7 @@ namespace redd096.Attributes
                 if (property.propertyType == SerializedPropertyType.Integer)
                     property.intValue = index;                
                 else if (property.propertyType == SerializedPropertyType.String)
-                    property.stringValue = scenes.Length > 0 ? scenes[index] : "";
+                    property.stringValue = index < scenes.Length ? GetSceneNameFromSceneList(scenes[index]) : "";
             }
             //else show warning
             else
@@ -53,13 +53,13 @@ namespace redd096.Attributes
             {
                 //only if enabled
                 if (EditorBuildSettings.scenes[i].enabled)
-                    scenesList.Add(GetSceneName(EditorBuildSettings.scenes[i].path));
+                    scenesList.Add(GetSceneNameFromPath(EditorBuildSettings.scenes[i].path) + " (" + scenesList.Count + ")");   //sceneName (index)
             }
 
             return scenesList.ToArray();
         }
 
-        string GetSceneName(string scenePath)
+        string GetSceneNameFromPath(string scenePath)
         {
             //path is Assets/ScenesFolder/SceneName.unity
             int slashIndex = scenePath.LastIndexOf('/');
@@ -70,6 +70,12 @@ namespace redd096.Attributes
                 return scenePath.Substring(slashIndex + 1, pointIndex - (slashIndex + 1));
 
             return "";
+        }
+
+        string GetSceneNameFromSceneList(string scene)
+        {
+            //sceneName (index) -> from 0 to the space between name and (index)
+            return scene.Substring(0, scene.LastIndexOf('(') - 1);
         }
 
         int GetCurrentIndex(SerializedProperty property)
@@ -84,7 +90,7 @@ namespace redd096.Attributes
             else if (property.propertyType == SerializedPropertyType.String)
             {
                 for (int i = 0; i < scenes.Length; i++)
-                    if (scenes[i] == property.stringValue)  //check scene name
+                    if (GetSceneNameFromSceneList(scenes[i]) == property.stringValue)       //check scene name
                         return i;
             }
 
