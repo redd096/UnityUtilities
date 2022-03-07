@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
-using System.Reflection;
 #if UNITY_EDITOR
+using System.Reflection;
 using UnityEditor;
 #endif
 
@@ -45,7 +45,7 @@ namespace redd096.Attributes
 		}
 
 		bool IsNumber(SerializedProperty property)
-        {
+		{
 			//be sure is int or float
 			return property != null && (property.propertyType == SerializedPropertyType.Integer || property.propertyType == SerializedPropertyType.Float);
 		}

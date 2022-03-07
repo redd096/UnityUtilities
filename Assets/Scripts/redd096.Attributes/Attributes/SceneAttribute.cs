@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 #if UNITY_EDITOR
+using System.Collections.Generic;
 using UnityEditor;
 #endif
 
@@ -32,7 +32,7 @@ namespace redd096.Attributes
 
                 //set int or string value
                 if (property.propertyType == SerializedPropertyType.Integer)
-                    property.intValue = index;                
+                    property.intValue = index;
                 else if (property.propertyType == SerializedPropertyType.String)
                     property.stringValue = index < scenes.Length ? GetSceneNameFromSceneList(scenes[index]) : "";
             }
