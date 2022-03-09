@@ -21,7 +21,7 @@ namespace redd096
             //set timeScale to 1
             Time.timeScale = 1;
 
-            //enable player input and hide cursor
+            //hide cursor
             if (changeCursorLockMode) LockMouse(lockModeOnResume);
         }
 
@@ -36,7 +36,7 @@ namespace redd096
             //stop time
             Time.timeScale = 0;
 
-            //disable player input and show cursor
+            //show cursor
             if (changeCursorLockMode) LockMouse(CursorLockMode.None);
         }
 
