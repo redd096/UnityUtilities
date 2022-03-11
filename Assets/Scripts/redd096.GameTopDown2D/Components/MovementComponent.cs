@@ -20,7 +20,7 @@ namespace redd096.GameTopDown2D
         [Tooltip("When player is pushed for example to the right, and hit a wall. Set Push to right at 0?")] [SerializeField] bool removePushForceWhenHit = true;
 
         [Header("Necessary Components (by default get from this gameObject)")]
-        [SerializeField] CollisionComponent collisionComponent = default;
+        [ShowIf("movementMode", EMovementModes.Transform)] [SerializeField] CollisionComponent collisionComponent = default;
         [ShowIf("movementMode", EMovementModes.Rigidbody)] [SerializeField] Rigidbody2D rb = default;
 
         [Header("DEBUG")]
@@ -29,7 +29,7 @@ namespace redd096.GameTopDown2D
         [ReadOnly] public Vector2 LastDesiredVelocity;          //when moves, set it as input direction * speed
         [ReadOnly] public Vector2 DesiredPushForce;             //used to push this object (push by recoil, knockback, dash, etc...), will be decreased by drag in every frame
         [ReadOnly] public Vector2 CurrentVelocity;              //velocity calculate for this frame
-        [ReadOnly] public float CurrentSpeed;                   //CurrentVelocity.magnitude
+        [ReadOnly] public float CurrentSpeed;                   //CurrentVelocity.magnitude or rigidbody.velocity.magnitude
 
         //events
         public System.Action<bool> onChangeMovementDirection { get; set; }
@@ -62,7 +62,7 @@ namespace redd096.GameTopDown2D
 
             //set velocity (input + push + check collisions)
             CurrentVelocity = CalculateVelocity();
-            CurrentSpeed = CurrentVelocity != Vector2.zero ? CurrentVelocity.magnitude : 0.0f;
+            CurrentSpeed = movementMode == EMovementModes.Transform ? (CurrentVelocity != Vector2.zero ? CurrentVelocity.magnitude : 0.0f) : (rb ? rb.velocity.magnitude : 0.0f);
 
             //set if change movement direction
             if (IsMovingRight != CheckIsMovingRight())
