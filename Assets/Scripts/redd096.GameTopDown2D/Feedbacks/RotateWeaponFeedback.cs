@@ -31,7 +31,7 @@ namespace redd096.GameTopDown2D
             if (weaponBASE && weaponBASE.Owner && weaponBASE.Owner.GetSavedComponent<AimComponent>())
             {
                 Vector2 aimDirection = weaponBASE.Owner.GetSavedComponent<AimComponent>().AimDirectionInput;
-                Quaternion rotation = Quaternion.LookRotation(Vector3.forward, Quaternion.AngleAxis(90, Vector3.forward) * aimDirection);
+                Quaternion rotation = Quaternion.LookRotation(Vector3.forward, Quaternion.AngleAxis(90, Vector3.forward) * aimDirection);   //Forward keep to Z axis. Up use X instead of Y (AngleAxis 90) and rotate to direction
 
                 //when rotate to opposite direction (from default), rotate 180 updown
                 if ((defaultLookRight && aimDirection.x < 0) || (defaultLookRight == false && aimDirection.x > 0))
