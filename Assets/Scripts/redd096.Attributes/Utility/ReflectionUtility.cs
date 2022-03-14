@@ -8,7 +8,7 @@ namespace redd096.Attributes
 {
 	public static class ReflectionUtility
 	{
-		#region return serialez property field
+		#region return serialized property field
 
 #if UNITY_EDITOR
 
