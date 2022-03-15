@@ -17,6 +17,7 @@ namespace redd096.Attributes
 		float maxValue;
 		string barLabel;
 		Color barColor;
+		bool canInteract;
 
 		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 		{
@@ -25,7 +26,7 @@ namespace redd096.Attributes
 			object maxValueObject = GetMaxValue(property, at);
 
 			//be sure property and maxValue are numbers
-			if (IsNumber(property) && maxValueObject != null && (maxValueObject is int || maxValueObject is float))
+			if (IsNumber(property) && IsNumber(maxValueObject))
 			{
 				//set values
 				value = property.propertyType == SerializedPropertyType.Integer ? property.intValue : property.floatValue;
@@ -34,6 +35,7 @@ namespace redd096.Attributes
 				string maxValueFormatted = maxValueObject is int ? maxValue.ToString() : string.Format("{0:0.00}", maxValue);
 				barLabel = (!string.IsNullOrEmpty(at.name) ? "[" + at.name + "] " : "") + valueFormatted + "/" + maxValueFormatted;
 				barColor = GetColor(at.color);
+				canInteract = at.canInteract;
 
 				//draw bar
 				DrawBar(property, position);
@@ -49,6 +51,11 @@ namespace redd096.Attributes
 			//be sure is int or float
 			return property != null && (property.propertyType == SerializedPropertyType.Integer || property.propertyType == SerializedPropertyType.Float);
 		}
+
+		bool IsNumber(object maxValueObject)
+        {
+			return maxValueObject != null && (maxValueObject is int || maxValueObject is float);
+        }
 
 		object GetMaxValue(SerializedProperty property, ProgressBarAttribute at)
 		{
@@ -164,11 +171,14 @@ namespace redd096.Attributes
 			EditorGUI.DropShadowLabel(labelRect, barLabel);
 
 			//draw invisible slider just to edit bar value
-			GUI.color = Color.clear;
-			if (property.propertyType == SerializedPropertyType.Integer)
-				property.intValue = Mathf.FloorToInt(GUI.HorizontalSlider(position, property.intValue, 0, maxValue));
-			else
-				property.floatValue = GUI.HorizontalSlider(position, property.floatValue, 0, maxValue);
+			if (canInteract)
+			{
+				GUI.color = Color.clear;
+				if (property.propertyType == SerializedPropertyType.Integer)
+					property.intValue = Mathf.FloorToInt(GUI.HorizontalSlider(position, property.intValue, 0, maxValue));
+				else
+					property.floatValue = GUI.HorizontalSlider(position, property.floatValue, 0, maxValue);
+			}
 
 			//reset color and alignment
 			GUI.contentColor = contentColor;
@@ -190,33 +200,38 @@ namespace redd096.Attributes
 		public readonly float maxValue;
 		public readonly string maxValueName;
 		public readonly EColor color;
+		public readonly bool canInteract;
 
-		public ProgressBarAttribute(string name, float maxValue, EColor color = EColor.Red)
+		public ProgressBarAttribute(string name, float maxValue, EColor color = EColor.Red, bool canInteract = true)
 		{
 			this.name = name;
 			this.maxValue = maxValue;
 			this.color = color;
+			this.canInteract = canInteract;
 		}
 
-		public ProgressBarAttribute(string name, string maxValueName, EColor color = EColor.Red)
+		public ProgressBarAttribute(string name, string maxValueName, EColor color = EColor.Red, bool canInteract = true)
 		{
 			this.name = name;
 			this.maxValueName = maxValueName;
 			this.color = color;
+			this.canInteract = canInteract;
 		}
 
-		public ProgressBarAttribute(float maxValue, EColor color = EColor.Red)
+		public ProgressBarAttribute(float maxValue, EColor color = EColor.Red, bool canInteract = true)
 		{
-			this.name = "";
+			this.name = string.Empty;
 			this.maxValue = maxValue;
 			this.color = color;
+			this.canInteract = canInteract;
 		}
 
-		public ProgressBarAttribute(string maxValueName, EColor color = EColor.Red)
+		public ProgressBarAttribute(string maxValueName, EColor color = EColor.Red, bool canInteract = true)
 		{
-			this.name = "";
+			this.name = string.Empty;
 			this.maxValueName = maxValueName;
 			this.color = color;
+			this.canInteract = canInteract;
 		}
 
 		public enum EColor
