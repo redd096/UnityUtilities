@@ -3,10 +3,10 @@ using UnityEngine.UI;
 
 namespace redd096
 {
-    [AddComponentMenu("redd096/MonoBehaviours/Scroll Rect With Slider")]
+    [AddComponentMenu("redd096/UI Control/Scroll Rect With Slider")]
     public class ScrollRectWithSlider : MonoBehaviour
     {
-        [Header("Important")]
+        [Header("UI Elements")]
         [SerializeField] ScrollRect scrollRect = default;
         [SerializeField] Slider verticalSlider = default;
         [SerializeField] Slider horizontalSlider = default;
@@ -16,16 +16,28 @@ namespace redd096
         [SerializeField] RectTransform viewport = default;
         [SerializeField] RectTransform content = default;
 
-        void Start()
+        void OnEnable()
         {
-            //set default positions
-            verticalSlider?.SetValueWithoutNotify(1 - scrollRect.verticalNormalizedPosition);
-            horizontalSlider?.SetValueWithoutNotify(1 - scrollRect.horizontalNormalizedPosition);
+            if (scrollRect == null)
+                Debug.LogWarning("Miss ScrollRect for ScrollRectWithSlider on " + name);
+            if (verticalSlider == null && horizontalSlider == null)
+                Debug.LogWarning("Miss Slider for ScrollRectWithSlider on " + name);
 
             //set events
-            scrollRect.onValueChanged.AddListener(OnScrollRectChanged);
-            verticalSlider?.onValueChanged.AddListener(OnVerticalSliderChanged);
-            horizontalSlider?.onValueChanged.AddListener(OnHorizontalSliderChanged);
+            if (scrollRect) scrollRect.onValueChanged.AddListener(OnScrollRectChanged);
+            if (verticalSlider) verticalSlider.onValueChanged.AddListener(OnVerticalSliderChanged);
+            if (horizontalSlider) horizontalSlider.onValueChanged.AddListener(OnHorizontalSliderChanged);
+
+            //set default positions
+            OnScrollRectChanged(scrollRect ? scrollRect.normalizedPosition : Vector2.zero);
+        }
+
+        void OnDisable()
+        {
+            //remove events
+            if (scrollRect) scrollRect.onValueChanged.RemoveListener(OnScrollRectChanged);
+            if (verticalSlider) verticalSlider.onValueChanged.RemoveListener(OnVerticalSliderChanged);
+            if (horizontalSlider) horizontalSlider.onValueChanged.RemoveListener(OnHorizontalSliderChanged);
         }
 
         void FixedUpdate()
@@ -36,14 +48,14 @@ namespace redd096
                 //hide if not necessary
                 if (content.rect.height <= viewport.rect.height)
                 {
-                    verticalSlider?.gameObject.SetActive(false);
-                    horizontalSlider?.gameObject.SetActive(false);
+                    if (verticalSlider) verticalSlider.gameObject.SetActive(false);
+                    if (horizontalSlider) horizontalSlider.gameObject.SetActive(false);
                 }
                 //else show
                 else
                 {
-                    verticalSlider?.gameObject.SetActive(true);
-                    horizontalSlider?.gameObject.SetActive(true);
+                    if (verticalSlider) verticalSlider.gameObject.SetActive(true);
+                    if (horizontalSlider) horizontalSlider.gameObject.SetActive(true);
                 }
             }
         }
@@ -58,8 +70,8 @@ namespace redd096
             //    Debug.Log($"scroll rect change: horizontal from {horizontalSlider.value} to {1 - scrollRect.horizontalNormalizedPosition}");
 
             //scrollRect go from 1 to 0, slider from 0 to 1
-            verticalSlider?.SetValueWithoutNotify(1 - scrollRect.verticalNormalizedPosition);
-            horizontalSlider?.SetValueWithoutNotify(1 - scrollRect.horizontalNormalizedPosition);
+            if (verticalSlider) verticalSlider?.SetValueWithoutNotify(1 - scrollRect.verticalNormalizedPosition);
+            if (horizontalSlider) horizontalSlider.SetValueWithoutNotify(1 - scrollRect.horizontalNormalizedPosition);
         }
 
         void OnVerticalSliderChanged(float value)
@@ -67,7 +79,7 @@ namespace redd096
             //Debug.Log($"vertical slider change: from {scrollRect.verticalNormalizedPosition} to {1 - verticalSlider.value}");
 
             //scrollRect go from 1 to 0, slider from 0 to 1
-            scrollRect.verticalNormalizedPosition = 1 - verticalSlider.value;
+            if (scrollRect) scrollRect.verticalNormalizedPosition = 1 - verticalSlider.value;
         }
 
         void OnHorizontalSliderChanged(float value)
@@ -75,7 +87,7 @@ namespace redd096
             //Debug.Log($"horizontal slider change: from {scrollRect.horizontalNormalizedPosition} to {1 - horizontalSlider.value}");
 
             //scrollRect go from 1 to 0, slider from 0 to 1
-            scrollRect.horizontalNormalizedPosition = 1 - horizontalSlider.value;
+            if (scrollRect) scrollRect.horizontalNormalizedPosition = 1 - horizontalSlider.value;
         }
     }
 }
