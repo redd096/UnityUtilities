@@ -78,6 +78,29 @@ namespace redd096
             {
                 instance.PlayBackgroundMusic(musicThisScene.audioClip, true, musicThisScene.volume, loopMusicThisScene);
             }
+
+            //if this is the instance, if miss some prefab, create it
+            if (instance == this)
+            {
+                if (musicPrefab == null)
+                {
+                    musicPrefab = new GameObject("Music Prefab", typeof(AudioSource)).GetComponent<AudioSource>();
+                    musicPrefab.transform.SetParent(transform);     //set child to not destroy when change scene
+                    musicPrefab.spatialBlend = 0.0f;                //set 2d sound
+                }
+                if (sound2DPrefab == null)
+                {
+                    sound2DPrefab = new GameObject("Sound 2D Prefab", typeof(AudioSource)).GetComponent<AudioSource>();
+                    sound2DPrefab.transform.SetParent(transform);   //set child to not destroy when change scene
+                    sound2DPrefab.spatialBlend = 0.0f;              //set 2d sound
+                }
+                if (sound3DPrefab == null)
+                {
+                    sound3DPrefab = new GameObject("Sound 3D Prefab", typeof(AudioSource)).GetComponent<AudioSource>();
+                    sound3DPrefab.transform.SetParent(transform);   //set child to not destroy when change scene
+                    sound3DPrefab.spatialBlend = 1.0f;              //set 3d sound
+                }
+            }
         }
 
         #region static Play
