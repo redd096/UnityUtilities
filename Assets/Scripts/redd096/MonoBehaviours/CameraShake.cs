@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+using redd096.Attributes;
 
 namespace redd096
 {
@@ -102,4 +103,26 @@ namespace redd096
 
 		#endregion
 	}
+
+	[System.Serializable]
+	public struct CameraShakeStruct
+	{
+		public bool DoShake;
+		[EnableIf("DoShake")] public bool CustomShake;
+		[EnableIf("DoShake", "CustomShake")] public float ShakeDuration;
+		[EnableIf("DoShake", "CustomShake")] public float ShakeAmount;
+
+        public void TryShake()
+        {
+            //camera shake
+            if (DoShake && CameraShake.instance)
+            {
+                //custom or default
+                if (CustomShake)
+					CameraShake.instance.StartShake(ShakeDuration, ShakeAmount);
+                else
+					CameraShake.instance.StartShake();
+            }
+        }
+    }
 }
