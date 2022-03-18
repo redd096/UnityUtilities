@@ -157,8 +157,10 @@ namespace redd096
 			if (currentShakes.ContainsKey(customObjectsToShake) == false || overwriteShake)
 			{
 				//start or restart shake coroutine
-				if (currentShakes.ContainsKey(customObjectsToShake))
+				if (currentShakes.ContainsKey(customObjectsToShake) && currentShakes[customObjectsToShake] != null)
+				{
 					owner.StopCoroutine(currentShakes[customObjectsToShake]);
+				}
 
 				currentShakes[customObjectsToShake] = owner.StartCoroutine(ShakeCoroutine(customObjectsToShake, duration, amount));
 			}
