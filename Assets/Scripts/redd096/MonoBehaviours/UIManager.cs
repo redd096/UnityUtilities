@@ -9,7 +9,7 @@ namespace redd096
     public class UIManager : MonoBehaviour
     {
         [Header("Menu")]
-        [SerializeField] float delayInputWhenOpenMenu = 0.3f;
+        [Min(0)] [SerializeField] float delayInputWhenOpenMenu = 0.3f;
         [SerializeField] GameObject pauseMenu = default;
         [SerializeField] GameObject endMenu = default;
 
@@ -35,7 +35,7 @@ namespace redd096
                 return;
 
             //when active menu, deactive event system for a little time
-            if (active)
+            if (active && delayInputWhenOpenMenu > Mathf.Epsilon)
             {
                 if (eventSystem) eventSystem.enabled = false;
 
