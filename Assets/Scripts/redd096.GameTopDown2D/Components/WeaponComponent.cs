@@ -79,17 +79,11 @@ namespace redd096.GameTopDown2D
             //instantiate and equip default weapons
             if (weaponsPrefabs != null && weaponsPrefabs.Length > 0)
             {
-                WeaponBASE instantiatedWeapon;
                 for (int i = 0; i < CurrentWeapons.Length; i++)
                 {
                     if (i < weaponsPrefabs.Length)
                     {
-                        if (weaponsPrefabs[i])
-                        {
-                            instantiatedWeapon = Instantiate(weaponsPrefabs[i]);
-                            instantiatedWeapon.WeaponPrefab = weaponsPrefabs[i];
-                            PickWeapon(instantiatedWeapon);
-                        }
+                        PickWeaponPrefab(weaponsPrefabs[i]);
                     }
                     else
                         break;
@@ -182,6 +176,22 @@ namespace redd096.GameTopDown2D
         #endregion
 
         #region public API
+
+        public void PickWeaponPrefab(WeaponBASE prefab, bool selectIndex = false, int index = 0)
+        {
+            if (prefab)
+            {
+                //instantiate prefab and save prefab in weapon instance
+                WeaponBASE instantiatedWeapon = Instantiate(prefab);
+                instantiatedWeapon.WeaponPrefab = prefab;
+
+                //pick
+                if (selectIndex)
+                    PickWeapon(instantiatedWeapon, index);
+                else
+                    PickWeapon(instantiatedWeapon);
+            }
+        }
 
         /// <summary>
         /// Pick Weapon and set at index
