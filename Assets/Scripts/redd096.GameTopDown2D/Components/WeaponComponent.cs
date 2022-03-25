@@ -370,6 +370,23 @@ namespace redd096.GameTopDown2D
             }
         }
 
+        /// <summary>
+        /// Return if every slot in array contain a weapon
+        /// </summary>
+        /// <returns></returns>
+        public bool IsFull()
+        {
+            //return false if there a slot empty
+            foreach (WeaponBASE weapon in CurrentWeapons)
+            {
+                if (weapon == null)
+                    return false;
+            }
+
+            //else return true
+            return true;
+        }
+
         #endregion
     }
 }
