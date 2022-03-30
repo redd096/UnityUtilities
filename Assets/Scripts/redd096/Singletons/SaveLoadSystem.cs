@@ -134,6 +134,46 @@ namespace redd096
         }
 
         /// <summary>
+        /// Save class in directory/key.json
+        /// </summary>
+        /// <param name="key">Name of the file</param>
+        /// <param name="value">Value to save</param>
+        public static void Save(string key, object value)
+        {
+            //if there is no directory, create it
+            if (Directory.Exists(SaveLoadSystem.instance.PathDirectory) == false)
+            {
+                Directory.CreateDirectory(SaveLoadSystem.instance.PathDirectory);
+            }
+
+            //value to json, then save file
+            string jsonValue = JsonUtility.ToJson(value);
+            File.WriteAllText(GetPathFile(key), jsonValue);
+        }
+
+        /// <summary>
+        /// Load class from directory/key.json
+        /// </summary>
+        /// <param name="key">name of the file</param>
+        /// <param name="type">type of the value to load</param>
+        /// <returns></returns>
+        public static object Load(string key, System.Type type)
+        {
+            //if there is no file, return null
+            if (File.Exists(GetPathFile(key)) == false)
+            {
+                if (SaveLoadSystem.instance.ShowDebug)
+                    Debug.Log("Save file not found: " + GetPathFile(key));
+
+                return null;
+            }
+
+            //load file, then json to value
+            string jsonValue = File.ReadAllText(GetPathFile(key));
+            return JsonUtility.FromJson(jsonValue, type);
+        }
+
+        /// <summary>
         /// Delete a file
         /// </summary>
         /// <param name="key">Name of the file</param>
