@@ -273,6 +273,54 @@ namespace redd096
         }
 
         /// <summary>
+        /// Save class in directory/key.bin
+        /// </summary>
+        /// <param name="key">Name of the file</param>
+        /// <param name="value">Value to save</param>
+        public static void Save(string key, object value)
+        {
+            //if there is no directory, create it
+            if (Directory.Exists(SaveLoadSystem.instance.PathDirectory) == false)
+            {
+                Directory.CreateDirectory(SaveLoadSystem.instance.PathDirectory);
+            }
+
+            //create stream at file position
+            BinaryFormatter formatter = new BinaryFormatter();
+            FileStream stream = new FileStream(GetPathFile(key), FileMode.Create);
+
+            //then save value to file position, and close stream
+            formatter.Serialize(stream, value);
+            stream.Close();
+        }
+
+        /// <summary>
+        /// Load class from directory/key.bin
+        /// </summary>
+        /// <param name="key">name of the file</param>
+        public static object Load(string key)
+        {
+            //if there is no file, return null
+            if (File.Exists(GetPathFile(key)) == false)
+            {
+                if (SaveLoadSystem.instance.ShowDebug)
+                    Debug.Log("Save file not found: " + GetPathFile(key));
+
+                return null;
+            }
+
+            //create stream at file position
+            BinaryFormatter formatter = new BinaryFormatter();
+            FileStream stream = new FileStream(GetPathFile(key), FileMode.Open);
+
+            //then load from file position as value, and close stream
+            object value = formatter.Deserialize(stream);
+            stream.Close();
+
+            return value;
+        }
+
+        /// <summary>
         /// Delete a file
         /// </summary>
         /// <param name="key">Name of the file</param>
