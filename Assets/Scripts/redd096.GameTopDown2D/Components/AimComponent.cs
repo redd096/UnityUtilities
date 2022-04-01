@@ -8,9 +8,9 @@ namespace redd096.GameTopDown2D
     {
         [Header("DEBUG")]
         [SerializeField] bool drawDebug = false;
-        [ReadOnly] public bool IsLookingRight = true;           //check if looking right
-        [ReadOnly] public Vector2 AimDirectionInput;            //when aim, set it with only direction (used to know where this object is aiming)
-        [ReadOnly] public Vector2 AimPositionNotNormalized;     //when aim, set it without normalize (used to set crosshair on screen - to know mouse position or analog inclination)
+        [ReadOnly] public bool IsLookingRight = true;                           //check if looking right
+        [ReadOnly] public Vector2 AimDirectionInput = Vector2.right;            //when aim, set it with only direction (used to know where this object is aiming)
+        [ReadOnly] public Vector2 AimPositionNotNormalized = Vector2.right;     //when aim, set it without normalize (used to set crosshair on screen - to know mouse position or analog inclination)
 
         //events
         public System.Action<bool> onChangeAimDirection { get; set; }
