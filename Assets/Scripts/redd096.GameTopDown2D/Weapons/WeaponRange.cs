@@ -114,6 +114,10 @@ namespace redd096.GameTopDown2D
                 //if there are not enough ammos, fail shoot
                 if (Owner.GetSavedComponent<AdvancedWeaponComponent>().GetCurrentAmmo(AmmoType) <= 0)
                 {
+                    //stop coroutine if automatic - when take ammo release and repress to shoot
+                    if (automaticShootCoroutine != null)
+                        StopCoroutine(automaticShootCoroutine);
+
                     onFailShoot?.Invoke();
                     return;
                 }
