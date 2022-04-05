@@ -82,7 +82,30 @@ namespace redd096
             }
 
             //call event
-            onSetState?.Invoke(CurrentState != null ? CurrentState.StateName : "");
+            onSetState?.Invoke(CurrentState != null ? CurrentState.StateName : string.Empty);
+        }
+
+        /// <summary>
+        /// Exit from previous state and enter in new one
+        /// </summary>
+        /// <param name="nextState"></param>
+        public void SetState(string nextState)
+        {
+            if (States != null)
+            {
+                //find state name and set it
+                for (int i = 0; i < States.Length; i++)
+                {
+                    if (nextState.Equals(States[i].StateName))//, System.StringComparison.Ordinal)
+                    {
+                        SetState(i);
+                        return;
+                    }
+                }
+            }
+
+            //else set null as state
+            SetState(-1);
         }
 
         #region private API
@@ -191,6 +214,19 @@ namespace redd096
                     }
                 }
             }
+        }
+
+        #endregion
+
+        #region public API
+
+        /// <summary>
+        /// Get current state name. If state is null, return empty string
+        /// </summary>
+        /// <returns></returns>
+        public string GetCurrentState()
+        {
+            return CurrentState != null ? CurrentState.StateName : string.Empty;
         }
 
         #endregion
