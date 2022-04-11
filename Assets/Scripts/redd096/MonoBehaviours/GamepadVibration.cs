@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+using redd096.Attributes;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
@@ -74,5 +75,28 @@ namespace redd096
 		}
 
 		#endregion
+	}
+
+	[System.Serializable]
+	public struct GamepadVibrationStruct
+	{
+		public bool DoVibration;
+		[EnableIf("DoVibration")] public bool CustomVibration;
+		[EnableIf("DoVibration", "CustomVibration")] public float VibrationDuration;
+		[EnableIf("DoVibration", "CustomVibration")] public float LowFrequency;
+		[EnableIf("DoVibration", "CustomVibration")] public float HighFrequency;
+
+		public void TryVibration()
+		{
+			//gamepad vibration
+			if (DoVibration && GamepadVibration.instance)
+			{
+				//custom or default
+				if (CustomVibration)
+					GamepadVibration.instance.StartVibration(VibrationDuration, LowFrequency, HighFrequency);
+				else
+					GamepadVibration.instance.StartVibration();
+			}
+		}
 	}
 }
