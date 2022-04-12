@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
-//using NaughtyAttributes;
 using redd096.Attributes;
 
 namespace redd096.GameTopDown2D
@@ -74,11 +73,22 @@ namespace redd096.GameTopDown2D
 
         #region private API
 
-        void OnGetDamage()
+        void OnGetDamage(Vector2 hitPoint)
         {
+            //rotation (to spawn using hit direction, for example to splurt blood on the floor)
+            Vector2 direction = ((Vector2)transform.position - hitPoint).normalized;
+            Quaternion rotation = Quaternion.LookRotation(Vector3.forward, Quaternion.AngleAxis(90, Vector3.forward) * direction);   //Forward keep to Z axis. Up use X instead of Y (AngleAxis 90) and rotate to direction
+
+            //when rotate to opposite direction (from default), rotate 180 updown
+            if (direction.x < 0)
+            {
+                rotation *= Quaternion.AngleAxis(180, Vector3.right);
+            }
+
+
             //instantiate vfx and sfx
-            InstantiateGameObjectManager.instance.Play(gameObjectOnGetDamage, transform.position, transform.rotation);
-            ParticlesManager.instance.Play(particlesOnGetDamage, transform.position, transform.rotation);
+            InstantiateGameObjectManager.instance.Play(gameObjectOnGetDamage, transform.position, rotation);
+            ParticlesManager.instance.Play(particlesOnGetDamage, transform.position, rotation);
             SoundManager.instance.Play(audioOnGetDamage, transform.position);
 
             //blink

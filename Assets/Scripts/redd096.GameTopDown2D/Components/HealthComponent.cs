@@ -18,9 +18,10 @@ namespace redd096.GameTopDown2D
         /*[ShowNonSerializedField]*/ [ReadOnly] bool alreadyDead = false;
 
         //events
-        public System.Action onGetDamage { get; set; }
+        public System.Action<Vector2> onGetDamage { get; set; }
         public System.Action<HealthComponent> onDie { get; set; }
         public System.Action onGetHealth { get; set; }
+        public System.Action onChangeHealth { get; set; }
 
         Character ownerCharacter;
         Shield shield;
@@ -66,9 +67,12 @@ namespace redd096.GameTopDown2D
             if (Invincible == false)
                 CurrentHealth -= damage;
 
-            //call event only if damage is > 0
+            //call events only if damage is > 0
             if (damage > Mathf.Epsilon)
-                onGetDamage?.Invoke();
+            {
+                onGetDamage?.Invoke(hitPoint);
+                onChangeHealth?.Invoke();
+            }
 
             //check if dead
             if (CurrentHealth <= 0)
@@ -111,8 +115,9 @@ namespace redd096.GameTopDown2D
             if (clampMaxHealth && CurrentHealth > MaxHealth)
                 CurrentHealth = MaxHealth;
 
-            //call event
+            //call events
             onGetHealth?.Invoke();
+            onChangeHealth?.Invoke();
         }
 
         #region private API
