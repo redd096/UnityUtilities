@@ -30,7 +30,7 @@ namespace redd096.GameTopDown2D
 
             //set prediction above health (to render it behind)
             if (healthImage && predictionImage)
-                predictionImage.transform.SetSiblingIndex(healthImage.transform.GetSiblingIndex());
+                predictionImage.transform.SetSiblingIndex(healthImage.transform.GetSiblingIndex() - 1);
 
             //add events
             if (healthComponent)
