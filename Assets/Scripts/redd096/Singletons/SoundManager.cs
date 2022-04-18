@@ -100,8 +100,73 @@ namespace redd096
                     sound3DPrefab.transform.SetParent(transform);   //set child to not destroy when change scene
                     sound3DPrefab.spatialBlend = 1.0f;              //set 3d sound
                 }
+
+                //set also fade in and fade out, if not setted
+                if (fadeInMusic.keys.Length <= 0)
+                    fadeInMusic.keys = new Keyframe[2] { new Keyframe(0, 0), new Keyframe(1, 1) };
+                if (fadeOutMusic.keys.Length <= 0)
+                    fadeOutMusic.keys = new Keyframe[2] { new Keyframe(0, 1), new Keyframe(1, 0) };
             }
         }
+
+        #region utilities
+
+        public IEnumerator DeactiveSoundAtPointCoroutine(AudioSource audioToDeactivate)
+        {
+            //wait to end the clip
+            if (audioToDeactivate)
+                yield return new WaitForSeconds(audioToDeactivate.clip.length);
+
+            //and deactive
+            if (audioToDeactivate)
+                audioToDeactivate.gameObject.SetActive(false);
+        }
+
+        public IEnumerator FadeAudioCoroutine(AudioSource audioSource, AudioClip clip, AnimationCurve fadeIn, AnimationCurve fadeOut, float volume = 1, bool loop = false)
+        {
+            //if playing, do fade out (only if there is an animation curve and volume is not already at 0)
+            if (audioSource.isPlaying && fadeOut != null && fadeOut.keys.Length > 0 && audioSource.volume > 0)
+            {
+                yield return FadeCoroutine(audioSource, audioSource.volume, fadeOut);
+            }
+
+            //set new clip, volume and loop - then be sure to play
+            audioSource.clip = clip;
+            audioSource.volume = fadeIn.keys.Length > 0 ? 0 : volume;       //if there is animation curve, set volume at 0, else set necessary volume
+            audioSource.loop = loop;
+            audioSource.Play();
+
+            //start fade in (only if there is an animation curve)
+            if (fadeIn != null && fadeIn.keys.Length > 0)
+            {
+                yield return FadeCoroutine(audioSource, volume, fadeIn);
+            }
+        }
+
+        public IEnumerator FadeCoroutine(AudioSource audioSource, float volume, AnimationCurve fadeCurve)
+        {
+            //if there is no curve, set immediatly sound and stop coroutine
+            if (fadeCurve == null || fadeCurve.keys.Length <= 0)
+            {
+                audioSource.volume = volume;
+                yield break;
+            }
+
+            float currentTime = 0;
+
+            //do fade
+            while (currentTime < fadeCurve.keys[fadeCurve.length - 1].time)
+            {
+                currentTime += Time.deltaTime;
+
+                //set volume using animation curve
+                audioSource.volume = Mathf.Lerp(0, volume, fadeCurve.Evaluate(currentTime));
+
+                yield return null;
+            }
+        }
+
+        #endregion
 
         #region static Play
 
@@ -153,50 +218,6 @@ namespace redd096
 
                 //start coroutine
                 instance.coroutines.Add(audioSource, instance.StartCoroutine(instance.FadeAudioCoroutine(audioSource, clip, fadeIn, fadeOut, volume, loop)));
-            }
-        }
-
-        public IEnumerator FadeAudioCoroutine(AudioSource audioSource, AudioClip clip, AnimationCurve fadeIn, AnimationCurve fadeOut, float volume = 1, bool loop = false)
-        {
-            //if playing, do fade out (only if there is an animation curve and volume is not already at 0)
-            if (audioSource.isPlaying && fadeOut != null && fadeOut.keys.Length > 0 && audioSource.volume > 0)
-            {
-                yield return FadeCoroutine(audioSource, audioSource.volume, fadeOut);
-            }
-
-            //set new clip, volume and loop - then be sure to play
-            audioSource.clip = clip;
-            audioSource.volume = fadeIn.keys.Length > 0 ? 0 : volume;       //if there is animation curve, set volume at 0, else set necessary volume
-            audioSource.loop = loop;
-            audioSource.Play();
-
-            //start fade in (only if there is an animation curve)
-            if (fadeIn != null && fadeIn.keys.Length > 0)
-            {
-                yield return FadeCoroutine(audioSource, volume, fadeIn);
-            }
-        }
-
-        public IEnumerator FadeCoroutine(AudioSource audioSource, float volume, AnimationCurve fadeCurve)
-        {
-            //if there is no curve, set immediatly sound and stop coroutine
-            if (fadeCurve == null || fadeCurve.keys.Length <= 0)
-            {
-                audioSource.volume = volume;
-                yield break;
-            }
-
-            float currentTime = 0;
-
-            //do fade
-            while (currentTime < fadeCurve.keys[fadeCurve.length - 1].time)
-            {
-                currentTime += Time.deltaTime;
-
-                //set volume using animation curve
-                audioSource.volume = Mathf.Lerp(0, volume, fadeCurve.Evaluate(currentTime));
-
-                yield return null;
             }
         }
 
@@ -367,17 +388,6 @@ namespace redd096
             }
 
             return null;
-        }
-
-        public IEnumerator DeactiveSoundAtPointCoroutine(AudioSource audioToDeactivate)
-        {
-            //wait to end the clip
-            if (audioToDeactivate)
-                yield return new WaitForSeconds(audioToDeactivate.clip.length);
-
-            //and deactive
-            if (audioToDeactivate)
-                audioToDeactivate.gameObject.SetActive(false);
         }
 
         #endregion
