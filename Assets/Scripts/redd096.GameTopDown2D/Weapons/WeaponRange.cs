@@ -7,11 +7,17 @@ namespace redd096.GameTopDown2D
     [AddComponentMenu("redd096/.GameTopDown2D/Weapons/Weapon Range")]
     public class WeaponRange : WeaponBASE
     {
+        public enum EFireMode { SemiAutomatic, Automatic, Burst }
+
         [Header("Range Weapon")]
-        [Tooltip("Keep pressed or click?")] public bool Automatic = true;
+        [Tooltip("Keep pressed or click?")] public EFireMode FireMode = EFireMode.SemiAutomatic;
         [Tooltip("Delay between shots")] public float RateOfFire = 0.2f;
         [Tooltip("Push back when shoot")] public float Recoil = 1;
         [Tooltip("Rotate random the shot when instantiated")] public float NoiseAccuracy = 10;
+
+        [Header("Burst Fire")]
+        [EnableIf("FireMode", EFireMode.Burst)] [Tooltip("Number of shots to shoot at every click")] [Min(1)] public int NumberOfShots = 3;
+        [EnableIf("FireMode", EFireMode.Burst)] [Tooltip("Delay between shots")] public float DelayBetweenShots = 0.1f;
 
         [Header("Barrel")]
         [Tooltip("Spawn bullets")] public Transform[] Barrels = default;
@@ -25,13 +31,15 @@ namespace redd096.GameTopDown2D
         [Header("Ammo - NONE = always full")]
         [Dropdown("GetAllAmmoTypes")] public string AmmoType = "NONE";
         [Tooltip("When pick this weapon for the first time, pick also ammo")] public int AmmoOnPick = 12;
+        [ShowAssetPreview] public Sprite AmmoSprite = default;
 
         [Header("DEBUG")]
         [SerializeField] bool drawDebug = false;
 
         //private
-        float timeForNextShot;
+        float timeForNextShoot;
         Coroutine automaticShootCoroutine;
+        Coroutine burstShootCoroutine;
 
         //bullets
         Pooling<Bullet> bulletsPooling = new Pooling<Bullet>();
@@ -39,11 +47,12 @@ namespace redd096.GameTopDown2D
         Transform BulletsParent { get { if (_bulletsParent == null) _bulletsParent = new GameObject(name + "'s Bullets Parent").transform; return _bulletsParent; } }
 
         //events
-        public System.Action<Transform> onInstantiateBullet { get; set; }
-        public System.Action onShoot { get; set; }
-        public System.Action onFailShoot { get; set; }
-        public System.Action onPressAttack { get; set; }
-        public System.Action onReleaseAttack { get; set; }
+        public System.Action<Transform> onInstantiateBullet { get; set; }       //called for every bullet instantiated
+        public System.Action onShoot { get; set; }                              //called one time for shoot, also if instantiate more bullets
+        public System.Action onLastShotBurst { get; set; }                      //called when shoot last shot of a burst (for FireMode == Burst), also if there are is only one ammo
+        public System.Action onFailShoot { get; set; }                          //called when fail to shoot, for example when there are no ammo
+        public System.Action onPressAttack { get; set; }                        //called when press attack, also if not shoot or shoot more times
+        public System.Action onReleaseAttack { get; set; }                      //called when release attack
 
 #if UNITY_EDITOR
 
@@ -72,18 +81,25 @@ namespace redd096.GameTopDown2D
         public override void PressAttack()
         {
             //check rate of fire
-            if (Time.time > timeForNextShot)
+            if (Time.time > timeForNextShoot)
             {
                 //shoot
-                Shoot();
-
-                //start coroutine if automatic
-                if (Automatic)
+                if (Shoot())
                 {
-                    if (automaticShootCoroutine != null)
-                        StopCoroutine(automaticShootCoroutine);
+                    //start coroutine if automatic
+                    if (FireMode == EFireMode.Automatic)
+                    {
+                        if (automaticShootCoroutine != null)
+                            StopCoroutine(automaticShootCoroutine);
 
-                    automaticShootCoroutine = StartCoroutine(AutomaticShootCoroutine());
+                        automaticShootCoroutine = StartCoroutine(AutomaticShootCoroutine());
+                    }
+                    //or burst coroutine if burst mode
+                    else if (FireMode == EFireMode.Burst)
+                    {
+                        if (burstShootCoroutine == null)
+                            burstShootCoroutine = StartCoroutine(BurstShootCoroutine());
+                    }
                 }
 
                 //call event
@@ -106,7 +122,7 @@ namespace redd096.GameTopDown2D
         /// <summary>
         /// Create bullet from every barrel or one random barrel
         /// </summary>
-        void Shoot()
+        bool Shoot()
         {
             //if this weapon need ammos
             if (AmmoType != "NONE" && Owner && Owner.GetSavedComponent<AdvancedWeaponComponent>())
@@ -119,7 +135,7 @@ namespace redd096.GameTopDown2D
                         StopCoroutine(automaticShootCoroutine);
 
                     onFailShoot?.Invoke();
-                    return;
+                    return false;
                 }
                 //else remove ammos
                 else
@@ -129,7 +145,7 @@ namespace redd096.GameTopDown2D
             }
 
             //update rate of fire
-            timeForNextShot = Time.time + RateOfFire;
+            timeForNextShoot = Time.time + RateOfFire;
 
             //shoot every bullet
             if (BarrelSimultaneously)
@@ -151,6 +167,7 @@ namespace redd096.GameTopDown2D
 
             //call event
             onShoot?.Invoke();
+            return true;
         }
 
         /// <summary>
@@ -195,7 +212,7 @@ namespace redd096.GameTopDown2D
                     break;
 
                 //check rate of fire
-                if (Time.time > timeForNextShot)
+                if (Time.time > timeForNextShoot)
                 {
                     //shoot
                     Shoot();
@@ -203,6 +220,40 @@ namespace redd096.GameTopDown2D
 
                 yield return null;
             }
+        }
+
+        /// <summary>
+        /// Shot every bullet in the burst
+        /// </summary>
+        /// <returns></returns>
+        IEnumerator BurstShootCoroutine()
+        {
+            //number of shots for this burst, minus one because is already shooted
+            int shotsToShoot = NumberOfShots - 1;
+            float timeNextShotInTheBurst = Time.time + DelayBetweenShots;   //don't use rate of fire, but delay between shots of this burst (set here because first one is already shooted)
+
+            while (shotsToShoot > 0)
+            {
+                //stop if lose owner
+                if (Owner == null)
+                    break;
+
+                //check time between shots
+                if (Time.time > timeNextShotInTheBurst)
+                {
+                    //shoot
+                    Shoot();
+                    timeNextShotInTheBurst = Time.time + DelayBetweenShots;     //set delay
+                    shotsToShoot--;                                             //decrease counter
+                }
+
+                yield return null;
+            }
+
+            //when shoot last shot of a burst
+            onLastShotBurst?.Invoke();
+
+            burstShootCoroutine = null;
         }
 
         #endregion
