@@ -17,6 +17,10 @@ namespace redd096.GameTopDown2D
         [Header("Friendly Fire")]
         [Range(0f, 1f)] [SerializeField] float percentageDamageWhenHitFromFriend = 0.25f;
 
+        [Header("Destroy object when dead")]
+        [SerializeField] bool destroyOnDie = true;
+        [EnableIf("destroyOnDie")] [SerializeField] float timeBeforeDestroy = 0;
+
         [Header("DEBUG")]
         [ProgressBar("Health", "MaxHealth", ProgressBarAttribute.EColor.SmoothGreen)] public float CurrentHealth = 100;
         /*[ShowNonSerializedField]*/ public bool IsCurrentlyInvincible => Invincible || Time.time < tempInvincibleTime;
@@ -106,8 +110,11 @@ namespace redd096.GameTopDown2D
             //call event
             onDie?.Invoke(this);
 
-            //destroy object
-            Destroy(gameObject);
+            //destroy object (if necessary)
+            if (destroyOnDie)
+            {
+                Destroy(gameObject, timeBeforeDestroy);
+            }
         }
 
         /// <summary>
