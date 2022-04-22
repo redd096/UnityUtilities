@@ -80,31 +80,32 @@ namespace redd096.GameTopDown2D
 
         public override void PressAttack()
         {
-            //check rate of fire
-            if (Time.time > timeForNextShoot)
+            //check rate of fire (and is not doing a burst shoot)
+            if (Time.time > timeForNextShoot && burstShootCoroutine == null)
             {
                 //shoot
                 if (Shoot())
                 {
-                    //start coroutine if automatic
-                    if (FireMode == EFireMode.Automatic)
-                    {
-                        if (automaticShootCoroutine != null)
-                            StopCoroutine(automaticShootCoroutine);
-
-                        automaticShootCoroutine = StartCoroutine(AutomaticShootCoroutine());
-                    }
-                    //or burst coroutine if burst mode
-                    else if (FireMode == EFireMode.Burst)
+                    //if burst mode and first shoot worked, start burst coroutine
+                    if (FireMode == EFireMode.Burst)
                     {
                         if (burstShootCoroutine == null)
                             burstShootCoroutine = StartCoroutine(BurstShootCoroutine());
                     }
                 }
-
-                //call event
-                onPressAttack?.Invoke();
             }
+
+            //start coroutine if automatic
+            if (FireMode == EFireMode.Automatic)
+            {
+                if (automaticShootCoroutine != null)
+                    StopCoroutine(automaticShootCoroutine);
+
+                automaticShootCoroutine = StartCoroutine(AutomaticShootCoroutine());
+            }
+
+            //call event
+            onPressAttack?.Invoke();
         }
 
         public override void ReleaseAttack()
@@ -242,9 +243,16 @@ namespace redd096.GameTopDown2D
                 if (Time.time > timeNextShotInTheBurst)
                 {
                     //shoot
-                    Shoot();
-                    timeNextShotInTheBurst = Time.time + DelayBetweenShots;     //set delay
-                    shotsToShoot--;                                             //decrease counter
+                    if (Shoot())
+                    {
+                        timeNextShotInTheBurst = Time.time + DelayBetweenShots;     //set delay
+                        shotsToShoot--;                                             //decrease counter
+                    }
+                    //break if can't shoot (eg. when no ammo)
+                    else
+                    {
+                        break;
+                    }
                 }
 
                 yield return null;
