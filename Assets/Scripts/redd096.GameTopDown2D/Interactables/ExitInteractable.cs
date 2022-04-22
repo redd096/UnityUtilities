@@ -113,6 +113,7 @@ namespace redd096.GameTopDown2D
                 //stop this script
                 DeactiveExit();     //stop check open/close
                 isOpen = false;     //can't interact anymore
+                enabled = false;    //to be sure
 
                 //call event
                 onInteract?.Invoke(this);
