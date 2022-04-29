@@ -45,8 +45,8 @@ namespace redd096.GameTopDown2D
             //get references
             owner = GetComponent<Character>();
 
-            //instantiate default weapons, only if this is not a Player or weapons are not saved in game manager
-            //if (owner == null || owner.CharacterType != Character.ECharacterType.Player || GameManager.instance == null || GameManager.instance.HasStatsSaved() == false)
+            //instantiate default weapons, only if this is not a Player or weapons are not saved in saves manager
+            //if (owner == null || owner.CharacterType != Character.ECharacterType.Player || SavesManager.CanLoadDefaultWeapons())
                 SetDefaultWeapons();
         }
 
@@ -343,31 +343,47 @@ namespace redd096.GameTopDown2D
                     newIndex = CurrentWeapons.Length - 1;
 
                 //if found weapon not null, set it
-                if (newIndex < CurrentWeapons.Length)
+                if (SwitchWeaponTo(newIndex))
                 {
-                    if (CurrentWeapons[newIndex])
-                    {
-                        //deactive previous weapon
-                        if (IndexEquippedWeapon < CurrentWeapons.Length && CurrentWeapons[IndexEquippedWeapon])
-                        {
-                            CurrentWeapons[IndexEquippedWeapon].gameObject.SetActive(false);
-                            CurrentWeapons[IndexEquippedWeapon].UnequipWeapon();
-                        }
-
-                        //and active new one
-                        CurrentWeapons[newIndex].transform.position = transform.position;
-                        CurrentWeapons[newIndex].gameObject.SetActive(true);
-                        CurrentWeapons[newIndex].EquipWeapon();
-
-                        IndexEquippedWeapon = newIndex;
-
-                        //call events
-                        onSwitchWeapon?.Invoke();
-                        onChangeWeapon?.Invoke();
-                        break;
-                    }
+                    break;
                 }
             }
+        }
+
+        /// <summary>
+        /// Switch to weapon at index
+        /// </summary>
+        /// <param name="index"></param>
+        public bool SwitchWeaponTo(int index)
+        {
+            if (CurrentWeapons == null || CurrentWeapons.Length <= 0)
+                return false;
+
+            //if found weapon not null, set it
+            if (index < CurrentWeapons.Length && CurrentWeapons[index])
+            {
+                //deactive previous weapon
+                if (IndexEquippedWeapon < CurrentWeapons.Length && CurrentWeapons[IndexEquippedWeapon])
+                {
+                    CurrentWeapons[IndexEquippedWeapon].gameObject.SetActive(false);
+                    CurrentWeapons[IndexEquippedWeapon].UnequipWeapon();
+                }
+
+                //and active new one
+                CurrentWeapons[index].transform.position = transform.position;
+                CurrentWeapons[index].gameObject.SetActive(true);
+                CurrentWeapons[index].EquipWeapon();
+
+                IndexEquippedWeapon = index;
+
+                //call events
+                onSwitchWeapon?.Invoke();
+                onChangeWeapon?.Invoke();
+
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>

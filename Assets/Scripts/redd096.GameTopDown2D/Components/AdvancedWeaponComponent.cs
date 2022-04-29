@@ -83,8 +83,8 @@ namespace redd096.GameTopDown2D
             //set default ammo limits
             SetDefaultLimitAmmosFromEditorToDictionary();
 
-            //set ammo from inspector, only if this is not a Player or ammos are not saved in game manager
-            //if (owner == null || owner.CharacterType != Character.ECharacterType.Player || GameManager.instance == null || GameManager.instance.HasStatsSaved() == false)
+            //set ammo from inspector, only if this is not a Player or ammos are not saved in saves manager
+            //if (owner == null || owner.CharacterType != Character.ECharacterType.Player || SavesManager.CanLoadDefaultAmmos())
                 SetDefaultAmmoFromEditorToDictionary();
         }
 
