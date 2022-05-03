@@ -54,6 +54,7 @@ namespace redd096.GameTopDown2D
         public System.Action onPressAttack { get; set; }                        //called when press attack, also if not shoot or shoot more times
         public System.Action onReleaseAttack { get; set; }                      //called when release attack
 
+        #region unity editor
 #if UNITY_EDITOR
 
         string[] GetAllAmmoTypes()
@@ -77,6 +78,7 @@ namespace redd096.GameTopDown2D
         }
 
 #endif
+        #endregion
 
         public override void PressAttack()
         {
@@ -116,6 +118,12 @@ namespace redd096.GameTopDown2D
 
             //call event
             onReleaseAttack?.Invoke();
+        }
+
+        protected virtual void OnDisable()
+        {
+            //be sure to reset burst shoot when disable weapon
+            burstShootCoroutine = null;
         }
 
         #region private API
