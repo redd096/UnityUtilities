@@ -14,6 +14,7 @@ namespace redd096.GameTopDown2D
         [Header("DEBUG")]
         [SerializeField] bool destroyWeaponOnDrop = false;
         [ReadOnly] public Character Owner;
+        [ReadOnly] public bool IsEquipped = false;
         [HideInInspector] public WeaponBASE WeaponPrefab = default;
 
         //events
@@ -59,6 +60,7 @@ namespace redd096.GameTopDown2D
         /// </summary>
         public virtual void EquipWeapon()
         {
+            IsEquipped = true;
             onEquipWeapon?.Invoke();
         }
 
@@ -67,6 +69,7 @@ namespace redd096.GameTopDown2D
         /// </summary>
         public virtual void UnequipWeapon()
         {
+            IsEquipped = false;
             onUnequipWeapon?.Invoke();
         }
 
