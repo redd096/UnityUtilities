@@ -151,6 +151,25 @@ namespace redd096
             return string.Empty;
         }
 
+        /// <summary>
+        /// Returns binding display name for selected control
+        /// </summary>
+        public static string GetBindingDisplayName(string inputName, int index, InputActionAsset inputActionAsset = null)
+        {
+            //use singleton if no input action asset
+            if (inputActionAsset == null)
+                inputActionAsset = InputManagerRedd096.instance.inputActionAsset;
+
+            InputAction inputAction = inputActionAsset.FindAction(inputName);
+
+            if (inputAction != null)
+                if (inputAction.controls.Count > index)
+                    return inputAction.GetBindingDisplayString(inputAction.GetBindingIndexForControl(inputAction.controls[index]));
+
+            //if no control, return empty string
+            return string.Empty;
+        }
+
         #endregion
 
         #region replace old input system
