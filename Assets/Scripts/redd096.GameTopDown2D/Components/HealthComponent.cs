@@ -29,7 +29,7 @@ namespace redd096.GameTopDown2D
 
         //events
         public System.Action<Vector2> onGetDamage { get; set; }
-        public System.Action<HealthComponent> onDie { get; set; }
+        public System.Action<HealthComponent, Character> onDie { get; set; }
         public System.Action onGetHealth { get; set; }
         public System.Action onChangeHealth { get; set; }
         public System.Action onSetTemporaryInvincible { get; set; }
@@ -95,14 +95,15 @@ namespace redd096.GameTopDown2D
             //check if dead
             if (CurrentHealth <= 0)
             {
-                Die();
+                Die(whoHit);
             }
         }
 
         /// <summary>
         /// Call it when health reach 0
         /// </summary>
-        public void Die()
+        /// <param name="whoHit"></param>
+        public void Die(Character whoHit)
         {
             if (alreadyDead)
                 return;
@@ -110,7 +111,7 @@ namespace redd096.GameTopDown2D
             alreadyDead = true;
 
             //call event
-            onDie?.Invoke(this);
+            onDie?.Invoke(this, whoHit);
 
             //destroy object (if necessary)
             if (destroyOnDie)

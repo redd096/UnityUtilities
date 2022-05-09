@@ -91,7 +91,7 @@ namespace redd096.GameTopDown2D
             }
         }
 
-        void OnDie(HealthComponent whoDied)
+        void OnDie(HealthComponent whoDied, Character whoHit)
         {
             //clone weapons to destroy also if dropped
             WeaponBASE[] tempWeapons = CurrentWeapons.Clone() as WeaponBASE[];

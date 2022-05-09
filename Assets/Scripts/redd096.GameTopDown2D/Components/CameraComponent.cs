@@ -81,7 +81,7 @@ namespace redd096.GameTopDown2D
             }
         }
 
-        void OnDie(HealthComponent whoDied)
+        void OnDie(HealthComponent whoDied, Character whoHit)
         {
             //drop camera on death, if setted
             if (dropCameraOnDeath && cameraToControl)

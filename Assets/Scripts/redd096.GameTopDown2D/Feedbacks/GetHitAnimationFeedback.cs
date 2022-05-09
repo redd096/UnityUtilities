@@ -45,7 +45,7 @@ namespace redd096.GameTopDown2D
                 anim.SetTrigger(hitTrigger);
         }
 
-        void OnDie(HealthComponent healthComponent)
+        void OnDie(HealthComponent healthComponent, Character whoHit)
         {
             //set trigger on die
             if (anim && setTriggerOnDie)

@@ -67,7 +67,7 @@ namespace redd096.GameTopDown2D
 
         #region events
 
-        void OnDie(HealthComponent whoDied)
+        void OnDie(HealthComponent whoDied, Character whoHit)
         {
             //instantiate on Die
             if (dropOnDie)

@@ -123,7 +123,7 @@ namespace redd096.GameTopDown2D
             blinkCoroutine = null;
         }
 
-        void OnDie(HealthComponent whoDied)
+        void OnDie(HealthComponent whoDied, Character whoHit)
         {
             //instantiate vfx and sfx
             foreach (InstantiatedGameObjectStruct go in gameObjectsOnDie)
