@@ -6,8 +6,21 @@ namespace redd096
     public class ActionTask : BaseTask
     {
         /// <summary>
+        /// Can call CompleteTask() to automatically call this event
+        /// </summary>
+        public System.Action onCompleteTask { get; set; }
+
+        /// <summary>
         /// Called every frame when inside this task
         /// </summary>
         public virtual void OnUpdateTask() { }
+
+        /// <summary>
+        /// Call onCompleteTask delegate
+        /// </summary>
+        protected virtual void CompleteTask()
+        {
+            onCompleteTask?.Invoke();
+        }
     }
 }
