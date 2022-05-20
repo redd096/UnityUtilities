@@ -15,12 +15,12 @@ namespace redd096.GameTopDown2D
         [HideIf("UseTextMeshPro")] public Text TextUI = default;
         [ShowIf("UseTextMeshPro")] public TextMeshPro TextMesh = default;
         [SerializeField] string[] possibleTexts = default;
+        [Tooltip("Deactivate instead of Destroy")] [SerializeField] bool usePooling = true;
 
         [Header("Movement")]
         [SerializeField] Vector2 movement = Vector2.up * 2f;
-        [Tooltip("Float without fade")] [SerializeField] float floatTime = 0.1f;
+        [Tooltip("Float without fade")] [SerializeField] float timeBeforeFade = 0.1f;
         [Tooltip("After floatTime, continue to float but start to fade")] [SerializeField] float fadeDuration = 2f;
-        [Tooltip("Deactivate instead of Destroy")] [SerializeField] bool usePooling = true;
 
         Color startColor;
         Color textColor;
@@ -117,7 +117,7 @@ namespace redd096.GameTopDown2D
                 TextUI.text = textsToUse[Random.Range(0, textsToUse.Length)];
 
             //and reset (necessary for pooling)
-            time = floatTime;
+            time = timeBeforeFade;
             textColor = startColor;
 
             //set text color
