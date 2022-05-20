@@ -7,6 +7,7 @@ using redd096.Attributes;
 //Then create two childs:
 //1. attach SpriteMask to the first (will be the showed sprite)
 //2. attach SpriteRenderer to the second. Set a sprite, black color, and mask interaction to "Visible Outside Mask"
+//NB set scale of SpriteRenderer to the size of the screen. You can disable sprite renderer to not have black screen in editor (component, not object)
 
 namespace redd096
 {
@@ -20,16 +21,18 @@ namespace redd096
 
         [Header("Animation")]
         [SerializeField] bool fadeInOnStart = true;
+        [EnableIf("fadeInOnStart")] [SerializeField] float waitBeforeFadeOnStart = 0.3f;
         [SerializeField] float animDuration = 2f;
         [Tooltip("Use realtime or deltaTime?")] [SerializeField] bool useRealtimeInsteadOfDeltatime = true;
 
         [Header("Fade Size")]
-        [SerializeField] bool useScreenSize = true;
-        [EnableIf("useScreenSize")] [SerializeField] float offsetScreenSize = 500;
-        [DisableIf("useScreenSize")] [SerializeField] float fixedSize = 2000;
+        [SerializeField] bool useBlackScreenSize = true;
+        [EnableIf("useBlackScreenSize")] [SerializeField] float offsetBlackScreen = 20;
+        [DisableIf("useBlackScreenSize")] [SerializeField] float fixedSize = 2000;
 
         //screen size (width or height + offset), else use fixed size
-        Vector2 sizeFadeOut => Vector2.one * (useScreenSize ? Mathf.Max(Screen.width, Screen.height) + offsetScreenSize : fixedSize);
+        Vector2 sizeFadeOut => Vector2.zero;
+        Vector2 sizeFadeIn => Vector2.one * (useBlackScreenSize ? (blackScreen ? Mathf.Max(blackScreen.transform.localScale.x, blackScreen.transform.localScale.y) : 0) + offsetBlackScreen : fixedSize);
 
         EventSystem eventSystem;
         Coroutine fadeCoroutine;
@@ -45,7 +48,14 @@ namespace redd096
 
             //fade in when enter in scene
             if (fadeInOnStart)
-                FadeIn();
+            {
+                //be sure objects are active
+                if (mask) mask.enabled = true;
+                if (blackScreen) blackScreen.enabled = true;
+
+                //fade in after few seconds
+                Invoke("FadeIn", waitBeforeFadeOnStart);
+            }
         }
 
         #region public API
@@ -55,7 +65,7 @@ namespace redd096
         /// </summary>
         public void FadeIn()
         {
-            StartFade(Vector2.zero, OnFadeInComplete);
+            StartFade(true, OnFadeInComplete);
         }
 
         /// <summary>
@@ -63,7 +73,7 @@ namespace redd096
         /// </summary>
         public void FadeOutNextScene()
         {
-            StartFade(sizeFadeOut, () => SceneLoader.instance.LoadNextScene());
+            StartFade(false, () => SceneLoader.instance.LoadNextScene());
         }
 
         /// <summary>
@@ -72,7 +82,7 @@ namespace redd096
         /// <param name="scene"></param>
         public void FadeOutLoadScene(string scene)
         {
-            StartFade(sizeFadeOut, () => SceneLoader.instance.LoadScene(scene));
+            StartFade(false, () => SceneLoader.instance.LoadScene(scene));
         }
 
         /// <summary>
@@ -80,7 +90,7 @@ namespace redd096
         /// </summary>
         public void FadeOutRestartScene()
         {
-            StartFade(sizeFadeOut, () => SceneLoader.instance.ReloadScene());
+            StartFade(false, () => SceneLoader.instance.ReloadScene());
         }
 
         /// <summary>
@@ -88,14 +98,14 @@ namespace redd096
         /// </summary>
         public void ExitGame()
         {
-            StartFade(sizeFadeOut, () => SceneLoader.instance.ExitGame());
+            StartFade(false, () => SceneLoader.instance.ExitGame());
         }
 
         #endregion
 
         #region private API
 
-        void StartFade(Vector2 sizeToReach, System.Action func)
+        void StartFade(bool fadeIn, System.Action func)
         {
             //disable event system until finish fade
             eventSystem = EventSystem.current;
@@ -107,14 +117,14 @@ namespace redd096
                 mask.sprite = sprites[Random.Range(0, sprites.Length)];
 
             //be sure objects are active
-            if (mask) mask.gameObject.SetActive(true);
-            if (blackScreen) blackScreen.gameObject.SetActive(true);
+            if (mask) mask.enabled = true;
+            if (blackScreen) blackScreen.enabled = true;
 
             //start fade coroutine
             if (fadeCoroutine != null)
                 StopCoroutine(fadeCoroutine);
 
-            fadeCoroutine = StartCoroutine(FadeCoroutine(sizeToReach, func));
+            fadeCoroutine = StartCoroutine(FadeCoroutine(fadeIn, func));
         }
 
         void OnFadeInComplete()
@@ -131,14 +141,14 @@ namespace redd096
             }
 
             //deactivate images, to be sure the screen is clear
-            if (mask) mask.gameObject.SetActive(false);
-            if (blackScreen) blackScreen.gameObject.SetActive(false);
+            if (mask) mask.enabled = false;
+            if (blackScreen) blackScreen.enabled = false;
 
             //call event
             onFadeInComplete?.Invoke();
         }
 
-        IEnumerator FadeCoroutine(Vector2 endScale, System.Action func)
+        IEnumerator FadeCoroutine(bool fadeIn, System.Action func)
         {
             //set default vars
             Vector2 startScale = mask ? (Vector2)mask.transform.localScale : Vector2.one;
@@ -150,7 +160,7 @@ namespace redd096
 
                 //fade (with realtime or delta)
                 delta += (useRealtimeInsteadOfDeltatime ? Time.unscaledDeltaTime : Time.deltaTime) / animDuration;
-                if (mask) mask.transform.localScale = Vector2.Lerp(startScale, endScale, delta);
+                if (mask) mask.transform.localScale = Vector2.Lerp(startScale, fadeIn ? sizeFadeIn : sizeFadeOut, delta);
             }
 
             //call function on complete
