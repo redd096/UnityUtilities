@@ -74,7 +74,7 @@ namespace redd096
                 instance.StopBackgroundMusic(true);
             }
             //else, on the instance, play new background music
-            else
+            else if (musicThisScene != null)
             {
                 instance.PlayBackgroundMusic(musicThisScene.audioClip, true, musicThisScene.volume, loopMusicThisScene);
             }
@@ -182,7 +182,7 @@ namespace redd096
             //if running fade coroutine for this audiosource, stop it
             if (instance.coroutines.ContainsKey(audioSource))
             {
-                instance.StopCoroutine(instance.coroutines[audioSource]);
+                if (instance.coroutines[audioSource] != null) instance.StopCoroutine(instance.coroutines[audioSource]);
                 instance.coroutines.Remove(audioSource);
             }
 
@@ -212,7 +212,7 @@ namespace redd096
                 //if already running fade coroutine for this audiosource, stop it
                 if (instance.coroutines.ContainsKey(audioSource))
                 {
-                    instance.StopCoroutine(instance.coroutines[audioSource]);
+                    if (instance.coroutines[audioSource] != null) instance.StopCoroutine(instance.coroutines[audioSource]);
                     instance.coroutines.Remove(audioSource);
                 }
 
@@ -272,7 +272,7 @@ namespace redd096
                 //if running fade coroutine for this audiosource, stop it
                 if (coroutines.ContainsKey(musicBackgroundAudioSource))
                 {
-                    StopCoroutine(coroutines[musicBackgroundAudioSource]);
+                    if (coroutines[musicBackgroundAudioSource] != null) StopCoroutine(coroutines[musicBackgroundAudioSource]);
                     coroutines.Remove(musicBackgroundAudioSource);
                 }
 
