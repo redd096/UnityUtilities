@@ -15,7 +15,7 @@ namespace redd096
     public class InstantiateGameObjectManager : Singleton<InstantiateGameObjectManager>
     {
         private Transform parent;
-        Transform Parent
+        public Transform Parent
         {
             get
             {

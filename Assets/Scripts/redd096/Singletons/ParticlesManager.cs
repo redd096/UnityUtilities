@@ -7,7 +7,7 @@ namespace redd096
     public class ParticlesManager : Singleton<ParticlesManager>
     {
         private Transform particlesParent;
-        Transform ParticlesParent
+        public Transform ParticlesParent
         {
             get
             {

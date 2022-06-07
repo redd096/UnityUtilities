@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using redd096.Attributes;
 
 namespace redd096
 {
@@ -43,9 +44,13 @@ namespace redd096
         [Header("Sounds On Click Button (random from array)")]
         [SerializeField] AudioClassBase[] soundsOnClick = default;
 
+        [Header("Volume Settings")]
+        [ReadOnly] [Range(0f, 1f)] [SerializeField] float volumeMusic = 1;
+        [ReadOnly] [Range(0f, 1f)] [SerializeField] float volumeSFX = 1;
+
         //sound parent (instantiate if null)
         private Transform soundsParent;
-        Transform SoundsParent
+        public Transform SoundsParent
         {
             get
             {
@@ -62,22 +67,14 @@ namespace redd096
         //coroutines
         Dictionary<AudioSource, Coroutine> coroutines = new Dictionary<AudioSource, Coroutine>();   //fade in and fade out coroutines, or deactive sound at point coroutines
 
+        //used for volume settings
+        Dictionary<AudioSource, float> savedVolumes = new Dictionary<AudioSource, float>();
+
         #endregion
 
         protected override void Awake()
         {
             base.Awake();
-
-            //stop background music if playing
-            if (stopBackgroundMusicThisScene)
-            {
-                instance.StopBackgroundMusic(true);
-            }
-            //else, on the instance, play new background music
-            else if (musicThisScene != null)
-            {
-                instance.PlayBackgroundMusic(musicThisScene.audioClip, true, musicThisScene.volume, loopMusicThisScene);
-            }
 
             //if this is the instance, if miss some prefab, create it
             if (instance == this)
@@ -107,6 +104,17 @@ namespace redd096
                 if (fadeOutMusic.keys.Length <= 0)
                     fadeOutMusic.keys = new Keyframe[2] { new Keyframe(0, 1), new Keyframe(1, 0) };
             }
+
+            //stop background music if playing
+            if (stopBackgroundMusicThisScene)
+            {
+                instance.StopBackgroundMusic(true);
+            }
+            //else, on the instance, play new background music
+            else if (musicThisScene != null)
+            {
+                instance.PlayBackgroundMusic(musicThisScene.audioClip, true, musicThisScene.volume, loopMusicThisScene);
+            }
         }
 
         #region utilities
@@ -132,7 +140,7 @@ namespace redd096
 
             //set new clip, volume and loop - then be sure to play
             audioSource.clip = clip;
-            audioSource.volume = fadeIn.keys.Length > 0 ? 0 : volume;       //if there is animation curve, set volume at 0, else set necessary volume
+            audioSource.volume = fadeIn.keys.Length > 0 ? 0 : volume * GetVolumeSettingsForThisAudioSource(audioSource);    //if there is animation curve, set volume at 0, else set necessary volume
             audioSource.loop = loop;
             audioSource.Play();
 
@@ -148,7 +156,7 @@ namespace redd096
             //if there is no curve, set immediatly sound and stop coroutine
             if (fadeCurve == null || fadeCurve.keys.Length <= 0)
             {
-                audioSource.volume = volume;
+                audioSource.volume = volume * GetVolumeSettingsForThisAudioSource(audioSource);                                                     //volumeAudio * optionsVolume
                 yield break;
             }
 
@@ -160,7 +168,7 @@ namespace redd096
                 currentTime += Time.deltaTime;
 
                 //set volume using animation curve
-                audioSource.volume = Mathf.Lerp(0, volume, fadeCurve.Evaluate(currentTime));
+                audioSource.volume = Mathf.Lerp(0, volume * GetVolumeSettingsForThisAudioSource(audioSource), fadeCurve.Evaluate(currentTime));     //volumeAudio * optionsVolume
 
                 yield return null;
             }
@@ -187,11 +195,14 @@ namespace redd096
             }
 
             //change only if different (so we can have same music in different scenes without stop) - or if set forceReplay or audioSource is not playing
-            if (forceReplay || audioSource.isPlaying == false || audioSource.clip != clip || audioSource.volume != volume || audioSource.loop != loop)
+            if (forceReplay || audioSource.isPlaying == false || audioSource.clip != clip || instance.CheckIsEqualToSavedVolume(audioSource, volume) || audioSource.loop != loop)
             {
                 audioSource.clip = clip;
-                audioSource.volume = volume;
+                audioSource.volume = volume * instance.GetVolumeSettingsForThisAudioSource(audioSource);    //volumeAudio * optionsVolume
                 audioSource.loop = loop;
+
+                //save volume settings
+                instance.SaveVolumeAudioSource(audioSource, volume);
 
                 audioSource.Play();
             }
@@ -207,7 +218,7 @@ namespace redd096
                 return;
 
             //change only if different (so we can have same music in different scenes without stop) - or if set forceReplay or audioSource is not playing
-            if (forceReplay || audioSource.isPlaying == false || audioSource.clip != clip || audioSource.volume != volume || audioSource.loop != loop)
+            if (forceReplay || audioSource.isPlaying == false || audioSource.clip != clip || instance.CheckIsEqualToSavedVolume(audioSource, volume) || audioSource.loop != loop)
             {
                 //if already running fade coroutine for this audiosource, stop it
                 if (instance.coroutines.ContainsKey(audioSource))
@@ -215,6 +226,9 @@ namespace redd096
                     if (instance.coroutines[audioSource] != null) instance.StopCoroutine(instance.coroutines[audioSource]);
                     instance.coroutines.Remove(audioSource);
                 }
+
+                //save volume settings
+                instance.SaveVolumeAudioSource(audioSource, volume);
 
                 //start coroutine
                 instance.coroutines.Add(audioSource, instance.StartCoroutine(instance.FadeAudioCoroutine(audioSource, clip, fadeIn, fadeOut, volume, loop)));
@@ -410,6 +424,85 @@ namespace redd096
         {
             //in instance, call Play 2D
             instance.Play(false, sound, Vector2.zero);
+        }
+
+        #endregion
+
+        #region volume settings
+
+        /// <summary>
+        /// Set volume settings for the background music
+        /// </summary>
+        /// <param name="volumeMusic"></param>
+        public void SetVolumeMusic(float volumeMusic)
+        {
+            this.volumeMusic = volumeMusic;
+
+            //update music audio source's volume
+            if (musicBackgroundAudioSource && savedVolumes.ContainsKey(musicBackgroundAudioSource))
+                musicBackgroundAudioSource.volume = savedVolumes[musicBackgroundAudioSource] * volumeMusic;
+        }
+
+        /// <summary>
+        /// Set volume settings for the SFXs
+        /// </summary>
+        /// <param name="volumeSFX"></param>
+        public void SetVolumeSFX(float volumeSFX)
+        {
+            this.volumeSFX = volumeSFX;
+
+            //update every audio source's volume
+            foreach (AudioSource audioSource in savedVolumes.Keys)
+            {
+                //be sure it isn't music audio source
+                if (audioSource && audioSource != musicBackgroundAudioSource)
+                    audioSource.volume = savedVolumes[audioSource] * volumeSFX;
+            }
+        }
+
+        /// <summary>
+        /// Get volumeMusic or volumeSFX based on audioSource
+        /// </summary>
+        /// <param name="audioSource"></param>
+        /// <returns></returns>
+        public float GetVolumeSettingsForThisAudioSource(AudioSource audioSource)
+        {
+            if (audioSource == musicBackgroundAudioSource)
+                return volumeMusic;
+            else //if (savedVolumes.ContainsKey(audioSource))
+                return volumeSFX;
+            //else 
+            //    return 1;
+        }
+
+        public void SaveVolumeAudioSource(AudioSource audioSource, float volume)
+        {
+            if (audioSource == null)
+                return;
+
+            //save audio source with volume
+            if (savedVolumes.ContainsKey(audioSource) == false)
+            {
+                savedVolumes.Add(audioSource, volume);
+            }
+            //else, update saved volume
+            else
+            {
+                savedVolumes[audioSource] = volume;
+            }
+        }
+
+        public bool CheckIsEqualToSavedVolume(AudioSource audioSource, float volume)
+        {
+            //if there is no audio source or is not saved, return false
+            if (audioSource == null || savedVolumes.ContainsKey(audioSource) == false)
+                return false;
+
+            //if volume is the same already saved, return true
+            if (Mathf.Approximately(savedVolumes[audioSource], volume))
+                return true;
+
+            return false;
         }
 
         #endregion
