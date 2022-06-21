@@ -11,38 +11,57 @@ namespace redd096.GameTopDown2D
     public class PopupText : MonoBehaviour
     {
         [Header("Popup - default get from children")]
-        public bool UseTextMeshPro = false;
-        [HideIf("UseTextMeshPro")] public Text TextUI = default;
-        [ShowIf("UseTextMeshPro")] public TextMeshPro TextMesh = default;
+        [SerializeField] bool useTextMeshPro = false;
+        [HideIf("useTextMeshPro")] [SerializeField] Text textUI = default;
+        [ShowIf("useTextMeshPro")] [SerializeField] TextMeshPro textMesh = default;
         [SerializeField] string[] possibleTexts = default;
-        [Tooltip("Deactivate instead of Destroy")] [SerializeField] bool usePooling = true;
 
         [Header("Movement")]
-        [SerializeField] Vector2 movement = Vector2.up * 2f;
-        [Tooltip("Float without fade")] [SerializeField] float timeBeforeFade = 0.1f;
-        [Tooltip("After floatTime, continue to float but start to fade")] [SerializeField] float fadeDuration = 2f;
+        [SerializeField] Vector2 minMovement = Vector2.up * 2f;
+        [SerializeField] Vector2 maxMovement = Vector2.up * 2f;
+
+        [Header("Time before start fade out")]
+        [Tooltip("Float without fade")] [SerializeField] float timeBeforeFadeMin = 0.1f;
+        [Tooltip("Float without fade")] [SerializeField] float timeBeforeFadeMax = 0.1f;
+
+        [Header("Duration fade out")]
+        [Tooltip("After floatTime, continue to float but start to fade")] [SerializeField] float fadeDurationMin = 1.5f;
+        [Tooltip("After floatTime, continue to float but start to fade")] [SerializeField] float fadeDurationMax = 1.5f;
+
+        [Header("Coding Vars")]
+        [Tooltip("Deactivate instead of Destroy")] [SerializeField] bool usePooling = true;
+        [Tooltip("Start movement at OnEnable (if just put prefab in scene)")] [SerializeField] bool autoInitializeOnEnable = false;
 
         Color startColor;
         Color textColor;
-        float time; //from floatTime to 0
+
+        //randomized vars
+        float timeBeforeFade;
+        float fadeDuration;
+        Vector2 movement;
 
         void Awake()
         {
             //get refs
-            if (TextUI == null) TextUI = GetComponentInChildren<Text>();
-            if (TextMesh == null) TextMesh = GetComponentInChildren<TextMeshPro>();
+            if (textUI == null) textUI = GetComponentInChildren<Text>();
+            if (textMesh == null) textMesh = GetComponentInChildren<TextMeshPro>();
 
-            //save start color
-            if (UseTextMeshPro && TextMesh)
-                startColor = TextMesh.color;
-            else if (UseTextMeshPro == false && TextUI)
-                startColor = TextUI.color;
+            //save start vars
+            if (useTextMeshPro && textMesh)
+            {
+                startColor = textMesh.color;
+            }
+            else if (useTextMeshPro == false && textUI)
+            {
+                startColor = textUI.color;
+            }
         }
 
-        bool CheckTextNotNull()
+        void OnEnable()
         {
-            //return if used text is not null
-            return (UseTextMeshPro && TextMesh) || (UseTextMeshPro == false && TextUI);
+            //auto initialize if necessary
+            if (autoInitializeOnEnable)
+                Init(GetTextPosition());
         }
 
         void Update()
@@ -50,20 +69,18 @@ namespace redd096.GameTopDown2D
             if (CheckTextNotNull() == false)
                 return;
 
-            //move text
-            if (UseTextMeshPro) TextMesh.transform.position += (Vector3)movement * Time.deltaTime;
-            else TextUI.transform.position += (Vector3)movement * Time.deltaTime;
+            //move text and reduce float time
+            MoveText(movement * Time.deltaTime);
+            timeBeforeFade -= Time.deltaTime;
 
-            //finished float time
-            time -= Time.deltaTime;
-            if (time <= 0)
+            //if finished float time
+            if (timeBeforeFade <= 0)
             {
                 //start fade out
                 textColor.a -= Time.deltaTime / fadeDuration;
 
                 //set text color
-                if (UseTextMeshPro) TextMesh.color = textColor;
-                else TextUI.color = textColor;
+                SetTextColor(textColor);
 
                 //destroy when alpha at 0
                 if (textColor.a <= 0f)
@@ -76,53 +93,110 @@ namespace redd096.GameTopDown2D
             }
         }
 
+        #region private API
+
+        bool CheckTextNotNull()
+        {
+            //return if used text is not null
+            return (useTextMeshPro && textMesh) || (useTextMeshPro == false && textUI);
+        }
+
+        void SetText(string text)
+        {
+            if (CheckTextNotNull() == false)
+                return;
+
+            if (useTextMeshPro) textMesh.SetText(text);
+            else textUI.text = text;
+        }
+
+        void SetTextColor(Color color)
+        {
+            if (CheckTextNotNull() == false)
+                return;
+
+            if (useTextMeshPro) textMesh.color = color;
+            else textUI.color = color;
+        }
+
+        void SetTextPosition(Vector2 position)
+        {
+            if (CheckTextNotNull() == false)
+                return;
+
+            if (useTextMeshPro) textMesh.transform.position = position;
+            else textUI.transform.position = position;
+        }
+
+        void MoveText(Vector2 movement)
+        {
+            if (CheckTextNotNull() == false)
+                return;
+
+            if (useTextMeshPro) textMesh.transform.position += (Vector3)movement;
+            else textUI.transform.position += (Vector3)movement;
+        }
+
+        Vector2 GetTextPosition()
+        {
+            if (CheckTextNotNull() == false)
+                return Vector2.zero;
+
+            if (useTextMeshPro) return textMesh.transform.position;
+            else return textUI.transform.position;
+        }
+
+        #endregion
+
         #region public API
 
         /// <summary>
         /// Initialize to set one random text from the array in the prefab
         /// </summary>
-        public void Init()
+        public void Init(Vector2 textPosition)
         {
-            Init(possibleTexts);
+            Init(textPosition, possibleTexts);
         }
 
         /// <summary>
         /// Initialize to set text
         /// </summary>
         /// <param name="textToUse"></param>
-        public void Init(string textToUse)
+        public void Init(Vector2 textPosition, string textToUse)
         {
-            Init(new string[1] { textToUse });
+            Init(textPosition, new string[1] { textToUse });
         }
 
         /// <summary>
         /// Initialize to set one random text from array
         /// </summary>
         /// <param name="textsToUse"></param>
-        public void Init(string[] textsToUse)
+        public void Init(Vector2 textPosition, params string[] textsToUse)
         {
             if (CheckTextNotNull() == false)
+            {
+                Debug.LogWarning("Miss Text or TextMeshPro on " + name);
                 return;
+            }
 
             if (textsToUse == null || textsToUse.Length <= 0)
             {
-                Debug.LogWarning("Miss texts on " + name);
+                Debug.LogWarning("Miss texts to show on " + name);
                 return;
             }
 
             //set text
-            if (UseTextMeshPro)
-                TextMesh.SetText(textsToUse[Random.Range(0, textsToUse.Length)]);
-            else
-                TextUI.text = textsToUse[Random.Range(0, textsToUse.Length)];
+            SetText(textsToUse[Random.Range(0, textsToUse.Length)]);
+
+            //set random vars
+            movement = new Vector2(Random.Range(minMovement.x, maxMovement.x), Random.Range(minMovement.y, maxMovement.y));
+            timeBeforeFade = Random.Range(timeBeforeFadeMin, timeBeforeFadeMax);
+            fadeDuration = Random.Range(fadeDurationMin, fadeDurationMax);
 
             //and reset (necessary for pooling)
-            time = timeBeforeFade;
+            SetTextPosition(textPosition);
             textColor = startColor;
-
-            //set text color
-            if (UseTextMeshPro) TextMesh.color = textColor;
-            else TextUI.color = textColor;
+            SetTextColor(textColor);
         }
 
         #endregion
