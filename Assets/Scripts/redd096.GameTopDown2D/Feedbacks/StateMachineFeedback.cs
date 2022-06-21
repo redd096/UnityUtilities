@@ -9,8 +9,11 @@ namespace redd096.GameTopDown2D
         [SerializeField] Animator anim = default;
         [SerializeField] StateMachineRedd096 stateMachine = default;
 
-        [Header("States and triggers in animator")]
+        [Header("When enter in these states, call trigger in animator")]
         [SerializeField] AnimTriggerStateStruct[] animTriggers = default;
+
+        [Header("When enter in these states, set bool in animator true or false")]
+        [SerializeField] AnimBoolStateStruct[] animBools = default;
 
         void OnEnable()
         {
@@ -52,6 +55,19 @@ namespace redd096.GameTopDown2D
                     break;
                 }
             }
+
+            foreach (AnimBoolStateStruct animBool in animBools)
+            {
+                //if enter in this state
+                if (stateName.Equals(animBool.State))
+                {
+                    //set bool
+                    if (anim)
+                        anim.SetBool(animBool.BoolToSet, animBool.Value);
+
+                    break;
+                }
+            }
         }
     }
 
@@ -60,5 +76,13 @@ namespace redd096.GameTopDown2D
     {
         public string State;
         public string TriggerToSet;
+    }
+
+    [System.Serializable]
+    public struct AnimBoolStateStruct
+    {
+        public string State;
+        public string BoolToSet;
+        public bool Value;
     }
 }
