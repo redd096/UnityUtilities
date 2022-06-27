@@ -36,6 +36,7 @@ namespace redd096
         [SerializeField] bool stopBackgroundMusicThisScene = false;
         [SerializeField] AudioClassBase musicThisScene = default;
         [SerializeField] bool loopMusicThisScene = true;
+        [Tooltip("When change scene, if setted same clip and volume, restart anyway?")] [SerializeField] bool forceReplayThisScene = false;
 
         [Header("Instantiate sound at point")]
         [Tooltip("Used also for SoundsOnClickButton")] [SerializeField] AudioSource sound2DPrefab = default;
@@ -113,7 +114,7 @@ namespace redd096
             //else, on the instance, play new background music
             else if (musicThisScene != null)
             {
-                instance.PlayBackgroundMusic(musicThisScene.audioClip, true, musicThisScene.volume, loopMusicThisScene);
+                instance.PlayBackgroundMusic(musicThisScene.audioClip, true, forceReplayThisScene, musicThisScene.volume, loopMusicThisScene);
             }
         }
 
@@ -242,7 +243,7 @@ namespace redd096
         /// <summary>
         /// Start audio clip for background music. Can set volume and loop
         /// </summary>
-        public AudioSource PlayBackgroundMusic(AudioClip clip, bool doFade, float volume = 1, bool loop = true)
+        public AudioSource PlayBackgroundMusic(AudioClip clip, bool doFade, bool forceReplay = false, float volume = 1, bool loop = true)
         {
             if (clip == null)
                 return null;
@@ -259,9 +260,9 @@ namespace redd096
 
             //play it (with fade or not)
             if (doFade)
-                PlayWithFade(musicBackgroundAudioSource, clip, fadeInMusic, fadeOutMusic, false, volume, loop);
+                PlayWithFade(musicBackgroundAudioSource, clip, fadeInMusic, fadeOutMusic, forceReplay, volume, loop);
             else
-                Play(musicBackgroundAudioSource, clip, false, volume, loop);
+                Play(musicBackgroundAudioSource, clip, forceReplay, volume, loop);
 
             return musicBackgroundAudioSource;
         }
@@ -272,7 +273,7 @@ namespace redd096
         /// <param name="doFade"></param>
         public AudioSource PlayBackgroundMusic(bool doFade)
         {
-            return PlayBackgroundMusic(musicThisScene.audioClip, doFade, musicThisScene.volume, loopMusicThisScene);
+            return PlayBackgroundMusic(musicThisScene.audioClip, doFade, forceReplayThisScene, musicThisScene.volume, loopMusicThisScene);
         }
 
         /// <summary>
