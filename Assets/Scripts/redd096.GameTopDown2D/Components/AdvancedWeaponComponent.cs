@@ -60,8 +60,8 @@ namespace redd096.GameTopDown2D
         [SerializeField] List<AmmoStruct> defaultAmmos = new List<AmmoStruct>();
 
         [Header("DEBUG")]
-        [ReadOnly] [SerializeField] List<DebugAmmoStruct> CurrentLimitAmmosDebug = new List<DebugAmmoStruct>();
-        [ReadOnly] [SerializeField] List<DebugAmmoStruct> CurrentAmmosDebug = new List<DebugAmmoStruct>();
+        [ReadOnly][SerializeField] List<DebugAmmoStruct> CurrentLimitAmmosDebug = new List<DebugAmmoStruct>();
+        [ReadOnly][SerializeField] List<DebugAmmoStruct> CurrentAmmosDebug = new List<DebugAmmoStruct>();
 
         //events
         public System.Action onAddAmmo { get; set; }

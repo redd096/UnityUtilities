@@ -3,7 +3,7 @@
 namespace redd096.GameTopDown2D
 {
     [AddComponentMenu("redd096/.GameTopDown2D/Feedbacks/Get Hit Animation Feedback")]
-    public class GetHitAnimmationFeedback : MonoBehaviour
+    public class GetHitAnimationFeedback : MonoBehaviour
     {
         [Header("Necessary Components - default get in child and parent")]
         [SerializeField] Animator anim = default;
@@ -38,7 +38,7 @@ namespace redd096.GameTopDown2D
             }
         }
 
-        void OnGetDamage(Vector2 hitPoint)
+        void OnGetDamage(Character whoHit, Vector2 hitPoint)
         {
             //set trigger on get damage
             if (anim && setTriggerOnGetDamage)

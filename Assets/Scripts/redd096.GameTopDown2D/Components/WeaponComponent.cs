@@ -12,7 +12,7 @@ namespace redd096.GameTopDown2D
         [SerializeField] WeaponBASE[] weaponsPrefabs = default;
 
         [Header("Number of Weapons")]
-        [Min(1)] [SerializeField] int maxWeapons = 2;
+        [Min(1)][SerializeField] int maxWeapons = 2;
 
         [Header("Destroy Weapon On Death (necessary HealthComponent - default get from this gameObject)")]
         [SerializeField] EWeaponOnDeath dropWeaponOnDeath = EWeaponOnDeath.None;

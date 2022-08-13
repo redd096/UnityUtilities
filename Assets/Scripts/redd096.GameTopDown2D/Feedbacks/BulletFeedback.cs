@@ -34,9 +34,11 @@ namespace redd096.GameTopDown2D
         [SerializeField] bool cameraShakeOnHitSomethingThatDestroyBullet = false;
         [SerializeField] bool cameraShakeOnAutoDestruction = false;
         [SerializeField] bool cameraShakeOnDestroy = false;
-        [EnableIf(EnableIfAttribute.EConditionOperator.OR, "cameraShakeOnHit", "cameraShakeOnHitSomethingThatDestroyBullet", "cameraShakeOnAutoDestruction", "cameraShakeOnDestroy")] [SerializeField] bool customShake = false;
-        [EnableIf(EnableIfAttribute.EConditionOperator.OR, "cameraShakeOnHit", "cameraShakeOnHitSomethingThatDestroyBullet", "cameraShakeOnAutoDestruction", "cameraShakeOnDestroy")] [SerializeField] float shakeDuration = 1;
-        [EnableIf(EnableIfAttribute.EConditionOperator.OR, "cameraShakeOnHit", "cameraShakeOnHitSomethingThatDestroyBullet", "cameraShakeOnAutoDestruction", "cameraShakeOnDestroy")] [SerializeField] float shakeAmount = 0.7f;
+        [EnableIf(EnableIfAttribute.EConditionOperator.OR, "cameraShakeOnHit", "cameraShakeOnHitSomethingThatDestroyBullet", "cameraShakeOnAutoDestruction", "cameraShakeOnDestroy")][SerializeField] bool customShake = false;
+        [EnableIf(EnableIfAttribute.EConditionOperator.OR, "cameraShakeOnHit", "cameraShakeOnHitSomethingThatDestroyBullet", "cameraShakeOnAutoDestruction", "cameraShakeOnDestroy")][SerializeField] float shakeDuration = 1;
+        [EnableIf(EnableIfAttribute.EConditionOperator.OR, "cameraShakeOnHit", "cameraShakeOnHitSomethingThatDestroyBullet", "cameraShakeOnAutoDestruction", "cameraShakeOnDestroy")][SerializeField] float shakeAmount = 0.7f;
+
+        TrailRenderer trail;
 
         void OnEnable()
         {
@@ -44,9 +46,13 @@ namespace redd096.GameTopDown2D
             if (bullet == null)
                 bullet = GetComponentInParent<Bullet>();
 
+            if (trail == null)
+                trail = GetComponentInChildren<TrailRenderer>();
+
             //add events
             if (bullet)
             {
+                bullet.onInit += OnInit;
                 bullet.onHit += OnHit;
                 bullet.onLastHit += OnLastHit;
                 bullet.onAutodestruction += OnAutodestruction;
@@ -59,11 +65,19 @@ namespace redd096.GameTopDown2D
             //remove events
             if (bullet)
             {
+                bullet.onInit -= OnInit;
                 bullet.onHit -= OnHit;
                 bullet.onLastHit -= OnLastHit;
                 bullet.onAutodestruction -= OnAutodestruction;
                 bullet.onDie -= OnDie;
             }
+        }
+
+        private void OnInit()
+        {
+            //reset trail
+            if (trail)
+                trail.Clear();
         }
 
         void OnHit(GameObject hit)
@@ -74,7 +88,7 @@ namespace redd096.GameTopDown2D
             SoundManager.instance.Play(audioOnHit, transform.position);
 
             //camera shake
-            if (cameraShakeOnHit)
+            if (cameraShakeOnHit && CameraShake.instance)
             {
                 //custom or default
                 if (customShake)
@@ -92,7 +106,7 @@ namespace redd096.GameTopDown2D
             SoundManager.instance.Play(audioOnLastHit, transform.position);
 
             //camera shake
-            if (cameraShakeOnHitSomethingThatDestroyBullet)
+            if (cameraShakeOnHitSomethingThatDestroyBullet && CameraShake.instance)
             {
                 //custom or default
                 if (customShake)
@@ -110,7 +124,7 @@ namespace redd096.GameTopDown2D
             SoundManager.instance.Play(audioOnAutodestruction, transform.position);
 
             //camera shake
-            if (cameraShakeOnAutoDestruction)
+            if (cameraShakeOnAutoDestruction && CameraShake.instance)
             {
                 //custom or default
                 if (customShake)
@@ -120,7 +134,7 @@ namespace redd096.GameTopDown2D
             }
         }
 
-        void OnDie()
+        void OnDie(Bullet bullet)
         {
             //instantiate vfx and sfx
             InstantiateGameObjectManager.instance.Play(gameObjectOnDestroy, transform.position, transform.rotation);
@@ -128,7 +142,7 @@ namespace redd096.GameTopDown2D
             SoundManager.instance.Play(audioOnDestroy, transform.position);
 
             //camera shake
-            if (cameraShakeOnDestroy)
+            if (cameraShakeOnDestroy && CameraShake.instance)
             {
                 //custom or default
                 if (customShake)

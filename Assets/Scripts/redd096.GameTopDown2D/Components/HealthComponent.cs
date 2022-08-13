@@ -15,11 +15,11 @@ namespace redd096.GameTopDown2D
         [EnableIf("SetTempInvincibleWhenHitted")] public float DurationTempInvincibilityWhenHitted = 0.5f;
 
         [Header("Friendly Fire")]
-        [Range(0f, 1f)] [SerializeField] float percentageDamageWhenHitFromFriend = 0.25f;
+        [Range(0f, 1f)][SerializeField] float percentageDamageWhenHitFromFriend = 0.25f;
 
         [Header("Destroy object when dead")]
         [SerializeField] bool destroyOnDie = true;
-        [EnableIf("destroyOnDie")] [SerializeField] float timeBeforeDestroy = 0;
+        [EnableIf("destroyOnDie")][SerializeField] float timeBeforeDestroy = 0;
 
         [Header("DEBUG")]
         [ProgressBar("Health", "MaxHealth", ProgressBarAttribute.EColor.SmoothGreen)] public float CurrentHealth = 100;
@@ -28,7 +28,7 @@ namespace redd096.GameTopDown2D
         /*[ShowNonSerializedField]*/ [ReadOnly] bool alreadyDead = false;
 
         //events
-        public System.Action<Vector2> onGetDamage { get; set; }
+        public System.Action<Character, Vector2> onGetDamage { get; set; }
         public System.Action<HealthComponent, Character> onDie { get; set; }
         public System.Action onGetHealth { get; set; }
         public System.Action onChangeHealth { get; set; }
@@ -87,7 +87,7 @@ namespace redd096.GameTopDown2D
                 //call events only if damage is > 0
                 if (damage > Mathf.Epsilon)
                 {
-                    onGetDamage?.Invoke(hitPoint);
+                    onGetDamage?.Invoke(whoHit, hitPoint);
                     onChangeHealth?.Invoke();
                 }
             }

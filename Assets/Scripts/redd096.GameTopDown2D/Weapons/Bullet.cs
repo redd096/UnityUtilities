@@ -10,33 +10,37 @@ namespace redd096.GameTopDown2D
     {
         [Header("Necessary Components - default get from this gameObject")]
         [SerializeField] MovementComponent movementComponent = default;
-        [SerializeField] CollisionComponent collisionComponent = default;
 
         [Header("Layer Penetrable")]
-        [Tooltip("Layers to hit but not destroy bullet")] [SerializeField] LayerMask layersPenetrable = default;
+        [Tooltip("Layers to hit but not destroy bullet")][SerializeField] LayerMask layersPenetrable = default;
+        [Tooltip("Layers to not hit")][SerializeField] LayerMask layersToIgnore = default;
+
+        [Header("Bounce (-1 = no limit)")]
+        [SerializeField] LayerMask layersToBounce = default;
+        [SerializeField] int maxNumberOfBounce = 2;
 
         [Header("Bullet")]
-        [Tooltip("When a character shoot, can hit also other characters of same type?")] [SerializeField] bool friendlyFire = true;
+        [Tooltip("When a character shoot, can hit also other characters of same type?")][SerializeField] bool friendlyFire = true;
         [SerializeField] bool ignoreShield = false;
-        [Tooltip("Knockback who hit")] [SerializeField] float knockBack = 1;
+        [Tooltip("Knockback who hit")][SerializeField] float knockBack = 1;
 
         [Header("Area Damage")]
         [SerializeField] bool doAreaDamage = false;
-        [Tooltip("Damage others in radius area")] [EnableIf("doAreaDamage")] [SerializeField] [Min(0)] float radiusAreaDamage = 0;
-        [EnableIf("doAreaDamage")] [SerializeField] bool ignoreShieldAreaDamage = false;
-        [Tooltip("Is possible to damage owner with area damage?")] [EnableIf("doAreaDamage")] [SerializeField] bool areaCanDamageWhoShoot = false;
-        [Tooltip("Is possible to damage again who hit this bullet?")] [EnableIf("doAreaDamage")] [SerializeField] bool areaCanDamageWhoHit = false;
-        [Tooltip("Do knockback also to who hit in area?")] [EnableIf("doAreaDamage")] [SerializeField] bool knockbackAlsoInArea = true;
+        [Tooltip("Damage others in radius area")][EnableIf("doAreaDamage")][SerializeField][Min(0)] float radiusAreaDamage = 0;
+        [EnableIf("doAreaDamage")][SerializeField] bool ignoreShieldAreaDamage = false;
+        [Tooltip("Is possible to damage owner with area damage?")][EnableIf("doAreaDamage")][SerializeField] bool areaCanDamageWhoShoot = false;
+        [Tooltip("Is possible to damage again who hit this bullet?")][EnableIf("doAreaDamage")][SerializeField] bool areaCanDamageWhoHit = false;
+        [Tooltip("Do knockback also to who hit in area?")][EnableIf("doAreaDamage")][SerializeField] bool knockbackAlsoInArea = true;
 
         [Header("Timer Autodestruction (0 = no autodestruction)")]
         [SerializeField] public float delayAutodestruction = 0;
-        [EnableIf("doAreaDamage")] [SerializeField] bool doAreaDamageAlsoOnAutoDestruction = true;
+        [EnableIf("doAreaDamage")][SerializeField] bool doAreaDamageAlsoOnAutoDestruction = true;
 
         [Header("DEBUG")]
         [SerializeField] bool drawDebug = false;
-        [ReadOnly] [SerializeField] Vector2 direction = Vector2.zero;
-        [ReadOnly] [SerializeField] float damage = 0;
-        [ReadOnly] [SerializeField] float bulletSpeed = 0;
+        [ReadOnly][SerializeField] Vector2 direction = Vector2.zero;
+        [ReadOnly][SerializeField] float damage = 0;
+        [ReadOnly][SerializeField] float bulletSpeed = 0;
 
         [HideInInspector] public Character Owner;
         WeaponRange weapon;
@@ -45,23 +49,24 @@ namespace redd096.GameTopDown2D
         List<Redd096Main> alreadyHit = new List<Redd096Main>();
         List<Redd096Main> alreadyHitsDamageInArea = new List<Redd096Main>();
 
+        int numberOfBounce;
         Coroutine autodestructionCoroutine;
 
         //events
-        public System.Action<GameObject> onHit { get; set; }        //also when penetrate something
+        public System.Action onInit { get; set; }
+        public System.Action<GameObject> onHit { get; set; }        //everytime hit something, also when penetrate or bounce
+        public System.Action<GameObject> onBounceHit { get; set; }  //when hit something and bounce
         public System.Action<GameObject> onLastHit { get; set; }    //when hit something that destroy this bullet
         public System.Action onAutodestruction { get; set; }        //when destroy by timer
-        public System.Action onDie { get; set; }                    //both hit something or destroyed by timer
+        public System.Action<Bullet> onDie { get; set; }            //both hit something or destroyed by timer
 
         private void Awake()
         {
             //get references
             if (movementComponent == null) movementComponent = GetComponent<MovementComponent>();
-            if (collisionComponent == null) collisionComponent = GetComponent<CollisionComponent>();
 
             //warnings
             if (movementComponent == null) Debug.LogWarning("Missing MovementComponent on " + name);
-            if (collisionComponent == null) Debug.LogWarning("Missing CollisionComponent on " + name);
         }
 
         void OnDrawGizmos()
@@ -74,30 +79,6 @@ namespace redd096.GameTopDown2D
                     Gizmos.color = Color.red;
                     Gizmos.DrawWireSphere(transform.position, radiusAreaDamage);
                 }
-            }
-        }
-
-        void OnEnable()
-        {
-            //get references
-            if (collisionComponent == null)
-                collisionComponent = GetComponent<CollisionComponent>();
-
-            //add events
-            if (collisionComponent)
-            {
-                collisionComponent.onCollisionEnter += OnRDCollisionEnter;
-                collisionComponent.onTriggerEnter += OnRDCollisionEnter;
-            }
-        }
-
-        void OnDisable()
-        {
-            //remove events
-            if (collisionComponent)
-            {
-                collisionComponent.onCollisionEnter -= OnRDCollisionEnter;
-                collisionComponent.onTriggerEnter -= OnRDCollisionEnter;
             }
         }
 
@@ -134,6 +115,8 @@ namespace redd096.GameTopDown2D
             //reset vars
             alreadyDead = false;
             alreadyHit.Clear();
+            numberOfBounce = 0;
+            if (autodestructionCoroutine != null) StopCoroutine(autodestructionCoroutine);
 
             this.direction = direction;
             this.damage = damage;
@@ -143,19 +126,19 @@ namespace redd096.GameTopDown2D
             ownerType = Owner ? (int)Owner.CharacterType : -1;  //if is not a character, set type to -1
 
             //ignore every collision with owner
-            if (Owner && collisionComponent)
+            if (Owner)
             {
                 foreach (Collider2D ownerCol in Owner.GetComponentsInChildren<Collider2D>())
                     foreach (Collider2D bulletCol in GetComponentsInChildren<Collider2D>())
-                        collisionComponent.IgnoreCollision(bulletCol, ownerCol);
+                        Physics2D.IgnoreCollision(bulletCol, ownerCol);
             }
 
             //ignore every collision with weapon
-            if (weapon && collisionComponent)
+            if (weapon)
             {
                 foreach (Collider2D weaponCol in weapon.GetComponentsInChildren<Collider2D>())
                     foreach (Collider2D bulletCol in GetComponentsInChildren<Collider2D>())
-                        collisionComponent.IgnoreCollision(bulletCol, weaponCol);
+                        Physics2D.IgnoreCollision(bulletCol, weaponCol);
             }
 
             //if passed autodestruction is greater then 0, use it. Else keep bullet delay
@@ -167,22 +150,29 @@ namespace redd096.GameTopDown2D
             {
                 autodestructionCoroutine = StartCoroutine(AutoDestructionCoroutine());
             }
+
+            //call event
+            onInit?.Invoke();
         }
 
-        void OnRDCollisionEnter(RaycastHit2D collision)
+        void OnTriggerEnter2D(Collider2D collision)
         {
             OnHit(collision);
         }
 
         #region private API
 
-        void OnHit(RaycastHit2D collision)
+        void OnHit(Collider2D collision)
         {
             if (alreadyDead)
                 return;
 
             //be sure to hit something
             if (collision == false || collision.transform == false)
+                return;
+
+            //be sure is not a layer to ignore
+            if (ContainsLayer(layersToIgnore, collision.transform.gameObject.layer))
                 return;
 
             GameObject hit = collision.transform.gameObject;
@@ -209,22 +199,41 @@ namespace redd096.GameTopDown2D
                 alreadyHit.Add(hitMain);
 
                 //if hit something, do damage and push back
-                if (hitMain.GetSavedComponent<HealthComponent>()) hitMain.GetSavedComponent<HealthComponent>().GetDamage(damage, Owner, collision.point, ignoreShield);
+                if (hitMain.GetSavedComponent<HealthComponent>()) hitMain.GetSavedComponent<HealthComponent>().GetDamage(damage, Owner, collision.ClosestPoint(transform.position), ignoreShield);
                 if (hitMain && hitMain.GetSavedComponent<MovementComponent>()) hitMain.GetSavedComponent<MovementComponent>().PushInDirection(direction, knockBack);
             }
 
-            //if is not a penetrable layer, destroy this object
+            //if is not a penetrable layer
             if (ContainsLayer(layersPenetrable, hit.layer) == false)
             {
-                //call event
-                onLastHit?.Invoke(hit);
+                //if can bounce and hit bounce layer, bounce
+                if ((maxNumberOfBounce < 0 || numberOfBounce < maxNumberOfBounce) && ContainsLayer(layersToBounce, hit.layer))
+                {
+                    //change direction
+                    RaycastHit2D bounceHit = Physics2D.Raycast(transform.position, direction, 1000, 1 << hit.layer);                        //raycast only hits hitted layer
+                    if (bounceHit)
+                        direction = Vector2.Reflect(direction, bounceHit.normal);
+                    else
+                        direction = -direction;                                                                                             //if raycast doesn't work, just move back
 
-                //damage in area too
-                if (doAreaDamage && radiusAreaDamage > 0)
-                    DamageInArea(hitMain);
+                    //increase bounce counter, rotate bullet and call event
+                    numberOfBounce++;
+                    transform.rotation = Quaternion.LookRotation(Vector3.forward, Quaternion.AngleAxis(90, Vector3.forward) * direction);   //rotate direction to left, to use right as forward
+                    onBounceHit?.Invoke(hit);
+                }
+                //else destroy this object
+                else
+                {
+                    //call event
+                    onLastHit?.Invoke(hit);
 
-                //destroy
-                Die();
+                    //damage in area too
+                    if (doAreaDamage && radiusAreaDamage > 0)
+                        DamageInArea(hitMain);
+
+                    //destroy
+                    Die();
+                }
             }
         }
 
@@ -253,8 +262,8 @@ namespace redd096.GameTopDown2D
             {
                 hitMain = col.GetComponentInParent<Redd096Main>();
 
-                if (hitMain != null && alreadyHitsDamageInArea.Contains(hitMain) == false                                       //be sure hit something and is not already hitted
-                    && collisionComponent && collisionComponent.CanHit(col) != CollisionComponent.ECollisionResponse.Ignore)    //be sure can be hit
+                if (hitMain != null && alreadyHitsDamageInArea.Contains(hitMain) == false       //be sure hit something and is not already hitted
+                    && ContainsLayer(layersToIgnore, col.gameObject.layer) == false)            //be sure can be hit
                 {
                     alreadyHitsDamageInArea.Add(hitMain);
 
@@ -304,7 +313,7 @@ namespace redd096.GameTopDown2D
                 StopCoroutine(autodestructionCoroutine);
 
             //call event
-            onDie?.Invoke();
+            onDie?.Invoke(this);
 
             //destroy bullet
             Pooling.Destroy(gameObject);

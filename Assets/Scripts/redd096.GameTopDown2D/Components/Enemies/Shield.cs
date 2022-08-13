@@ -13,7 +13,7 @@ namespace redd096.GameTopDown2D
         [SerializeField] Vector2 size = Vector2.one;
 
         [Header("Reduce Damage - return only a percentage")]
-        [Range(0f, 1f)] [SerializeField] float percentageDamage = 0.25f;
+        [Range(0f, 1f)][SerializeField] float percentageDamage = 0.25f;
 
         [Header("DEBUG")]
         [SerializeField] bool drawDebug = false;

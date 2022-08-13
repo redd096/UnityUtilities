@@ -11,10 +11,10 @@ namespace redd096.GameTopDown2D
 		enum EUpdateModes { Update, FixedUpdate, Coroutine }
 
 		[Header("Find Interactables")]
-		[Tooltip("Find interactables on Update or FixedUpdate?")] [SerializeField] EUpdateModes updateMode = EUpdateModes.Coroutine;
-		[Tooltip("Delay between updates using Coroutine method")] [EnableIf("updateMode", EUpdateModes.Coroutine)] [SerializeField] float timeCoroutine = 0.1f;
-		[Tooltip("Area to check for interactables")] [SerializeField] float radiusInteract = 1.5f;
-		[Tooltip("Ignore interactables with this layer")] [SerializeField] LayerMask layersToIgnore = default;
+		[Tooltip("Find interactables on Update or FixedUpdate?")][SerializeField] EUpdateModes updateMode = EUpdateModes.Coroutine;
+		[Tooltip("Delay between updates using Coroutine method")][EnableIf("updateMode", EUpdateModes.Coroutine)][SerializeField] float timeCoroutine = 0.1f;
+		[Tooltip("Area to check for interactables")][SerializeField] float radiusInteract = 1.5f;
+		[Tooltip("Ignore interactables with this layer")][SerializeField] LayerMask layersToIgnore = default;
 
 		[Header("DEBUG")]
 		[SerializeField] bool drawDebug = false;
@@ -22,6 +22,9 @@ namespace redd096.GameTopDown2D
 		//events
 		public System.Action<IInteractable> onFoundInteractable { get; set; }
 		public System.Action<IInteractable> onLostInteractable { get; set; }
+		//if interact with something that open a menu, can use a state in statemachine to call this event. Then the menu will register to this event to decide what to do
+		//for example, when player enter in a shop menu statemachine do nothing, but check if press Esc to call this event. Shop menu when start this event, close menu e reset statemachine
+		public System.Action inputEventForStateMachines { get; set; }
 
 		//update mode
 		Coroutine updateCoroutine;
