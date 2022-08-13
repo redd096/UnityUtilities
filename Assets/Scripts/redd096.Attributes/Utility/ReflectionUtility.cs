@@ -8,9 +8,8 @@ namespace redd096.Attributes
 {
 	public static class ReflectionUtility
 	{
-		#region return serialized property field
-
 #if UNITY_EDITOR
+		#region everything from SerializedProperty
 
 		/// <summary>
 		/// Return field of this property, used for example to get or set a value without know the type
@@ -20,16 +19,23 @@ namespace redd096.Attributes
 		public static FieldInfo GetField(this SerializedProperty property)
 		{
 			//find field using property.name
-			foreach (FieldInfo field in property.serializedObject.targetObject.GetFields())
-				if (field.Name.Equals(property.name, System.StringComparison.Ordinal))
-					return field;
-
-			return null;
+			return property.GetTargetObjectWithProperty().GetField(property.name);
 		}
 
-#endif
+		/// <summary>
+		/// Return a value from a field, or property, or method. Use this property targetObject
+		/// </summary>
+		/// <param name="property"></param>
+		/// <param name="valueName"></param>
+		/// <param name="methodReturnTypes">Call methods only with this return type. If null call every method</param>
+		/// <returns></returns>
+		public static object GetValue(this SerializedProperty property, string valueName, params System.Type[] methodReturnTypes)
+		{
+			return property.GetTargetObjectWithProperty().GetValue(valueName, methodReturnTypes);
+		}
 
 		#endregion
+#endif
 
 		#region return first
 
@@ -48,20 +54,6 @@ namespace redd096.Attributes
 		}
 
 		/// <summary>
-		/// Get Method by name
-		/// </summary>
-		/// <param name="property"></param>
-		/// <returns></returns>
-		public static MethodInfo GetMethod(this object targetObject, string methodName)
-		{
-			foreach (MethodInfo method in targetObject.GetMethods())
-				if (method.Name.Equals(methodName, System.StringComparison.Ordinal))
-					return method;
-
-			return null;
-		}
-
-		/// <summary>
 		/// Get Property by name
 		/// </summary>
 		/// <param name="property"></param>
@@ -75,19 +67,23 @@ namespace redd096.Attributes
 			return null;
 		}
 
+		/// <summary>
+		/// Get Method by name
+		/// </summary>
+		/// <param name="property"></param>
+		/// <returns></returns>
+		public static MethodInfo GetMethod(this object targetObject, string methodName)
+		{
+			foreach (MethodInfo method in targetObject.GetMethods())
+				if (method.Name.Equals(methodName, System.StringComparison.Ordinal))
+					return method;
+
+			return null;
+		}
+
 		#endregion
 
 		#region return array
-
-		/// <summary>
-		/// Return every method in this object
-		/// </summary>
-		/// <param name="targetObject"></param>
-		/// <returns></returns>
-		public static MethodInfo[] GetMethods(this object targetObject)
-		{
-			return targetObject.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.DeclaredOnly);
-		}
 
 		/// <summary>
 		/// Return every field in this object
@@ -107,6 +103,16 @@ namespace redd096.Attributes
 		public static PropertyInfo[] GetProperties(this object targetObject)
 		{
 			return targetObject.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.DeclaredOnly);
+		}
+
+		/// <summary>
+		/// Return every method in this object
+		/// </summary>
+		/// <param name="targetObject"></param>
+		/// <returns></returns>
+		public static MethodInfo[] GetMethods(this object targetObject)
+		{
+			return targetObject.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.DeclaredOnly);
 		}
 
 		#endregion
@@ -153,6 +159,128 @@ namespace redd096.Attributes
 			return method.GetParameters().All(p => p.IsOptional);
 		}
 
+		/// <summary>
+		/// Return true if this method's ReturnType is void
+		/// </summary>
+		/// <param name="method"></param>
+		/// <returns></returns>
+		public static bool IsReturnTypeVoid(this MethodInfo method)
+        {
+			return method.ReturnType == typeof(void);
+        }
+
+		/// <summary>
+		/// Return true if this method's ReturnType is one of these in the parameters
+		/// </summary>
+		/// <param name="method"></param>
+		/// <param name="methodReturnTypes"></param>
+		/// <returns></returns>
+		public static bool IsReturnTypeOneOfThese(this MethodInfo method, params System.Type[] methodReturnTypes)
+        {
+			foreach (System.Type t in methodReturnTypes)
+            {
+				if (method.ReturnType == t)
+					return true;
+            }
+
+			return false;
+        }
+
 		#endregion
-	}
+
+		#region return value
+
+		/// <summary>
+		/// Return a value from a field, or property, or method.
+		/// </summary>
+		/// <param name="targetObject"></param>
+		/// <param name="valueName"></param>
+		/// <param name="methodReturnTypes">Call methods only with this return type. If null call every method</param>
+		/// <returns></returns>
+		public static object GetValue(this object targetObject, string valueName, params System.Type[] methodReturnTypes)
+		{
+			//if string is empty, return null
+			if (string.IsNullOrEmpty(valueName))
+			{
+				return null;
+			}
+			else
+			{
+				//else try get values from field
+				FieldInfo fieldValues = targetObject.GetField(valueName);
+				if (fieldValues != null)
+				{
+					return fieldValues.GetValue(targetObject);
+				}
+
+				//else try get from a property
+				PropertyInfo propertyValues = targetObject.GetProperty(valueName);
+				if (propertyValues != null)
+				{
+					return propertyValues.GetValue(targetObject);
+				}
+
+				//else try from a method
+				MethodInfo methodValues = targetObject.GetMethod(valueName);
+				if (methodValues != null)
+				{
+					//can have only zero or optional parameters
+					if (methodValues.HasZeroParameterOrOnlyOptional())
+					{
+						//if there aren't return types, call every type of method
+						if (methodReturnTypes == null || methodReturnTypes.Length <= 0)
+						{
+							//pass default values, if there are optional parameters
+							return methodValues.Invoke(targetObject, methodValues.GetDefaultParameters());
+						}
+						//else check if return type is inside the array
+						else
+						{
+							foreach (System.Type t in methodReturnTypes)
+							{
+								//pass default values, if there are optional parameters
+								if (methodValues.ReturnType == t)
+									return methodValues.Invoke(targetObject, methodValues.GetDefaultParameters());
+							}
+						}
+					}
+
+					UnityEngine.Object targetUnityObject = targetObject as UnityEngine.Object;
+					UnityEngine.Debug.LogWarning(targetUnityObject.name + " can't invoke '" + methodValues.Name + "'. It can invoke only methods with 0 or optional parameters and return type: " + SystemTypesToString(false, methodReturnTypes), targetUnityObject);
+				}
+
+				return null;
+			}
+		}
+
+		#endregion
+
+		#region debug
+
+		/// <summary>
+		/// Return a string with every System.Type separated by a comma
+		/// </summary>
+		/// <param name="defaultIsVoid">If types are null or length is 0, return void as type</param>
+		/// <param name="types"></param>
+		/// <returns></returns>
+		public static string SystemTypesToString(bool defaultIsVoid = true, params System.Type[] types)
+        {
+			//if no types, return void as type or empty
+			if (types == null || types.Length <= 0)
+            {
+				return defaultIsVoid ? "void" : "";
+            }
+
+			//else return every type separated by a comma
+			string s = "";
+			foreach (System.Type t in types)
+            {
+				s += (t.Name + ", ");
+            }
+
+			return s;
+        }
+
+        #endregion
+    }
 }

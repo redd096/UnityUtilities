@@ -30,9 +30,17 @@ namespace redd096.Attributes
             at = attribute as ShowAssetPreviewAttribute;
 
             //get texture or sprite
-            textureToShow = property.objectReferenceValue as Texture;
-            if (textureToShow == null && property.objectReferenceValue is Sprite)
-                textureToShow = ((Sprite)property.objectReferenceValue).texture;
+            object obj = property.GetValue(property.name, typeof(Texture), typeof(Sprite));
+            if (obj is Texture)
+            {
+                textureToShow = obj as Texture;
+            }
+            else if (obj is Sprite)
+            {
+                Sprite sprite = obj as Sprite;
+                if (sprite)
+                    textureToShow = sprite.texture;
+            }
 
             //show texture preview
             if (at != null && textureToShow)

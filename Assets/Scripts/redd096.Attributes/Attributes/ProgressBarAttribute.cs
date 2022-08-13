@@ -23,7 +23,7 @@ namespace redd096.Attributes
 		{
 			//get attribute and max value
 			ProgressBarAttribute at = attribute as ProgressBarAttribute;
-			object maxValueObject = GetMaxValue(property, at);
+			object maxValueObject = property.GetValue(at.maxValueName, typeof(int), typeof(float));
 
 			//be sure property and maxValue are numbers
 			if (IsNumber(property) && IsNumber(maxValueObject))
@@ -56,50 +56,6 @@ namespace redd096.Attributes
         {
 			return maxValueObject != null && (maxValueObject is int || maxValueObject is float);
         }
-
-		object GetMaxValue(SerializedProperty property, ProgressBarAttribute at)
-		{
-			//if string is empty, return float value
-			if (string.IsNullOrEmpty(at.maxValueName))
-			{
-				return at.maxValue;
-			}
-			else
-			{
-				Object targetObject = property.serializedObject.targetObject;
-
-				//else try get values from field
-				FieldInfo fieldValues = targetObject.GetField(at.maxValueName);
-				if (fieldValues != null)
-				{
-					return fieldValues.GetValue(targetObject);
-				}
-
-				//else try get from a property
-				PropertyInfo propertyValues = targetObject.GetProperty(at.maxValueName);
-				if (propertyValues != null)
-				{
-					return propertyValues.GetValue(targetObject);
-				}
-
-				//else try from a method
-				MethodInfo methodValues = targetObject.GetMethod(at.maxValueName);
-				if (methodValues != null)
-				{
-					//can have only zero or optional parameters and must return float or int
-					if (methodValues.HasZeroParameterOrOnlyOptional() && (methodValues.ReturnType == typeof(float) || methodValues.ReturnType == typeof(int)))
-					{
-						return methodValues.Invoke(targetObject, methodValues.GetDefaultParameters());      //pass default values, if there are optional parameters
-					}
-					else
-					{
-						Debug.LogWarning(at.GetType().Name + " can't invoke '" + methodValues.Name + "'. It can invoke only methods with 0 or optional parameters and return type float or int", targetObject);
-					}
-				}
-
-				return null;
-			}
-		}
 
 		Color GetColor(ProgressBarAttribute.EColor color)
 		{

@@ -28,7 +28,7 @@ namespace redd096.Attributes
                 OnValueChangedAttribute at = attribute as OnValueChangedAttribute;
 
                 //in target object, find method with same name and invoke
-                MethodInfo method = property.serializedObject.targetObject.GetMethod(at.methodName);
+                MethodInfo method = property.GetTargetObjectWithProperty().GetMethod(at.methodName);
 
                 //only if with 0 or only optional parameters
                 if (method != null && method.HasZeroParameterOrOnlyOptional())

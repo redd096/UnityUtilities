@@ -24,7 +24,8 @@ namespace redd096.Attributes
             if (property.propertyType == SerializedPropertyType.Integer || property.propertyType == SerializedPropertyType.String)
             {
                 //get scenes name
-                scenes = GetScenesInBuildIndex();
+                SceneAttribute at = attribute as SceneAttribute;
+                scenes = GetScenesInBuildIndex(property, at.showAlsoNotEnabledScenes);
 
                 //find current selected index, then show dropdown to select
                 index = GetCurrentIndex(property);
@@ -45,7 +46,7 @@ namespace redd096.Attributes
             EditorGUI.EndProperty();
         }
 
-        string[] GetScenesInBuildIndex()
+        string[] GetScenesInBuildIndex(SerializedProperty property, bool showAlsoNotEnabledScenes)
         {
             //get name of every scene in build settings
             List<string> scenesList = new List<string>();
@@ -54,6 +55,8 @@ namespace redd096.Attributes
                 //only if enabled
                 if (EditorBuildSettings.scenes[i].enabled)
                     scenesList.Add(GetSceneNameFromPath(EditorBuildSettings.scenes[i].path) + " (" + scenesList.Count + ")");   //sceneName (index)
+                else if (property.propertyType == SerializedPropertyType.String && showAlsoNotEnabledScenes)
+                    scenesList.Add(GetSceneNameFromPath(EditorBuildSettings.scenes[i].path) + " ()");                           //sceneName ()
             }
 
             return scenesList.ToArray();
@@ -107,5 +110,15 @@ namespace redd096.Attributes
     /// </summary>
     public class SceneAttribute : PropertyAttribute
     {
+        public readonly bool showAlsoNotEnabledScenes;
+
+        /// <summary>
+        /// Show dropdown of every scene in Build Index
+        /// </summary>
+        /// <param name="showAlsoNotEnabledScenes">It works only with string values</param>
+        public SceneAttribute(bool showAlsoNotEnabledScenes = false)
+        {
+            this.showAlsoNotEnabledScenes = showAlsoNotEnabledScenes;
+        }
     }
 }

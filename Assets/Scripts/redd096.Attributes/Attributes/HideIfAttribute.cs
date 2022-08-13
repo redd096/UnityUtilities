@@ -12,9 +12,6 @@ namespace redd096.Attributes
     [CustomPropertyDrawer(typeof(HideIfAttribute))]
     public class HideIfDrawer : PropertyDrawer
     {
-        //used to compare float
-        float floatingPoint = 0.05f;
-
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
             //update height only if can hide is false (to hide space where there are hidden variables) - necessary also to update height when open a list/array/struct in inspector
@@ -45,19 +42,19 @@ namespace redd096.Attributes
             //compare property
             if (at.comparing)
             {
-                SerializedProperty comparedProperty = property.FindCorrectProperty(at.propertyA);
+                object comparedObject = property.GetValue(at.propertyA);
 
-                //compare property based on propertyType
-                if (comparedProperty.propertyType == SerializedPropertyType.Boolean)
-                    return CompareEqual(at, comparedProperty.boolValue);
-                else if (comparedProperty.propertyType == SerializedPropertyType.Enum)
-                    return CompareEqual(at, comparedProperty.enumValueIndex);
-                else if (comparedProperty.propertyType == SerializedPropertyType.Integer)
-                    return CompareInt(at, comparedProperty.intValue);
-                else if (comparedProperty.propertyType == SerializedPropertyType.Float)
-                    return CompareFloat(at, comparedProperty.floatValue);
-                else if (comparedProperty.propertyType == SerializedPropertyType.String)
-                    return CompareEqual(at, comparedProperty.stringValue);
+                //compare based on type
+                if (comparedObject is bool)
+                    return CompareEqual(at, (bool)comparedObject);
+                else if (comparedObject is string)
+                    return CompareEqual(at, (string)comparedObject);
+                else if (comparedObject is System.Enum)
+                    return CompareInt(at, (int)comparedObject);
+                else if (comparedObject is int)
+                    return CompareInt(at, (int)comparedObject);
+                else if (comparedObject is float)
+                    return CompareFloat(at, (float)comparedObject);
 
                 return false;
             }
@@ -73,7 +70,7 @@ namespace redd096.Attributes
             //foreach value to check
             foreach (string value in at.values)
             {
-                bool check = property.FindCorrectProperty(value).boolValue;
+                bool check = (bool)property.GetValue(value, typeof(bool));
 
                 //if check AND, when find one false, return false
                 if (at.conditionOperator == HideIfAttribute.EConditionOperator.AND && check == false)
@@ -131,9 +128,9 @@ namespace redd096.Attributes
             switch (at.comparisonType)
             {
                 case HideIfAttribute.EComparisonType.isEqual:
-                    return Mathf.Abs(comparedProperty - (float)at.valueToCompare) <= floatingPoint;
+                    return Mathf.Approximately(comparedProperty, (float)at.valueToCompare);
                 case HideIfAttribute.EComparisonType.isNotEqual:
-                    return comparedProperty != (float)at.valueToCompare;
+                    return Mathf.Approximately(comparedProperty, (float)at.valueToCompare) == false;
                 case HideIfAttribute.EComparisonType.isGreater:
                     return comparedProperty > (float)at.valueToCompare;
                 case HideIfAttribute.EComparisonType.isGreaterEqual:
@@ -143,7 +140,7 @@ namespace redd096.Attributes
                 case HideIfAttribute.EComparisonType.isLowerEqual:
                     return comparedProperty <= (float)at.valueToCompare;
                 default:
-                    return Mathf.Abs(comparedProperty - (float)at.valueToCompare) <= floatingPoint;
+                    return Mathf.Approximately(comparedProperty, (float)at.valueToCompare);
             }
         }
 
