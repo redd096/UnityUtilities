@@ -11,20 +11,55 @@ namespace redd096.GameTopDown2D
 
         [Header("Update camera position to follow this object")]
         [SerializeField] bool updatePosition = true;
-        [Tooltip("Use LateUpdate or Update to move the camera?")] [EnableIf("updatePosition")] [SerializeField] bool useLateUpdate = true;
-        [EnableIf("updatePosition")] [SerializeField] Vector3 offsetPosition = new Vector3(0, 0, -10);
+        [Tooltip("Use LateUpdate or Update to move the camera?")][EnableIf("updatePosition")][SerializeField] bool useLateUpdate = true;
+        [EnableIf("updatePosition")][SerializeField] Vector3 offsetPosition = new Vector3(0, 0, -10);
 
         [Header("Clamp camera position to pixelsPerUnit")]
         [SerializeField] bool usePixelClamp = false;
-        [EnableIf("usePixelClamp")] [SerializeField] float pixelsPerUnit = 16;
+        [EnableIf("usePixelClamp")][SerializeField] float pixelsPerUnit = 16;
 
         [Header("Drop Camera On Death (necessary HealthComponent - default get from this gameObject)")]
         [SerializeField] bool dropCameraOnDeath = true;
-        [EnableIf("dropCameraOnDeath")] [SerializeField] HealthComponent healthComponent = default;
+        [EnableIf("dropCameraOnDeath")][SerializeField] HealthComponent healthComponent = default;
+
+        [Header("Confine camera in a cube")]
+        [SerializeField] bool isConfined = false;
+        [SerializeField] Vector3 minConfiner = -Vector3.one * 10;
+        [SerializeField] Vector3 maxConfiner = Vector3.one * 10;
+        [SerializeField] bool showGizmos = false;
 
         Transform cameraParent;
         Vector3 movement;
         Vector3 oldPosition;
+        Vector3 newPosition;
+
+        void OnDrawGizmos()
+        {
+            if (showGizmos)
+            {
+                Gizmos.color = Color.red;
+
+                //front quad
+                Gizmos.DrawLine(minConfiner, new Vector3(maxConfiner.x, minConfiner.y, minConfiner.z));
+                Gizmos.DrawLine(new Vector3(maxConfiner.x, minConfiner.y, minConfiner.z), new Vector3(maxConfiner.x, maxConfiner.y, minConfiner.z));
+                Gizmos.DrawLine(new Vector3(maxConfiner.x, maxConfiner.y, minConfiner.z), new Vector3(minConfiner.x, maxConfiner.y, minConfiner.z));
+                Gizmos.DrawLine(new Vector3(minConfiner.x, maxConfiner.y, minConfiner.z), minConfiner);
+
+                //back quad
+                Gizmos.DrawLine(maxConfiner, new Vector3(minConfiner.x, maxConfiner.y, maxConfiner.z));
+                Gizmos.DrawLine(new Vector3(minConfiner.x, maxConfiner.y, maxConfiner.z), new Vector3(minConfiner.x, minConfiner.y, maxConfiner.z));
+                Gizmos.DrawLine(new Vector3(minConfiner.x, minConfiner.y, maxConfiner.z), new Vector3(maxConfiner.x, minConfiner.y, maxConfiner.z));
+                Gizmos.DrawLine(new Vector3(maxConfiner.x, minConfiner.y, maxConfiner.z), maxConfiner);
+
+                //depth
+                Gizmos.DrawLine(minConfiner, new Vector3(minConfiner.x, minConfiner.y, maxConfiner.z));
+                Gizmos.DrawLine(new Vector3(maxConfiner.x, minConfiner.y, minConfiner.z), new Vector3(maxConfiner.x, minConfiner.y, maxConfiner.z));
+                Gizmos.DrawLine(new Vector3(maxConfiner.x, maxConfiner.y, minConfiner.z), maxConfiner);
+                Gizmos.DrawLine(new Vector3(minConfiner.x, maxConfiner.y, minConfiner.z), new Vector3(minConfiner.x, maxConfiner.y, maxConfiner.z));
+
+                Gizmos.color = Color.white;
+            }
+        }
 
         void OnEnable()
         {
@@ -109,19 +144,109 @@ namespace redd096.GameTopDown2D
                 movement = PixelClamp(movement);                                            //clamp movement to pixelPerUnit
                 oldPosition = PixelClamp(cameraParent.position);                            //clamp old position to pixelsPerUnit
 
-                cameraParent.position = oldPosition + movement;                             //set new position using clamped values
+                newPosition = oldPosition + movement;                                       //set new position using clamped values
             }
             //just move camera to position + offset
             else
             {
-                cameraParent.position = transform.position + offsetPosition;
+                newPosition = transform.position + offsetPosition;
             }
+
+            //set position (confined or not)
+            cameraParent.position = isConfined ? ConfinedPosition(newPosition) : newPosition;
         }
 
         Vector3 PixelClamp(Vector3 position)
         {
             //round position * pixelsPerUnit, then divide by pixelsPerUnit
             return new Vector3(Mathf.RoundToInt(position.x * pixelsPerUnit), Mathf.RoundToInt(position.y * pixelsPerUnit), Mathf.RoundToInt(position.z * pixelsPerUnit)) / pixelsPerUnit;
+        }
+
+        Vector3 ConfinedPosition(Vector3 position)
+        {
+            //confine x, y, z
+            return new Vector3(
+                Mathf.Clamp(position.x, minConfiner.x, maxConfiner.x),
+                Mathf.Clamp(position.y, minConfiner.y, maxConfiner.y),
+                Mathf.Clamp(position.z, minConfiner.z, maxConfiner.z));
+        }
+
+        #endregion
+
+        #region public API
+
+        /// <summary>
+        /// Set confiners using box collider 2D
+        /// </summary>
+        /// <param name="boxCollider"></param>
+        public void SetConfine(BoxCollider2D boxCollider)
+        {
+            if (boxCollider == null)
+                return;
+
+            //calculate box collider size
+            Vector2 center = (Vector2)boxCollider.transform.position + boxCollider.offset * boxCollider.transform.lossyScale;
+            Vector2 halfSize = boxCollider.size * boxCollider.transform.lossyScale * 0.5f;
+
+            //set confiner (keep Z already setted)
+            isConfined = true;
+            minConfiner = new Vector3(center.x - halfSize.x, center.y - halfSize.y, minConfiner.z);
+            maxConfiner = new Vector3(center.x + halfSize.x, center.y + halfSize.y, maxConfiner.z);
+        }
+
+        /// <summary>
+        /// Set confiners using box collider
+        /// </summary>
+        /// <param name="boxCollider"></param>
+        public void SetConfine(BoxCollider boxCollider)
+        {
+            if (boxCollider == null)
+                return;
+
+            //calculate box collider size
+            Vector3 center = boxCollider.transform.position + Vector3.Scale(boxCollider.center, boxCollider.transform.lossyScale);
+            Vector3 halfSize = Vector3.Scale(boxCollider.size, boxCollider.transform.lossyScale) * 0.5f;
+
+            //set confiner
+            isConfined = true;
+            minConfiner = new Vector3(center.x - halfSize.x, center.y - halfSize.y, center.z - halfSize.z);
+            maxConfiner = new Vector3(center.x + halfSize.x, center.y + halfSize.y, center.z + halfSize.z);
+        }
+
+        /// <summary>
+        /// Set min confiner
+        /// </summary>
+        /// <param name="minConfine"></param>
+        public void SetMinConfine(Vector3 minConfine)
+        {
+            isConfined = true;
+            minConfiner = minConfine;
+        }
+
+        /// <summary>
+        /// Set max confiner
+        /// </summary>
+        /// <param name="maxConfine"></param>
+        public void SetMaxConfine(Vector3 maxConfine)
+        {
+            isConfined = true;
+            maxConfiner = maxConfine;
+        }
+
+        /// <summary>
+        /// Set confined inside already setted min and max confiner
+        /// </summary>
+        public void Confine()
+        {
+            isConfined = true;
+        }
+
+        /// <summary>
+        /// Remove confiners
+        /// </summary>
+        public void UnConfine()
+        {
+            isConfined = false;
         }
 
         #endregion
