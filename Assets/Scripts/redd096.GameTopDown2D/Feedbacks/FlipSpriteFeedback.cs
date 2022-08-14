@@ -4,27 +4,34 @@ using UnityEngine;
 namespace redd096.GameTopDown2D
 {
     [AddComponentMenu("redd096/.GameTopDown2D/Feedbacks/Flip Sprite Feedback")]
-    public class FlipSpriteFeedback : MonoBehaviour
+    public class FlipSpriteFeedback : FeedbackRedd096
     {
         [Header("Necessary Components - default get in parent")]
         [SerializeField] AimComponent aimComponent;
 
         [Header("Default get component in children")]
-        [Tooltip("By default these sprites are looking to the right?")] [SerializeField] bool defaultLookRight = true;
+        [Tooltip("By default these sprites are looking to the right?")][SerializeField] bool defaultLookRight = true;
         [SerializeField] SpriteRenderer[] spritesToFlip = default;
 
         //TEMP
         Coroutine flipSpriteCoroutine;
         Character selfCharacter;
 
-        void OnEnable()
+        protected override void OnEnable()
         {
             //TEMP
-            selfCharacter = GetComponentInParent<Character>();
+            if (selfCharacter == null) selfCharacter = GetComponentInParent<Character>();
 
             //get references
             if (aimComponent == null) aimComponent = GetComponentInParent<AimComponent>();
             if (spritesToFlip == null || spritesToFlip.Length <= 0) spritesToFlip = GetComponentsInChildren<SpriteRenderer>();
+
+            base.OnEnable();
+        }
+
+        protected override void AddEvents()
+        {
+            base.AddEvents();
 
             //add events
             if (aimComponent)
@@ -34,14 +41,17 @@ namespace redd096.GameTopDown2D
             }
         }
 
-        void OnDisable()
+        protected override void RemoveEvents()
         {
+            base.RemoveEvents();
+
             //remove events
             if (aimComponent)
                 aimComponent.onChangeAimDirection -= OnChangeAimDirection;
         }
 
-        void OnChangeAimDirection(bool isLookingRight)
+        //public to use for example when doing Dash. Disable this script and call manually this function
+        public void OnChangeAimDirection(bool isLookingRight)
         {
             //TEMP for enemies use a coroutine
             if (selfCharacter && selfCharacter.CharacterType == Character.ECharacterType.AI)

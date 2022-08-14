@@ -3,7 +3,7 @@
 namespace redd096.GameTopDown2D
 {
     [AddComponentMenu("redd096/.GameTopDown2D/Feedbacks/Idle Run Animation Feedback")]
-    public class IdleRunAnimationFeedback : MonoBehaviour
+    public class IdleRunAnimationFeedback : FeedbackRedd096
     {
         [Header("Necessary Components - default get in child and parent")]
         [SerializeField] Animator anim = default;
@@ -17,10 +17,13 @@ namespace redd096.GameTopDown2D
 
         bool isRunning;
 
-        void OnEnable()
+        protected override void OnEnable()
         {
+            //get references
             if (anim == null) anim = GetComponentInChildren<Animator>();
             if (movementComponent == null) movementComponent = GetComponentInParent<MovementComponent>();
+
+            base.OnEnable();
         }
 
         void Update()

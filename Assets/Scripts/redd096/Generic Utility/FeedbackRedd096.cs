@@ -50,6 +50,7 @@ namespace redd096
         /// </summary>
         /// <param name="feedback"></param>
         /// <param name="parent"></param>
+        /// <param name="worldPositionStays"></param>
         protected void InstantiateFeedback(FeedbackStructRedd096 feedback, Transform parent = null, bool worldPositionStays = true)
         {
             feedback.InstantiateFeedback(parent ? parent : transform, worldPositionStays);
@@ -117,6 +118,17 @@ namespace redd096
             outInstantiatedGameObjects = instantiatedGameObjects.ToArray();
             outInstantiatedParticles = instantiatedParticles.ToArray();
             outInstantiatedAudios = instantiatedAudios.ToArray();
+        }
+
+        public void InstantiateFeedback(Vector3 position, Quaternion rotation, Transform parent = null, bool worldPositionStays = true)
+        {
+            //instantiate
+            InstantiateFeedback(parent, worldPositionStays);
+
+            //set custom position and rotation
+            instantiatedGameObjects.ForEach(x => { x.transform.position = position; x.transform.rotation = rotation; });
+            instantiatedParticles.ForEach(x => { x.transform.position = position; x.transform.rotation = rotation; });
+            instantiatedAudios.ForEach(x => { x.transform.position = position; x.transform.rotation = rotation; });
         }
 
         public void InstantiateFeedback(Transform parent, bool worldPositionStays = true)

@@ -3,40 +3,42 @@
 namespace redd096.GameTopDown2D
 {
     [AddComponentMenu("redd096/.GameTopDown2D/Feedbacks/Exit Feedback")]
-    public class ExitFeedbacks : MonoBehaviour
+    public class ExitFeedbacks : FeedbackRedd096<ExitInteractable>
     {
-        [Header("Necessary Components - default get in parent")]
-        [SerializeField] ExitInteractable interactable;
-
         [Header("Animator - default get in children")]
         [SerializeField] Animator anim = default;
         [SerializeField] string boolParameter = "IsOpen";
 
-        void OnEnable()
+        [Header("Command to show when open")]
+        [SerializeField] GameObject objectToShow = default;
+
+        protected override void OnEnable()
         {
             //get references
-            if (interactable == null) interactable = GetComponentInParent<ExitInteractable>();
             if (anim == null) anim = GetComponentInChildren<Animator>();
 
-            //add events
-            if (interactable)
-            {
-                interactable.onOpen += OnSetState;
-                interactable.onClose += OnSetState;
-
-                //set default value
-                OnSetState();
-            }
+            base.OnEnable();
         }
 
-        void OnDisable()
+        protected override void AddEvents()
         {
+            base.AddEvents();
+
+            //add events
+            owner.onOpen += OnSetState;
+            owner.onClose += OnSetState;
+
+            //set default value
+            OnSetState();
+        }
+
+        protected override void RemoveEvents()
+        {
+            base.RemoveEvents();
+
             //remove events
-            if (interactable)
-            {
-                interactable.onOpen -= OnSetState;
-                interactable.onClose -= OnSetState;
-            }
+            owner.onOpen -= OnSetState;
+            owner.onClose -= OnSetState;
         }
 
         void OnSetState()
@@ -44,8 +46,12 @@ namespace redd096.GameTopDown2D
             //move to open or close animation
             if (anim)
             {
-                anim.SetBool(boolParameter, interactable.IsOpen);
+                anim.SetBool(boolParameter, owner.IsOpen);
             }
+
+            //show object when open and hide when close
+            if (objectToShow)
+                objectToShow.SetActive(owner.IsOpen);
         }
     }
 }

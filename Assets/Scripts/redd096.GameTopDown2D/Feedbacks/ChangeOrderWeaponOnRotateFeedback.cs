@@ -32,6 +32,7 @@ namespace redd096.GameTopDown2D
         {
             base.AddEvents();
 
+            //add events
             owner.onPickWeapon += OnPickWeapon;
             owner.onDropWeapon += OnDropWeapon;
 
@@ -43,6 +44,7 @@ namespace redd096.GameTopDown2D
         {
             base.RemoveEvents();
 
+            //remove events
             owner.onPickWeapon -= OnPickWeapon;
             owner.onDropWeapon -= OnDropWeapon;
         }

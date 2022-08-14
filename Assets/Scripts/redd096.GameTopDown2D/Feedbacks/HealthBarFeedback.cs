@@ -3,13 +3,13 @@ using UnityEngine;
 using redd096.Attributes;
 using UnityEngine.UI;
 
+//if not setted automatically, you need to put predictionImage above healthImage (to render behind)
 namespace redd096.GameTopDown2D
 {
     [AddComponentMenu("redd096/.GameTopDown2D/Feedbacks/Health Bar Feedback")]
-    public class HealthBarFeedback : MonoBehaviour
+    public class HealthBarFeedback : FeedbackRedd096<HealthComponent>
     {
-        [Header("Necessary Components - default get in parent")]
-        [SerializeField] HealthComponent healthComponent = default;
+        [Header("Health Bar (Image with fill amount)")]
         [SerializeField] Image healthImage = default;
 
         [Header("Predict")]
@@ -22,31 +22,33 @@ namespace redd096.GameTopDown2D
 
         Coroutine updateHealthBarCoroutine;
 
-        void OnEnable()
+        protected override void OnEnable()
         {
             //get references
             if (healthImage == null) healthImage = GetComponentInParent<Image>();
-            if (healthComponent == null) healthComponent = GetComponentInParent<HealthComponent>();
 
             //set prediction above health (to render it behind)
             if (healthImage && predictionImage)
                 predictionImage.transform.SetSiblingIndex(healthImage.transform.GetSiblingIndex() - 1);
 
-            //add events
-            if (healthComponent)
-            {
-                healthComponent.onChangeHealth += UpdateLife;
-                UpdateLife(); //set default value
-            }
+            base.OnEnable();
         }
 
-        void OnDisable()
+        protected override void AddEvents()
         {
+            base.AddEvents();
+
+            //add events
+            owner.onChangeHealth += UpdateLife;
+            UpdateLife(); //set default value
+        }
+
+        protected override void RemoveEvents()
+        {
+            base.RemoveEvents();
+
             //remove events
-            if (healthComponent)
-            {
-                healthComponent.onChangeHealth -= UpdateLife;
-            }
+            owner.onChangeHealth -= UpdateLife;
         }
 
         void UpdateLife()
@@ -58,7 +60,7 @@ namespace redd096.GameTopDown2D
             //if predict is not enabled or there isn't prediction image, just set health value
             if (enablePredict == false || predictionImage == null)
             {
-                healthImage.fillAmount = healthComponent.CurrentHealth / healthComponent.MaxHealth;
+                healthImage.fillAmount = owner.CurrentHealth / owner.MaxHealth;
             }
             //else start coroutine to update health using prediction too
             else
@@ -73,7 +75,7 @@ namespace redd096.GameTopDown2D
         IEnumerator UpdateHealthBarCoroutine()
         {
             //check if increase or decrease
-            float valueToReach = healthComponent.CurrentHealth / healthComponent.MaxHealth;
+            float valueToReach = owner.CurrentHealth / owner.MaxHealth;
             bool increase = valueToReach >= predictionImage.fillAmount;
 
             //set prediction color (increase or decrease)

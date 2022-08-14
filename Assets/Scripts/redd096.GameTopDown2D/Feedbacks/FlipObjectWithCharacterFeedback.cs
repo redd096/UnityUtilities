@@ -3,7 +3,7 @@
 namespace redd096.GameTopDown2D
 {
     [AddComponentMenu("redd096/.GameTopDown2D/Feedbacks/Flip Object With Character Feedback")]
-    public class FlipObjectWithCharacterFeedback : MonoBehaviour
+    public class FlipObjectWithCharacterFeedback : FeedbackRedd096
     {
         enum EFlipType { BasedOnAim, BasedOnMovement }
 
@@ -11,13 +11,13 @@ namespace redd096.GameTopDown2D
         [SerializeField] MovementComponent movementComponent = default;
         [SerializeField] AimComponent aimComponent = default;
 
-        [Header("object to flip (already in scene/prefab)")]
-        [SerializeField] GameObject objectToFlip = default;
+        [Header("Object to flip (already in scene/prefab) - default is this transform")]
+        [SerializeField] Transform objectToFlip = default;
 
         [Header("Flip Rules")]
-        [Tooltip("Default look right, set negative values when look left, or viceversa")] [SerializeField] bool defaultCharacterIsLookingRight = true;
-        [Tooltip("Use AimComponent or MovementComponent")] [SerializeField] EFlipType flipType = EFlipType.BasedOnAim;
-        [Tooltip("Set only position or also scale")] [SerializeField] bool flipAlsoScale = false;
+        [Tooltip("Default look right, set negative values when look left, or viceversa")][SerializeField] bool defaultCharacterIsLookingRight = true;
+        [Tooltip("Use AimComponent or MovementComponent")][SerializeField] EFlipType flipType = EFlipType.BasedOnAim;
+        [Tooltip("Set only position or also scale")][SerializeField] bool flipAlsoScale = false;
 
         bool ownerIsLookingRight;
 
@@ -27,10 +27,19 @@ namespace redd096.GameTopDown2D
             ownerIsLookingRight = defaultCharacterIsLookingRight;
         }
 
-        void OnEnable()
+        protected override void OnEnable()
         {
+            //get references
             if (movementComponent == null) movementComponent = GetComponentInParent<MovementComponent>();
             if (aimComponent == null) aimComponent = GetComponentInParent<AimComponent>();
+            if (objectToFlip == null) objectToFlip = transform;
+
+            base.OnEnable();
+        }
+
+        protected override void AddEvents()
+        {
+            base.AddEvents();
 
             //add events
             if (movementComponent)
@@ -45,8 +54,10 @@ namespace redd096.GameTopDown2D
             }
         }
 
-        void OnDisable()
+        protected override void RemoveEvents()
         {
+            base.RemoveEvents();
+
             //remove events
             if (movementComponent)
             {
@@ -70,8 +81,8 @@ namespace redd096.GameTopDown2D
                     ownerIsLookingRight = movingRight;
 
                     //rotate scale and change offset
-                    objectToFlip.transform.localPosition = new Vector2(-objectToFlip.transform.localPosition.x, objectToFlip.transform.localPosition.y);
-                    if (flipAlsoScale) objectToFlip.transform.localScale = new Vector2(-objectToFlip.transform.localScale.x, objectToFlip.transform.localScale.y);
+                    objectToFlip.localPosition = new Vector2(-objectToFlip.localPosition.x, objectToFlip.localPosition.y);
+                    if (flipAlsoScale) objectToFlip.localScale = new Vector2(-objectToFlip.localScale.x, objectToFlip.localScale.y);
                 }
             }
         }
@@ -86,8 +97,8 @@ namespace redd096.GameTopDown2D
                     ownerIsLookingRight = lookingRight;
 
                     //rotate scale and change offset
-                    objectToFlip.transform.localPosition = new Vector2(-objectToFlip.transform.localPosition.x, objectToFlip.transform.localPosition.y);
-                    if (flipAlsoScale) objectToFlip.transform.localScale = new Vector2(-objectToFlip.transform.localScale.x, objectToFlip.transform.localScale.y);
+                    objectToFlip.localPosition = new Vector2(-objectToFlip.localPosition.x, objectToFlip.localPosition.y);
+                    if (flipAlsoScale) objectToFlip.localScale = new Vector2(-objectToFlip.localScale.x, objectToFlip.localScale.y);
                 }
             }
         }

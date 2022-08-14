@@ -4,7 +4,7 @@ using UnityEngine;
 namespace redd096.GameTopDown2D
 {
     [AddComponentMenu("redd096/.GameTopDown2D/Pickables/Pick Up BASE")]
-    public abstract class PickUpBASE<T> : MonoBehaviour, IPickable where T : Component
+    public abstract class PickUpBASE<T> : PickUpBASE where T : Component
     {
         enum EUpdateMode { Never, FixedUpdate, Coroutine }
 
@@ -14,10 +14,6 @@ namespace redd096.GameTopDown2D
 
         [Header("Destroy when instantiated - 0 = no destroy")]
         [SerializeField] float timeBeforeDestroy = 0;
-
-        //events
-        public System.Action<PickUpBASE<T>> onPick { get; set; }
-        public System.Action<PickUpBASE<T>> onFailPick { get; set; }
 
         protected Character whoHit;
         protected T whoHitComponent;
@@ -117,7 +113,7 @@ namespace redd096.GameTopDown2D
 
         #region protected API
 
-        public abstract void PickUp();
+        public abstract override void PickUp();
 
         protected abstract bool CanPickUp();
 
@@ -138,5 +134,14 @@ namespace redd096.GameTopDown2D
         }
 
         #endregion
+    }
+
+    public abstract class PickUpBASE : MonoBehaviour, IPickable
+    {
+        //events
+        public System.Action<PickUpBASE> onPick { get; set; }
+        public System.Action<PickUpBASE> onFailPick { get; set; }
+
+        public abstract void PickUp();
     }
 }

@@ -44,6 +44,7 @@ namespace redd096.GameTopDown2D
         {
             base.AddEvents();
 
+            //add events
             owner.onInit += OnInit;
             owner.onHit += OnHit;
             owner.onBounceHit += OnBounceHit;
@@ -56,6 +57,7 @@ namespace redd096.GameTopDown2D
         {
             base.RemoveEvents();
 
+            //remove events
             owner.onInit -= OnInit;
             owner.onHit -= OnHit;
             owner.onBounceHit -= OnBounceHit;

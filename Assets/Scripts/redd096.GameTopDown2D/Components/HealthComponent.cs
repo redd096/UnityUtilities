@@ -84,12 +84,14 @@ namespace redd096.GameTopDown2D
                 if (SetTempInvincibleWhenHitted)
                     SetTemporaryInvincible(DurationTempInvincibilityWhenHitted);
 
-                //call events only if damage is > 0
+                //call event only if damage is > 0
                 if (damage > Mathf.Epsilon)
                 {
                     onGetDamage?.Invoke(whoHit, hitPoint);
-                    onChangeHealth?.Invoke();
                 }
+
+                //call always event
+                onChangeHealth?.Invoke();
             }
 
             //check if dead

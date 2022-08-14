@@ -3,7 +3,7 @@
 namespace redd096.GameTopDown2D
 {
     [AddComponentMenu("redd096/.GameTopDown2D/Feedbacks/Get Hit Animation Feedback")]
-    public class GetHitAnimationFeedback : MonoBehaviour
+    public class GetHitAnimationFeedback : FeedbackRedd096
     {
         [Header("Necessary Components - default get in child and parent")]
         [SerializeField] Animator anim = default;
@@ -17,11 +17,20 @@ namespace redd096.GameTopDown2D
         [SerializeField] bool setTriggerOnGetDamage = true;
         [SerializeField] bool setTriggerOnDie = true;
 
-        void OnEnable()
+        protected override void OnEnable()
         {
+            //get references
             if (anim == null) anim = GetComponentInChildren<Animator>();
             if (healthComponent == null) healthComponent = GetComponentInParent<HealthComponent>();
 
+            base.OnEnable();
+        }
+
+        protected override void AddEvents()
+        {
+            base.AddEvents();
+
+            //add events
             if (healthComponent)
             {
                 healthComponent.onGetDamage += OnGetDamage;
@@ -29,8 +38,11 @@ namespace redd096.GameTopDown2D
             }
         }
 
-        void OnDisable()
+        protected override void RemoveEvents()
         {
+            base.RemoveEvents();
+
+            //remove events
             if (healthComponent)
             {
                 healthComponent.onGetDamage -= OnGetDamage;

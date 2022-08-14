@@ -3,20 +3,18 @@
 namespace redd096.GameTopDown2D
 {
     [AddComponentMenu("redd096/.GameTopDown2D/Feedbacks/Move Weapon Feedback")]
-    public class MoveWeaponFeedback : MonoBehaviour
+    public class MoveWeaponFeedback : FeedbackRedd096<WeaponBASE>
     {
-        [Header("Necessary Components - default get in parent")]
-        [SerializeField] WeaponBASE weaponBASE;
-
         [Header("Pivot - default is this transform")]
         [SerializeField] Transform objectPivot = default;
         [SerializeField] float offsetFromCharacter = 0.5f;
 
-        void OnEnable()
+        protected override void OnEnable()
         {
             //get references
-            if (weaponBASE == null) weaponBASE = GetComponentInParent<WeaponBASE>();
             if (objectPivot == null) objectPivot = transform;
+
+            base.OnEnable();
         }
 
         void Update()
@@ -28,9 +26,9 @@ namespace redd096.GameTopDown2D
         void MoveWeapon()
         {
             //move to owner + offset
-            if (weaponBASE && weaponBASE.Owner && weaponBASE.Owner.GetSavedComponent<AimComponent>())
+            if (owner && owner.Owner && owner.Owner.GetSavedComponent<AimComponent>())
             {
-                objectPivot.position = (Vector2)weaponBASE.Owner.transform.position + (weaponBASE.Owner.GetSavedComponent<AimComponent>().AimDirectionInput * offsetFromCharacter);
+                objectPivot.position = (Vector2)owner.Owner.transform.position + (owner.Owner.GetSavedComponent<AimComponent>().AimDirectionInput * offsetFromCharacter);
             }
         }
     }
