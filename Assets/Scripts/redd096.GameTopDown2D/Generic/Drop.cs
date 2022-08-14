@@ -18,7 +18,7 @@ namespace redd096.GameTopDown2D
         [SerializeField] bool dropOnDeactivate = false;
 
         [Header("Drop")]
-        [ReadOnly] [SerializeField] int totalPercentage = 0;
+        [ReadOnly][SerializeField] int totalPercentage = 0;
         [SerializeField] DropStruct[] drops = default;
 
         SpawnableObject spawnableObject;

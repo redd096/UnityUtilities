@@ -10,14 +10,14 @@ namespace redd096
 		public static CameraShake instance;
 
 		[Header("Camera - by default is main camera")]
-		[Tooltip("If null, use main camera")] [SerializeField] Transform camTransform;
+		[Tooltip("If null, use main camera")][SerializeField] Transform camTransform;
 
 		[Header("Shake")]
-		[Tooltip("How long should shake")] [SerializeField] float shakeDuration = 1f;
-		[Tooltip("Amplitude of the shake. A larger value shakes the camera harder")] [SerializeField] float shakeAmount = 0.7f;
+		[Tooltip("How long should shake")][SerializeField] float shakeDuration = 1f;
+		[Tooltip("Amplitude of the shake. A larger value shakes the camera harder")][SerializeField] float shakeAmount = 0.7f;
 
 		[Header("Overwrite - start shake also if another is running")]
-		[Tooltip("If another shake is already running, stop it and start new one")] [SerializeField] bool overwriteShake = true;
+		[Tooltip("If another shake is already running, stop it and start new one")][SerializeField] bool overwriteShake = true;
 
 		Coroutine shakeCoroutine;
 		Transform cameraParent;
@@ -112,17 +112,17 @@ namespace redd096
 		[EnableIf("DoShake", "CustomShake")] public float ShakeDuration;
 		[EnableIf("DoShake", "CustomShake")] public float ShakeAmount;
 
-        public void TryShake()
-        {
-            //camera shake
-            if (DoShake && CameraShake.instance)
-            {
-                //custom or default
-                if (CustomShake)
+		public void TryShake()
+		{
+			//camera shake
+			if (DoShake && CameraShake.instance)
+			{
+				//custom or default
+				if (CustomShake)
 					CameraShake.instance.StartShake(ShakeDuration, ShakeAmount);
-                else
+				else
 					CameraShake.instance.StartShake();
-            }
-        }
-    }
+			}
+		}
+	}
 }

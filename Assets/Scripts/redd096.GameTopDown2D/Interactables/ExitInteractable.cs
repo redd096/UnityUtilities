@@ -8,14 +8,14 @@ namespace redd096.GameTopDown2D
     public class ExitInteractable : MonoBehaviour, IInteractable
     {
         [Header("Rules to Open")]
-        [Tooltip("Check there are no enemies in scene")] [SerializeField] bool checkNoEnemiesInScene = true;
-        [Tooltip("Check every player has weapon")] [SerializeField] bool checkEveryPlayerHasWeapon = true;
+        [Tooltip("Check there are no enemies in scene")][SerializeField] bool checkNoEnemiesInScene = true;
+        [Tooltip("Check every player has weapon")][SerializeField] bool checkEveryPlayerHasWeapon = true;
 
         [Header("On Interact")]
-        [SerializeField] [Scene] string sceneToLoad = default;
+        [SerializeField][Scene] string sceneToLoad = default;
 
         [Header("DEBUG")]
-        /*[ShowNonSerializedField]*/ [SerializeField] [ReadOnly] bool isOpen;
+        /*[ShowNonSerializedField]*/[SerializeField][ReadOnly] bool isOpen;
 
         [Button("Force Exit", ButtonAttribute.EEnableType.PlayMode)] public void ForceExit() => ChangeExitState();
 
@@ -130,11 +130,8 @@ namespace redd096.GameTopDown2D
         void OnEnemyDie(SpawnableObject enemy)
         {
             //when an enemy die, remove from the list
-            if (enemy)
-            {
-                if (enemies.Contains(enemy))
-                    enemies.Remove(enemy);
-            }
+            if (enemies.Contains(enemy))
+                enemies.Remove(enemy);
 
             //do checks
             DoCheck();

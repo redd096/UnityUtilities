@@ -13,12 +13,12 @@ namespace redd096
 		public static GamepadVibration instance;
 
 		[Header("Vibration")]
-		[Tooltip("How long should vibrate")] [SerializeField] float vibrationDuration = 0.1f;
-		[Tooltip("Amplitude of the vibration")] [SerializeField] float lowFrequency = 0.5f;
-		[Tooltip("Amplitude of the vibration")] [SerializeField] float highFrequency = 0.8f;
+		[Tooltip("How long should vibrate")][SerializeField] float vibrationDuration = 0.1f;
+		[Tooltip("Amplitude of the vibration")][SerializeField] float lowFrequency = 0.5f;
+		[Tooltip("Amplitude of the vibration")][SerializeField] float highFrequency = 0.8f;
 
 		[Header("Overwrite - start vibration also if another is running")]
-		[Tooltip("If another vibration is already running, stop it and start new one")] [SerializeField] bool overwriteVibration = true;
+		[Tooltip("If another vibration is already running, stop it and start new one")][SerializeField] bool overwriteVibration = true;
 
 		Coroutine vibrationCoroutine;
 

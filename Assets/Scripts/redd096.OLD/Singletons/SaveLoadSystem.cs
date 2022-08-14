@@ -2,7 +2,7 @@
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
-namespace redd096
+namespace redd096.OLD
 {
     #region custom editor
 
@@ -72,10 +72,12 @@ namespace redd096
     public class ExampleClassToSave
     {
         public int test;
+        public string[] testArray;
 
-        public ExampleClassToSave(int test)
+        public ExampleClassToSave(int test, string[] testArray)
         {
             this.test = test;
+            this.testArray = testArray;
         }
     }
 
@@ -86,7 +88,7 @@ namespace redd096
         persistentDataPath, gameFolder, nothing
     }
 
-    [AddComponentMenu("redd096/Singletons/Save and Load System")]
+    [AddComponentMenu("redd096/.OLD/Singletons/Save and Load System")]
     [DefaultExecutionOrder(-200)]
     public class SaveLoadSystem : Singleton<SaveLoadSystem>
     {

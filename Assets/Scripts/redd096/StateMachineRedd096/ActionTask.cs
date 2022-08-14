@@ -18,7 +18,7 @@ namespace redd096
         /// <summary>
         /// Call onCompleteTask delegate
         /// </summary>
-        protected virtual void CompleteTask()
+        protected void CompleteTask()
         {
             onCompleteTask?.Invoke();
         }
