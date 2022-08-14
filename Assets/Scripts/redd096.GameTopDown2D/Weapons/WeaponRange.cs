@@ -49,7 +49,7 @@ namespace redd096.GameTopDown2D
         //events
         public System.Action<Transform> onInstantiateBullet { get; set; }       //called for every bullet instantiated
         public System.Action onShoot { get; set; }                              //called one time for shoot, also if instantiate more bullets
-        public System.Action onLastShotBurst { get; set; }                      //called when shoot last shot of a burst (for FireMode == Burst), also if there are is only one ammo
+        public System.Action onLastShotBurst { get; set; }                      //called when shoot last shot of a burst (for FireMode == Burst), also if there is only one ammo
         public System.Action onFailShoot { get; set; }                          //called when fail to shoot, for example when there are no ammo
         public System.Action onPressAttack { get; set; }                        //called when press attack, also if not shoot or shoot more times
         public System.Action onReleaseAttack { get; set; }                      //called when release attack
