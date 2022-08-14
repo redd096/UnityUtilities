@@ -108,7 +108,7 @@ namespace redd096
             }
         }
 
-        #region publi API
+        #region public API
 
         public void DestroyMap()
         {

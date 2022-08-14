@@ -88,7 +88,7 @@ namespace redd096
         /// <summary>
         /// Fade out, then reload this scene
         /// </summary>
-        public void FadeOutRestartScene()
+        public void FadeOutReloadScene()
         {
             StartFade(false, () => SceneLoader.instance.ReloadScene());
         }

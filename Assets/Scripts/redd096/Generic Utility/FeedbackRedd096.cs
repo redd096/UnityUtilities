@@ -70,7 +70,7 @@ namespace redd096
     public struct FeedbackStructRedd096
     {
         [Tooltip("Use array to instantiate every single element, or just one picked random from it")] public bool InstantiateOneRandom;
-        [Tooltip("When instantiated, set parent of the object which instantiate it?")] public bool SetParent;
+        [Tooltip("When instantiated, set child of the object which instantiate it?")] public bool SetParent;
         public InstantiatedGameObjectStruct[] GameObjectsFeedback;
         public ParticleSystem[] ParticlesFeedback;
         public AudioClass[] AudiosFeedback;

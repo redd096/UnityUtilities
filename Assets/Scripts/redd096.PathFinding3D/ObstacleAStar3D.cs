@@ -14,19 +14,20 @@ namespace redd096.PathFinding3D
 
         [Header("Collider Obstacle")]
         [SerializeField] bool useCustomCollider = true;
-        [HideIf("useCustomCollider")] [SerializeField] Collider[] colliders = default;
-        [ShowIf("useCustomCollider")] [SerializeField] Vector3 offset = Vector3.zero;
-        [ShowIf("useCustomCollider")] [SerializeField] ETypeCollider typeCollider = ETypeCollider.box;
-        [ShowIf("useCustomCollider")] [EnableIf("typeCollider", ETypeCollider.box)] [SerializeField] Vector3 sizeCollider = Vector3.one;
-        [ShowIf("useCustomCollider")] [EnableIf("typeCollider", ETypeCollider.sphere)] [SerializeField] float radiusCollider = 1;
+        [DisableIf("useCustomCollider")][SerializeField] Collider[] colliders = default;
+        [ShowIf("useCustomCollider")][SerializeField] Vector3 offset = Vector3.zero;
+        [ShowIf("useCustomCollider")][SerializeField] ETypeCollider typeCollider = ETypeCollider.box;
+        [ShowIf("useCustomCollider")][EnableIf("typeCollider", ETypeCollider.sphere)][SerializeField] float radiusCollider = 1;
+        [ShowIf("useCustomCollider")][EnableIf("typeCollider", ETypeCollider.box)] [SerializeField] Vector3 sizeCollider = Vector3.one;
 
         [Header("Type Obstacle (set unwalkable or add penalty)")]
         [SerializeField] bool setUnwalkable = false;
         [SerializeField] bool addPenalty = true;
-        [EnableIf("addPenalty")] [SerializeField] int penalty = 1;
+        [EnableIf("addPenalty")][SerializeField] int penalty = 1;
 
         [Header("DEBUG (only custom collider)")]
-        [SerializeField] bool drawDebug = false;
+        [SerializeField] bool drawCustomCollider = false;
+        [SerializeField] Color colorDebugCustomCollider = Color.cyan;
 
         public bool IsUnwalkable => setUnwalkable;
         public int AddPenalty => addPenalty ? penalty : 0;
@@ -45,9 +46,9 @@ namespace redd096.PathFinding3D
 
         void OnDrawGizmos()
         {
-            if (drawDebug && useCustomCollider)
+            if (drawCustomCollider && useCustomCollider)
             {
-                Gizmos.color = Color.cyan;
+                Gizmos.color = colorDebugCustomCollider;
 
                 //draw box
                 if (typeCollider == ETypeCollider.box)

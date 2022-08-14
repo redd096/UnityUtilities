@@ -28,6 +28,7 @@ namespace redd096
     {
         #region variables
 
+        //TODO use doors on every room to instantiate. No limit Y or Z
         [Header("Use Z instead of Y")]
         [SerializeField] bool useZ = true;
 
@@ -36,6 +37,10 @@ namespace redd096
         [Tooltip("Int because the size will be exspressed in tiles")] [SerializeField] int width = 1;
         [Tooltip("Int because the size will be exspressed in tiles")] [SerializeField] int height = 1;
         [SerializeField] protected List<DoorStruct> doors = new List<DoorStruct>();
+
+        [Header("DEBUG")]
+        [SerializeField] bool drawRoomArea = true;
+        [SerializeField] Color colorRoomArea = Color.cyan;
 
         float HalfWidth => width * tileSize * 0.5f;
         float HalfHeight => height * tileSize * 0.5f;
@@ -54,10 +59,15 @@ namespace redd096
 
         protected virtual void OnDrawGizmos()
         {
-            Gizmos.color = Color.cyan;
+            if (drawRoomArea)
+            {
+                Gizmos.color = colorRoomArea;
 
-            //draw room size
-            Gizmos.DrawWireCube(transform.position, new Vector3(width * tileSize, useZ ? 0 : height * tileSize, useZ ? height * tileSize : 0));
+                //draw room size
+                Gizmos.DrawWireCube(transform.position, new Vector3(width * tileSize, useZ ? 0 : height * tileSize, useZ ? height * tileSize : 0));
+
+                Gizmos.color = Color.white;
+            }
         }
 
         #region public API

@@ -23,7 +23,8 @@ namespace redd096.PathFinding3D
         [SerializeField] ObstacleAStar3D obstacleAStar = default;
 
         [Header("DEBUG (only custom collider)")]
-        [SerializeField] bool drawDebug = false;
+        [SerializeField] bool drawCustomCollider = false;
+        [SerializeField] Color colorDebugCustomCollider = Color.cyan;
 
         //vars
         Node3D node;
@@ -45,9 +46,9 @@ namespace redd096.PathFinding3D
 
         void OnDrawGizmos()
         {
-            if (drawDebug && useCustomCollider)
+            if (drawCustomCollider && useCustomCollider)
             {
-                Gizmos.color = Color.cyan;
+                Gizmos.color = colorDebugCustomCollider;
 
                 //draw box
                 if (typeCollider == ETypeCollider.box)

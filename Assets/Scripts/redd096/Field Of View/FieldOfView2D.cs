@@ -1,58 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using redd096.Attributes;
 
 namespace redd096
 {
-
-#if UNITY_EDITOR
-
-    using UnityEditor;
-
-    [CustomEditor(typeof(FieldOfView2D))]
-    public class FieldOfViewEditor2D : Editor
-    {
-        void OnSceneGUI()
-        {
-            //draw circle
-            FieldOfView2D fov = (FieldOfView2D)target;
-            Handles.color = Color.white;
-            Handles.DrawWireArc(fov.transform.position, Vector3.back, fov.StartDirection, 360, fov.viewRadius);
-
-            //draw 2 line to see cone vision
-            Vector3 ViewAngleA = fov.DirFromAngle(-fov.viewAngle / 2, false);
-            Vector3 ViewAngleB = fov.DirFromAngle(fov.viewAngle / 2, false);
-            Handles.DrawLine(fov.transform.position, fov.transform.position + ViewAngleA * fov.viewRadius);
-            Handles.DrawLine(fov.transform.position, fov.transform.position + ViewAngleB * fov.viewRadius);
-
-            //show targets
-            Handles.color = Color.red;
-            foreach (Transform visibleTarget in fov.VisibleTargets)
-            {
-                Handles.DrawLine(fov.transform.position, visibleTarget.position);
-            }
-        }
-
-        public override void OnInspectorGUI()
-        {
-            base.OnInspectorGUI();
-
-            GUILayout.Space(10);
-
-            //button to show if hit targets
-            if (GUILayout.Button("Update Targets"))
-            {
-                FieldOfView2D fov = (FieldOfView2D)target;
-                fov.FindVisibleTargets();
-
-                //repaint scene
-                SceneView.RepaintAll();
-            }
-        }
-    }
-
-#endif
-
     [AddComponentMenu("redd096/Field Of View/Field Of View 2D")]
     public class FieldOfView2D : MonoBehaviour
     {
@@ -65,10 +17,51 @@ namespace redd096
         [SerializeField] LayerMask targetMask = -1;
         [SerializeField] LayerMask obstacleMask = default;
 
-        List<Transform> visibleTargets = new List<Transform>();
+        [Header("DEBUG")]
+        [SerializeField] bool drawDebugFieldOfView = false;
+        [SerializeField] Color colorDebugFieldOfView = Color.cyan;
+        [SerializeField] bool drawDebugLineToTargets = false;
+        [SerializeField] Color colorDebugLineToTargets = Color.red;
 
+#if UNITY_EDITOR
+        [Button("Update Targets")] void ButtonUpdateTargets() { FindVisibleTargets(); UnityEditor.SceneView.RepaintAll(); }
+#endif
+
+        List<Transform> visibleTargets = new List<Transform>();
+        
         public List<Transform> VisibleTargets => visibleTargets;
-        public Vector3 StartDirection => pointDirection ? (pointDirection.position - transform.position).normalized : Vector3.up;   //direction from our to pointDirection - else look up
+        public Vector3 StartDirection => pointDirection ? (pointDirection.position - transform.position).normalized : transform.up;   //direction to pointDirection - else look up
+        
+        private void OnDrawGizmos()
+        {
+            if (drawDebugFieldOfView)
+            {
+#if UNITY_EDITOR
+                //draw circle
+                UnityEditor.Handles.color = colorDebugFieldOfView;
+                UnityEditor.Handles.DrawWireDisc(transform.position, Vector3.back, viewRadius);
+                UnityEditor.Handles.color = Color.white;
+#endif
+
+                //draw 2 line to see cone vision
+                Gizmos.color = colorDebugFieldOfView;
+                Vector3 ViewAngleA = DirFromAngle(-viewAngle / 2, false);
+                Vector3 ViewAngleB = DirFromAngle(viewAngle / 2, false);
+                Gizmos.DrawLine(transform.position, transform.position + ViewAngleA * viewRadius);
+                Gizmos.DrawLine(transform.position, transform.position + ViewAngleB * viewRadius);
+            }
+            if (drawDebugLineToTargets)
+            {
+                //show targets
+                Gizmos.color = colorDebugLineToTargets;
+                foreach (Transform visibleTarget in visibleTargets)
+                {
+                    Gizmos.DrawLine(transform.position, visibleTarget.position);
+                }
+            }
+        
+            Gizmos.color = Color.white;
+        }
 
         void OnEnable()
         {

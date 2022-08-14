@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.UI;
-using redd096;
 using redd096.Attributes;
 
 namespace redd096

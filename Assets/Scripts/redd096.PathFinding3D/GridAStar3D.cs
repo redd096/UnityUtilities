@@ -71,8 +71,8 @@ namespace redd096.PathFinding3D
         [SerializeField] protected Vector2 gridWorldSize = Vector2.one;
         [SerializeField] [Min(0.1f)] protected float nodeDiameter = 1;
 
-        [Header("Gizmos")]
-        [SerializeField] protected bool drawGizmos = false;
+        [Header("Gizmos - cyan Area - green/red walkable node - magenta obstacle")]
+        [SerializeField] protected bool drawGridArea = false;
         [SerializeField] protected bool drawObstacles = false;
         [SerializeField] protected float alphaNodes = 0.3f;
 
@@ -101,7 +101,7 @@ namespace redd096.PathFinding3D
 
         void OnDrawGizmos()
         {
-            if (drawGizmos)
+            if (drawGridArea)
             {
                 //draw area
                 Gizmos.color = Color.cyan;
