@@ -1,76 +1,63 @@
 ﻿using UnityEngine;
-using redd096.Attributes;
 
 namespace redd096.GameTopDown2D
 {
     [AddComponentMenu("redd096/.GameTopDown2D/Feedbacks/Bullet Feedback")]
-    public class BulletFeedback : MonoBehaviour
+    public class BulletFeedback : FeedbackRedd096<Bullet>
     {
-        [Header("Necessary Components - default get in parent")]
-        [SerializeField] Bullet bullet;
+        [Header("On Spawn bullet")]
+        [SerializeField] FeedbackStructRedd096 feedbackOnInit = default;
+        [SerializeField] CameraShakeStruct cameraShakeOnInit = default;
 
         [Header("On Hit (also if move through this object)")]
-        [SerializeField] InstantiatedGameObjectStruct gameObjectOnHit = default;
-        [SerializeField] ParticleSystem particlesOnHit = default;
-        [SerializeField] AudioClass audioOnHit = default;
+        [SerializeField] FeedbackStructRedd096 feedbackOnHit = default;
+        [SerializeField] CameraShakeStruct cameraShakeOnHit = default;
+
+        [Header("On Bounce")]
+        [SerializeField] FeedbackStructRedd096 feedbackOnBounce = default;
+        [SerializeField] CameraShakeStruct cameraShakeOnBounce = default;
 
         [Header("On Hit something that destroy bullet")]
-        [SerializeField] InstantiatedGameObjectStruct gameObjectOnLastHit = default;
-        [SerializeField] ParticleSystem particlesOnLastHit = default;
-        [SerializeField] AudioClass audioOnLastHit = default;
+        [SerializeField] FeedbackStructRedd096 feedbackOnLastHit = default;
+        [SerializeField] CameraShakeStruct cameraShakeOnLastHit = default;
 
         [Header("On AutoDestruction")]
-        [SerializeField] InstantiatedGameObjectStruct gameObjectOnAutodestruction = default;
-        [SerializeField] ParticleSystem particlesOnAutodestruction = default;
-        [SerializeField] AudioClass audioOnAutodestruction = default;
+        [SerializeField] FeedbackStructRedd096 feedbackOnAutoDestruction = default;
+        [SerializeField] CameraShakeStruct cameraShakeOnAutoDestruction = default;
 
         [Header("On Destroy (both autodestruction or hit)")]
-        [SerializeField] InstantiatedGameObjectStruct gameObjectOnDestroy = default;
-        [SerializeField] ParticleSystem particlesOnDestroy = default;
-        [SerializeField] AudioClass audioOnDestroy = default;
-
-        [Header("Camera Shake")]
-        [SerializeField] bool cameraShakeOnHit = false;
-        [SerializeField] bool cameraShakeOnHitSomethingThatDestroyBullet = false;
-        [SerializeField] bool cameraShakeOnAutoDestruction = false;
-        [SerializeField] bool cameraShakeOnDestroy = false;
-        [EnableIf(EnableIfAttribute.EConditionOperator.OR, "cameraShakeOnHit", "cameraShakeOnHitSomethingThatDestroyBullet", "cameraShakeOnAutoDestruction", "cameraShakeOnDestroy")][SerializeField] bool customShake = false;
-        [EnableIf(EnableIfAttribute.EConditionOperator.OR, "cameraShakeOnHit", "cameraShakeOnHitSomethingThatDestroyBullet", "cameraShakeOnAutoDestruction", "cameraShakeOnDestroy")][SerializeField] float shakeDuration = 1;
-        [EnableIf(EnableIfAttribute.EConditionOperator.OR, "cameraShakeOnHit", "cameraShakeOnHitSomethingThatDestroyBullet", "cameraShakeOnAutoDestruction", "cameraShakeOnDestroy")][SerializeField] float shakeAmount = 0.7f;
+        [SerializeField] FeedbackStructRedd096 feedbackOnDestroy = default;
+        [SerializeField] CameraShakeStruct cameraShakeOnDestroy = default;
 
         TrailRenderer trail;
 
-        void OnEnable()
+        protected override void OnEnable()
         {
-            //get references
-            if (bullet == null)
-                bullet = GetComponentInParent<Bullet>();
-
+            //get other references
             if (trail == null)
                 trail = GetComponentInChildren<TrailRenderer>();
 
-            //add events
-            if (bullet)
-            {
-                bullet.onInit += OnInit;
-                bullet.onHit += OnHit;
-                bullet.onLastHit += OnLastHit;
-                bullet.onAutodestruction += OnAutodestruction;
-                bullet.onDie += OnDie;
-            }
+            base.OnEnable();
         }
 
-        void OnDisable()
+        protected override void AddEvents()
         {
-            //remove events
-            if (bullet)
-            {
-                bullet.onInit -= OnInit;
-                bullet.onHit -= OnHit;
-                bullet.onLastHit -= OnLastHit;
-                bullet.onAutodestruction -= OnAutodestruction;
-                bullet.onDie -= OnDie;
-            }
+            owner.onInit += OnInit;
+            owner.onHit += OnHit;
+            owner.onBounceHit += OnBounceHit;
+            owner.onLastHit += OnLastHit;
+            owner.onAutodestruction += OnAutodestruction;
+            owner.onDie += OnDie;
+        }
+
+        protected override void RemoveEvents()
+        {
+            owner.onInit -= OnInit;
+            owner.onHit -= OnHit;
+            owner.onBounceHit -= OnBounceHit;
+            owner.onLastHit -= OnLastHit;
+            owner.onAutodestruction -= OnAutodestruction;
+            owner.onDie -= OnDie;
         }
 
         private void OnInit()
@@ -78,78 +65,57 @@ namespace redd096.GameTopDown2D
             //reset trail
             if (trail)
                 trail.Clear();
-        }
 
-        void OnHit(GameObject hit)
-        {
             //instantiate vfx and sfx
-            InstantiateGameObjectManager.instance.Play(gameObjectOnHit, transform.position, transform.rotation);
-            ParticlesManager.instance.Play(particlesOnHit, transform.position, transform.rotation);
-            SoundManager.instance.Play(audioOnHit, transform.position);
+            InstantiateFeedback(feedbackOnInit);
 
             //camera shake
-            if (cameraShakeOnHit && CameraShake.instance)
-            {
-                //custom or default
-                if (customShake)
-                    CameraShake.instance.StartShake(shakeDuration, shakeAmount);
-                else
-                    CameraShake.instance.StartShake();
-            }
+            cameraShakeOnInit.TryShake();
         }
 
-        void OnLastHit(GameObject hit)
+        private void OnHit(GameObject hit)
         {
             //instantiate vfx and sfx
-            InstantiateGameObjectManager.instance.Play(gameObjectOnLastHit, transform.position, transform.rotation);
-            ParticlesManager.instance.Play(particlesOnLastHit, transform.position, transform.rotation);
-            SoundManager.instance.Play(audioOnLastHit, transform.position);
+            InstantiateFeedback(feedbackOnHit);
 
             //camera shake
-            if (cameraShakeOnHitSomethingThatDestroyBullet && CameraShake.instance)
-            {
-                //custom or default
-                if (customShake)
-                    CameraShake.instance.StartShake(shakeDuration, shakeAmount);
-                else
-                    CameraShake.instance.StartShake();
-            }
+            cameraShakeOnHit.TryShake();
         }
 
-        void OnAutodestruction()
+        private void OnBounceHit(GameObject obj)
         {
             //instantiate vfx and sfx
-            InstantiateGameObjectManager.instance.Play(gameObjectOnAutodestruction, transform.position, transform.rotation);
-            ParticlesManager.instance.Play(particlesOnAutodestruction, transform.position, transform.rotation);
-            SoundManager.instance.Play(audioOnAutodestruction, transform.position);
+            InstantiateFeedback(feedbackOnBounce);
 
             //camera shake
-            if (cameraShakeOnAutoDestruction && CameraShake.instance)
-            {
-                //custom or default
-                if (customShake)
-                    CameraShake.instance.StartShake(shakeDuration, shakeAmount);
-                else
-                    CameraShake.instance.StartShake();
-            }
+            cameraShakeOnBounce.TryShake();
         }
 
-        void OnDie(Bullet bullet)
+        private void OnLastHit(GameObject hit)
         {
             //instantiate vfx and sfx
-            InstantiateGameObjectManager.instance.Play(gameObjectOnDestroy, transform.position, transform.rotation);
-            ParticlesManager.instance.Play(particlesOnDestroy, transform.position, transform.rotation);
-            SoundManager.instance.Play(audioOnDestroy, transform.position);
+            InstantiateFeedback(feedbackOnLastHit);
 
             //camera shake
-            if (cameraShakeOnDestroy && CameraShake.instance)
-            {
-                //custom or default
-                if (customShake)
-                    CameraShake.instance.StartShake(shakeDuration, shakeAmount);
-                else
-                    CameraShake.instance.StartShake();
-            }
+            cameraShakeOnLastHit.TryShake();
+        }
+
+        private void OnAutodestruction()
+        {
+            //instantiate vfx and sfx
+            InstantiateFeedback(feedbackOnAutoDestruction);
+
+            //camera shake
+            cameraShakeOnAutoDestruction.TryShake();
+        }
+
+        private void OnDie(Bullet bullet)
+        {
+            //instantiate vfx and sfx
+            InstantiateFeedback(feedbackOnDestroy);
+
+            //camera shake
+            cameraShakeOnDestroy.TryShake();
         }
     }
 }

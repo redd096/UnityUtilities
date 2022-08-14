@@ -5,7 +5,8 @@ namespace redd096
 {
     public abstract class FeedbackRedd096<T> : MonoBehaviour
     {
-        protected T owner;
+        [Header("Necessary Components - default get in parent")]
+        [SerializeField] protected T owner;
 
         protected virtual void OnEnable()
         {

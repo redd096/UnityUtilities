@@ -8,7 +8,7 @@ namespace redd096
     public struct InstantiatedGameObjectStruct
     {
         public GameObject instantiatedGameObject;
-        public float timeAutodestruction;
+        [Tooltip("0 = no autodestruction")] public float timeAutodestruction;
     }
 
     [AddComponentMenu("redd096/Singletons/Instantiate GameObject Manager")]
