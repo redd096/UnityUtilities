@@ -3,46 +3,48 @@
 namespace redd096.GameTopDown2D
 {
     [AddComponentMenu("redd096/.GameTopDown2D/Feedbacks/Change Order Weapon On Rotate Feedback")]
-    public class ChangeOrderWeaponOnRotateFeedback : MonoBehaviour
+    public class ChangeOrderWeaponOnRotateFeedback : FeedbackRedd096<WeaponBASE>
     {
-        [Header("Necessary Components - default get in parent")]
-        [SerializeField] WeaponBASE weaponBASE;
-
         [Header("Sprites - default get in children")]
         [SerializeField] SpriteRenderer[] spritesToUse = default;
         [SerializeField] int layerWhenLookingRight = 1;
         [SerializeField] int layerWhenLookingLeft = -1;
 
-        AimComponent owner;
+        AimComponent aimComponent;
 
-        void OnEnable()
+        protected override void OnEnable()
         {
             //get referemces
-            if (weaponBASE == null) weaponBASE = GetComponentInParent<WeaponBASE>();
             if (spritesToUse == null || spritesToUse.Length <= 0) spritesToUse = GetComponentsInChildren<SpriteRenderer>();
 
-            //add events
-            if (weaponBASE)
-            {
-                weaponBASE.onPickWeapon += OnPickWeapon;
-                weaponBASE.onDropWeapon += OnDropWeapon;
-
-                //if there is an owner register to its events too
-                OnPickWeapon();
-            }
+            base.OnEnable();
         }
 
-        void OnDisable()
+        protected override void OnDisable()
         {
-            //remove events
-            if (weaponBASE)
-            {
-                weaponBASE.onPickWeapon -= OnPickWeapon;
-                weaponBASE.onDropWeapon -= OnDropWeapon;
-            }
+            base.OnDisable();
 
             //remove owner events too
             OnDropWeapon();
+        }
+
+        protected override void AddEvents()
+        {
+            base.AddEvents();
+
+            owner.onPickWeapon += OnPickWeapon;
+            owner.onDropWeapon += OnDropWeapon;
+
+            //if there is an owner register to its events too
+            OnPickWeapon();
+        }
+
+        protected override void RemoveEvents()
+        {
+            base.RemoveEvents();
+
+            owner.onPickWeapon -= OnPickWeapon;
+            owner.onDropWeapon -= OnDropWeapon;
         }
 
         void UpdateOrderInLayer(bool isLookingRight)
@@ -59,22 +61,22 @@ namespace redd096.GameTopDown2D
         void OnPickWeapon()
         {
             //register to owner events
-            if (weaponBASE.Owner && weaponBASE.Owner.GetSavedComponent<AimComponent>())
+            if (owner.Owner && owner.Owner.GetSavedComponent<AimComponent>())
             {
-                owner = weaponBASE.Owner.GetSavedComponent<AimComponent>();
-                owner.onChangeAimDirection += OnChangeAimDirection;
+                aimComponent = owner.Owner.GetSavedComponent<AimComponent>();
+                aimComponent.onChangeAimDirection += OnChangeAimDirection;
 
                 //update order
-                UpdateOrderInLayer(owner.IsLookingRight);
+                UpdateOrderInLayer(aimComponent.IsLookingRight);
             }
         }
 
         void OnDropWeapon()
         {
             //remove events from owner
-            if (owner)
+            if (aimComponent)
             {
-                owner.onChangeAimDirection -= OnChangeAimDirection;
+                aimComponent.onChangeAimDirection -= OnChangeAimDirection;
             }
         }
 

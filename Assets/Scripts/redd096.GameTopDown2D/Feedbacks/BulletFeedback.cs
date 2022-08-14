@@ -33,7 +33,7 @@ namespace redd096.GameTopDown2D
 
         protected override void OnEnable()
         {
-            //get other references
+            //get references
             if (trail == null)
                 trail = GetComponentInChildren<TrailRenderer>();
 
@@ -42,6 +42,8 @@ namespace redd096.GameTopDown2D
 
         protected override void AddEvents()
         {
+            base.AddEvents();
+
             owner.onInit += OnInit;
             owner.onHit += OnHit;
             owner.onBounceHit += OnBounceHit;
@@ -52,6 +54,8 @@ namespace redd096.GameTopDown2D
 
         protected override void RemoveEvents()
         {
+            base.RemoveEvents();
+
             owner.onInit -= OnInit;
             owner.onHit -= OnHit;
             owner.onBounceHit -= OnBounceHit;

@@ -5,7 +5,7 @@ using redd096.Attributes;
 namespace redd096.GameTopDown2D
 {
     [AddComponentMenu("redd096/.GameTopDown2D/Feedbacks/Crosshair Feedback")]
-    public class CrosshairFeedback : MonoBehaviour
+    public class CrosshairFeedback : FeedbackRedd096
     {
         [Header("Necessary Components - default get in parent")]
         [SerializeField] AimComponent aimComponent = default;
@@ -21,15 +21,17 @@ namespace redd096.GameTopDown2D
         [SerializeField] string mouseSchemeName = "KeyboardAndMouse";
 
         [Header("If using canvas Screen Space - default is main camera")]
-        [Tooltip("Set if moving something in screen space (canvas) or world space")] [SerializeField] bool isScreenSpace = true;
-        [EnableIf("isScreenSpace")] [SerializeField] Camera cam = default;
+        [Tooltip("Set if moving something in screen space (canvas) or world space")][SerializeField] bool isScreenSpace = true;
+        [EnableIf("isScreenSpace")][SerializeField] Camera cam = default;
 
-        void OnEnable()
+        protected override void OnEnable()
         {
             //get references
             if (aimComponent == null) aimComponent = GetComponentInParent<AimComponent>();
             if (playerInput == null) playerInput = GetComponentInParent<PlayerInput>();
             if (cam == null) cam = Camera.main;
+
+            base.OnEnable();
         }
 
         void Update()

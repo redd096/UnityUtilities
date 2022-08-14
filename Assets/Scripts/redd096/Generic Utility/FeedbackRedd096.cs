@@ -3,30 +3,47 @@ using UnityEngine;
 
 namespace redd096
 {
-    public abstract class FeedbackRedd096<T> : MonoBehaviour
+    public abstract class FeedbackRedd096<T> : FeedbackRedd096
     {
         [Header("Necessary Components - default get in parent")]
         [SerializeField] protected T owner;
 
-        protected virtual void OnEnable()
+        protected override void OnEnable()
         {
             //get owner
-            owner = GetComponentInParent<T>();
+            if (owner == null)
+                owner = GetComponentInParent<T>();
 
             //add events
             if (owner != null)
                 AddEvents();
         }
 
-        protected virtual void OnDisable()
+        protected override void OnDisable()
         {
             //remove events
             if (owner != null)
                 RemoveEvents();
         }
 
-        protected abstract void AddEvents();
-        protected abstract void RemoveEvents();
+    }
+
+    public abstract class FeedbackRedd096 : MonoBehaviour
+    {
+        protected virtual void OnEnable()
+        {
+            //add events
+            AddEvents();
+        }
+
+        protected virtual void OnDisable()
+        {
+            //remove events
+            RemoveEvents();
+        }
+
+        protected virtual void AddEvents() { }
+        protected virtual void RemoveEvents() { }
 
         /// <summary>
         /// Instantiate feedbacks using parent or self

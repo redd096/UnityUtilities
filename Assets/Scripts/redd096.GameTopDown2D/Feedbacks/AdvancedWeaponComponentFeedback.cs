@@ -3,11 +3,8 @@
 namespace redd096.GameTopDown2D
 {
     [AddComponentMenu("redd096/.GameTopDown2D/Feedbacks/Advanced Weapon Component Feedback")]
-    public class AdvancedWeaponComponentFeedback : MonoBehaviour
+    public class AdvancedWeaponComponentFeedback : FeedbackRedd096<AdvancedWeaponComponent>
     {
-        [Header("Necessary Components - default get in parent")]
-        [SerializeField] AdvancedWeaponComponent advancedWeaponComponent = default;
-
         [Header("Ammo")]
         [SerializeField] bool updateAmmoOnEquip = true;
         [SerializeField] bool updateAmmoOnShoot = true;
@@ -17,30 +14,29 @@ namespace redd096.GameTopDown2D
 
         WeaponRange equippedRangeWeapon;
 
-        void OnEnable()
+        protected override void OnEnable()
         {
-            //get references
-            if (advancedWeaponComponent == null) advancedWeaponComponent = GetComponentInParent<AdvancedWeaponComponent>();
+            base.OnEnable();
 
-            //add events
-            if (advancedWeaponComponent)
-            {
-                advancedWeaponComponent.onChangeWeapon += OnChangeWeapon;
-                advancedWeaponComponent.onAddAmmo += OnAddAmmo;
-
-                //set default weapon and ammo
+            //set default weapon and ammo
+            if (owner)
                 OnChangeWeapon();
-            }
         }
 
-        void OnDisable()
+        protected override void AddEvents()
         {
-            //remove events
-            if (advancedWeaponComponent)
-            {
-                advancedWeaponComponent.onChangeWeapon -= OnChangeWeapon;
-                advancedWeaponComponent.onAddAmmo -= OnAddAmmo;
-            }
+            base.AddEvents();
+
+            owner.onChangeWeapon += OnChangeWeapon;
+            owner.onAddAmmo += OnAddAmmo;
+        }
+
+        protected override void RemoveEvents()
+        {
+            base.RemoveEvents();
+
+            owner.onChangeWeapon -= OnChangeWeapon;
+            owner.onAddAmmo -= OnAddAmmo;
         }
 
         #region private API
@@ -48,7 +44,7 @@ namespace redd096.GameTopDown2D
         void OnChangeWeapon()
         {
             //save equipped weapon
-            equippedRangeWeapon = advancedWeaponComponent.CurrentWeapon as WeaponRange;
+            equippedRangeWeapon = owner.CurrentWeapon as WeaponRange;
 
             if (updateAmmoOnEquip)
             {
