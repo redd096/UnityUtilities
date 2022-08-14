@@ -27,7 +27,7 @@ namespace redd096.GameTopDown2D
         [Header("Area Damage")]
         [SerializeField] bool doAreaDamage = false;
         [Tooltip("Damage others in radius area")][EnableIf("doAreaDamage")][SerializeField][Min(0)] float radiusAreaDamage = 0;
-        [EnableIf("doAreaDamage")][SerializeField] bool ignoreShieldAreaDamage = false;
+        [Tooltip("Area damage ignore shields?")][EnableIf("doAreaDamage")][SerializeField] bool ignoreShieldAreaDamage = false;
         [Tooltip("Is possible to damage owner with area damage?")][EnableIf("doAreaDamage")][SerializeField] bool areaCanDamageWhoShoot = false;
         [Tooltip("Is possible to damage again who hit this bullet?")][EnableIf("doAreaDamage")][SerializeField] bool areaCanDamageWhoHit = false;
         [Tooltip("Do knockback also to who hit in area?")][EnableIf("doAreaDamage")][SerializeField] bool knockbackAlsoInArea = true;
@@ -37,10 +37,10 @@ namespace redd096.GameTopDown2D
         [EnableIf("doAreaDamage")][SerializeField] bool doAreaDamageAlsoOnAutoDestruction = true;
 
         [Header("DEBUG")]
-        [SerializeField] bool drawDebug = false;
         [ReadOnly][SerializeField] Vector2 direction = Vector2.zero;
         [ReadOnly][SerializeField] float damage = 0;
         [ReadOnly][SerializeField] float bulletSpeed = 0;
+        [SerializeField] ShowDebugRedd096 drawAreaDamage = Color.red;
 
         [HideInInspector] public Character Owner;
         WeaponRange weapon;
@@ -72,11 +72,11 @@ namespace redd096.GameTopDown2D
         void OnDrawGizmos()
         {
             //draw area damage
-            if (drawDebug)
+            if (drawAreaDamage)
             {
                 if (doAreaDamage && radiusAreaDamage > 0)
                 {
-                    Gizmos.color = Color.red;
+                    Gizmos.color = drawAreaDamage.ColorDebug;
                     Gizmos.DrawWireSphere(transform.position, radiusAreaDamage);
                 }
             }

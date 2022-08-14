@@ -16,8 +16,8 @@ namespace redd096.GameTopDown2D
         [Tooltip("Rotate random the shot when instantiated")] public float NoiseAccuracy = 10;
 
         [Header("Burst Fire")]
-        [EnableIf("FireMode", EFireMode.Burst)] [Tooltip("Number of shots to shoot at every click")] [Min(1)] public int NumberOfShots = 3;
-        [EnableIf("FireMode", EFireMode.Burst)] [Tooltip("Delay between shots")] public float DelayBetweenShots = 0.1f;
+        [EnableIf("FireMode", EFireMode.Burst)][Tooltip("Number of shots to shoot at every click")][Min(1)] public int NumberOfShots = 3;
+        [EnableIf("FireMode", EFireMode.Burst)][Tooltip("Delay between shots")] public float DelayBetweenShots = 0.1f;
 
         [Header("Barrel")]
         [Tooltip("Spawn bullets")] public Transform[] Barrels = default;

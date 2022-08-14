@@ -7,7 +7,9 @@ namespace redd096.GameTopDown2D
         [SerializeField] WeaponBASE weaponPrefab = default;
 
         //editor used to show weapon sprite when place the spawn
-        [HideInInspector] [SerializeField] SpriteRenderer spriteInEditor = default;
+        [HideInInspector][SerializeField] SpriteRenderer spriteInEditor = default;
+
+        WeaponBASE instantiatedWeapon;
 
         void OnValidate()
         {
@@ -32,9 +34,25 @@ namespace redd096.GameTopDown2D
             if (weaponPrefab)
             {
                 //instantiate weapon and save prefab
-                WeaponBASE weapon = Instantiate(weaponPrefab, transform.position, transform.rotation);
-                weapon.WeaponPrefab = weaponPrefab;
+                instantiatedWeapon = Instantiate(weaponPrefab, transform.position, transform.rotation);
+                instantiatedWeapon.WeaponPrefab = weaponPrefab;
+
+                //add event
+                instantiatedWeapon.onPickWeapon += OnPickWeapon;
             }
+        }
+
+        private void OnDestroy()
+        {
+            //remove event
+            if (instantiatedWeapon)
+                instantiatedWeapon.onPickWeapon -= OnPickWeapon;
+        }
+
+        void OnPickWeapon()
+        {
+            //destroy this object on pick
+            Destroy(gameObject);
         }
     }
 }

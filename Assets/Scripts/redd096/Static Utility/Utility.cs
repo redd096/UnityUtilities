@@ -122,58 +122,6 @@ namespace redd096
 
     public static class Collections
     {
-        #region create copy
-
-        /// <summary>
-        /// Create a copy of the collection
-        /// </summary>
-        public static T[] CreateCopy<T>(this T[] collection)
-        {
-            T[] newCollection = new T[collection.Length];
-
-            //add every element in new collection
-            for (int i = 0; i < collection.Length; i++)
-            {
-                newCollection[i] = collection[i];
-            }
-
-            return newCollection;
-        }
-
-        /// <summary>
-        /// Create a copy of the collection
-        /// </summary>
-        public static List<T> CreateCopy<T>(this List<T> collection)
-        {
-            List<T> newCollection = new List<T>();
-
-            //add every element in new collection
-            foreach (T element in collection)
-            {
-                newCollection.Add(element);
-            }
-
-            return newCollection;
-        }
-
-        /// <summary>
-        /// Create a copy of the collection
-        /// </summary>
-        public static Dictionary<K, T> CreateCopy<K, T>(this Dictionary<K, T> collection)
-        {
-            Dictionary<K, T> newCollection = new Dictionary<K, T>();
-
-            //add every element in new collection
-            foreach (K key in collection.Keys)
-            {
-                newCollection.Add(key, collection[key]);
-            }
-
-            return newCollection;
-        }
-
-        #endregion
-
         #region set parent
 
         /// <summary>
@@ -239,78 +187,6 @@ namespace redd096
                 return (obj as GameObject).transform;
             else
                 return (obj as Component).transform;
-        }
-
-        #endregion
-
-        #region vector2
-
-        /// <summary>
-        /// Sum return Vector2
-        /// </summary>
-        public static Vector2 SumVectors(this Vector2 first, Vector3 second)
-        {
-            return new Vector2(first.x + second.x, first.y + second.y);
-        }
-
-        /// <summary>
-        /// Subtraction return Vector2
-        /// </summary>
-        public static Vector2 SubtractVectors(this Vector2 first, Vector3 second)
-        {
-            return new Vector2(first.x - second.x, first.y - second.y);
-        }
-
-        /// <summary>
-        /// Multiplication return Vector2
-        /// </summary>
-        public static Vector2 MultiplyVectors(this Vector2 first, Vector3 second)
-        {
-            return new Vector2(first.x * second.x, first.y * second.y);
-        }
-
-        /// <summary>
-        /// Division return Vector2
-        /// </summary>
-        public static Vector2 DivideVectors(this Vector2 first, Vector3 second)
-        {
-            return new Vector2(first.x / second.x, first.y / second.y);
-        }
-
-        #endregion
-
-        #region vector3
-
-        /// <summary>
-        /// Sum return Vector3
-        /// </summary>
-        public static Vector3 SumVectors(this Vector3 first, Vector2 second)
-        {
-            return new Vector3(first.x + second.x, first.y + second.y, first.z);
-        }
-
-        /// <summary>
-        /// Subtraction return Vector3
-        /// </summary>
-        public static Vector3 SubtractVectors(this Vector3 first, Vector2 second)
-        {
-            return new Vector3(first.x - second.x, first.y - second.y, first.z);
-        }
-
-        /// <summary>
-        /// Multiplication return Vector3
-        /// </summary>
-        public static Vector3 MultiplyVectors(this Vector3 first, Vector2 second)
-        {
-            return new Vector3(first.x * second.x, first.y * second.y, first.z);
-        }
-
-        /// <summary>
-        /// Division return Vector3
-        /// </summary>
-        public static Vector3 DivideVectors(this Vector3 first, Vector2 second)
-        {
-            return new Vector3(first.x / second.x, first.y / second.y, first.z);
         }
 
         #endregion

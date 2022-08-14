@@ -33,7 +33,7 @@ namespace redd096
         }
     }
 
-    public static class Quat
+    public static class MathQuaternion
     {
         /// <summary>
         /// originalQuat + addedQuat
@@ -49,69 +49,6 @@ namespace redd096
         public static Quaternion SubtractQuaternion(Quaternion originalQuat, Quaternion subtractedQuat)
         {
             return originalQuat * Quaternion.Inverse(subtractedQuat);
-        }
-    }
-
-    public static class Vect
-    {
-        /// <summary>
-        /// originalVect * multipliedVect
-        /// </summary>
-        public static Vector3 MultiplyVector3(Vector3 originalVect, Vector3 multipliedVect)
-        {
-            Vector3 v;
-
-            v.x = originalVect.x * multipliedVect.x;
-            v.y = originalVect.y * multipliedVect.y;
-            v.z = originalVect.z * multipliedVect.z;
-
-            return v;
-        }
-
-        /// <summary>
-        /// originalVect / dividedVect
-        /// </summary>
-        public static Vector3 DivideVector3(Vector3 originalVect, Vector3 dividedVect)
-        {
-            Vector3 v;
-
-            v.x = originalVect.x / dividedVect.x;
-            v.y = originalVect.y / dividedVect.y;
-            v.z = originalVect.z / dividedVect.z;
-
-            return v;
-        }
-
-        /// <summary>
-        /// originalVect == equalVect (approx is how much difference)
-        /// </summary>
-        public static bool EqualVector3(Vector3 originalVect, Vector3 equalVect, float approx = 0.01f)
-        {
-            //equal of Vector3.Distance(originalVect, equalVect)
-            float distance = (originalVect - equalVect).magnitude;
-
-            bool lowerThanMax = distance < approx;
-            bool greaterThanMax = distance > approx;
-
-            bool equal = lowerThanMax && greaterThanMax;
-
-            return equal;
-        }
-    }
-
-    public static class Math
-    {
-        /// <summary>
-        /// originalFloat == equalFloat (approx is how much difference)
-        /// </summary>
-        public static bool EqualFloat(float originalFloat, float equalFloat, float approx = 0.01f)
-        {
-            bool lowerThanMax = originalFloat < equalFloat + approx;
-            bool greaterThanMax = originalFloat > equalFloat - approx;
-
-            bool equal = lowerThanMax && greaterThanMax;
-
-            return equal;
         }
     }
 
@@ -244,7 +181,7 @@ namespace redd096
             newIdentity = TransformRot.TransformToTransformRotation(currentIdentity, newUp);
 
             //return difference of rotation on Y axis (MouseX), from Quaternion.identity to new identity
-            differenceYAxisFromDefaultIdentity = Quat.SubtractQuaternion(newIdentity, defaultIdentityRotated);
+            differenceYAxisFromDefaultIdentity = MathQuaternion.SubtractQuaternion(newIdentity, defaultIdentityRotated);
         }
 
         /// <summary>
@@ -258,7 +195,7 @@ namespace redd096
             Quaternion newRotation = TransformRot.TransformRotation(rotation, upVector);
 
             //there is a problem: Vector3.up has Z as forward, but rotation can have forward rotated, so we must add Y axis (MouseX)
-            return Quat.AddQuaternion(differenceYAxis, newRotation);
+            return MathQuaternion.AddQuaternion(differenceYAxis, newRotation);
         }
 
         /// <summary>
@@ -271,7 +208,7 @@ namespace redd096
             Quaternion newRotation = TransformRot.InverseTransformRotation(rotation);
 
             //there is a problem: Vector3.up has Z as forward, but rotation can have forward rotated, so we must subtract Y axis (MouseX)
-            return Quat.SubtractQuaternion(newRotation, differenceYAxis);
+            return MathQuaternion.SubtractQuaternion(newRotation, differenceYAxis);
         }
     }
 }
