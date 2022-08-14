@@ -17,13 +17,18 @@ namespace redd096.GameTopDown2D
         [SerializeField] CameraShakeStruct cameraShakeOnShoot = default;
         [SerializeField] GamepadVibrationStruct gamepadVibrationOnShoot = default;
 
+        [Space(20)]
+        [HelpBox("A lot of times are necessary two feedbacks for OnShoot event.\n" +
+            "For example first one instantiate muzzle flash that follow weapon,\n" +
+            "this second one instantiate bullet shells without set parent")]
         [Header("On Shoot - second barrel by default is transform")]
         [SerializeField] Transform secondBarrel = default;
         [SerializeField] FeedbackStructRedd096 feedbackOnShoot2 = default;
 
-        [Header("On Burst Shoot - barrel by default is transform")]
+        [Space(20)]
         [HelpBox("This event is called when shoot last shot of the burst.\n" +
             "To show feedback at start of the burst, use On Press Attack instead")]
+        [Header("On Burst Shoot - barrel by default is transform")]
         [SerializeField] Transform barrelOnBurst = default;
         [SerializeField] FeedbackStructRedd096 feedbackOnBurst = default;
         [SerializeField] CameraShakeStruct cameraShakeOnBurst = default;

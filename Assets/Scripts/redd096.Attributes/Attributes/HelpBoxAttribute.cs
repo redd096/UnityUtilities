@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -10,31 +11,38 @@ namespace redd096.Attributes
 #if UNITY_EDITOR
 
     [CustomPropertyDrawer(typeof(HelpBoxAttribute))]
-    public class HelpBoxDrawer : PropertyDrawer
+    public class HelpBoxDrawer : DecoratorDrawer
     {
         HelpBoxAttribute at;
 
-        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+        public override float GetHeight()
         {
-            //add help box height
-            return EditorGUI.GetPropertyHeight(property, label, true) + 
-                EditorStyles.helpBox.CalcSize(new GUIContent(at != null ? at.message : "")).y;
+            return base.GetHeight() + EditorStyles.helpBox.CalcSize(new GUIContent(at != null ? at.message : "")).y;
         }
 
-        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        public override void OnGUI(Rect position)
         {
+            //base.OnGUI(position);
             at = attribute as HelpBoxAttribute;
 
-            //draw help box above
-            if (at.isAbove)
-                EditorGUILayout.HelpBox(at.message, at.messageType, at.wide);
+            EditorGUI.HelpBox(position, at.message, GetMessageType(at.messageType));
+        }
 
-            //draw property
-            EditorGUILayout.PropertyField(property, label, true);
-
-            //draw help box below
-            if (at.isAbove == false)
-                EditorGUILayout.HelpBox(at.message, at.messageType, at.wide);
+        MessageType GetMessageType(HelpBoxAttribute.EMessageType messageType)
+        {
+            switch (messageType)
+            {
+                case HelpBoxAttribute.EMessageType.None:
+                    return MessageType.None;
+                case HelpBoxAttribute.EMessageType.Info:
+                    return MessageType.Info;
+                case HelpBoxAttribute.EMessageType.Warning:
+                    return MessageType.Warning;
+                case HelpBoxAttribute.EMessageType.Error:
+                    return MessageType.Error;
+                default:
+                    return MessageType.Info;
+            }
         }
     }
 
@@ -45,12 +53,14 @@ namespace redd096.Attributes
     /// <summary>
     /// Show help box above property
     /// </summary>
+    [AttributeUsage(AttributeTargets.Field, AllowMultiple = true, Inherited = true)]
     public class HelpBoxAttribute : PropertyAttribute
     {
-        public readonly MessageType messageType;
+        public enum EMessageType { None, Info, Warning, Error }
+
+        public readonly EMessageType messageType;
         public readonly string message;
         public readonly bool wide;
-        public readonly bool isAbove;
 
         /// <summary>
         /// Show help box above property
@@ -58,25 +68,9 @@ namespace redd096.Attributes
         /// <param name="message"></param>
         /// <param name="messageType"></param>
         /// <param name="wide">If true, the box will cover the whole width of the window; otherwise it will cover the controls part only</param>
-        public HelpBoxAttribute(string message, MessageType messageType = MessageType.Info, bool wide = true)
+        public HelpBoxAttribute(string message, EMessageType messageType = EMessageType.Info, bool wide = true)
         {
             this.message = message;
-            this.messageType = messageType;
-            this.wide = wide;
-            isAbove = true;
-        }
-
-        /// <summary>
-        /// Show help box above or below property
-        /// </summary>
-        /// <param name="message"></param>
-        /// <param name="isAbove">help box will be above or below property?</param>
-        /// <param name="messageType"></param>
-        /// <param name="wide">If true, the box will cover the whole width of the window; otherwise it will cover the controls part only</param>
-        public HelpBoxAttribute(string message, bool isAbove, MessageType messageType = MessageType.Info, bool wide = true)
-        {
-            this.message = message;
-            this.isAbove = isAbove;
             this.messageType = messageType;
             this.wide = wide;
         }
