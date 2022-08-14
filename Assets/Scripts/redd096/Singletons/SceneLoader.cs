@@ -7,8 +7,8 @@ namespace redd096
     [AddComponentMenu("redd096/Singletons/Scene Loader")]
     public class SceneLoader : Singleton<SceneLoader>
     {
-        [SerializeField] bool changeCursorLockMode = true;
-        [EnableIf("changeCursorLockMode")] [SerializeField] CursorLockMode lockModeOnResume = CursorLockMode.Confined;
+        public bool ChangeCursorLockMode = true;
+        [EnableIf("ChangeCursorLockMode")] public CursorLockMode LockModeOnResume = CursorLockMode.Confined;
 
         /// <summary>
         /// Resume time and hide cursor
@@ -16,13 +16,14 @@ namespace redd096
         public void ResumeGame()
         {
             //hide pause menu
-            GameManager.instance.uiManager.PauseMenu(false);
+            if (GameManager.instance && GameManager.instance.uiManager)
+                GameManager.instance.uiManager.PauseMenu(false);
 
             //set timeScale to 1
             Time.timeScale = 1;
 
-            //hide cursor
-            if (changeCursorLockMode) LockMouse(lockModeOnResume);
+            //enable player input and hide cursor
+            if (ChangeCursorLockMode) LockMouse(LockModeOnResume);
         }
 
         /// <summary>
@@ -31,13 +32,14 @@ namespace redd096
         public void PauseGame()
         {
             //show pause menu
-            GameManager.instance.uiManager.PauseMenu(true);
+            if (GameManager.instance && GameManager.instance.uiManager)
+                GameManager.instance.uiManager.PauseMenu(true);
 
             //stop time
             Time.timeScale = 0;
 
-            //show cursor
-            if (changeCursorLockMode) LockMouse(CursorLockMode.None);
+            //disable player input and show cursor
+            if (ChangeCursorLockMode) LockMouse(CursorLockMode.None);
         }
 
         /// <summary>
@@ -58,7 +60,7 @@ namespace redd096
         public void ReloadScene()
         {
             //show cursor and set timeScale to 1
-            if (changeCursorLockMode) LockMouse(CursorLockMode.None);
+            if (ChangeCursorLockMode) LockMouse(CursorLockMode.None);
             Time.timeScale = 1;
 
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
@@ -70,7 +72,7 @@ namespace redd096
         public void LoadScene(string scene)
         {
             //show cursor and set timeScale to 1
-            if (changeCursorLockMode) LockMouse(CursorLockMode.None);
+            if (ChangeCursorLockMode) LockMouse(CursorLockMode.None);
             Time.timeScale = 1;
 
             //load new scene
@@ -83,7 +85,7 @@ namespace redd096
         public void LoadNextScene()
         {
             //show cursor and set timeScale to 1
-            if (changeCursorLockMode) LockMouse(CursorLockMode.None);
+            if (ChangeCursorLockMode) LockMouse(CursorLockMode.None);
             Time.timeScale = 1;
 
             //load next scene

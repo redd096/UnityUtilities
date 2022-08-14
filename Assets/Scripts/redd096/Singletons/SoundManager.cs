@@ -29,25 +29,25 @@ namespace redd096
 
         [Header("Background Music")]
         [SerializeField] AudioSource musicPrefab = default;
-        [Tooltip("From 0 to 1, where 0 is 0 and 1 is volume to set")] [SerializeField] AnimationCurve fadeInMusic = default;
-        [Tooltip("From 1 to 0, where 1 is current volume and 0 is 0")] [SerializeField] AnimationCurve fadeOutMusic = default;
+        [Tooltip("From 0 to 1, where 0 is 0 and 1 is volume to set")][SerializeField] AnimationCurve fadeInMusic = default;
+        [Tooltip("From 1 to 0, where 1 is current volume and 0 is 0")][SerializeField] AnimationCurve fadeOutMusic = default;
 
         [Header("Edit Background Music for this scene")]
         [SerializeField] bool stopBackgroundMusicThisScene = false;
         [SerializeField] AudioClassBase musicThisScene = default;
         [SerializeField] bool loopMusicThisScene = true;
-        [Tooltip("When change scene, if setted same clip and volume, restart anyway?")] [SerializeField] bool forceReplayThisScene = false;
+        [Tooltip("When change scene, if setted same clip and volume, restart anyway?")][SerializeField] bool forceReplayThisScene = false;
 
         [Header("Instantiate sound at point")]
-        [Tooltip("Used also for SoundsOnClickButton")] [SerializeField] AudioSource sound2DPrefab = default;
+        [Tooltip("Used also for SoundsOnClickButton")][SerializeField] AudioSource sound2DPrefab = default;
         [SerializeField] AudioSource sound3DPrefab = default;
 
         [Header("Sounds On Click Button (random from array)")]
         [SerializeField] AudioClassBase[] soundsOnClick = default;
 
         [Header("Volume Settings")]
-        [ReadOnly] [Range(0f, 1f)] [SerializeField] float volumeMusic = 1;
-        [ReadOnly] [Range(0f, 1f)] [SerializeField] float volumeSFX = 1;
+        [ReadOnly][Range(0f, 1f)][SerializeField] float volumeMusic = 1;
+        [ReadOnly][Range(0f, 1f)][SerializeField] float volumeSFX = 1;
 
         //sound parent (instantiate if null)
         private Transform soundsParent;

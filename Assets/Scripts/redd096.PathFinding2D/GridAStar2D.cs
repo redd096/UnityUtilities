@@ -69,7 +69,7 @@ namespace redd096.PathFinding2D
         [Header("Grid")]
         [SerializeField] protected bool updateOnAwake = true;
         [SerializeField] protected Vector2 gridWorldSize = Vector2.one;
-        [SerializeField] [Min(0.1f)] protected float nodeDiameter = 1;
+        [SerializeField][Min(0.1f)] protected float nodeDiameter = 1;
 
         [Header("Gizmos")]
         [SerializeField] protected bool drawGizmos = false;

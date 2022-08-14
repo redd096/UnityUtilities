@@ -13,11 +13,11 @@ namespace redd096.PathFinding2D
 
         [Header("Collider Agent - Only Box and Circle")]
         [SerializeField] bool useCustomCollider = false;
-        [HideIf("useCustomCollider")] [Tooltip("ONLY BOX AND CIRCLE")] [SerializeField] Collider2D[] colliders = default;
-        [ShowIf("useCustomCollider")] [SerializeField] Vector2 offset = Vector2.zero;
-        [ShowIf("useCustomCollider")] [SerializeField] ETypeCollider typeCollider = ETypeCollider.box;
-        [ShowIf("useCustomCollider")] [EnableIf("typeCollider", ETypeCollider.box)] [SerializeField] Vector2 sizeCollider = Vector2.one;
-        [ShowIf("useCustomCollider")] [EnableIf("typeCollider", ETypeCollider.circle)] [SerializeField] float radiusCollider = 1;
+        [HideIf("useCustomCollider")][Tooltip("ONLY BOX AND CIRCLE")][SerializeField] Collider2D[] colliders = default;
+        [ShowIf("useCustomCollider")][SerializeField] Vector2 offset = Vector2.zero;
+        [ShowIf("useCustomCollider")][SerializeField] ETypeCollider typeCollider = ETypeCollider.box;
+        [ShowIf("useCustomCollider")][EnableIf("typeCollider", ETypeCollider.box)][SerializeField] Vector2 sizeCollider = Vector2.one;
+        [ShowIf("useCustomCollider")][EnableIf("typeCollider", ETypeCollider.circle)][SerializeField] float radiusCollider = 1;
 
         [Header("If this object is an obstacle, ignore self (default get from this gameObject)")]
         [SerializeField] ObstacleAStar2D obstacleAStar = default;

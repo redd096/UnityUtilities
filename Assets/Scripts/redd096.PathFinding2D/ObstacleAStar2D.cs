@@ -14,16 +14,16 @@ namespace redd096.PathFinding2D
 
         [Header("Collider Obstacle")]
         [SerializeField] bool useCustomCollider = true;
-        [HideIf("useCustomCollider")] [SerializeField] Collider2D[] colliders = default;
-        [ShowIf("useCustomCollider")] [SerializeField] Vector2 offset = Vector2.zero;
-        [ShowIf("useCustomCollider")] [SerializeField] ETypeCollider typeCollider = ETypeCollider.box;
-        [ShowIf("useCustomCollider")] [EnableIf("typeCollider", ETypeCollider.box)] [SerializeField] Vector2 sizeCollider = Vector2.one;
-        [ShowIf("useCustomCollider")] [EnableIf("typeCollider", ETypeCollider.circle)] [SerializeField] float radiusCollider = 1;
+        [HideIf("useCustomCollider")][SerializeField] Collider2D[] colliders = default;
+        [ShowIf("useCustomCollider")][SerializeField] Vector2 offset = Vector2.zero;
+        [ShowIf("useCustomCollider")][SerializeField] ETypeCollider typeCollider = ETypeCollider.box;
+        [ShowIf("useCustomCollider")][EnableIf("typeCollider", ETypeCollider.box)][SerializeField] Vector2 sizeCollider = Vector2.one;
+        [ShowIf("useCustomCollider")][EnableIf("typeCollider", ETypeCollider.circle)][SerializeField] float radiusCollider = 1;
 
         [Header("Type Obstacle (set unwalkable or add penalty)")]
         [SerializeField] bool setUnwalkable = false;
         [SerializeField] bool addPenalty = true;
-        [EnableIf("addPenalty")] [SerializeField] int penalty = 1;
+        [EnableIf("addPenalty")][SerializeField] int penalty = 1;
 
         [Header("DEBUG (only custom collider)")]
         [SerializeField] bool drawDebug = false;

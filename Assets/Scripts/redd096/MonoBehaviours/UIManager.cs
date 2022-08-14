@@ -19,9 +19,6 @@ namespace redd096
 
         void Start()
         {
-            //get references
-            eventSystem = EventSystem.current;
-
             //by default, deactive menus
             PauseMenu(false);
             EndMenu(false);
@@ -29,7 +26,7 @@ namespace redd096
 
         #region open menu with input delay
 
-        void OpenMenu(GameObject menu, bool active)
+        public void OpenMenu(GameObject menu, bool active)
         {
             if (menu == null)
                 return;
@@ -37,7 +34,12 @@ namespace redd096
             //when active menu, deactive event system for a little time
             if (active && delayInputWhenOpenMenu > Mathf.Epsilon)
             {
-                if (eventSystem) eventSystem.enabled = false;
+                //remember event system
+                if (EventSystem.current)
+                {
+                    eventSystem = EventSystem.current;
+                    eventSystem.enabled = false;
+                }
 
                 //restart coroutine
                 if (delayInputCoroutine != null) StopCoroutine(delayInputCoroutine);
@@ -56,7 +58,14 @@ namespace redd096
                 yield return null;
 
             //then re-enable event system
-            if (eventSystem) eventSystem.enabled = true;
+            if (eventSystem)
+            {
+                eventSystem.enabled = true;
+
+                //try set singleton if not setted, because unity remove it when disabled
+                if (EventSystem.current == null)
+                    EventSystem.current = eventSystem;
+            }
         }
 
         #endregion

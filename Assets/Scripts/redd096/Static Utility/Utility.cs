@@ -9,15 +9,6 @@ namespace redd096
         #region general
 
         /// <summary>
-        /// Set lockState, and visible only when not locked
-        /// </summary>
-        public static void LockMouse(CursorLockMode lockMode)
-        {
-            Cursor.lockState = lockMode;
-            Cursor.visible = lockMode != CursorLockMode.Locked;
-        }
-
-        /// <summary>
         /// Remap a value min and max
         /// </summary>
         /// <param name="value">Value to remap</param>
