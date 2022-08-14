@@ -16,7 +16,7 @@ namespace redd096.GameTopDown2D
         [Range(0f, 1f)][SerializeField] float percentageDamage = 0.25f;
 
         [Header("DEBUG")]
-        [SerializeField] bool drawDebug = false;
+        [SerializeField] ShowDebugRedd096 drawShield = Color.yellow;
 
         //events
         public System.Action<Vector2> onHitShield { get; set; }
@@ -30,9 +30,9 @@ namespace redd096.GameTopDown2D
 
         void OnDrawGizmos()
         {
-            if (drawDebug)
+            if (drawShield)
             {
-                Gizmos.color = Color.yellow;
+                Gizmos.color = drawShield.ColorDebug;
 
                 //draw attack area
                 int direction = component && component.IsLookingRight ? 1 : -1;

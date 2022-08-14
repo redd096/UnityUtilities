@@ -6,12 +6,14 @@ namespace redd096.GameTopDown2D
     [AddComponentMenu("redd096/.GameTopDown2D/Components/Camera Component")]
     public class CameraComponent : MonoBehaviour
     {
+        enum EUpdateMode { Update, FixedUpdate, LateUpdate }
+
         [Header("Camera - by default is MainCamera")]
         [SerializeField] Camera cameraToControl = default;
 
         [Header("Update camera position to follow this object")]
         [SerializeField] bool updatePosition = true;
-        [Tooltip("Use LateUpdate or Update to move the camera?")][EnableIf("updatePosition")][SerializeField] bool useLateUpdate = true;
+        [Tooltip("Use LateUpdate or Update to move the camera?")][EnableIf("updatePosition")][SerializeField] EUpdateMode updateMode = EUpdateMode.LateUpdate;
         [EnableIf("updatePosition")][SerializeField] Vector3 offsetPosition = new Vector3(0, 0, -10);
 
         [Header("Clamp camera position to pixelsPerUnit")]
@@ -24,8 +26,8 @@ namespace redd096.GameTopDown2D
 
         [Header("Confine camera in a cube")]
         [SerializeField] bool isConfined = false;
-        [SerializeField] Vector3 minConfiner = -Vector3.one * 10;
-        [SerializeField] Vector3 maxConfiner = Vector3.one * 10;
+        [EnableIf("isConfined")][SerializeField] Vector3 minConfiner = -Vector3.one * 10;
+        [EnableIf("isConfined")][SerializeField] Vector3 maxConfiner = Vector3.one * 10;
         [SerializeField] ShowDebugRedd096 showConfineArea = Color.red;
 
         Transform cameraParent;
@@ -95,7 +97,19 @@ namespace redd096.GameTopDown2D
         void Update()
         {
             //update camera position if necessary
-            if (updatePosition && useLateUpdate == false)
+            if (updatePosition && updateMode == EUpdateMode.Update)
+            {
+                if (cameraParent)
+                {
+                    MoveCamera();
+                }
+            }
+        }
+
+        private void FixedUpdate()
+        {
+            //update camera position if necessary
+            if (updatePosition && updateMode == EUpdateMode.FixedUpdate)
             {
                 if (cameraParent)
                 {
@@ -107,7 +121,7 @@ namespace redd096.GameTopDown2D
         void LateUpdate()
         {
             //update camera position if necessary
-            if (updatePosition && useLateUpdate)
+            if (updatePosition && updateMode == EUpdateMode.LateUpdate)
             {
                 if (cameraParent)
                 {

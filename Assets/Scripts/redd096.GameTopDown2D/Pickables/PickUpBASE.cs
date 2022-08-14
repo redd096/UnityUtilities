@@ -6,6 +6,12 @@ namespace redd096.GameTopDown2D
     [AddComponentMenu("redd096/.GameTopDown2D/Pickables/Pick Up BASE")]
     public abstract class PickUpBASE<T> : MonoBehaviour, IPickable where T : Component
     {
+        enum EUpdateMode { Never, FixedUpdate, Coroutine }
+
+        [Header("Check TriggerStay in addition to TriggerEnter")]
+        [SerializeField] EUpdateMode triggerStayUpdateMode = EUpdateMode.Coroutine;
+        [Tooltip("Delay between updates using Coroutine method")][SerializeField] float timeCoroutine = 0.2f;
+
         [Header("Destroy when instantiated - 0 = no destroy")]
         [SerializeField] float timeBeforeDestroy = 0;
 
@@ -17,7 +23,7 @@ namespace redd096.GameTopDown2D
         protected T whoHitComponent;
         bool alreadyUsed;
 
-        protected virtual void OnEnable()
+        void OnEnable()
         {
             //reset vars
             whoHit = null;
@@ -27,22 +33,28 @@ namespace redd096.GameTopDown2D
             //if there is, start auto destruction timer
             if (timeBeforeDestroy > 0)
                 StartCoroutine(AutoDestruction());
+
+            //if update mode is Coroutine
+            if (triggerStayUpdateMode == EUpdateMode.Coroutine)
+                StartCoroutine(UpdateCoroutine());
         }
 
-        protected virtual void FixedUpdate()
+        void FixedUpdate()
         {
-            if (alreadyUsed)
-                return;
+            if (triggerStayUpdateMode == EUpdateMode.FixedUpdate)
+                CheckTriggerStay();
+        }
 
-            //if trigger enter and can't pick up, check again. Maybe player stay compenetrate and loose health, so now can pick up
-            if (whoHit && CanPickUp())
+        IEnumerator UpdateCoroutine()
+        {
+            while (triggerStayUpdateMode == EUpdateMode.Coroutine)
             {
-                PickUp();
-                OnPick();
+                CheckTriggerStay();
+                yield return new WaitForSeconds(timeCoroutine);
             }
         }
 
-        protected virtual void OnTriggerEnter2D(Collider2D collision)
+        void OnTriggerEnter2D(Collider2D collision)
         {
             if (alreadyUsed)
                 return;
@@ -68,13 +80,28 @@ namespace redd096.GameTopDown2D
             }
         }
 
-        protected virtual void OnTriggerExit2D(Collider2D collision)
+        void OnTriggerExit2D(Collider2D collision)
         {
             //remove who hit on trigger exit
             if (whoHit && collision.transform.GetComponentInParent<Character>() == whoHit)
             {
                 whoHit = null;
                 whoHitComponent = null;
+            }
+        }
+
+        #region private API
+
+        void CheckTriggerStay()
+        {
+            if (alreadyUsed)
+                return;
+
+            //if trigger enter and can't pick up, check again. Maybe player stay compenetrate and loose health, so now can pick up
+            if (whoHit && CanPickUp())
+            {
+                PickUp();
+                OnPick();
             }
         }
 
@@ -85,6 +112,8 @@ namespace redd096.GameTopDown2D
             alreadyUsed = true;
             Destroy(gameObject);
         }
+
+        #endregion
 
         #region protected API
 

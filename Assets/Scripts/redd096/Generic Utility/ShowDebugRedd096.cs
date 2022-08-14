@@ -10,6 +10,12 @@ namespace redd096
     [CustomPropertyDrawer(typeof(ShowDebugRedd096))]
     public class ShowDebugRedd096Drawer : PropertyDrawer
     {
+        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+        {
+            //return base.GetPropertyHeight(property, label);
+            return 0;
+        }
+
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             //base.OnGUI(position, property, label);
@@ -21,9 +27,9 @@ namespace redd096
             Vector2 size = EditorStyles.label.CalcSize(label);
 
             // Draw fields - pass GUIContent.none to each so they are drawn without labels
-            EditorGUILayout.PrefixLabel(label);
+            EditorGUILayout.LabelField(label);
             EditorGUILayout.PropertyField(property.FindPropertyRelative("ShowDebug"), GUIContent.none, GUILayout.Width(30));
-            EditorGUILayout.PropertyField(property.FindPropertyRelative("ColorDebug"), GUIContent.none);
+            EditorGUILayout.PropertyField(property.FindPropertyRelative("ColorDebug"), GUIContent.none, GUILayout.Width(100));
 
             EditorGUILayout.EndHorizontal();
 
