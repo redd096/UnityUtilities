@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
+//can use RotateLeftRightFeedback if prefer to rotate instead of flip sprite
 namespace redd096.GameTopDown2D
 {
     [AddComponentMenu("redd096/.GameTopDown2D/Feedbacks/Flip Sprite Feedback")]

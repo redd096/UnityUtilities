@@ -3,7 +3,7 @@
 namespace redd096.GameTopDown2D
 {
     [AddComponentMenu("redd096/.GameTopDown2D/Feedbacks/Rotate Left Right Feedback")]
-    public class RotateLeftRightFeedback : MonoBehaviour
+    public class RotateLeftRightFeedback : FeedbackRedd096
     {
         [Header("Necessary Components - default get in parent")]
         [SerializeField] AimComponent aimComponent;
@@ -20,28 +20,38 @@ namespace redd096.GameTopDown2D
             lookRight = defaultLookRight;
         }
 
-        void OnEnable()
+        protected override void OnEnable()
         {
             //get references
             if (aimComponent == null) aimComponent = GetComponentInParent<AimComponent>();
             if (objectToRotate == null) objectToRotate = transform;
 
+            base.OnEnable();
+        }
+
+        protected override void AddEvents()
+        {
+            base.AddEvents();
+
             //add events
             if (aimComponent)
             {
                 aimComponent.onChangeAimDirection += OnChangeAimDirection;
-                OnChangeAimDirection(aimComponent.IsLookingRight);     //set default rotation
+                OnChangeAimDirection(aimComponent.IsLookingRight);      //set default rotation
             }
         }
 
-        void OnDisable()
+        protected override void RemoveEvents()
         {
+            base.RemoveEvents();
+
             //remove events
             if (aimComponent)
                 aimComponent.onChangeAimDirection -= OnChangeAimDirection;
         }
 
-        void OnChangeAimDirection(bool isLookingRight)
+        //public to use for example when doing Dash. Disable this script and call manually this function
+        public void OnChangeAimDirection(bool isLookingRight)
         {
             //if change direction, rotate
             if ((lookRight && isLookingRight == false) || (lookRight == false && isLookingRight))

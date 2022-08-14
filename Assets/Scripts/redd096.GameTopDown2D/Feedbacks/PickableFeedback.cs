@@ -19,6 +19,7 @@ namespace redd096.GameTopDown2D
         {
             base.AddEvents();
 
+            //add events
             owner.onPick += OnPick;
             owner.onFailPick += OnFailPick;
         }
@@ -27,6 +28,7 @@ namespace redd096.GameTopDown2D
         {
             base.RemoveEvents();
 
+            //remove events
             owner.onPick -= OnPick;
             owner.onFailPick -= OnFailPick;
         }

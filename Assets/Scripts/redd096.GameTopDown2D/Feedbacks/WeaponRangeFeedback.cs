@@ -54,7 +54,7 @@ namespace redd096.GameTopDown2D
 
         protected override void OnEnable()
         {
-            //get other references
+            //get references
             if (mainBarrel == null) mainBarrel = transform;
             if (secondBarrel == null) secondBarrel = transform;
             if (barrelOnBurst == null) barrelOnBurst = transform;
@@ -66,6 +66,7 @@ namespace redd096.GameTopDown2D
 
         protected override void AddEvents()
         {
+            //add events
             owner.onInstantiateBullet += OnInstantiateBullet;
             owner.onShoot += OnShoot;
             owner.onLastShotBurst += OnLastShotBurst;
@@ -76,6 +77,7 @@ namespace redd096.GameTopDown2D
 
         protected override void RemoveEvents()
         {
+            //remove events
             owner.onInstantiateBullet -= OnInstantiateBullet;
             owner.onShoot -= OnShoot;
             owner.onLastShotBurst -= OnLastShotBurst;

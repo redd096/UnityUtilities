@@ -23,6 +23,7 @@ namespace redd096.GameTopDown2D
 
         protected override void AddEvents()
         {
+            //add events
             owner.onPickWeapon += OnPickWeapon;
             owner.onDropWeapon += OnDropWeapon;
             owner.onEquipWeapon += OnEquipWeapon;
@@ -31,6 +32,7 @@ namespace redd096.GameTopDown2D
 
         protected override void RemoveEvents()
         {
+            //remove events
             owner.onPickWeapon -= OnPickWeapon;
             owner.onDropWeapon -= OnDropWeapon;
             owner.onEquipWeapon -= OnEquipWeapon;

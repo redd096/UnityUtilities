@@ -3,7 +3,7 @@
 namespace redd096.GameTopDown2D
 {
     [AddComponentMenu("redd096/.GameTopDown2D/Feedbacks/StateMachine Feedback")]
-    public class StateMachineFeedback : MonoBehaviour
+    public class StateMachineFeedback : FeedbackRedd096
     {
         [Header("Necessary Components - default get in child and parent")]
         [SerializeField] Animator anim = default;
@@ -15,7 +15,7 @@ namespace redd096.GameTopDown2D
         [Header("When enter in these states, set bool in animator true or false")]
         [SerializeField] AnimBoolStateStruct[] animBools = default;
 
-        void OnEnable()
+        protected override void OnEnable()
         {
             //get references
             if (anim == null) anim = GetComponentInChildren<Animator>();
@@ -25,6 +25,13 @@ namespace redd096.GameTopDown2D
                 if (main) stateMachine = main.GetComponentInChildren<StateMachineRedd096>();
             }
 
+            base.OnEnable();
+        }
+
+        protected override void AddEvents()
+        {
+            base.AddEvents();
+
             //add events
             if (stateMachine)
             {
@@ -32,8 +39,10 @@ namespace redd096.GameTopDown2D
             }
         }
 
-        void OnDisable()
+        protected override void RemoveEvents()
         {
+            base.RemoveEvents();
+
             //remove events
             if (stateMachine)
             {
@@ -75,14 +84,14 @@ namespace redd096.GameTopDown2D
     public struct AnimTriggerStateStruct
     {
         public string State;
-        public string TriggerToSet;
+        [Tooltip("Trigger's name in the animator")] public string TriggerToSet;
     }
 
     [System.Serializable]
     public struct AnimBoolStateStruct
     {
         public string State;
-        public string BoolToSet;
-        public bool Value;
+        [Tooltip("Bool's name in the animator")] public string BoolToSet;
+        [Tooltip("Value to set when enter in this state")] public bool Value;
     }
 }
