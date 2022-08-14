@@ -21,14 +21,14 @@ namespace redd096
 
         [Header("Animation")]
         [SerializeField] bool fadeInOnStart = true;
-        [EnableIf("fadeInOnStart")] [SerializeField] float waitBeforeFadeOnStart = 0.3f;
+        [EnableIf("fadeInOnStart")][SerializeField] float waitBeforeFadeOnStart = 0.3f;
         [SerializeField] float animDuration = 2f;
-        [Tooltip("Use realtime or deltaTime?")] [SerializeField] bool useRealtimeInsteadOfDeltatime = true;
+        [Tooltip("Use realtime or deltaTime?")][SerializeField] bool useRealtimeInsteadOfDeltatime = true;
 
         [Header("Fade Size")]
         [SerializeField] bool useBlackScreenSize = true;
-        [EnableIf("useBlackScreenSize")] [SerializeField] float offsetBlackScreen = 20;
-        [DisableIf("useBlackScreenSize")] [SerializeField] float fixedSize = 2000;
+        [EnableIf("useBlackScreenSize")][SerializeField] float offsetBlackScreen = 20;
+        [DisableIf("useBlackScreenSize")][SerializeField] float fixedSize = 2000;
 
         //screen size (width or height + offset), else use fixed size
         Vector2 sizeFadeOut => Vector2.zero;

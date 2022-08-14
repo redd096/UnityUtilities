@@ -12,8 +12,8 @@ namespace redd096.GameTopDown2D
     {
         [Header("Popup - default get from children")]
         [SerializeField] bool useTextMeshPro = false;
-        [HideIf("useTextMeshPro")] [SerializeField] Text textUI = default;
-        [ShowIf("useTextMeshPro")] [SerializeField] TextMeshPro textMesh = default;
+        [HideIf("useTextMeshPro")][SerializeField] Text textUI = default;
+        [ShowIf("useTextMeshPro")][SerializeField] TextMeshPro textMesh = default;
         [SerializeField] string[] possibleTexts = default;
 
         [Header("Movement")]
@@ -21,16 +21,16 @@ namespace redd096.GameTopDown2D
         [SerializeField] Vector2 maxMovement = Vector2.up * 2f;
 
         [Header("Time before start fade out")]
-        [Tooltip("Float without fade")] [SerializeField] float timeBeforeFadeMin = 0.1f;
-        [Tooltip("Float without fade")] [SerializeField] float timeBeforeFadeMax = 0.1f;
+        [Tooltip("Float without fade")][SerializeField] float timeBeforeFadeMin = 0.1f;
+        [Tooltip("Float without fade")][SerializeField] float timeBeforeFadeMax = 0.1f;
 
         [Header("Duration fade out")]
-        [Tooltip("After floatTime, continue to float but start to fade")] [SerializeField] float fadeDurationMin = 1.5f;
-        [Tooltip("After floatTime, continue to float but start to fade")] [SerializeField] float fadeDurationMax = 1.5f;
+        [Tooltip("After floatTime, continue to float but start to fade")][SerializeField] float fadeDurationMin = 1.5f;
+        [Tooltip("After floatTime, continue to float but start to fade")][SerializeField] float fadeDurationMax = 1.5f;
 
         [Header("Coding Vars")]
-        [Tooltip("Deactivate instead of Destroy")] [SerializeField] bool usePooling = true;
-        [Tooltip("Start movement at OnEnable (if just put prefab in scene)")] [SerializeField] bool autoInitializeOnEnable = false;
+        [Tooltip("Deactivate instead of Destroy")][SerializeField] bool usePooling = true;
+        [Tooltip("Start movement at OnEnable (if just put prefab in scene)")][SerializeField] bool autoInitializeOnEnable = false;
 
         Color startColor;
         Color textColor;
