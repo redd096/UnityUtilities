@@ -42,7 +42,7 @@ namespace redd096.GameTopDown2D
             }
         }
 
-        void Awake()
+        void Start()
         {
             //get references
             if (component == null)
@@ -54,6 +54,10 @@ namespace redd096.GameTopDown2D
 
         public bool CheckHitShield(Vector2 hitPoint)
         {
+            //do nothing if not enabled
+            if (enabled == false)
+                return false;
+
             //update position of the shield box
             UpdateBox();
 
@@ -83,8 +87,8 @@ namespace redd096.GameTopDown2D
 
         void UpdateBox()
         {
-            //update box values
-            int direction = component && component.IsLookingRight ? 1 : -1;
+            //update box values (without component, is right)
+            int direction = component ? (component.IsLookingRight ? 1 : -1) : 1;
             center = (Vector2)transform.position + new Vector2(offset.x * direction, offset.y);
             upLeft = center + new Vector2(-size.x, size.y) * 0.5f;
             upRight = center + size * 0.5f;

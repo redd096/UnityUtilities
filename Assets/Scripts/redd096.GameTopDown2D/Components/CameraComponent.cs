@@ -26,7 +26,7 @@ namespace redd096.GameTopDown2D
         [SerializeField] bool isConfined = false;
         [SerializeField] Vector3 minConfiner = -Vector3.one * 10;
         [SerializeField] Vector3 maxConfiner = Vector3.one * 10;
-        [SerializeField] bool showGizmos = false;
+        [SerializeField] ShowDebugRedd096 showConfineArea = Color.red;
 
         Transform cameraParent;
         Vector3 movement;
@@ -35,9 +35,9 @@ namespace redd096.GameTopDown2D
 
         void OnDrawGizmos()
         {
-            if (showGizmos)
+            if (showConfineArea)
             {
-                Gizmos.color = Color.red;
+                Gizmos.color = showConfineArea.ColorDebug;
 
                 //front quad
                 Gizmos.DrawLine(minConfiner, new Vector3(maxConfiner.x, minConfiner.y, minConfiner.z));

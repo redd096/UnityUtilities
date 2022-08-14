@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using redd096.Attributes;
 
-namespace redd096.GameTopDown2D
+namespace redd096.OLD
 {
-	[AddComponentMenu("redd096/.GameTopDown2D/Components/Collision Component")]
+	[AddComponentMenu("redd096/.OLD/Components/Collision Component")]
 	public class CollisionComponent : MonoBehaviour
 	{
 		public enum EUpdateModes { Update, FixedUpdate, Coroutine, None }

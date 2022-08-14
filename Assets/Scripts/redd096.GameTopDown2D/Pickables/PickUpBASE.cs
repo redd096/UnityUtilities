@@ -4,67 +4,77 @@ using UnityEngine;
 namespace redd096.GameTopDown2D
 {
     [AddComponentMenu("redd096/.GameTopDown2D/Pickables/Pick Up BASE")]
-    public abstract class PickUpBASE : MonoBehaviour, IPickable
+    public abstract class PickUpBASE<T> : MonoBehaviour, IPickable where T : Component
     {
-        [Header("Necessary Components - default get from this gameObject")]
-        [SerializeField] CollisionComponent collisionComponent = default;
-
         [Header("Destroy when instantiated - 0 = no destroy")]
         [SerializeField] float timeBeforeDestroy = 0;
 
         //events
-        public System.Action<PickUpBASE> onPick { get; set; }
-        public System.Action<PickUpBASE> onFailPick { get; set; }
+        public System.Action<PickUpBASE<T>> onPick { get; set; }
+        public System.Action<PickUpBASE<T>> onFailPick { get; set; }
 
         protected Character whoHit;
+        protected T whoHitComponent;
         bool alreadyUsed;
 
-        void OnEnable()
+        protected virtual void OnEnable()
         {
             //reset vars
+            whoHit = null;
+            whoHitComponent = null;
             alreadyUsed = false;
 
             //if there is, start auto destruction timer
             if (timeBeforeDestroy > 0)
                 StartCoroutine(AutoDestruction());
-
-            //get references
-            if (collisionComponent == null)
-                collisionComponent = GetComponent<CollisionComponent>();
-
-            //warnings
-            if (collisionComponent == null)
-                Debug.LogWarning("Missing CollisionComponent on " + name);
-
-            //add events
-            if (collisionComponent)
-            {
-                collisionComponent.onCollisionEnter += OnRDCollisionEvent;
-                collisionComponent.onTriggerEnter += OnRDCollisionEvent;
-            }
         }
 
-        void OnDisable()
+        protected virtual void FixedUpdate()
         {
-            //remove events
-            if (collisionComponent)
+            if (alreadyUsed)
+                return;
+
+            //if trigger enter and can't pick up, check again. Maybe player stay compenetrate and loose health, so now can pick up
+            if (whoHit && CanPickUp())
             {
-                collisionComponent.onCollisionEnter -= OnRDCollisionEvent;
-                collisionComponent.onTriggerEnter -= OnRDCollisionEvent;
+                PickUp();
+                OnPick();
             }
         }
 
-        void OnRDCollisionEvent(RaycastHit2D collision)
+        protected virtual void OnTriggerEnter2D(Collider2D collision)
         {
             if (alreadyUsed)
                 return;
 
             //if hitted by player
-            whoHit = collision.transform.GetComponentInParent<Character>();
-            if (whoHit && whoHit.CharacterType == Character.ECharacterType.Player)
+            Character ch = collision.transform.GetComponentInParent<Character>();
+            if (ch && ch.CharacterType == Character.ECharacterType.Player)
             {
+                whoHit = ch;
+                whoHitComponent = whoHit.GetSavedComponent<T>();
+
                 //pick up
-                PickUp();
+                if (CanPickUp())
+                {
+                    PickUp();
+                    OnPick();
+                }
+                //or fail pick up
+                else
+                {
+                    OnFailPick();
+                }
+            }
+        }
+
+        protected virtual void OnTriggerExit2D(Collider2D collision)
+        {
+            //remove who hit on trigger exit
+            if (whoHit && collision.transform.GetComponentInParent<Character>() == whoHit)
+            {
+                whoHit = null;
+                whoHitComponent = null;
             }
         }
 
@@ -79,6 +89,8 @@ namespace redd096.GameTopDown2D
         #region protected API
 
         public abstract void PickUp();
+
+        protected abstract bool CanPickUp();
 
         protected virtual void OnPick()
         {

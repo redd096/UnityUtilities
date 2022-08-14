@@ -1,26 +1,28 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using redd096;
-using redd096.OLD;
 
-public class Player : StateMachine
+namespace redd096.OLD
 {
-    [Header("Camera")]
-    public CameraBaseControl cameraControl;
-
-    private void OnDrawGizmos()
+    [AddComponentMenu("redd096/.OLD/Example Player/Player")]
+    public class Player : StateMachine
     {
-        cameraControl.OnDrawGizmos(Camera.main.transform, transform);
-    }
+        [Header("Camera")]
+        public CameraBaseControl cameraControl;
 
-    void Start()
-    {
-        //set default camera
-        cameraControl.StartDefault(Camera.main.transform, transform);
+        private void OnDrawGizmos()
+        {
+            cameraControl.OnDrawGizmos(Camera.main.transform, transform);
+        }
 
-        //set state
-        SetState(new PlayerState());    // create new one, with constructor
-        //SetState(playerState);        // use serialized state (use AwakeState instead of constructor)
+        void Start()
+        {
+            //set default camera
+            cameraControl.StartDefault(Camera.main.transform, transform);
+
+            //set state
+            SetState(new PlayerState());    // create new one, with constructor
+                                            //SetState(playerState);        // use serialized state (use AwakeState instead of constructor)
+        }
     }
 }

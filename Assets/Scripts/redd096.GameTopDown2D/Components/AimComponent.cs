@@ -7,7 +7,8 @@ namespace redd096.GameTopDown2D
     public class AimComponent : MonoBehaviour
     {
         [Header("DEBUG")]
-        [SerializeField] bool drawDebug = false;
+        [SerializeField] ShowDebugRedd096 showPositionNotNormalized = Color.red;
+        [SerializeField] ShowDebugRedd096 showDirectionInput = Color.cyan;
         [ReadOnly] public bool IsLookingRight = true;                           //check if looking right
         [ReadOnly] public Vector2 AimDirectionInput = Vector2.right;            //when aim, set it with only direction (used to know where this object is aiming)
         [ReadOnly] public Vector2 AimPositionNotNormalized = Vector2.right;     //when aim, set it without normalize (used to set crosshair on screen - to know mouse position or analog inclination)
@@ -18,14 +19,17 @@ namespace redd096.GameTopDown2D
         void OnDrawGizmos()
         {
             //draw sphere to see where is aiming
-            if (drawDebug)
+            if (showPositionNotNormalized)
             {
-                Gizmos.color = Color.red;
+                Gizmos.color = showPositionNotNormalized.ColorDebug;
                 Gizmos.DrawWireSphere((Vector2)transform.position + AimPositionNotNormalized, 1);
-
-                Gizmos.color = Color.blue;
+            }
+            if (showDirectionInput)
+            {
+                Gizmos.color = showDirectionInput.ColorDebug;
                 Gizmos.DrawWireSphere((Vector2)transform.position + AimDirectionInput, 1);
             }
+            Gizmos.color = Color.white;
         }
 
         bool CheckIsLookingRight()
