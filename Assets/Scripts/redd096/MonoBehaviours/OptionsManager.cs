@@ -19,9 +19,9 @@ namespace redd096
         [Header("UI Graphic")]
         [SerializeField] Toggle fullScreenToggle = default;
 
-        [Header("Default Values - set custom or take from bars and toggle in Editor")]
+        [Header("Default Values - set custom or take from bars and toggles in Editor")]
         [SerializeField] bool takeFromUI = true;
-        [HideIf("takeFromUI", "volumeMasterSlider")][SerializeField] float volumeMasterDefault = 1;
+        [HideIf("takeFromUI")][SerializeField] float volumeMasterDefault = 1;
         [HideIf("takeFromUI")][SerializeField] float volumeMusicDefault = 1;
         [HideIf("takeFromUI")][SerializeField] float volumeSFXDefault = 1;
         [HideIf("takeFromUI")][SerializeField] bool fullScreenDefault = true;
