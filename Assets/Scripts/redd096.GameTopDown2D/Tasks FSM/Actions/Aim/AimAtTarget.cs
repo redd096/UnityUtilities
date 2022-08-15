@@ -7,7 +7,7 @@ namespace redd096.GameTopDown2D
     public class AimAtTarget : ActionTask
     {
         [Header("Necessary Components - default get in parent")]
-        [SerializeField] AimComponent aimComponent;
+        [SerializeField] AimComponent aimComponent = default;
 
         [Header("Aim")]
         [SerializeField] VarOrBlackboard<Transform> target = new VarOrBlackboard<Transform>("Target");

@@ -12,6 +12,7 @@ namespace redd096.GameTopDown2D
         [Header("Movement")]
         [Tooltip("Move on Update or FixedUpdate?")][SerializeField] EUpdateModes updateMode = EUpdateModes.FixedUpdate;
         [Tooltip("Move using transform or rigidbody? Transform doesn't see colliders, rigidbody use unity physics")][SerializeField] EMovementModes movementMode = EMovementModes.Rigidbody;
+        [Tooltip("Speed when call MoveTo or MoveInDirection")][SerializeField] float inputSpeed = 5;
         [Tooltip("Max Speed, calculating velocity by input + push (-1 = no limit)")][SerializeField] float maxSpeed = 50;
 
         [Header("When pushed")]
@@ -29,8 +30,13 @@ namespace redd096.GameTopDown2D
         [ReadOnly] public Vector2 CurrentPushForce;             //used to push this object (push by recoil, knockback, dash, etc...), will be decreased by drag in every frame
         [ReadOnly] public Vector2 CurrentVelocity;              //calculated velocity for this frame or rigidbody.velocity
         [ReadOnly] public float CurrentSpeed;                   //CurrentVelocity.magnitude or rigidbody.velocity.magnitude
-        public float MaxSpeed => maxSpeed;
-        public float Drag => useCustomDrag ? customDrag : (rb ? rb.drag : 1);
+        public float InputSpeed { get => inputSpeed; set => inputSpeed = value; }
+        public float MaxSpeed { get => maxSpeed; set => maxSpeed = value; }
+        /// <summary>
+        /// If using custom drag, get and set customDrag. Else get and set rigidbody.drag
+        /// </summary>
+        public float Drag { get => useCustomDrag ? customDrag : (rb ? rb.drag : 1);
+            set { if (useCustomDrag) customDrag = value; else if (rb) rb.drag = value; } }
 
         //events
         public System.Action<bool> onChangeMovementDirection { get; set; }
@@ -164,27 +170,49 @@ namespace redd096.GameTopDown2D
         #region public API
 
         /// <summary>
-        /// Set movement in direction using custom speed
+        /// Set movement in direction
         /// </summary>
         /// <param name="direction"></param>
-        /// <param name="newSpeed"></param>
-        public void MoveInDirection(Vector2 direction, float newSpeed)
+        public void MoveInDirection(Vector2 direction)
         {
             //save last input direction + set movement
             MoveDirectionInput = direction.normalized;
-            desiredVelocity = MoveDirectionInput * newSpeed;
+            desiredVelocity = MoveDirectionInput * inputSpeed;
+        }
+
+        /// <summary>
+        /// Set movement to position
+        /// </summary>
+        /// <param name="positionToReach"></param>
+        public void MoveTo(Vector2 positionToReach)
+        {
+            //save last input direction + set movement
+            MoveDirectionInput = (positionToReach - (Vector2)transform.position).normalized;
+            desiredVelocity = MoveDirectionInput * inputSpeed;
+        }
+
+        /// <summary>
+        /// Set movement in direction using custom speed
+        /// </summary>
+        /// <param name="direction"></param>
+        /// <param name="customSpeed"></param>
+        public void MoveInDirection(Vector2 direction, float customSpeed)
+        {
+            //save last input direction + set movement
+            MoveDirectionInput = direction.normalized;
+            desiredVelocity = MoveDirectionInput * customSpeed;
         }
 
         /// <summary>
         /// Set movement to position using custom speed
         /// </summary>
         /// <param name="positionToReach"></param>
-        /// <param name="newSpeed"></param>
-        public void MoveTo(Vector2 positionToReach, float newSpeed)
+        /// <param name="customSpeed"></param>
+        public void MoveTo(Vector2 positionToReach, float customSpeed)
         {
             //save last input direction + set movement
             MoveDirectionInput = (positionToReach - (Vector2)transform.position).normalized;
-            desiredVelocity = MoveDirectionInput * newSpeed;
+            desiredVelocity = MoveDirectionInput * customSpeed;
         }
 
         /// <summary>
@@ -200,24 +228,6 @@ namespace redd096.GameTopDown2D
                 CurrentPushForce = pushDirection.normalized * pushForce;
             else
                 CurrentPushForce += pushDirection.normalized * pushForce;
-        }
-
-        /// <summary>
-        /// Set MaxSpeed at runtime
-        /// </summary>
-        /// <param name="maxSpeed"></param>
-        public void SetMaxSpeed(float maxSpeed)
-        {
-            this.maxSpeed = maxSpeed;
-        }
-
-        /// <summary>
-        /// Set Drag at runtime
-        /// </summary>
-        /// <param name="drag"></param>
-        public void SetDrag(float drag)
-        {
-            customDrag = drag;
         }
 
         #endregion

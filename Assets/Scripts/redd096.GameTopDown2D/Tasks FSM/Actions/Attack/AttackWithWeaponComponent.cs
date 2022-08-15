@@ -7,7 +7,7 @@ namespace redd096.GameTopDown2D
     public class AttackWithWeaponComponent : ActionTask
     {
         [Header("Necessary Components - default get in parent")]
-        [SerializeField] WeaponComponent weaponComponent;
+        [SerializeField] WeaponComponent weaponComponent = default;
 
         [Header("Attack")]
         [SerializeField] float timeBeforeFirstAttack = 0.5f;
