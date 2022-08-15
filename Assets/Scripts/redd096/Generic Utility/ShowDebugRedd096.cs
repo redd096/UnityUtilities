@@ -24,10 +24,14 @@ namespace redd096
             EditorGUI.BeginProperty(position, label, property);
             EditorGUILayout.BeginHorizontal();
 
+            //get property
+            SerializedProperty showDebug = property.FindPropertyRelative("ShowDebug");
+
             // Draw fields - pass GUIContent.none to each so they are drawn without labels
             EditorGUILayout.LabelField(label, GUILayout.ExpandWidth(false));
-            EditorGUILayout.PropertyField(property.FindPropertyRelative("ShowDebug"), GUIContent.none, GUILayout.Width(30));
-            EditorGUILayout.PropertyField(property.FindPropertyRelative("ColorDebug"), GUIContent.none, GUILayout.Width(100));
+            EditorGUILayout.PropertyField(showDebug, GUIContent.none, GUILayout.Width(30));
+            if (showDebug.boolValue)
+                EditorGUILayout.PropertyField(property.FindPropertyRelative("ColorDebug"), GUIContent.none, GUILayout.Width(100));
 
             EditorGUILayout.EndHorizontal();
             EditorGUI.EndProperty();

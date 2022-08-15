@@ -96,7 +96,7 @@ namespace redd096
                 //find state name and set it
                 for (int i = 0; i < States.Length; i++)
                 {
-                    if (nextState.Equals(States[i].StateName))//, System.StringComparison.Ordinal)
+                    if (nextState.Equals(States[i].StateName))//, System.StringComparison.CurrentCultureIgnoreCase)
                     {
                         SetState(i);
                         return;
@@ -112,6 +112,9 @@ namespace redd096
 
         void DoActions()
         {
+            if (CurrentState.Actions == null)
+                return;
+
             //do every action
             for (int i = 0; i < CurrentState.Actions.Length; i++)
             {
@@ -122,6 +125,9 @@ namespace redd096
 
         void CheckTransitions()
         {
+            if (CurrentState.Transitions == null)
+                return;
+
             //check every transition
             for (int i = 0; i < CurrentState.Transitions.Length; i++)
             {
@@ -142,6 +148,9 @@ namespace redd096
 
         bool CheckConditionsEVERY(Transition transition)
         {
+            if (transition.Conditions == null)
+                return false;
+
             //return true if EVERY condition is true
             for (int i = 0; i < transition.Conditions.Count; i++)
             {
@@ -158,6 +167,9 @@ namespace redd096
 
         bool CheckConditionsANY(Transition transition)
         {
+            if (transition.Conditions == null)
+                return false;
+
             //return true if ANY condition is true
             for (int i = 0; i < transition.Conditions.Count; i++)
             {
@@ -175,45 +187,58 @@ namespace redd096
         void ExitState()
         {
             //exit from actions
-            foreach (ActionTask action in CurrentState.Actions)
-                if (action)
-                    action.OnExitTask();
+            if (CurrentState.Actions != null)
+            {
+                foreach (ActionTask action in CurrentState.Actions)
+                    if (action)
+                        action.ExitTask();
+            }
 
             //exit from previous conditions
-            foreach (Transition transition in CurrentState.Transitions)
-                if (transition != null)
-                    foreach (ConditionTask condition in transition.Conditions)
-                        if (condition)
-                            condition.OnExitTask();
+            if (CurrentState.Transitions != null)
+            {
+                foreach (Transition transition in CurrentState.Transitions)
+                    if (transition != null && transition.Conditions != null)
+                        foreach (ConditionTask condition in transition.Conditions)
+                            if (condition)
+                                condition.ExitTask();
+            }
         }
 
         void EnterState()
         {
             //enter in new actions
-            foreach (ActionTask action in CurrentState.Actions)
+            if (CurrentState.Actions != null)
             {
-                if (action)
+                foreach (ActionTask action in CurrentState.Actions)
                 {
-                    action.InitializeTask(this);
-                    action.OnEnterTask();
+                    if (action)
+                    {
+                        action.InitializeTask(this);
+                        action.EnterTask();
+                    }
                 }
             }
 
             //enter in new conditions
-            foreach (Transition transition in CurrentState.Transitions)
+            if (CurrentState.Transitions != null)
             {
-                if (transition != null)
+                foreach (Transition transition in CurrentState.Transitions)
                 {
-                    foreach (ConditionTask condition in transition.Conditions)
+                    if (transition != null && transition.Conditions != null)
                     {
-                        if (condition)
+                        foreach (ConditionTask condition in transition.Conditions)
                         {
-                            condition.InitializeTask(this);
-                            condition.OnEnterTask();
+                            if (condition)
+                            {
+                                condition.InitializeTask(this);
+                                condition.EnterTask();
+                            }
                         }
                     }
                 }
             }
+
         }
 
         #endregion
