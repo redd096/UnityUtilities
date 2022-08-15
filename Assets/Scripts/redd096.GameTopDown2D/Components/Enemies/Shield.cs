@@ -6,7 +6,7 @@ namespace redd096.GameTopDown2D
     public class Shield : MonoBehaviour
     {
         [Header("Necessary Components - default get from this gameObject")]
-        [SerializeField] AimComponent component;
+        [SerializeField] AimComponent aimComponent = default;
 
         [Header("Shield Area")]
         [SerializeField] Vector2 offset = Vector2.right;
@@ -35,7 +35,7 @@ namespace redd096.GameTopDown2D
                 Gizmos.color = drawShield.ColorDebug;
 
                 //draw attack area
-                int direction = component && component.IsLookingRight ? 1 : -1;
+                int direction = aimComponent && aimComponent.IsLookingRight ? 1 : -1;
                 Gizmos.DrawWireCube((Vector2)transform.position + new Vector2(offset.x * direction, offset.y), size);
 
                 Gizmos.color = Color.white;
@@ -45,10 +45,10 @@ namespace redd096.GameTopDown2D
         void Start()
         {
             //get references
-            if (component == null)
-                component = GetComponent<AimComponent>();
+            if (aimComponent == null)
+                aimComponent = GetComponent<AimComponent>();
 
-            if (component == null)
+            if (aimComponent == null)
                 Debug.LogWarning("Miss AimComponent necessary for Shield in " + name);
         }
 
@@ -88,7 +88,7 @@ namespace redd096.GameTopDown2D
         void UpdateBox()
         {
             //update box values (without component, is right)
-            int direction = component ? (component.IsLookingRight ? 1 : -1) : 1;
+            int direction = aimComponent ? (aimComponent.IsLookingRight ? 1 : -1) : 1;
             center = (Vector2)transform.position + new Vector2(offset.x * direction, offset.y);
             upLeft = center + new Vector2(-size.x, size.y) * 0.5f;
             upRight = center + size * 0.5f;
