@@ -22,7 +22,7 @@ namespace redd096.GameTopDown2D
             if (showPositionNotNormalized)
             {
                 Gizmos.color = showPositionNotNormalized.ColorDebug;
-                Gizmos.DrawWireSphere((Vector2)transform.position + AimPositionNotNormalized, 1);
+                Gizmos.DrawWireSphere(AimPositionNotNormalized, 1);
             }
             if (showDirectionInput)
             {

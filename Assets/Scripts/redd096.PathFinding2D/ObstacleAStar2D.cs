@@ -5,9 +5,9 @@ using redd096.Attributes;
 namespace redd096.PathFinding2D
 {
     /// <summary>
-    /// Used to create dynamic NotWalkable nodes on the grid
+    /// Used to create dynamic NotWalkable nodes on the grid. Or set penalty to them
     /// </summary>
-    [AddComponentMenu("redd096/Path Finding A Star/Obstacle A Star 2D")]
+    [AddComponentMenu("redd096/.PathFinding2D/Obstacle A Star 2D")]
     public class ObstacleAStar2D : MonoBehaviour
     {
         enum ETypeCollider { circle, box }

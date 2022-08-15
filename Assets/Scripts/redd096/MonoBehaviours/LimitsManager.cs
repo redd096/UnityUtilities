@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace redd096
 {
-
+    #region editor
 #if UNITY_EDITOR
 
     using UnityEditor;
@@ -40,6 +40,7 @@ namespace redd096
     }
 
 #endif
+    #endregion
 
     [AddComponentMenu("redd096/MonoBehaviours/Limits Manager")]
     public class LimitsManager : MonoBehaviour

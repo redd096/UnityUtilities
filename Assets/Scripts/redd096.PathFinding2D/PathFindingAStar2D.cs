@@ -9,7 +9,7 @@ namespace redd096.PathFinding2D
     /// <summary>
     /// Call this to calculate a path using pathfinding or to update the grid
     /// </summary>
-    [AddComponentMenu("redd096/Path Finding A Star/Path Finding A Star 2D")]
+    [AddComponentMenu("redd096/.PathFinding2D/Path Finding A Star 2D")]
     public class PathFindingAStar2D : PathRequestManagerAStar2D
     {
         public static PathFindingAStar2D instance;

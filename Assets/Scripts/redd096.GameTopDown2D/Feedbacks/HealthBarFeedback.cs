@@ -3,9 +3,11 @@ using UnityEngine;
 using redd096.Attributes;
 using UnityEngine.UI;
 
-//if not setted automatically, you need to put predictionImage above healthImage (to render behind)
 namespace redd096.GameTopDown2D
 {
+    /// <summary>
+    /// If not setted automatically, you need to put predictionImage above healthImage (to render behind)
+    /// </summary>
     [AddComponentMenu("redd096/.GameTopDown2D/Feedbacks/Health Bar Feedback")]
     public class HealthBarFeedback : FeedbackRedd096<HealthComponent>
     {

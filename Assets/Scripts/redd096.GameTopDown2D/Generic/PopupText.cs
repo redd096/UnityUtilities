@@ -3,10 +3,12 @@ using UnityEngine.UI;
 using TMPro;
 using redd096.Attributes;
 
-//create a prefab with this script and instantiate where you need
 
 namespace redd096.GameTopDown2D
 {
+    /// <summary>
+    /// Create a prefab with this script and instantiate where you need
+    /// </summary>
     [AddComponentMenu("redd096/.GameTopDown2D/Generic/Popup Text")]
     public class PopupText : MonoBehaviour
     {

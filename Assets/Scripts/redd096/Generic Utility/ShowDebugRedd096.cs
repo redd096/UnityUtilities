@@ -20,19 +20,16 @@ namespace redd096
         {
             //base.OnGUI(position, property, label);
 
-            EditorGUI.BeginProperty(position, label, property);
-
             //draw in horizontal
+            EditorGUI.BeginProperty(position, label, property);
             EditorGUILayout.BeginHorizontal();
-            Vector2 size = EditorStyles.label.CalcSize(label);
 
             // Draw fields - pass GUIContent.none to each so they are drawn without labels
-            EditorGUILayout.LabelField(label);
+            EditorGUILayout.LabelField(label, GUILayout.ExpandWidth(false));
             EditorGUILayout.PropertyField(property.FindPropertyRelative("ShowDebug"), GUIContent.none, GUILayout.Width(30));
             EditorGUILayout.PropertyField(property.FindPropertyRelative("ColorDebug"), GUIContent.none, GUILayout.Width(100));
 
             EditorGUILayout.EndHorizontal();
-
             EditorGUI.EndProperty();
         }
     }

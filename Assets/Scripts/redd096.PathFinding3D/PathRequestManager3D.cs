@@ -48,7 +48,7 @@ namespace redd096.PathFinding3D
 
     #endregion
 
-    [AddComponentMenu("redd096/Path Finding A Star/Path Request Manager A Star 3D")]
+    [AddComponentMenu("redd096/.PathFinding3D/Path Request Manager A Star 3D")]
     public abstract class PathRequestManagerAStar3D : MonoBehaviour
     {
         List<PathRequest> pathRequestQueue = new List<PathRequest>();

@@ -46,7 +46,7 @@ namespace redd096.PathFinding3D
     /// <summary>
     /// Grid used for pathfinding
     /// </summary>
-    [AddComponentMenu("redd096/Path Finding A Star/Grid A Star 3D")]
+    [AddComponentMenu("redd096/.PathFinding3D/Grid A Star 3D")]
     public class GridAStar3D : MonoBehaviour
     {
         #region structs

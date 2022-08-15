@@ -6,7 +6,7 @@ namespace redd096.PathFinding3D
     /// <summary>
     /// Used to know size of the agent. When call PathFinding you can pass it as parameter
     /// </summary>
-    [AddComponentMenu("redd096/Path Finding A Star/Agent A Star 3D")]
+    [AddComponentMenu("redd096/.PathFinding3D/Agent A Star 3D")]
     public class AgentAStar3D : MonoBehaviour
     {
         enum ETypeCollider { sphere, box }

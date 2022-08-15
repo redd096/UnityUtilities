@@ -2,58 +2,62 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class ReplaceGameObjectMouseOrGamepad : MonoBehaviour
+namespace redd096
 {
-    [Header("Change object if use mouse or gamepad")]
-    [SerializeField] string mouseSchemeName = "KeyboardAndMouse";
-    [SerializeField] GameObject[] objectsMouse = default;
-    [SerializeField] GameObject[] objectsGamepad = default;
-
-    PlayerInput playerInput;
-    bool usingMouse;
-
-    void OnEnable()
+    [AddComponentMenu("redd096/MonoBehaviours/Replace GameObject Mouse Or Gamepad")]
+    public class ReplaceGameObjectMouseOrGamepad : MonoBehaviour
     {
-        //get references
-        if (playerInput == null)
-            playerInput = FindObjectOfType<PlayerInput>();
+        [Header("Change object if use mouse or gamepad")]
+        [SerializeField] string mouseSchemeName = "KeyboardAndMouse";
+        [SerializeField] GameObject[] objectsMouse = default;
+        [SerializeField] GameObject[] objectsGamepad = default;
 
-        //set gameObject
-        ReplaceGameObjects();
+        PlayerInput playerInput;
+        bool usingMouse;
 
-        //start update coroutine
-        StartCoroutine(UpdateCoroutine());
-    }
-
-    IEnumerator UpdateCoroutine()
-    {
-        yield return new WaitForSeconds(0.2f);
-
-        //if change device, replace gameObjects
-        if (playerInput && IsUsingMouse() != usingMouse)
+        void OnEnable()
         {
+            //get references
+            if (playerInput == null)
+                playerInput = FindObjectOfType<PlayerInput>();
+
+            //set gameObject
             ReplaceGameObjects();
+
+            //start update coroutine
+            StartCoroutine(UpdateCoroutine());
         }
-    }
 
-    bool IsUsingMouse()
-    {
-        //return if current control scheme is mouse scheme
-        return playerInput ? playerInput.currentControlScheme == mouseSchemeName : true;
-    }
+        IEnumerator UpdateCoroutine()
+        {
+            yield return new WaitForSeconds(0.2f);
 
-    void ReplaceGameObjects()
-    {
-        //set if using mouse or gamepad
-        usingMouse = IsUsingMouse();
+            //if change device, replace gameObjects
+            if (playerInput && IsUsingMouse() != usingMouse)
+            {
+                ReplaceGameObjects();
+            }
+        }
 
-        //active or deactive objects
-        foreach (GameObject go in objectsMouse)
-            if (go)
-                go.SetActive(usingMouse);
+        bool IsUsingMouse()
+        {
+            //return if current control scheme is mouse scheme
+            return playerInput ? playerInput.currentControlScheme == mouseSchemeName : true;
+        }
 
-        foreach (GameObject go in objectsGamepad)
-            if (go)
-                go.SetActive(!usingMouse);
+        void ReplaceGameObjects()
+        {
+            //set if using mouse or gamepad
+            usingMouse = IsUsingMouse();
+
+            //active or deactive objects
+            foreach (GameObject go in objectsMouse)
+                if (go)
+                    go.SetActive(usingMouse);
+
+            foreach (GameObject go in objectsGamepad)
+                if (go)
+                    go.SetActive(!usingMouse);
+        }
     }
 }

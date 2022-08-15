@@ -2,6 +2,10 @@
 
 namespace redd096.GameTopDown2D
 {
+    /// <summary>
+    /// Use this script to place weapons in scene. So this will set also WeaponPrefab
+    /// </summary>
+    [AddComponentMenu("redd096/.GameTopDown2D/Weapons/Spawn Weapon")]
     public class SpawnWeapon : MonoBehaviour
     {
         [SerializeField] WeaponBASE weaponPrefab = default;
