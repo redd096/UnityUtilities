@@ -8,15 +8,15 @@ namespace redd096.Attributes
 {
 	public static class ReflectionUtility
 	{
+        #region everything from SerializedProperty
 #if UNITY_EDITOR
-		#region everything from SerializedProperty
 
-		/// <summary>
-		/// Return field of this property, used for example to get or set a value without know the type
-		/// </summary>
-		/// <param name="property"></param>
-		/// <returns></returns>
-		public static FieldInfo GetField(this SerializedProperty property)
+        /// <summary>
+        /// Return field of this property, used for example to get or set a value without know the type
+        /// </summary>
+        /// <param name="property"></param>
+        /// <returns></returns>
+        public static FieldInfo GetField(this SerializedProperty property)
 		{
 			//find field using property.name
 			return property.GetTargetObjectWithProperty().GetField(property.name);
@@ -34,17 +34,17 @@ namespace redd096.Attributes
 			return property.GetTargetObjectWithProperty().GetValue(valueName, methodReturnTypes);
 		}
 
-		#endregion
 #endif
+        #endregion
 
-		#region return first
+        #region return first
 
-		/// <summary>
-		/// Get Field by name
-		/// </summary>
-		/// <param name="property"></param>
-		/// <returns></returns>
-		public static FieldInfo GetField(this object targetObject, string fieldName)
+        /// <summary>
+        /// Get Field by name
+        /// </summary>
+        /// <param name="property"></param>
+        /// <returns></returns>
+        public static FieldInfo GetField(this object targetObject, string fieldName)
 		{
 			foreach (FieldInfo field in targetObject.GetFields())
 				if (field.Name.Equals(fieldName, System.StringComparison.Ordinal))

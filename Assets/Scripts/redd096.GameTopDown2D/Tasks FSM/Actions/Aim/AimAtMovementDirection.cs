@@ -14,6 +14,9 @@ namespace redd096.GameTopDown2D
         [SerializeField] bool rotateUsingSpeed = false;
         [EnableIf("rotateUsingSpeed")][SerializeField] float rotationSpeed = 50;
 
+        [Header("Call OnCompleteTask when look at direction")]
+        [ColorGUI(AttributesUtility.EColor.Yellow)][SerializeField] bool callEvent = true;
+
         [Header("DEBUG")]
         [SerializeField] ShowDebugRedd096 drawLineToCurrentDirection = Color.cyan;
         [SerializeField] ShowDebugRedd096 drawLineToMovementDirection = Color.red;
@@ -75,6 +78,7 @@ namespace redd096.GameTopDown2D
                 if (rotateUsingSpeed == false)
                 {
                     aimComponent.AimInDirection(movementComponent.CurrentVelocity.normalized);
+                    if (callEvent) CompleteTask();  //call event
                 }
                 //or with rotation speed
                 else
@@ -93,6 +97,11 @@ namespace redd096.GameTopDown2D
 
                         //set new aim position
                         aimComponent.AimInDirection(newAimPosition);
+                    }
+                    //when reach direction, call event
+                    else if (callEvent)
+                    {
+                        CompleteTask();
                     }
                 }
             }

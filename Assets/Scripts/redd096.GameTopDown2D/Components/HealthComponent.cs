@@ -22,7 +22,7 @@ namespace redd096.GameTopDown2D
         [EnableIf("destroyOnDie")][SerializeField] float timeBeforeDestroy = 0;
 
         [Header("DEBUG")]
-        [ProgressBar("Health", "MaxHealth", ProgressBarAttribute.EColor.SmoothGreen)] public float CurrentHealth = 100;
+        [ProgressBar("Health", "MaxHealth", AttributesUtility.EColor.SmoothGreen)] public float CurrentHealth = 100;
         /*[ShowNonSerializedField]*/ public bool IsCurrentlyInvincible => Invincible || Time.time < tempInvincibleTime;
         /*[ShowNonSerializedField]*/ public bool IsCurrentlyTemporaryInvincible => Time.time < tempInvincibleTime;
         /*[ShowNonSerializedField]*/ [ReadOnly] bool alreadyDead = false;
