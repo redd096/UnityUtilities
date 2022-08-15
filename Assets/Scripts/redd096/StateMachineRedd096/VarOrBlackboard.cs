@@ -1,0 +1,88 @@
+using UnityEngine;
+
+namespace redd096
+{
+    #region editor
+#if UNITY_EDITOR
+
+    using UnityEditor;
+
+    [CustomPropertyDrawer(typeof(VarOrBlackboard<>), true)]
+    public class VarOrBlackboardEditor : PropertyDrawer
+    {
+        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+        {
+            return base.GetPropertyHeight(property, label);
+        }
+
+        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        {
+            //base.OnGUI(position, property, label);
+
+            //draw in horizontal
+            EditorGUI.BeginProperty(position, label, property);
+            EditorGUILayout.BeginHorizontal();
+
+            //get property
+            SerializedProperty useBlackboard = property.FindPropertyRelative("useBlackboard");
+
+            //set button color
+            Color color = GUI.color;
+            GUI.color = useBlackboard.boolValue ? Color.yellow : new Color(1,.5f,.5f);
+
+            //button with B (blackboard) or N (normal)
+            if (GUILayout.Button(useBlackboard.boolValue ? "B" : "N"))
+                useBlackboard.boolValue = !useBlackboard.boolValue;
+
+            GUI.color = color;
+
+            //show variable name
+            EditorGUILayout.PrefixLabel(label);
+
+            //show blackboard name or normal variable
+            EditorGUILayout.PropertyField(useBlackboard.boolValue ?
+                property.FindPropertyRelative("blackboardName") :
+                property.FindPropertyRelative("normalVariable"),
+                GUIContent.none);
+
+            EditorGUILayout.EndHorizontal();
+            EditorGUI.EndProperty();
+        }
+    }
+
+#endif
+    #endregion
+
+    /// <summary>
+    /// Display variable with a toggle to select Blackboard Variable or Normal Variable
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    [System.Serializable]
+    public class VarOrBlackboard<T>
+    {
+        [SerializeField] bool useBlackboard;
+        [SerializeField] string blackboardName;
+        [SerializeField] T normalVariable;
+
+        public VarOrBlackboard(T normalVariable)
+        {
+            this.normalVariable = normalVariable;
+        }
+
+        /// <summary>
+        /// Get value from blackboard or normal variable
+        /// </summary>
+        /// <param name="stateMachine"></param>
+        /// <returns></returns>
+        public T GetValue(StateMachineRedd096 stateMachine)
+        {
+            return useBlackboard ? (stateMachine ? stateMachine.GetBlackboardElement<T>(blackboardName) : default) : (T)normalVariable;
+        }
+
+        /// <summary>
+        /// Use this convertor to make for example VarOrBlackboard<int> varName = 5;
+        /// </summary>
+        /// <param name="v"></param>
+        public static implicit operator VarOrBlackboard<T>(T v) => new VarOrBlackboard<T>(v);
+    }
+}
