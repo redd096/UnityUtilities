@@ -1,0 +1,99 @@
+﻿using UnityEngine;
+using redd096.Attributes;
+
+namespace redd096.GameTopDown2D
+{
+    [AddComponentMenu("redd096/.GameTopDown2D/Tasks FSM/Actions/Aim/Aim At Target")]
+    public class AimAtTarget : ActionTask
+    {
+        [Header("Necessary Components - default get in parent")]
+        [SerializeField] AimComponent aimComponent;
+
+        [Header("Aim")]
+        [SerializeField] VarOrBlackboard<Transform> target = new VarOrBlackboard<Transform>("Target");
+        [Tooltip("Rotate immediatly or use a rotation speed")][SerializeField] bool rotateUsingSpeed = false;
+        [EnableIf("rotateUsingSpeed")][SerializeField] float rotationSpeed = 50;
+
+        [Header("DEBUG")]
+        [SerializeField] ShowDebugRedd096 drawLineToCurrentDirection = Color.cyan;
+        [SerializeField] ShowDebugRedd096 drawLineToTarget = Color.red;
+
+        //events
+        public System.Action onStartAimAtTarget { get; set; }
+        public System.Action onEndAimAtTarget { get; set; }
+
+        void OnDrawGizmos()
+        {
+            //draw line to aim direction or right
+            if (drawLineToCurrentDirection)
+            {
+                Gizmos.color = drawLineToCurrentDirection.ColorDebug;
+                Gizmos.DrawLine(transformTask.position, Application.isPlaying && aimComponent ? (Vector2)transformTask.position + aimComponent.AimDirectionInput * 2 : (Vector2)transformTask.position + Vector2.right * 2);
+            }
+            //draw line to position to Aim
+            if (drawLineToTarget)
+            {
+                Gizmos.color = drawLineToTarget.ColorDebug;
+                if (GetValue(target)) Gizmos.DrawLine(transformTask.position, GetValue(target).position);
+            }
+            Gizmos.color = Color.white;
+        }
+
+        protected override void OnInitTask()
+        {
+            base.OnInitTask();
+
+            //get references
+            if (aimComponent == null) aimComponent = GetStateMachineComponent<AimComponent>();
+        }
+
+        public override void OnEnterTask()
+        {
+            base.OnEnterTask();
+
+            //call event
+            onStartAimAtTarget?.Invoke();
+        }
+
+        public override void OnExitTask()
+        {
+            base.OnExitTask();
+
+            //call event
+            onEndAimAtTarget?.Invoke();
+        }
+
+        public override void OnUpdateTask()
+        {
+            base.OnUpdateTask();
+
+            //aim at target
+            if (aimComponent && GetValue(target))
+            {
+                //immediatly
+                if (rotateUsingSpeed == false)
+                {
+                    aimComponent.AimAt(GetValue(target).position);
+                }
+                //or with rotation speed
+                else
+                {
+                    //calculate direction to target
+                    Vector2 directionToReach = (GetValue(target).position - transformTask.position).normalized;     //direction to target
+                    float angle = Vector2.SignedAngle(aimComponent.AimDirectionInput, directionToReach);            //rotation angle
+
+                    //rotate only if not already looking at target
+                    if (Mathf.Abs(angle) > Mathf.Epsilon)
+                    {
+                        //calculate rotation, but if exceed, clamp it
+                        float rotationAngle = rotationSpeed * Time.deltaTime > Mathf.Abs(angle) ? angle : rotationSpeed * Time.deltaTime * Mathf.Sign(angle);
+                        Vector2 newAimPosition = Quaternion.AngleAxis(rotationAngle, Vector3.forward) * aimComponent.AimDirectionInput;
+
+                        //set new aim position
+                        aimComponent.AimInDirection(newAimPosition);
+                    }
+                }
+            }
+        }
+    }
+}

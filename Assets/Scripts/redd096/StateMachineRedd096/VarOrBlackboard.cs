@@ -12,7 +12,8 @@ namespace redd096
     {
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
-            return base.GetPropertyHeight(property, label);
+            //return base.GetPropertyHeight(property, label);
+            return 0;
         }
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
@@ -64,9 +65,18 @@ namespace redd096
         [SerializeField] string blackboardName;
         [SerializeField] T normalVariable;
 
-        public VarOrBlackboard(T normalVariable)
+        public VarOrBlackboard()
         {
-            this.normalVariable = normalVariable;
+        }
+
+        /// <summary>
+        /// Use this constructor to create default blackboard variable, e.g. VarOrBlackboard<int> varName = new VarOrBlackboard<int>("Number");
+        /// </summary>
+        /// <param name="blackboardName"></param>
+        public VarOrBlackboard(string blackboardName)
+        {
+            useBlackboard = true;
+            this.blackboardName = blackboardName;
         }
 
         /// <summary>
@@ -83,6 +93,12 @@ namespace redd096
         /// Use this convertor to make for example VarOrBlackboard<int> varName = 5;
         /// </summary>
         /// <param name="v"></param>
-        public static implicit operator VarOrBlackboard<T>(T v) => new VarOrBlackboard<T>(v);
+        public static implicit operator VarOrBlackboard<T>(T value)
+        {
+            //set only normal variable
+            VarOrBlackboard<T> v = new VarOrBlackboard<T>();
+            v.normalVariable = value;
+            return v;
+        }
     }
 }
