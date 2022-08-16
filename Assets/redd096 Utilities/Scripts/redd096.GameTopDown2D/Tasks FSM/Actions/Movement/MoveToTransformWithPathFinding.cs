@@ -4,8 +4,8 @@ using redd096.Attributes;
 
 namespace redd096.GameTopDown2D
 {
-    [AddComponentMenu("redd096/.GameTopDown2D/Tasks FSM/Actions/Movement/Move To Target With Path Finding")]
-    public class MoveToTargetWithPathFinding : ActionTask
+    [AddComponentMenu("redd096/.GameTopDown2D/Tasks FSM/Actions/Movement/Move To Transform With Path Finding")]
+    public class MoveToTransformWithPathFinding : ActionTask
     {
         [Header("Necessary Components - default get in parent")]
         [SerializeField] MovementComponent movementComponent = default;

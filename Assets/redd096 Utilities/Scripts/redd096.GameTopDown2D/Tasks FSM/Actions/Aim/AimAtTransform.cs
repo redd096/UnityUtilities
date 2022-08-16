@@ -3,8 +3,8 @@ using redd096.Attributes;
 
 namespace redd096.GameTopDown2D
 {
-    [AddComponentMenu("redd096/.GameTopDown2D/Tasks FSM/Actions/Aim/Aim At Target")]
-    public class AimAtTarget : ActionTask
+    [AddComponentMenu("redd096/.GameTopDown2D/Tasks FSM/Actions/Aim/Aim At Transform")]
+    public class AimAtTransform : ActionTask
     {
         [Header("Necessary Components - default get in parent")]
         [SerializeField] AimComponent aimComponent = default;

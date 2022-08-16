@@ -22,6 +22,9 @@ namespace redd096.GameTopDown2D
         [SerializeField] bool mustReachPosition = true;
         [DisableIf("mustReachPosition")][SerializeField] float approximately = 0.05f;
 
+        [Header("Call OnCompleteTask when reach one destination")]
+        [ColorGUI(AttributesUtility.EColor.Orange)][SerializeField] bool callEvent = false;
+
         [Header("DEBUG")]
         [SerializeField] ShowDebugRedd096 drawAreaMovement = Color.magenta;
         [SerializeField] ShowDebugRedd096 drawPath = Color.cyan;
@@ -171,6 +174,10 @@ namespace redd096.GameTopDown2D
             if (path == null || path.vectorPath == null || path.vectorPath.Count <= 0)
             {
                 waitTimer = Time.time + timeToWaitWhenReach;
+
+                //call complete task event
+                if (callEvent)
+                    CompleteTask();
             }
         }
 
