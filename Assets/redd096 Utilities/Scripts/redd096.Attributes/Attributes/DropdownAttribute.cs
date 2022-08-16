@@ -66,7 +66,7 @@ namespace redd096.Attributes
 			}
 			else
 			{
-				Debug.LogWarning(at.GetType().Name + " - error between property type and method's return type", (targetObject as Component).gameObject);
+				Debug.LogWarning((targetObject as Component).gameObject + " - error between property type and method's return type", (targetObject as Component).gameObject);
 			}
 
 			EditorGUI.EndProperty();

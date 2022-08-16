@@ -11,7 +11,7 @@ namespace redd096
     [System.Serializable]
     public class Transition
     {
-        [DropdownState("Destination State")] public int StateDestination;
+        [DropdownState] public string DestinationState;
         public ETransitionCheck TransitionCheck;
         [DropdownTask(typeof(ConditionTask))] public List<ConditionTask> Conditions;
     }
@@ -19,7 +19,7 @@ namespace redd096
     [System.Serializable]
     public class State
     {
-        public string StateName;
+        [OnStateNameChanged] public string StateName;
         [DropdownTask(typeof(ActionTask))] public ActionTask[] Actions;
         public Transition[] Transitions;
     }
@@ -137,7 +137,7 @@ namespace redd096
                     if ((CurrentState.Transitions[i].TransitionCheck == ETransitionCheck.AllTrueRequired && CheckConditionsEVERY(CurrentState.Transitions[i]))
                         || (CurrentState.Transitions[i].TransitionCheck == ETransitionCheck.AnyTrueSuffice && CheckConditionsANY(CurrentState.Transitions[i])))
                     {
-                        SetState(CurrentState.Transitions[i].StateDestination);
+                        SetState(CurrentState.Transitions[i].DestinationState);
 
                         //break, because now is in another state
                         break;

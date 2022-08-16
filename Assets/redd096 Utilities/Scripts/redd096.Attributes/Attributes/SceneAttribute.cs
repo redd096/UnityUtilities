@@ -40,7 +40,7 @@ namespace redd096.Attributes
             //else show warning
             else
             {
-                Debug.LogWarning(typeof(SceneAttribute).Name + " can't be used on '" + property.name + "'. It can be used only on int or string variables", property.serializedObject.targetObject);
+                Debug.LogWarning(property.serializedObject.targetObject + " - " + typeof(SceneAttribute).Name + " can't be used on '" + property.name + "'. It can be used only on int or string variables", property.serializedObject.targetObject);
             }
 
             EditorGUI.EndProperty();

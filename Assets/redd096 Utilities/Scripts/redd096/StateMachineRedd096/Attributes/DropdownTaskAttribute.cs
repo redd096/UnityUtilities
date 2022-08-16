@@ -40,10 +40,11 @@ namespace redd096
                 selectedIndex = EditorGUI.Popup(new Rect(position.x, position.y, position.width, position.height - heightRef - spaceBetweemElements), selectedIndex, tasksNames);   //remove height, because will be used for readonly ref
                 property.objectReferenceValue = possibleTasks[selectedIndex];
             }
-            //else show NONE and don't set anything
+            //else show NONE
             else
             {
                 EditorGUI.Popup(new Rect(position.x, position.y, position.width, position.height - heightRef - spaceBetweemElements), 0, new string[1] { "NONE" });                 //remove height, because will be used for readonly ref
+                property.objectReferenceValue = null;
             }
 
             //show readonly reference
@@ -69,7 +70,7 @@ namespace redd096
                 if (components != null && components.Length > 0)
                 {
                     possibleTasks = new BaseTask[components.Length + 1];
-                    tasksNames = new string[possibleTasks.Length + 1];
+                    tasksNames = new string[components.Length + 1];
 
                     //set NONE as first task
                     possibleTasks[0] = null;

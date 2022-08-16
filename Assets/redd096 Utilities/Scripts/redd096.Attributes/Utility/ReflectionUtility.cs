@@ -20,16 +20,16 @@ namespace redd096.Attributes
 		{
 			//find field using property.name
 			return property.GetTargetObjectWithProperty().GetField(property.name);
-		}
+        }
 
-		/// <summary>
-		/// Return a value from a field, or property, or method. Use this property targetObject
-		/// </summary>
-		/// <param name="property"></param>
-		/// <param name="valueName"></param>
-		/// <param name="methodReturnTypes">Call methods only with this return type. If null call every method</param>
-		/// <returns></returns>
-		public static object GetValue(this SerializedProperty property, string valueName, params System.Type[] methodReturnTypes)
+        /// <summary>
+        /// Return a value from a field, or property, or method. Use this property targetObject
+        /// </summary>
+        /// <param name="property"></param>
+        /// <param name="valueName"></param>
+        /// <param name="methodReturnTypes">Call methods only with this return type. If null call every method</param>
+        /// <returns></returns>
+        public static object GetValue(this SerializedProperty property, string valueName, params System.Type[] methodReturnTypes)
 		{
 			return property.GetTargetObjectWithProperty().GetValue(valueName, methodReturnTypes);
 		}

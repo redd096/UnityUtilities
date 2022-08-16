@@ -69,7 +69,7 @@ namespace redd096.Attributes
                     }
                     else
                     {
-                        Debug.LogWarning(buttonAttribute.GetType().Name + " can't invoke '" + method.Name + "'. It can invoke only methods with 0 or optional parameters", target);
+                        Debug.LogWarning(target.name + " can't invoke '" + method.Name + "'. It can invoke only methods with 0 or optional parameters", target);
                     }
                 }
             }

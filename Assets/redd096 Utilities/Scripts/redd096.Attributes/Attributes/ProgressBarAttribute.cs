@@ -41,7 +41,7 @@ namespace redd096.Attributes
 			}
 			else
 			{
-				Debug.LogWarning(at.GetType().Name + " can be used only on int or float properties", (property.serializedObject.targetObject as Component).gameObject);
+				Debug.LogWarning(property.serializedObject.targetObject + " - " + at.GetType().Name + " can be used only on int or float properties", (property.serializedObject.targetObject as Component).gameObject);
 			}
 		}
 
