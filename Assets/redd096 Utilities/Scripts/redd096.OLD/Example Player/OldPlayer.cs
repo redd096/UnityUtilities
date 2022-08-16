@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace redd096.OLD
 {
-    [AddComponentMenu("redd096/.OLD/Example Player/Player")]
-    public class Player : StateMachine
+    [AddComponentMenu("redd096/.OLD/Example Player/Old Player")]
+    public class OldPlayer : StateMachine
     {
         [Header("Camera")]
         public CameraBaseControl cameraControl;
@@ -21,7 +21,7 @@ namespace redd096.OLD
             cameraControl.StartDefault(Camera.main.transform, transform);
 
             //set state
-            SetState(new PlayerState());    // create new one, with constructor
+            SetState(new OldPlayerState()); // create new one, with constructor
                                             //SetState(playerState);        // use serialized state (use AwakeState instead of constructor)
         }
     }

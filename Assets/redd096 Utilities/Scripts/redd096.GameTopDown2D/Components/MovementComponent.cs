@@ -44,7 +44,6 @@ namespace redd096.GameTopDown2D
         //private
         Vector2 desiredVelocity;                //when moves, set it as input direction * speed (used to move this object, will be reset in every frame)
         Vector2 calculatedVelocity;             //desiredVelocity + DesiredPushForce
-        Vector2 newPosition;                    //new position when Move
         Vector2 newPushForce;                   //new push force when Drag
 
         void Update()
@@ -140,13 +139,11 @@ namespace redd096.GameTopDown2D
             {
                 rb.velocity = calculatedVelocity;
             }
-            //or move with transform (if there is collision component, calculate reachable position, else just move to new position)
+            //or move with transform
             else if (movementMode == EMovementModes.Transform)
             {
-                newPosition = transform.position + (Vector3)calculatedVelocity * 
+                transform.position += (Vector3)calculatedVelocity *
                     (updateMode == EUpdateModes.Update ? Time.deltaTime : Time.fixedDeltaTime);
-
-                transform.position = newPosition;
             }
         }
 
@@ -228,6 +225,28 @@ namespace redd096.GameTopDown2D
                 CurrentPushForce = pushDirection.normalized * pushForce;
             else
                 CurrentPushForce += pushDirection.normalized * pushForce;
+        }
+
+        /// <summary>
+        /// Calculate which position we will have next frame. 
+        /// NB that this use current push and speed, doesn't know if this frame will receive some push or other, so it's not 100% correct
+        /// </summary>
+        /// <returns></returns>
+        public Vector2 CalculateNextPosition()
+        {
+            CalculateVelocity();
+
+            //do movement with rigidbody (let unity calculate reachable position)
+            if (movementMode == EMovementModes.Rigidbody)
+            {
+                return transform.position + (Vector3)calculatedVelocity * Time.fixedDeltaTime;
+            }
+            //or move with transform
+            else
+            {
+                return transform.position + (Vector3)calculatedVelocity *
+                    (updateMode == EUpdateModes.Update ? Time.deltaTime : Time.fixedDeltaTime);
+            }
         }
 
         #endregion

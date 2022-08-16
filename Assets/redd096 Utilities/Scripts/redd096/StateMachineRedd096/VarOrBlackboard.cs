@@ -29,7 +29,7 @@ namespace redd096
 
             //set button color
             Color color = GUI.color;
-            GUI.color = useBlackboard.boolValue ? Color.yellow : new Color(1,.5f,.5f);
+            GUI.color = useBlackboard.boolValue ? Color.yellow : new Color32(255, 152, 203, 255);
 
             //button with B (blackboard) or N (normal)
             if (GUILayout.Button(useBlackboard.boolValue ? "B" : "N"))

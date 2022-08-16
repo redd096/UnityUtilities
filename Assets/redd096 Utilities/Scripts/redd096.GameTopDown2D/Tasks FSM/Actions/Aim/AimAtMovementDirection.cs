@@ -15,7 +15,7 @@ namespace redd096.GameTopDown2D
         [EnableIf("rotateUsingSpeed")][SerializeField] float rotationSpeed = 50;
 
         [Header("Call OnCompleteTask when look at direction")]
-        [ColorGUI(AttributesUtility.EColor.Yellow)][SerializeField] bool callEvent = true;
+        [ColorGUI(AttributesUtility.EColor.Orange)][SerializeField] bool callEvent = false;
 
         [Header("DEBUG")]
         [SerializeField] ShowDebugRedd096 drawLineToCurrentDirection = Color.cyan;
@@ -71,7 +71,7 @@ namespace redd096.GameTopDown2D
         {
             base.OnUpdateTask();
 
-            //aim at target
+            //aim in direction
             if (aimComponent && movementComponent)
             {
                 //immediatly

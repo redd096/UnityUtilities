@@ -15,7 +15,7 @@ namespace redd096.GameTopDown2D
         [SerializeField] float timeBetweenAttacks = 0.5f;
 
         [Header("Call OnCompleteTask after few attacks (0 = no call)")]
-        [ColorGUI(AttributesUtility.EColor.Yellow)][SerializeField] int numberOfAttacks = 1;
+        [ColorGUI(AttributesUtility.EColor.Orange)][SerializeField] int numberOfAttacks = 0;
 
         float timerBeforeAttack;    //time between attacks
         float timerAttack;          //duration attack

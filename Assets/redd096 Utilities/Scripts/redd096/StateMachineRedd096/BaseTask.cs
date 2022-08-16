@@ -28,7 +28,7 @@ namespace redd096
 
             //show warning if not found
             if (showWarningIfNotFound && component == null)
-                Debug.LogWarning($"Miss {typeof(T)} on {stateMachine}");
+                Debug.LogWarning($"Miss {typeof(T).Name} on {stateMachine}");
 
             return component;
         }

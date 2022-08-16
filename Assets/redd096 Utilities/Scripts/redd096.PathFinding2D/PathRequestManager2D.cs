@@ -32,9 +32,12 @@ namespace redd096.PathFinding2D
         }
     }
 
+    [System.Serializable]
     public class Path
     {
         public List<Vector2> vectorPath;
+
+        public Vector2 nextNode => vectorPath != null && vectorPath.Count > 0 ? vectorPath[0] : Vector2.zero;
 
         /// <summary>
         /// Struct used to pass found path

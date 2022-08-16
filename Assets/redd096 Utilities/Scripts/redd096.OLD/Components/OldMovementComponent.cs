@@ -3,8 +3,8 @@ using redd096.Attributes;
 
 namespace redd096.OLD
 {
-    [AddComponentMenu("redd096/.OLD/Components/Movement Component")]
-    public class MovementComponent : MonoBehaviour
+    [AddComponentMenu("redd096/.OLD/Components/Old Movement Component")]
+    public class OldMovementComponent : MonoBehaviour
     {
         enum EUpdateModes { Update, FixedUpdate }
         enum EMovementModes { Transform, Rigidbody }
@@ -22,7 +22,7 @@ namespace redd096.OLD
         [Tooltip("Drag used when pushed from something")][ShowIf("useCustomDrag")][SerializeField] float customDrag = 5;
 
         [Header("Necessary Components (by default get from this gameObject)")]
-        [EnableIf("movementMode", EMovementModes.Transform)][SerializeField] CollisionComponent collisionComponent = default;
+        [EnableIf("movementMode", EMovementModes.Transform)][SerializeField] OldCollisionComponent collisionComponent = default;
         [EnableIf("movementMode", EMovementModes.Rigidbody)][SerializeField] Rigidbody2D rb = default;
 
         [Header("DEBUG")]
@@ -97,7 +97,7 @@ namespace redd096.OLD
         {
             //check if have components
             if (collisionComponent == null)
-                collisionComponent = GetComponent<CollisionComponent>();
+                collisionComponent = GetComponent<OldCollisionComponent>();
             if (rb == null)
                 rb = GetComponent<Rigidbody2D>();
 
@@ -126,15 +126,15 @@ namespace redd096.OLD
             if (movementMode == EMovementModes.Transform && useCollisionComponent && collisionComponent != null)
             {
                 //check if hit horizontal
-                if (collisionComponent.IsHitting(CollisionComponent.EDirectionEnum.right) && calculatedVelocity.x > 0)
+                if (collisionComponent.IsHitting(OldCollisionComponent.EDirectionEnum.right) && calculatedVelocity.x > 0)
                     calculatedVelocity.x = 0;
-                else if (collisionComponent.IsHitting(CollisionComponent.EDirectionEnum.left) && calculatedVelocity.x < 0)
+                else if (collisionComponent.IsHitting(OldCollisionComponent.EDirectionEnum.left) && calculatedVelocity.x < 0)
                     calculatedVelocity.x = 0;
 
                 //check if hit vertical
-                if (collisionComponent.IsHitting(CollisionComponent.EDirectionEnum.up) && calculatedVelocity.y > 0)
+                if (collisionComponent.IsHitting(OldCollisionComponent.EDirectionEnum.up) && calculatedVelocity.y > 0)
                     calculatedVelocity.y = 0;
-                else if (collisionComponent.IsHitting(CollisionComponent.EDirectionEnum.down) && calculatedVelocity.y < 0)
+                else if (collisionComponent.IsHitting(OldCollisionComponent.EDirectionEnum.down) && calculatedVelocity.y < 0)
                     calculatedVelocity.y = 0;
             }
 
@@ -171,14 +171,14 @@ namespace redd096.OLD
                 if (useCollisionComponent && collisionComponent != null)
                 {
                     if (calculatedVelocity.x > 0)
-                        newPosition = collisionComponent.CalculateReachablePosition(CollisionComponent.EDirectionEnum.right, newPosition);
+                        newPosition = collisionComponent.CalculateReachablePosition(OldCollisionComponent.EDirectionEnum.right, newPosition);
                     else if (calculatedVelocity.x < 0)
-                        newPosition = collisionComponent.CalculateReachablePosition(CollisionComponent.EDirectionEnum.left, newPosition);
+                        newPosition = collisionComponent.CalculateReachablePosition(OldCollisionComponent.EDirectionEnum.left, newPosition);
 
                     if (calculatedVelocity.y > 0)
-                        newPosition = collisionComponent.CalculateReachablePosition(CollisionComponent.EDirectionEnum.up, newPosition);
+                        newPosition = collisionComponent.CalculateReachablePosition(OldCollisionComponent.EDirectionEnum.up, newPosition);
                     else if (calculatedVelocity.y < 0)
-                        newPosition = collisionComponent.CalculateReachablePosition(CollisionComponent.EDirectionEnum.down, newPosition);
+                        newPosition = collisionComponent.CalculateReachablePosition(OldCollisionComponent.EDirectionEnum.down, newPosition);
                 }
 
                 transform.position = newPosition;
@@ -205,15 +205,15 @@ namespace redd096.OLD
                 if (useCollisionComponent && collisionComponent != null && removePushForceWhenHit)
                 {
                     //check if hit horizontal
-                    if (collisionComponent.IsHitting(CollisionComponent.EDirectionEnum.right) && newPushForce.x > 0)
+                    if (collisionComponent.IsHitting(OldCollisionComponent.EDirectionEnum.right) && newPushForce.x > 0)
                         newPushForce.x = 0;
-                    else if (collisionComponent.IsHitting(CollisionComponent.EDirectionEnum.left) && newPushForce.x < 0)
+                    else if (collisionComponent.IsHitting(OldCollisionComponent.EDirectionEnum.left) && newPushForce.x < 0)
                         newPushForce.x = 0;
 
                     //check if hit vertical
-                    if (collisionComponent.IsHitting(CollisionComponent.EDirectionEnum.up) && newPushForce.y > 0)
+                    if (collisionComponent.IsHitting(OldCollisionComponent.EDirectionEnum.up) && newPushForce.y > 0)
                         newPushForce.y = 0;
-                    else if (collisionComponent.IsHitting(CollisionComponent.EDirectionEnum.down) && newPushForce.y < 0)
+                    else if (collisionComponent.IsHitting(OldCollisionComponent.EDirectionEnum.down) && newPushForce.y < 0)
                         newPushForce.y = 0;
                 }
             }

@@ -10,14 +10,14 @@ namespace redd096.OLD
 
     using UnityEditor;
 
-    [CustomEditor(typeof(SaveLoadSystem))]
-    public class SaveLoadSystemEditor : Editor
+    [CustomEditor(typeof(OldSaveLoadSystem))]
+    public class OldSaveLoadSystemEditor : Editor
     {
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
 
-            SaveLoadSystem saveLoad = target as SaveLoadSystem;
+            OldSaveLoadSystem saveLoad = target as OldSaveLoadSystem;
 
             EditorGUILayout.BeginVertical();
             EditorGUILayout.Space(5);
@@ -44,7 +44,7 @@ namespace redd096.OLD
         void DeleteAll()
         {
             //use this SaveLoadSystem, cause instance is not setted
-            SaveLoadSystem saveLoadSystem = target as SaveLoadSystem;
+            OldSaveLoadSystem saveLoadSystem = target as OldSaveLoadSystem;
             if (saveLoadSystem == null)
                 return;
 
@@ -69,12 +69,12 @@ namespace redd096.OLD
     #region save class
 
     [System.Serializable]
-    public class ExampleClassToSave
+    public class OldExampleClassToSave
     {
         public int test;
         public string[] testArray;
 
-        public ExampleClassToSave(int test, string[] testArray)
+        public OldExampleClassToSave(int test, string[] testArray)
         {
             this.test = test;
             this.testArray = testArray;
@@ -88,9 +88,9 @@ namespace redd096.OLD
         persistentDataPath, gameFolder, nothing
     }
 
-    [AddComponentMenu("redd096/.OLD/Singletons/Save and Load System")]
+    [AddComponentMenu("redd096/.OLD/Singletons/Old Save and Load System")]
     [DefaultExecutionOrder(-200)]
-    public class SaveLoadSystem : Singleton<SaveLoadSystem>
+    public class OldSaveLoadSystem : Singleton<OldSaveLoadSystem>
     {
         [Header("Data Directory")]
         [SerializeField] SaveFolder saveFolder = SaveFolder.persistentDataPath;
@@ -113,7 +113,7 @@ namespace redd096.OLD
         }
     }
 
-    public static class SaveLoadJSON
+    public static class OldSaveLoadJSON
     {
         /// <summary>
         /// Get path to the file (directory path + name of the file (key) + format (.json))
@@ -123,7 +123,7 @@ namespace redd096.OLD
         public static string GetPathFile(string key)
         {
             //directory path + name of the file (key) + format (.json)
-            return Path.Combine(SaveLoadSystem.instance.PathDirectory, key + ".json");
+            return Path.Combine(OldSaveLoadSystem.instance.PathDirectory, key + ".json");
         }
 
         /// <summary>
@@ -134,9 +134,9 @@ namespace redd096.OLD
         public static void Save<T>(string key, T value)
         {
             //if there is no directory, create it
-            if (Directory.Exists(SaveLoadSystem.instance.PathDirectory) == false)
+            if (Directory.Exists(OldSaveLoadSystem.instance.PathDirectory) == false)
             {
-                Directory.CreateDirectory(SaveLoadSystem.instance.PathDirectory);
+                Directory.CreateDirectory(OldSaveLoadSystem.instance.PathDirectory);
             }
 
             //value to json, then save file
@@ -153,7 +153,7 @@ namespace redd096.OLD
             //if there is no file, return null
             if (File.Exists(GetPathFile(key)) == false)
             {
-                if (SaveLoadSystem.instance.ShowDebugLogs)
+                if (OldSaveLoadSystem.instance.ShowDebugLogs)
                     Debug.Log("Save file not found: " + GetPathFile(key));
 
                 return null;
@@ -172,9 +172,9 @@ namespace redd096.OLD
         public static void Save(string key, object value)
         {
             //if there is no directory, create it
-            if (Directory.Exists(SaveLoadSystem.instance.PathDirectory) == false)
+            if (Directory.Exists(OldSaveLoadSystem.instance.PathDirectory) == false)
             {
-                Directory.CreateDirectory(SaveLoadSystem.instance.PathDirectory);
+                Directory.CreateDirectory(OldSaveLoadSystem.instance.PathDirectory);
             }
 
             //value to json, then save file
@@ -193,7 +193,7 @@ namespace redd096.OLD
             //if there is no file, return null
             if (File.Exists(GetPathFile(key)) == false)
             {
-                if (SaveLoadSystem.instance.ShowDebugLogs)
+                if (OldSaveLoadSystem.instance.ShowDebugLogs)
                     Debug.Log("Save file not found: " + GetPathFile(key));
 
                 return null;
@@ -213,7 +213,7 @@ namespace redd096.OLD
             //check there is a file
             if (File.Exists(GetPathFile(key)) == false)
             {
-                if (SaveLoadSystem.instance.ShowDebugLogs)
+                if (OldSaveLoadSystem.instance.ShowDebugLogs)
                     Debug.Log("Save file not found: " + GetPathFile(key));
 
                 return;
@@ -229,16 +229,16 @@ namespace redd096.OLD
         public static void DeleteAll()
         {
             //check there is a directory
-            if (Directory.Exists(SaveLoadSystem.instance.PathDirectory) == false)
+            if (Directory.Exists(OldSaveLoadSystem.instance.PathDirectory) == false)
             {
-                if (SaveLoadSystem.instance.ShowDebugLogs)
-                    Debug.Log("Directory not found: " + SaveLoadSystem.instance.PathDirectory);
+                if (OldSaveLoadSystem.instance.ShowDebugLogs)
+                    Debug.Log("Directory not found: " + OldSaveLoadSystem.instance.PathDirectory);
 
                 return;
             }
 
             //delete directory
-            Directory.Delete(SaveLoadSystem.instance.PathDirectory, true);
+            Directory.Delete(OldSaveLoadSystem.instance.PathDirectory, true);
         }
     }
 
@@ -252,7 +252,7 @@ namespace redd096.OLD
         public static string GetPathFile(string key)
         {
             //directory path + name of the file (key) + format (.bin)
-            return Path.Combine(SaveLoadSystem.instance.PathDirectory, key + ".bin");
+            return Path.Combine(OldSaveLoadSystem.instance.PathDirectory, key + ".bin");
         }
 
         /// <summary>
@@ -263,9 +263,9 @@ namespace redd096.OLD
         public static void Save<T>(string key, T value)
         {
             //if there is no directory, create it
-            if (Directory.Exists(SaveLoadSystem.instance.PathDirectory) == false)
+            if (Directory.Exists(OldSaveLoadSystem.instance.PathDirectory) == false)
             {
-                Directory.CreateDirectory(SaveLoadSystem.instance.PathDirectory);
+                Directory.CreateDirectory(OldSaveLoadSystem.instance.PathDirectory);
             }
 
             //create stream at file position
@@ -286,7 +286,7 @@ namespace redd096.OLD
             //if there is no file, return null
             if (File.Exists(GetPathFile(key)) == false)
             {
-                if (SaveLoadSystem.instance.ShowDebugLogs)
+                if (OldSaveLoadSystem.instance.ShowDebugLogs)
                     Debug.Log("Save file not found: " + GetPathFile(key));
 
                 return null;
@@ -311,9 +311,9 @@ namespace redd096.OLD
         public static void Save(string key, object value)
         {
             //if there is no directory, create it
-            if (Directory.Exists(SaveLoadSystem.instance.PathDirectory) == false)
+            if (Directory.Exists(OldSaveLoadSystem.instance.PathDirectory) == false)
             {
-                Directory.CreateDirectory(SaveLoadSystem.instance.PathDirectory);
+                Directory.CreateDirectory(OldSaveLoadSystem.instance.PathDirectory);
             }
 
             //create stream at file position
@@ -334,7 +334,7 @@ namespace redd096.OLD
             //if there is no file, return null
             if (File.Exists(GetPathFile(key)) == false)
             {
-                if (SaveLoadSystem.instance.ShowDebugLogs)
+                if (OldSaveLoadSystem.instance.ShowDebugLogs)
                     Debug.Log("Save file not found: " + GetPathFile(key));
 
                 return null;
@@ -360,7 +360,7 @@ namespace redd096.OLD
             //check there is a file
             if (File.Exists(GetPathFile(key)) == false)
             {
-                if (SaveLoadSystem.instance.ShowDebugLogs)
+                if (OldSaveLoadSystem.instance.ShowDebugLogs)
                     Debug.Log("Save file not found: " + GetPathFile(key));
 
                 return;
@@ -376,16 +376,16 @@ namespace redd096.OLD
         public static void DeleteAll()
         {
             //check there is a directory
-            if (Directory.Exists(SaveLoadSystem.instance.PathDirectory) == false)
+            if (Directory.Exists(OldSaveLoadSystem.instance.PathDirectory) == false)
             {
-                if (SaveLoadSystem.instance.ShowDebugLogs)
-                    Debug.Log("Directory not found: " + SaveLoadSystem.instance.PathDirectory);
+                if (OldSaveLoadSystem.instance.ShowDebugLogs)
+                    Debug.Log("Directory not found: " + OldSaveLoadSystem.instance.PathDirectory);
 
                 return;
             }
 
             //delete directory
-            Directory.Delete(SaveLoadSystem.instance.PathDirectory, true);
+            Directory.Delete(OldSaveLoadSystem.instance.PathDirectory, true);
         }
     }
 }

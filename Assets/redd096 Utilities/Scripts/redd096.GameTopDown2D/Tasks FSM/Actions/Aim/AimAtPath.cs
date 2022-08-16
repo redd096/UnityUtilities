@@ -1,29 +1,31 @@
-﻿using UnityEngine;
+using UnityEngine;
 using redd096.Attributes;
+using redd096.PathFinding2D;
 
 namespace redd096.GameTopDown2D
 {
-    [AddComponentMenu("redd096/.GameTopDown2D/Tasks FSM/Actions/Aim/Aim At Target")]
-    public class AimAtTarget : ActionTask
+    [AddComponentMenu("redd096/.GameTopDown2D/Tasks FSM/Actions/Aim/Aim At Path")]
+    public class AimAtPath : ActionTask
     {
         [Header("Necessary Components - default get in parent")]
         [SerializeField] AimComponent aimComponent = default;
 
-        [Header("Aim")]
-        [SerializeField] VarOrBlackboard<Transform> target = new VarOrBlackboard<Transform>("Target");
-        [Tooltip("Rotate immediatly or use a rotation speed")][SerializeField] bool rotateUsingSpeed = false;
+        [Header("Rotate immediatly or use a rotation speed")]
+        [SerializeField] VarOrBlackboard<Path> path = new VarOrBlackboard<Path>("Path");
+        [SerializeField] bool rotateUsingSpeed = false;
         [EnableIf("rotateUsingSpeed")][SerializeField] float rotationSpeed = 50;
 
-        [Header("Call OnCompleteTask when look at target")]
+        [Header("Call OnCompleteTask when look at position")]
         [ColorGUI(AttributesUtility.EColor.Orange)][SerializeField] bool callEvent = false;
 
         [Header("DEBUG")]
         [SerializeField] ShowDebugRedd096 drawLineToCurrentDirection = Color.cyan;
-        [SerializeField] ShowDebugRedd096 drawLineToTarget = Color.red;
+        [SerializeField] ShowDebugRedd096 drawLineToNextNode = Color.red;
+        [SerializeField] ShowDebugRedd096 drawPath = Color.red;
 
         //events
-        public System.Action onStartAimAtTarget { get; set; }
-        public System.Action onEndAimAtTarget { get; set; }
+        public System.Action onStartAimAtPosition { get; set; }
+        public System.Action onEndAimAtPosition { get; set; }
 
         void OnDrawGizmos()
         {
@@ -33,11 +35,25 @@ namespace redd096.GameTopDown2D
                 Gizmos.color = drawLineToCurrentDirection.ColorDebug;
                 Gizmos.DrawLine(transformTask.position, Application.isPlaying && aimComponent ? (Vector2)transformTask.position + aimComponent.AimDirectionInput * 2 : (Vector2)transformTask.position + Vector2.right * 2);
             }
-            //draw line to target
-            if (drawLineToTarget)
+            //draw line to position to next node
+            if (drawLineToNextNode && GetValue(path) != null)
             {
-                Gizmos.color = drawLineToTarget.ColorDebug;
-                if (GetValue(target)) Gizmos.DrawLine(transformTask.position, GetValue(target).position);
+                Gizmos.color = drawLineToNextNode.ColorDebug;
+                Gizmos.DrawLine(transformTask.position, GetValue(path).nextNode);
+            }
+            //draw path
+            if (drawPath)
+            {
+                if (GetValue(path) != null && GetValue(path).vectorPath != null && GetValue(path).vectorPath.Count > 0)
+                {
+                    Gizmos.color = drawPath.ColorDebug;
+                    for (int i = 0; i < GetValue(path).vectorPath.Count; i++)
+                    {
+                        if (i + 1 < GetValue(path).vectorPath.Count)
+                            Gizmos.DrawLine(GetValue(path).vectorPath[i], GetValue(path).vectorPath[i + 1]);
+                    }
+                    Gizmos.color = Color.white;
+                }
             }
             Gizmos.color = Color.white;
         }
@@ -55,7 +71,7 @@ namespace redd096.GameTopDown2D
             base.OnEnterTask();
 
             //call event
-            onStartAimAtTarget?.Invoke();
+            onStartAimAtPosition?.Invoke();
         }
 
         public override void OnExitTask()
@@ -63,30 +79,30 @@ namespace redd096.GameTopDown2D
             base.OnExitTask();
 
             //call event
-            onEndAimAtTarget?.Invoke();
+            onEndAimAtPosition?.Invoke();
         }
 
         public override void OnUpdateTask()
         {
             base.OnUpdateTask();
 
-            //aim at target
-            if (aimComponent && GetValue(target))
+            //aim at path
+            if (aimComponent && GetValue(path) != null)
             {
                 //immediatly
                 if (rotateUsingSpeed == false)
                 {
-                    aimComponent.AimAt(GetValue(target).position);
+                    aimComponent.AimAt(GetValue(path).nextNode);
                     if (callEvent) CompleteTask();  //call event
                 }
                 //or with rotation speed
                 else
                 {
                     //calculate direction to target
-                    Vector2 directionToReach = (GetValue(target).position - transformTask.position).normalized;     //direction to target
-                    float angle = Vector2.SignedAngle(aimComponent.AimDirectionInput, directionToReach);            //rotation angle
+                    Vector2 directionToReach = (GetValue(path).nextNode - (Vector2)transformTask.position).normalized;  //direction to next node
+                    float angle = Vector2.SignedAngle(aimComponent.AimDirectionInput, directionToReach);                //rotation angle
 
-                    //rotate only if not already looking at target
+                    //rotate only if not already looking at position
                     if (Mathf.Abs(angle) > Mathf.Epsilon)
                     {
                         //calculate rotation, but if exceed, clamp it
@@ -96,7 +112,7 @@ namespace redd096.GameTopDown2D
                         //set new aim position
                         aimComponent.AimInDirection(newAimPosition);
                     }
-                    //when reach target, call event
+                    //when reach position, call event
                     else if (callEvent)
                     {
                         CompleteTask();

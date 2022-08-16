@@ -5,8 +5,8 @@ using redd096.Attributes;
 
 namespace redd096.OLD
 {
-	[AddComponentMenu("redd096/.OLD/Components/Collision Component")]
-	public class CollisionComponent : MonoBehaviour
+	[AddComponentMenu("redd096/.OLD/Components/Old Collision Component")]
+	public class OldCollisionComponent : MonoBehaviour
 	{
 		public enum EUpdateModes { Update, FixedUpdate, Coroutine, None }
 		public enum EDirectionEnum { up, right, left, down }

@@ -13,12 +13,13 @@ namespace redd096.PathFinding3D
 
         [Header("Collider Agent - Only Box And Sphere")]
         [SerializeField] bool useCustomCollider = false;
-        [HideIf("useCustomCollider")] [Tooltip("ONLY BOX AND SPHERE")] [SerializeField] Collider[] colliders = default;
-        [ShowIf("useCustomCollider")] [SerializeField] Vector3 offset = Vector3.zero;
-        [ShowIf("useCustomCollider")] [SerializeField] ETypeCollider typeCollider = ETypeCollider.box;
-        [ShowIf("useCustomCollider")] [EnableIf("typeCollider", ETypeCollider.box)] [SerializeField] Vector3 sizeCollider = Vector3.one;
-        [ShowIf("useCustomCollider")] [EnableIf("typeCollider", ETypeCollider.sphere)] [SerializeField] float radiusCollider = 1;
+        [HideIf("useCustomCollider")][Tooltip("ONLY BOX AND SPHERE")][SerializeField] Collider[] colliders = default;
+        [ShowIf("useCustomCollider")][SerializeField] Vector3 offset = Vector3.zero;
+        [ShowIf("useCustomCollider")][SerializeField] ETypeCollider typeCollider = ETypeCollider.box;
+        [ShowIf("useCustomCollider")][EnableIf("typeCollider", ETypeCollider.box)] [SerializeField] Vector3 sizeCollider = Vector3.one;
+        [ShowIf("useCustomCollider")][EnableIf("typeCollider", ETypeCollider.sphere)] [SerializeField] float radiusCollider = 1;
 
+        [HelpBox("Ignore self is Deprecated! Better not set self as not walkable node", HelpBoxAttribute.EMessageType.Error)]
         [Header("If this object is an obstacle, ignore self (default get from this gameObject)")]
         [SerializeField] ObstacleAStar3D obstacleAStar = default;
 

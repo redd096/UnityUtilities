@@ -2,9 +2,9 @@
 
 namespace redd096.OLD
 {
-    public class PlayerState : redd096.OLD.State
+    public class OldPlayerState : redd096.OLD.State
     {
-        protected Player player;
+        protected OldPlayer player;
         protected Transform transform;
         protected Rigidbody rb;
         protected CameraBaseControl cameraControl;
@@ -14,7 +14,7 @@ namespace redd096.OLD
             base.AwakeState(stateMachine);
 
             //get references
-            player = stateMachine as Player;
+            player = stateMachine as OldPlayer;
             transform = player.transform;
             rb = transform.GetComponent<Rigidbody>();
             cameraControl = player.cameraControl;

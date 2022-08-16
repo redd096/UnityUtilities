@@ -19,6 +19,7 @@ namespace redd096.PathFinding2D
         [ShowIf("useCustomCollider")][EnableIf("typeCollider", ETypeCollider.box)][SerializeField] Vector2 sizeCollider = Vector2.one;
         [ShowIf("useCustomCollider")][EnableIf("typeCollider", ETypeCollider.circle)][SerializeField] float radiusCollider = 1;
 
+        [HelpBox("Ignore self is Deprecated! Better not set self as not walkable node", HelpBoxAttribute.EMessageType.Error)]
         [Header("If this object is an obstacle, ignore self (default get from this gameObject)")]
         [SerializeField] ObstacleAStar2D obstacleAStar = default;
 
