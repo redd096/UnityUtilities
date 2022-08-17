@@ -261,18 +261,15 @@ namespace redd096
                 instance.filesWithMoreVariables.Add(fileName, new Dictionary<string, string>());
 
             string[] lines = fileString.Split('\n');
-            for (int i = 1; i < lines.Length; i++)
+            for (int i = 2; i < lines.Length; i += 2)   //skip 0 because is our custom string, then move by 2 and read variable name and value
             {
                 //first line is variable name
-                if (instance.filesWithMoreVariables[fileName].ContainsKey(lines[i]) == false)
-                    instance.filesWithMoreVariables[fileName].Add(lines[i], "");
+                if (instance.filesWithMoreVariables[fileName].ContainsKey(lines[i - 1]) == false)
+                    instance.filesWithMoreVariables[fileName].Add(lines[i - 1], "");
 
                 //and second line is json
-                if (i + 1 < lines.Length)
-                    instance.filesWithMoreVariables[fileName][lines[i]] = lines[i + 1];
-
-                //skip line, because already used to set json
-                i++;
+                if (i < lines.Length)
+                    instance.filesWithMoreVariables[fileName][lines[i - 1]] = lines[i];
             }
         }
 
