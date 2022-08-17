@@ -121,7 +121,7 @@ namespace redd096
         //used when create one single file with more variables -> key: file name without extension, value: another dictionary with key: variableName, value: json
         private Dictionary<string, Dictionary<string, string>> filesWithMoreVariables = new Dictionary<string, Dictionary<string, string>>();
         //system to use for save and load
-        private ISaveLoad saveLoadSystem;
+        private ISaveLoadSystem saveLoadSystem;
 
         protected override void Awake()
         {
@@ -133,7 +133,7 @@ namespace redd096
                 //set save load system based on platform
 #if UNITY_STEAM
 #elif UNITY_STANDALONE
-                saveLoadSystem = new SaveLoadJson_PC();
+                saveLoadSystem = new SaveLoadSystem_PC();
 #elif UNITY_IOS || UNITY_ANDROID
 #elif UNITY_GAMECORE
 #elif UNITY_PS4
