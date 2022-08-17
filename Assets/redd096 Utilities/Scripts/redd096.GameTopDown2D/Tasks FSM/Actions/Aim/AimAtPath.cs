@@ -15,7 +15,7 @@ namespace redd096.GameTopDown2D
         [SerializeField] bool rotateUsingSpeed = false;
         [EnableIf("rotateUsingSpeed")][SerializeField] float rotationSpeed = 50;
 
-        [Header("Call OnCompleteTask when look at position")]
+        [Header("Call OnCompleteTask when look at next node")]
         [ColorGUI(AttributesUtility.EColor.Orange)][SerializeField] bool callEvent = false;
 
         [Header("DEBUG")]

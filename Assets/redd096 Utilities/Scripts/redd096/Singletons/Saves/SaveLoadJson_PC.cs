@@ -37,7 +37,7 @@ namespace redd096
                 }
             }
 
-            //update dictionary in SaveManager, used when load async
+            //update dictionary in SaveManager, used when use preload is true
             SaveManager.instance.FinishPreload(jsons);
         }
 
@@ -284,12 +284,14 @@ namespace redd096
             }
         }
 
+        #region private API
+
         /// <summary>
         /// Load file as a Json. Same as call Load without the last line (JsonUtility.FromJson)
         /// </summary>
         /// <param name="key">file name</param>
         /// <returns></returns>
-        public string GetJson(string key)
+        private string GetJson(string key)
         {
             try
             {
@@ -317,7 +319,7 @@ namespace redd096
         /// </summary>
         /// <param name="key">file name</param>
         /// <returns></returns>
-        public async Task<string> GetJsonAsync(string key)
+        private async Task<string> GetJsonAsync(string key)
         {
             try
             {
@@ -339,5 +341,7 @@ namespace redd096
                 return default;
             }
         }
+
+        #endregion
     }
 }

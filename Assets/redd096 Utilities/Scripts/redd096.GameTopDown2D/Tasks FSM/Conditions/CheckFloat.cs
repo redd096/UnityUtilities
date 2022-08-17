@@ -56,7 +56,6 @@ namespace redd096.GameTopDown2D
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <param name="cm"></param>
-        /// <param name="floatingPoint"></param>
         /// <returns></returns>
         bool Compare(float a, float b, ECompareMethod cm)
         {

@@ -1,50 +1,47 @@
 ﻿using UnityEngine;
-using redd096;
 
-[AddComponentMenu("redd096/Tasks FSM/Condition/Check Complete Action Task")]
-public class CheckCompleteActionTask : ConditionTask
+namespace redd096.GameTopDown2D
 {
-    [Header("Action to complete - default get component")]
-    [SerializeField] ActionTask actionToComplete = default;
-
-    bool isActionComplete;
-
-    protected override void OnInitTask()
+    [AddComponentMenu("redd096/.GameTopDown2D/Tasks FSM/Conditions/Check Complete Action Task")]
+    public class CheckCompleteActionTask : ConditionTask
     {
-        base.OnInitTask();
+        [Header("Action to complete")]
+        [SerializeField] ActionTask actionToComplete = default;
 
-        //get references
-        if (actionToComplete == null) actionToComplete = GetComponent<ActionTask>();
+        bool isActionComplete;
 
-        //register to event
-        if (actionToComplete)
-            actionToComplete.onCompleteTask += OnCompleteTask;
-    }
+        private void OnEnable()
+        {
+            //register to event
+            if (actionToComplete)
+                actionToComplete.onCompleteTask += OnCompleteTask;
+        }
 
-    void OnDestroy()
-    {
-        //unregister from event
-        if (actionToComplete)
-            actionToComplete.onCompleteTask -= OnCompleteTask;
-    }
+        private void OnDisable()
+        {
+            //unregister from event
+            if (actionToComplete)
+                actionToComplete.onCompleteTask -= OnCompleteTask;
+        }
 
-    public override bool OnCheckTask()
-    {
-        //return when action is complete
-        return isActionComplete;
-    }
+        public override void OnEnterTask()
+        {
+            base.OnEnterTask();
 
-    private void OnCompleteTask()
-    {
-        //set var
-        isActionComplete = true;
-    }
+            //reset var
+            isActionComplete = false;
+        }
 
-    public override void OnExitTask()
-    {
-        base.OnExitTask();
+        public override bool OnCheckTask()
+        {
+            //return when action is complete
+            return isActionComplete;
+        }
 
-        //reset var
-        isActionComplete = false;
+        private void OnCompleteTask()
+        {
+            //set var
+            isActionComplete = true;
+        }
     }
 }

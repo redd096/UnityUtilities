@@ -1,21 +1,25 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using redd096.Attributes;
 
 namespace redd096.GameTopDown2D
 {
-    [AddComponentMenu("redd096/.GameTopDown2D/Tasks FSM/Conditions/Check Can See Target 2D Advanced")]
-    public class CheckCanSeeTarget2DAdvanced : ConditionTask
+    [AddComponentMenu("redd096/.GameTopDown2D/Tasks FSM/Actions/Find Target Advanced")]
+    public class FindTargetAdvanced : ActionTask
     {
         [Header("Necessary Components - default get in parent")]
         [SerializeField] AimComponent aimComponent = default;
 
-        [Header("Can See Component 2D")]
+        [Header("Delay between every check (0 = every frame)")]
+        [Min(0)][SerializeField] float delayBetweenChecks = 0.2f;
+
+        [HelpBox("Targets in awareness don't need to be in cone vision, but can check if view is clear")]
+        [Header("Find Target in awareness radius")]
         [SerializeField] VarOrBlackboard<LayerMask> targetLayer = default;
-        [SerializeField] VarOrBlackboard<float> awarenessDistance = 1;
+        [SerializeField] VarOrBlackboard<float> awarenessRadius = 5;
         [Tooltip("Check if there is a wall between this object and target")][SerializeField] bool checkViewClearForAwareness = true;
 
-        [Header("Cone Vision")]
+        [Header("Find Target in cone vision")]
         [SerializeField] VarOrBlackboard<float> sightDistance = 5;
         [Tooltip("Look only left and right, or use aim direction")][SerializeField] bool useOnlyLeftAndRight = false;
         [Range(1, 180)] public float viewAngle = 70f;
@@ -23,22 +27,26 @@ namespace redd096.GameTopDown2D
         [SerializeField] VarOrBlackboard<LayerMask> layerWalls = default;
         [ColorGUI(AttributesUtility.EColor.Yellow)][SerializeField] string saveTargetInBlackboardAs = "Target";
 
+        [Header("Call OnCompleteTask when set a target")]
+        [ColorGUI(AttributesUtility.EColor.Orange)][SerializeField] bool callEvent = false;
+
         [Header("DEBUG")]
-        [SerializeField] ShowDebugRedd096 drawAwarenessArea = Color.red;
+        [SerializeField] ShowDebugRedd096 drawAwarenessRadius = Color.cyan;
         [SerializeField] ShowDebugRedd096 drawConeVision = Color.cyan;
 
         List<Transform> possibleTargets = new List<Transform>();
         List<Transform> targetsInSight = new List<Transform>();
         Transform target;
         float distance;
+        float timeNextCheck; //used for delays
 
         void OnDrawGizmos()
         {
             //draw awareness
-            if (drawAwarenessArea)
+            if (drawAwarenessRadius)
             {
-                Gizmos.color = drawAwarenessArea.ColorDebug;
-                Gizmos.DrawWireSphere(transformTask.position, GetValue(awarenessDistance));
+                Gizmos.color = drawAwarenessRadius.ColorDebug;
+                Gizmos.DrawWireSphere(transformTask.position, GetValue(awarenessRadius));
                 Gizmos.color = Color.white;
             }
             //draw cone vision
@@ -63,8 +71,21 @@ namespace redd096.GameTopDown2D
             if (aimComponent == null) aimComponent = GetStateMachineComponent<AimComponent>();
         }
 
-        public override bool OnCheckTask()
+        public override void OnEnterTask()
         {
+            base.OnEnterTask();
+
+            //reset vars
+            timeNextCheck = 0;
+        }
+
+        public override void OnUpdateTask()
+        {
+            base.OnUpdateTask();
+
+            if (IsWaitingDelay())
+                return;
+
             //find every targets inside awareness and sight distance
             FindPossibleTargets();
 
@@ -91,16 +112,30 @@ namespace redd096.GameTopDown2D
             }
 
             if (possibleTargets.Count <= 0)
-                return false;
+                return;
 
             //if found targets, save nearest in the blackboard
             GetNearest();
             stateMachine.SetBlackboardElement(saveTargetInBlackboardAs, target);
 
-            return true;
+            //call event
+            if (callEvent)
+                CompleteTask();
         }
 
         #region private API
+
+        bool IsWaitingDelay()
+        {
+            //if there's a delay, wait between checks
+            if (delayBetweenChecks > Mathf.Epsilon && Time.time < timeNextCheck)
+                return true;
+
+            //else, set delay for next frame, but return false to do checks this frame
+            timeNextCheck = Time.time + delayBetweenChecks;
+
+            return false;
+        }
 
         void FindPossibleTargets()
         {
@@ -109,7 +144,7 @@ namespace redd096.GameTopDown2D
             targetsInSight.Clear();
 
             //find every element in awareness, using layer
-            foreach (Collider2D col in Physics2D.OverlapCircleAll(transformTask.position, GetValue(awarenessDistance), GetValue(targetLayer)))
+            foreach (Collider2D col in Physics2D.OverlapCircleAll(transformTask.position, GetValue(awarenessRadius), GetValue(targetLayer)))
             {
                 possibleTargets.Add(col.transform);
             }
@@ -133,7 +168,7 @@ namespace redd096.GameTopDown2D
                 return false;
 
             //check is inside view angle (use IsLookingRight to check right or left, else use aim direction input)
-            return Vector2.Angle(t.position - transformTask.position, useOnlyLeftAndRight ? (aimComponent.IsLookingRight ? Vector2.right : Vector2.left) : aimComponent.AimDirectionInput) < viewAngle;
+            return Vector2.Angle((t.position - transformTask.position).normalized, useOnlyLeftAndRight ? (aimComponent.IsLookingRight ? Vector2.right : Vector2.left) : aimComponent.AimDirectionInput) < viewAngle;
         }
 
         void GetNearest()

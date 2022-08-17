@@ -96,9 +96,9 @@ namespace redd096
         [SerializeField] SaveFolder saveFolder = SaveFolder.persistentDataPath;
         [SerializeField] string directoryName = "Saves";
 
-        [Header("Optimization - if LoadAsync is true, is recommended to set true also LoadEverythingAtStart")]
+        [Header("Optimization")]
         [SerializeField] bool saveAsync = true;
-        [SerializeField] bool loadAsync = true;
+        [SerializeField] bool usePreload = true;
 
         [Header("Debug Mode")]
         public bool ShowDebugLogs = false;
@@ -116,8 +116,11 @@ namespace redd096
             }
         }
 
-        //key: file name without extension, value: json
+        //used when "Use Preload" is enabled -> key: file name without extension, value: json
         private Dictionary<string, string> savesJson = new Dictionary<string, string>();
+        //used when create one single file with more variables -> key: file name without extension, value: another dictionary with key: variableName, value: json
+        private Dictionary<string, Dictionary<string, string>> filesWithMoreVariables = new Dictionary<string, Dictionary<string, string>>();
+        //system to use for save and load
         private ISaveLoad saveLoadSystem;
 
         protected override void Awake()
@@ -139,17 +142,229 @@ namespace redd096
 #endif
 
                 //preload every file
-                saveLoadSystem.Preload();
+                if (usePreload)
+                    saveLoadSystem.Preload();
             }
         }
 
         /// <summary>
-        /// Called from Preload, to set dictionary (used when load async)
+        /// Called from Preload, to set dictionary (used when "Use Preload" is enabled)
         /// </summary>
         public void FinishPreload(Dictionary<string, string> jsons)
         {
             savesJson = new Dictionary<string, string>(jsons);
+
+            //add also file with more variables to their dictionary
+            foreach (string fileName in savesJson.Keys) LoadFromDisk(fileName);
         }
+
+        #region custom - single file with more variables
+
+        /// <summary>
+        /// Save value in a dictionary. Use SaveOnDisk to save on disk
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="fileName"></param>
+        /// <param name="key">variable name</param>
+        /// <param name="value"></param>
+        public static void Save<T>(string fileName, string key, T value)
+        {
+            //if there is already a file, set or add variable
+            if (instance.filesWithMoreVariables.ContainsKey(fileName))
+            {
+                if (instance.filesWithMoreVariables[fileName].ContainsKey(key))
+                    instance.filesWithMoreVariables[fileName][key] = JsonUtility.ToJson(value);
+                else
+                    instance.filesWithMoreVariables[fileName].Add(key, JsonUtility.ToJson(value));
+            }
+            //else add file name and variable
+            else
+            {
+                instance.filesWithMoreVariables.Add(fileName, new Dictionary<string, string>());
+                instance.filesWithMoreVariables[fileName].Add(key, JsonUtility.ToJson(value));
+            }
+        }
+
+        /// <summary>
+        /// Save on disk every file setted in dictionary
+        /// </summary>
+        public static void SaveOnDisk()
+        {
+            //save every file to disk
+            foreach (string fileName in instance.filesWithMoreVariables.Keys)
+            {
+                SaveOnDisk(fileName);
+            }
+        }
+
+        /// <summary>
+        /// Save file on disk with every variable setted in dictionary
+        /// </summary>
+        public static void SaveOnDisk(string fileName)
+        {
+            string fileString = "redd096File with more variables\n";
+            if (instance.filesWithMoreVariables.ContainsKey(fileName))
+            {
+                //create a string "1stVarName\n1stJson\n2ndVarName\n2ndJson\n..."
+                foreach (string variableName in instance.filesWithMoreVariables[fileName].Keys)
+                {
+                    fileString += (variableName + "\n" + instance.filesWithMoreVariables[fileName][variableName] + "\n");
+                }
+            }
+
+            //save
+            Save(fileName, fileString);
+        }
+
+        /// <summary>
+        /// Load variable from dictionary. Use LoadFromDisk or enable "Use Preload" to fill dictionary
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="fileName"></param>
+        /// <param name="key">variable name</param>
+        /// <returns></returns>
+        public static T Load<T>(string fileName, string key)
+        {
+            if (instance.filesWithMoreVariables.ContainsKey(fileName))
+            {
+                //get variable from dictionary
+                if (instance.filesWithMoreVariables[fileName].ContainsKey(key))
+                    return JsonUtility.FromJson<T>(instance.filesWithMoreVariables[fileName][key]);
+                else if (instance.ShowDebugLogs)
+                    Debug.Log("Variable " + key + " not found in: " + instance.saveLoadSystem.GetPathFile(fileName));
+            }
+            else
+                Debug.Log("File not found: " + instance.saveLoadSystem.GetPathFile(fileName));
+
+            return default;
+        }
+
+        /// <summary>
+        /// Load variable from dictionary. Use LoadFromDisk or enable "Use Preload" to fill dictionary
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="key"></param>
+        /// <param name="type">variable name</param>
+        /// <returns></returns>
+        public static object Load(string fileName, string key, System.Type type)
+        {
+            if (instance.filesWithMoreVariables.ContainsKey(fileName))
+            {
+                //get variable from dictionary
+                if (instance.filesWithMoreVariables[fileName].ContainsKey(key))
+                    return JsonUtility.FromJson(instance.filesWithMoreVariables[fileName][key], type);
+                else if (instance.ShowDebugLogs)
+                    Debug.Log("Variable " + key + " not found in: " + instance.saveLoadSystem.GetPathFile(fileName));
+            }
+            else
+                Debug.Log("File not found: " + instance.saveLoadSystem.GetPathFile(fileName));
+
+            return default;
+        }
+
+        /// <summary>
+        /// Load variable from dictionary. Use LoadFromDisk or enable "Use Preload" to fill dictionary. 
+        /// If there is no file, return defaultValue
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="fileName"></param>
+        /// <param name="key">variable name</param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
+        public static T Load<T>(string fileName, string key, T defaultValue)
+        {
+            //check if there is a file in dictionary to return
+            if (instance.filesWithMoreVariables.ContainsKey(fileName) && instance.filesWithMoreVariables[fileName].ContainsKey(key))
+                return Load<T>(fileName, key);
+
+            //else return default value
+            return defaultValue;
+        }
+
+        /// <summary>
+        /// Load variable from dictionary. Use LoadFromDisk or enable "Use Preload" to fill dictionary. 
+        /// If there is no file, return defaultValue
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="key">variable name</param>
+        /// <param name="type"></param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
+        public static object Load(string fileName, string key, System.Type type, object defaultValue)
+        {
+            //check if there is a file in dictionary to return
+            if (instance.filesWithMoreVariables.ContainsKey(fileName) && instance.filesWithMoreVariables[fileName].ContainsKey(key))
+                return Load(fileName, key, type);
+
+            //else return default value
+            return defaultValue;
+        }
+
+        /// <summary>
+        /// Load from disk and set in dictionary
+        /// </summary>
+        /// <param name="fileName"></param>
+        public static void LoadFromDisk(string fileName)
+        {
+            //load from disk
+            string fileString = Load<string>(fileName);
+            if (fileString == null || fileString.StartsWith("redd096File with more variables") == false)
+            {
+                if (instance.ShowDebugLogs)
+                    Debug.Log("Incorrect file: " + instance.saveLoadSystem.GetPathFile(fileName));
+
+                return;
+            }
+
+            //add file to dictionary
+            if (instance.filesWithMoreVariables.ContainsKey(fileName) == false)
+                instance.filesWithMoreVariables.Add(fileName, new Dictionary<string, string>());
+
+            string[] lines = fileString.Split('\n');
+            for (int i = 1; i < lines.Length; i++)
+            {
+                //first line is variable name
+                if (instance.filesWithMoreVariables[fileName].ContainsKey(lines[i]) == false)
+                    instance.filesWithMoreVariables[fileName].Add(lines[i], "");
+
+                //and second line is json
+                if (i + 1 < lines.Length)
+                    instance.filesWithMoreVariables[fileName][lines[i]] = lines[i + 1];
+
+                //skip line, because already used to set json
+                i++;
+            }
+        }
+
+        /// <summary>
+        /// Delete a file (same as DeleteKey)
+        /// </summary>
+        /// <param name="fileName"></param>
+        public static void DeleteFile(string fileName)
+        {
+            DeleteData(fileName);
+        }
+
+        /// <summary>
+        /// Delete a variable from dictionary
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="key">variable name</param>
+        public static void DeleteVariable(string fileName, string key)
+        {
+            if (instance.filesWithMoreVariables.ContainsKey(fileName))
+            {
+                //remove variable from dictionary
+                if (instance.filesWithMoreVariables[fileName].ContainsKey(key))
+                    instance.filesWithMoreVariables[fileName].Remove(key);
+                else if (instance.ShowDebugLogs)
+                    Debug.Log("Variable " + key + " not found in: " + instance.saveLoadSystem.GetPathFile(fileName));
+            }
+            else if (instance.ShowDebugLogs)
+                Debug.Log("Save file not found: " + instance.saveLoadSystem.GetPathFile(fileName));
+        }
+
+        #endregion
 
         #region custom
 
@@ -186,8 +401,8 @@ namespace redd096
         /// <returns></returns>
         public static T Load<T>(string key)
         {
-            //load from dictionary if async
-            if (instance.loadAsync)
+            //load from dictionary if use preload
+            if (instance.usePreload)
             {
                 if (instance.savesJson.ContainsKey(key))
                     return JsonUtility.FromJson<T>(instance.savesJson[key]);
@@ -212,8 +427,8 @@ namespace redd096
         /// <returns></returns>
         public static object Load(string key, System.Type type)
         {
-            //load from dictionary if async
-            if (instance.loadAsync)
+            //load from dictionary if use preload
+            if (instance.usePreload)
             {
                 if (instance.savesJson.ContainsKey(key))
                     return JsonUtility.FromJson(instance.savesJson[key], type);
@@ -231,12 +446,289 @@ namespace redd096
         }
 
         /// <summary>
+        /// Load from directory/key.json. If there is no file, return defaultValue
+        /// </summary>
+        /// <param name="key">file name</param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
+        public static T Load<T>(string key, T defaultValue)
+        {
+            //if use preload, check if there is already a file in dictionary to return
+            if (instance.usePreload && instance.savesJson.ContainsKey(key))
+            {
+                return JsonUtility.FromJson<T>(instance.savesJson[key]);
+            }
+            //else, check if there is a file saved to return
+            else if (instance.usePreload == false && instance.saveLoadSystem.FileExists(key))
+            {
+                return instance.saveLoadSystem.Load<T>(key);
+            }
+
+            //else return default value
+            return defaultValue;
+        }
+
+        /// <summary>
+        /// Load from directory/key.json. If there is no file, return defaultValue
+        /// </summary>
+        /// <param name="key">file name</param>
+        /// <param name="type"></param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
+        public static object Load(string key, System.Type type, object defaultValue)
+        {
+            //if use preload, check if there is already a file in dictionary to return
+            if (instance.usePreload && instance.savesJson.ContainsKey(key))
+            {
+                return JsonUtility.FromJson(instance.savesJson[key], type);
+            }
+            //else, check if there is a file saved to return
+            else if (instance.usePreload == false && instance.saveLoadSystem.FileExists(key))
+            {
+                return instance.saveLoadSystem.Load(key, type);
+            }
+
+            //else return default value
+            return defaultValue;
+        }
+
+        /// <summary>
         /// Delete a file (same as DeleteKey)
         /// </summary>
         /// <param name="key">file name</param>
         public static void DeleteData(string key)
         {
             instance.saveLoadSystem.DeleteData(key);
+
+            //delete also from dictionaries
+            if (instance.savesJson.ContainsKey(key))
+                instance.savesJson.Remove(key);
+            if (instance.filesWithMoreVariables.ContainsKey(key))
+                instance.filesWithMoreVariables.Remove(key);
+        }
+
+        #endregion
+
+        #region playerPrefs - single file with more playerPrefs
+
+        /// <summary>
+        /// Save value in a dictionary. Use SaveOnDisk to save on disk
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="key">variable name</param>
+        /// <param name="value"></param>
+        /// <param name="automaticSaveOnDisk">call automatically SaveOnDisk</param>
+        public static void SetInt(string fileName, string key, int value, bool automaticSaveOnDisk = true)
+        {
+            Save(fileName, key, value);
+            if (automaticSaveOnDisk) SaveOnDisk(fileName);
+        }
+
+        /// <summary>
+        /// Load value. If there is no key, return defaultValue
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="key">variable name</param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
+        public static int GetInt(string fileName, string key, int defaultValue)
+        {
+            //load and add to dictionary, if don't use preload
+            if (instance.usePreload == false)
+                LoadFromDisk(fileName);
+
+            return Load(fileName, key, defaultValue);
+        }
+
+        /// <summary>
+        /// Load value
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="key">variable name</param>
+        /// <returns></returns>
+        public static int GetInt(string fileName, string key)
+        {
+            //load and add to dictionary, if don't use preload
+            if (instance.usePreload == false)
+                LoadFromDisk(fileName);
+
+            return Load<int>(key);
+        }
+
+        /// <summary>
+        /// Save value in a dictionary. Use SaveOnDisk to save on disk
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="key">variable name</param>
+        /// <param name="value"></param>
+        /// <param name="automaticSaveOnDisk">call automatically SaveOnDisk</param>
+        public static void SetFloat(string fileName, string key, float value, bool automaticSaveOnDisk = true)
+        {
+            Save(fileName, key, value);
+            if (automaticSaveOnDisk) SaveOnDisk(fileName);
+        }
+
+        /// <summary>
+        /// Load value. If there is no key, return defaultValue
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="key">variable name</param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
+        public static float GetFloat(string fileName, string key, float defaultValue)
+        {
+            //load and add to dictionary, if don't use preload
+            if (instance.usePreload == false)
+                LoadFromDisk(fileName);
+
+            return Load(fileName, key, defaultValue);
+        }
+
+        /// <summary>
+        /// Load value
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="key">variable name</param>
+        /// <returns></returns>
+        public static float GetFloat(string fileName, string key)
+        {
+            //load and add to dictionary, if don't use preload
+            if (instance.usePreload == false)
+                LoadFromDisk(fileName);
+
+            return Load<float>(key);
+        }
+
+        /// <summary>
+        /// Save value in a dictionary. Use SaveOnDisk to save on disk
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="key">variable name</param>
+        /// <param name="value"></param>
+        /// <param name="automaticSaveOnDisk">call automatically SaveOnDisk</param>
+        public static void SetString(string fileName, string key, string value, bool automaticSaveOnDisk = true)
+        {
+            Save(fileName, key, value);
+            if (automaticSaveOnDisk) SaveOnDisk(fileName);
+        }
+
+        /// <summary>
+        /// Load value. If there is no key, return defaultValue
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="key">variable name</param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
+        public static string GetString(string fileName, string key, string defaultValue)
+        {
+            //load and add to dictionary, if don't use preload
+            if (instance.usePreload == false)
+                LoadFromDisk(fileName);
+
+            return Load(fileName, key, defaultValue);
+        }
+
+        /// <summary>
+        /// Load value
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="key">variable name</param>
+        /// <returns></returns>
+        public static string GetStringVar(string fileName, string key)
+        {
+            //load and add to dictionary, if don't use preload
+            if (instance.usePreload == false)
+                LoadFromDisk(fileName);
+
+            return Load<string>(key);
+        }
+
+        /// <summary>
+        /// Save value in a dictionary. Use SaveOnDisk to save on disk
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="key">variable name</param>
+        /// <param name="value"></param>
+        /// <param name="automaticSaveOnDisk">call automatically SaveOnDisk</param>
+        public static void SetBool(string fileName, string key, bool value, bool automaticSaveOnDisk = true)
+        {
+            Save(fileName, key, value);
+            if (automaticSaveOnDisk) SaveOnDisk(fileName);
+        }
+
+        /// <summary>
+        /// Load value. If there is no key, return defaultValue
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="key">variable name</param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
+        public static bool GetBool(string fileName, string key, bool defaultValue)
+        {
+            //load and add to dictionary, if don't use preload
+            if (instance.usePreload == false)
+                LoadFromDisk(fileName);
+
+            return Load(fileName, key, defaultValue);
+        }
+
+        /// <summary>
+        /// Load value
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="key">variable name</param>
+        /// <returns></returns>
+        public static bool GetBool(string fileName, string key)
+        {
+            //load and add to dictionary, if don't use preload
+            if (instance.usePreload == false)
+                LoadFromDisk(fileName);
+
+            return Load<bool>(key);
+        }
+
+        /// <summary>
+        /// Check if there is a file with this name
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        public static bool HasFile(string fileName)
+        {
+            //load and add to dictionary, if don't use preload
+            if (instance.usePreload == false)
+                LoadFromDisk(fileName);
+
+            //return if there is a file with this name
+            return instance.filesWithMoreVariables.ContainsKey(fileName);
+        }
+
+        /// <summary>
+        /// Check if there is a variable with this name in this file
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="key">variable name</param>
+        /// <returns></returns>
+        public static bool HasKey(string fileName, string key)
+        {
+            //load and add to dictionary, if don't use preload
+            if (instance.usePreload == false)
+                LoadFromDisk(fileName);
+
+            //check there is this file and has this variable
+            if (instance.filesWithMoreVariables.ContainsKey(fileName) && instance.filesWithMoreVariables[fileName].ContainsKey(key))
+                return true;
+
+            return false;
+        }
+
+        /// <summary>
+        /// Delete a variable from dictionary
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="key">variable name</param>
+        public static void DeleteKey(string fileName, string key)
+        {
+            DeleteVariable(fileName, key);
         }
 
         #endregion
@@ -261,19 +753,7 @@ namespace redd096
         /// <returns></returns>
         public static int GetInt(string key, int defaultValue)
         {
-            //if load async, check if there is already a file in dictionary to return
-            if (instance.loadAsync && instance.savesJson.ContainsKey(key))
-            {
-                return JsonUtility.FromJson<int>(instance.savesJson[key]);
-            }
-            //else, check if there is a file saved to return
-            else if (instance.loadAsync == false && instance.saveLoadSystem.FileExists(key))
-            {
-                return instance.saveLoadSystem.Load<int>(key);
-            }
-
-            //else return default value
-            return defaultValue;
+            return Load(key, defaultValue);
         }
 
         /// <summary>
@@ -304,19 +784,7 @@ namespace redd096
         /// <returns></returns>
         public static float GetFloat(string key, float defaultValue)
         {
-            //if load async, check if there is already a file in dictionary to return
-            if (instance.loadAsync && instance.savesJson.ContainsKey(key))
-            {
-                return JsonUtility.FromJson<float>(instance.savesJson[key]);
-            }
-            //else, check if there is a file saved to return
-            else if (instance.loadAsync == false && instance.saveLoadSystem.FileExists(key))
-            {
-                return instance.saveLoadSystem.Load<float>(key);
-            }
-
-            //else return default value
-            return defaultValue;
+            return Load(key, defaultValue);
         }
 
         /// <summary>
@@ -347,19 +815,7 @@ namespace redd096
         /// <returns></returns>
         public static string GetString(string key, string defaultValue)
         {
-            //if load async, check if there is already a file in dictionary to return
-            if (instance.loadAsync && instance.savesJson.ContainsKey(key))
-            {
-                return JsonUtility.FromJson<string>(instance.savesJson[key]);
-            }
-            //else, check if there is a file saved to return
-            else if (instance.loadAsync == false && instance.saveLoadSystem.FileExists(key))
-            {
-                return instance.saveLoadSystem.Load<string>(key);
-            }
-
-            //else return default value
-            return defaultValue;
+            return Load(key, defaultValue);
         }
 
         /// <summary>
@@ -390,19 +846,7 @@ namespace redd096
         /// <returns></returns>
         public static bool GetBool(string key, bool defaultValue)
         {
-            //if load async, check if there is already a file in dictionary to return
-            if (instance.loadAsync && instance.savesJson.ContainsKey(key))
-            {
-                return JsonUtility.FromJson<bool>(instance.savesJson[key]);
-            }
-            //else, check if there is a file saved to return
-            else if (instance.loadAsync == false && instance.saveLoadSystem.FileExists(key))
-            {
-                return instance.saveLoadSystem.Load<bool>(key);
-            }
-
-            //else return default value
-            return defaultValue;
+            return Load(key, defaultValue);
         }
 
         /// <summary>
@@ -422,8 +866,8 @@ namespace redd096
         /// <returns></returns>
         public static bool HasKey(string key)
         {
-            //if load async, check if there is inside dictionary
-            if (instance.loadAsync)
+            //if use preload, check if there is inside dictionary
+            if (instance.usePreload)
             {
                 return instance.savesJson.ContainsKey(key);
             }
@@ -449,6 +893,10 @@ namespace redd096
         public static void DeleteAll()
         {
             instance.saveLoadSystem.DeleteAll();
+
+            //clear also dictionaries
+            instance.savesJson.Clear();
+            instance.filesWithMoreVariables.Clear();
         }
 
         #endregion

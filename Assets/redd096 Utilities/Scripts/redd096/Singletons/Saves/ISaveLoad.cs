@@ -84,19 +84,5 @@ namespace redd096
         /// </summary>
         /// <returns></returns>
         bool DeleteAll();
-
-        /// <summary>
-        /// Load file as a Json. Same as call Load without the last line (JsonUtility.FromJson)
-        /// </summary>
-        /// <param name="key">file name</param>
-        /// <returns></returns>
-        string GetJson(string key);
-
-        /// <summary>
-        /// Load async file as a Json. Same as call LoadAsync without the last line (JsonUtility.FromJson)
-        /// </summary>
-        /// <param name="key">file name</param>
-        /// <returns></returns>
-        Task<string> GetJsonAsync(string key);
     }
 }
