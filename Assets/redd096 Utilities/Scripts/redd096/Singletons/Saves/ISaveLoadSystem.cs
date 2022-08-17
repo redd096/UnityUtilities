@@ -20,50 +20,32 @@ namespace redd096
         /// <summary>
         /// Save in directory/key.json
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="key">file name</param>
-        /// <param name="value"></param>
-        bool Save<T>(string key, T value);
-
-        /// <summary>
-        /// Load from directory/key.json
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="key">file name</param>
+        /// <param name="json">file value</param>
         /// <returns></returns>
-        T Load<T>(string key);
+        bool Save(string key, string json);
 
         /// <summary>
         /// Load from directory/key.json
         /// </summary>
         /// <param name="key">file name</param>
-        /// <param name="type">type of the value to load</param>
         /// <returns></returns>
-        object Load(string key, System.Type type);
+        string Load(string key);
 
         /// <summary>
         /// Save async in directory/key.json
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="key">file name</param>
-        /// <param name="value"></param>
-        Task<bool> SaveAsync<T>(string key, T value);
+        /// <param name="json">file value</param>
+        /// <returns></returns>
+        Task<bool> SaveAsync(string key, string json);
 
         /// <summary>
         /// Load async from directory/key.json
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="key">file name</param>
         /// <returns></returns>
-        Task<T> LoadAsync<T>(string key);
-
-        /// <summary>
-        /// Load from directory/key.json
-        /// </summary>
-        /// <param name="key">file name</param>
-        /// <param name="type">type of the value to load</param>
-        /// <returns></returns>
-        Task<object> LoadAsync(string key, System.Type type);
+        Task<string> LoadAsync(string key);
 
         /// <summary>
         /// Check if file is saved on disk
