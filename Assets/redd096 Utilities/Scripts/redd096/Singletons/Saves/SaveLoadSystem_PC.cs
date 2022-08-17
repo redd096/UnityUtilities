@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace redd096
 {
-    public class SaveLoadJson_PC : ISaveLoad
+    public class SaveLoadSystem_PC : ISaveLoadSystem
     {
         /// <summary>
         /// Get path to the file (directory path + name of the file (key) + format (.json))

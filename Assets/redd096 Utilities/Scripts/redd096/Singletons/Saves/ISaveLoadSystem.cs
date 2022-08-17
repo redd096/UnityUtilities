@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 
 namespace redd096
 {
-    public interface ISaveLoad
+    public interface ISaveLoadSystem
     {
         /// <summary>
         /// Get path to the file (directory path + name of the file (key) + format (.json))

@@ -242,7 +242,7 @@ namespace redd096.OLD
         }
     }
 
-    public static class SaveLoadBinary
+    public static class OldSaveLoadBinary
     {
         /// <summary>
         /// Get path to the file (directory path + name of the file (key) + format (.bin))
