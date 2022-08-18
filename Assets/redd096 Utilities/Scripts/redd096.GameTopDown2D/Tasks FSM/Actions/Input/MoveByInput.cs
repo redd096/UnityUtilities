@@ -1,11 +1,15 @@
 ﻿using UnityEngine;
+using redd096.Attributes;
+#if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
+#endif
 
 namespace redd096.GameTopDown2D
 {
     [AddComponentMenu("redd096/.GameTopDown2D/Tasks FSM/Actions/Input/Move By Input")]
     public class MoveByInput : ActionTask
     {
+#if ENABLE_INPUT_SYSTEM
         [Header("Necessary Components - default get in parent")]
         [SerializeField] MovementComponent movementComponent = default;
         [SerializeField] PlayerInput playerInput = default;
@@ -36,5 +40,9 @@ namespace redd096.GameTopDown2D
             //move in direction
             movementComponent.MoveInDirection(playerInput.actions.FindAction(inputName).ReadValue<Vector2>());
         }
+#else
+        [HelpBox("This works only with new unity input system", HelpBoxAttribute.EMessageType.Error)]
+        public string Error = "It works only with new unity input system";
+#endif
     }
 }

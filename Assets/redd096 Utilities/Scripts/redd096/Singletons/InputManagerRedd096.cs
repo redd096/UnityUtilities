@@ -1,11 +1,15 @@
 ﻿using UnityEngine;
+using redd096.Attributes;
+#if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
+#endif
 
 namespace redd096
 {
     [AddComponentMenu("redd096/Singletons/Input Manager redd096")]
     public class InputManagerRedd096 : Singleton<InputManagerRedd096>
     {
+#if ENABLE_INPUT_SYSTEM
         [Header("Input Action Asset")]
         public InputActionAsset inputActionAsset;
 
@@ -352,5 +356,9 @@ namespace redd096
         #endregion
 
         #endregion
+#else
+        [HelpBox("This works only with new unity input system", HelpBoxAttribute.EMessageType.Error)]
+        public string Error = "It works only with new unity input system";
+#endif
     }
 }

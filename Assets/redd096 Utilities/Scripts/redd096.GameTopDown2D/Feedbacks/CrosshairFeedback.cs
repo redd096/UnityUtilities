@@ -1,12 +1,15 @@
 ﻿using UnityEngine;
-using UnityEngine.InputSystem;
 using redd096.Attributes;
+#if ENABLE_INPUT_SYSTEM
+using UnityEngine.InputSystem;
+#endif
 
 namespace redd096.GameTopDown2D
 {
     [AddComponentMenu("redd096/.GameTopDown2D/Feedbacks/Crosshair Feedback")]
     public class CrosshairFeedback : FeedbackRedd096
     {
+#if ENABLE_INPUT_SYSTEM
         [Header("Necessary Components - default get in parent")]
         [SerializeField] AimComponent aimComponent = default;
         [SerializeField] PlayerInput playerInput = default;
@@ -29,6 +32,7 @@ namespace redd096.GameTopDown2D
             //get references
             if (aimComponent == null) aimComponent = GetComponentInParent<AimComponent>();
             if (playerInput == null) playerInput = GetComponentInParent<PlayerInput>();
+
             if (cam == null) cam = Camera.main;
 
             base.OnEnable();
@@ -84,5 +88,9 @@ namespace redd096.GameTopDown2D
             else
                 return worldPosition;
         }
+#else
+        [HelpBox("This works only with new unity input system", HelpBoxAttribute.EMessageType.Error)]
+        public string Error = "It works only with new unity input system";
+#endif
     }
 }
