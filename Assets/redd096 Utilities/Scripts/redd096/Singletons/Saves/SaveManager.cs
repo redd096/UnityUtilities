@@ -204,18 +204,18 @@ namespace redd096
         /// </summary>
         public static void SaveOnDisk(string fileName)
         {
-            string fileString = "redd096File with more variables\n";
+            System.Text.StringBuilder fileString = new System.Text.StringBuilder("redd096File with more variables\n");
             if (instance.filesWithMoreVariables.ContainsKey(fileName))
             {
                 //create a string "1stVarName\n1stJson\n2ndVarName\n2ndJson\n..."
                 foreach (string variableName in instance.filesWithMoreVariables[fileName].Keys)
                 {
-                    fileString += (variableName + "\n" + instance.filesWithMoreVariables[fileName][variableName] + "\n");
+                    fileString.Append(variableName).Append("\n").Append(instance.filesWithMoreVariables[fileName][variableName]).Append("\n");
                 }
             }
 
             //save
-            Save(fileName, fileString);
+            Save(fileName, fileString.ToString());
         }
 
         /// <summary>
@@ -611,6 +611,14 @@ namespace redd096
         public static void DeleteKey(string fileName, string key)
         {
             DeleteVariable(fileName, key);
+        }
+
+        /// <summary>
+        /// Save on disk every file setted in dictionary (same as SaveOnDisk())
+        /// </summary>
+        public static void Save()
+        {
+            SaveOnDisk();
         }
 
         #endregion
