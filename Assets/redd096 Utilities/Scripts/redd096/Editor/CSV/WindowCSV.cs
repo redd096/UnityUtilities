@@ -230,7 +230,8 @@ namespace redd096
             //when complete, show error or Download Completed!
             if (ManageDownloadCSV.www.isDone)
             {
-                if (ManageDownloadCSV.www.isHttpError || ManageDownloadCSV.www.isNetworkError)
+                //if (ManageDownloadCSV.www.isHttpError || ManageDownloadCSV.www.isNetworkError)
+                if (ManageDownloadCSV.www.result == UnityWebRequest.Result.ProtocolError || ManageDownloadCSV.www.result == UnityWebRequest.Result.ConnectionError)
                     EditorGUILayout.LabelField("Error:", ManageDownloadCSV.www.error, EditorStyles.boldLabel);
                 else
                     EditorGUILayout.LabelField("Download Completed!", EditorStyles.boldLabel);
@@ -308,7 +309,8 @@ namespace redd096
         static void OnCompleteDownload(AsyncOperation asyncOperation)
         {
             //do only if there are not errors
-            if (www.isHttpError || www.isNetworkError)
+            //if (www.isHttpError || www.isNetworkError)
+            if (www.result == UnityWebRequest.Result.ProtocolError || www.result == UnityWebRequest.Result.ConnectionError)
                 return;
 
             //save CSV
