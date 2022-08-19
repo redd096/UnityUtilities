@@ -35,8 +35,19 @@ namespace redd096.GameTopDown2D
         /// <summary>
         /// If using custom drag, get and set customDrag. Else get and set rigidbody.drag
         /// </summary>
-        public float Drag { get => useCustomDrag ? customDrag : (rb ? rb.drag : 1);
-            set { if (useCustomDrag) customDrag = value; else if (rb) rb.drag = value; } }
+        public float Drag
+        {
+            get => useCustomDrag ? customDrag : (rb ? rb.drag : 1);
+            set { if (useCustomDrag) customDrag = value; else if (rb) rb.drag = value; }
+        }
+        /// <summary>
+        /// Return IsMovingRight as a direction. Can also set it passing a Vector2 with X greater or lower than 0
+        /// </summary>
+        public Vector2 IsMovingRightDirection
+        {
+            get => IsMovingRight ? Vector2.right : Vector2.left;
+            set { if (Mathf.Approximately(value.x, 0) == false) IsMovingRight = value.x > 0; }
+        }
 
         //events
         public System.Action<bool> onChangeMovementDirection { get; set; }
