@@ -25,6 +25,9 @@ namespace redd096
         [HideIf("takeFromUI")][SerializeField] float volumeSFXDefault = 1;
         [HideIf("takeFromUI")][SerializeField] bool fullScreenDefault = true;
 
+        [Header("Optimization")]
+        [SerializeField] bool saveOnDisable = true;
+
         private string fileName = "Options";
 
         float masterVolume;
@@ -63,6 +66,10 @@ namespace redd096
             if (volumeSFXSlider) volumeSFXSlider.onValueChanged.RemoveListener(OnSetVolumeSFX);
 
             if (fullScreenToggle) fullScreenToggle.onValueChanged.RemoveListener(OnSetFullScreen);
+
+            //save on disk On Disable
+            if (saveOnDisable)
+                SaveManager.Save();
         }
 
         #region private API
@@ -70,12 +77,12 @@ namespace redd096
         void SetInGame()
         {
             //set volumes
-            AudioListener.volume = masterVolume;                                                    
-            if (SoundManager.instance) SoundManager.instance.SetVolumeMusic(musicVolume);           
-            if (SoundManager.instance) SoundManager.instance.SetVolumeSFX(sfxVolume);               
+            AudioListener.volume = masterVolume;
+            if (SoundManager.instance) SoundManager.instance.SetVolumeMusic(musicVolume);
+            if (SoundManager.instance) SoundManager.instance.SetVolumeSFX(sfxVolume);
 
             //set full screen
-            Screen.fullScreen = fullScreenEnabled;                                                  
+            Screen.fullScreen = fullScreenEnabled;
         }
 
         void UpdateUI()
@@ -100,7 +107,7 @@ namespace redd096
         {
             //save
             masterVolume = value;
-            SaveManager.SetFloat(fileName, "masterVolume", value);
+            SaveManager.SetFloat(fileName, "masterVolume", value, saveOnDisable == false);
 
             //update UI and set in game
             UpdateUI();
@@ -111,7 +118,7 @@ namespace redd096
         {
             //save
             musicVolume = value;
-            SaveManager.SetFloat(fileName, "musicVolume", value);
+            SaveManager.SetFloat(fileName, "musicVolume", value, saveOnDisable == false);
 
             //update UI and set in game
             UpdateUI();
@@ -122,7 +129,7 @@ namespace redd096
         {
             //save
             sfxVolume = value;
-            SaveManager.SetFloat(fileName, "sfxVolume", value);
+            SaveManager.SetFloat(fileName, "sfxVolume", value, saveOnDisable == false);
 
             //update UI and set in game
             UpdateUI();
@@ -133,7 +140,7 @@ namespace redd096
         {
             //save
             fullScreenEnabled = value;
-            SaveManager.SetBool(fileName, "fullScreenEnabled", value);
+            SaveManager.SetBool(fileName, "fullScreenEnabled", value, saveOnDisable == false);
 
             //update UI and set in game
             UpdateUI();
