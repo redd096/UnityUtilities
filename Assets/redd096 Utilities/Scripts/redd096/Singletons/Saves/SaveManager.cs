@@ -621,6 +621,14 @@ namespace redd096
             SaveOnDisk();
         }
 
+        /// <summary>
+        /// Save file on disk with every variable setted in dictionary (same as SaveOnDisk(fileName))
+        /// </summary>
+        public static void Save(string fileName)
+        {
+            SaveOnDisk(fileName);
+        }
+
         #endregion
 
         #region playerPrefs

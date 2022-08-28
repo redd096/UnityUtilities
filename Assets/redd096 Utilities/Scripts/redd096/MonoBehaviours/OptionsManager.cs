@@ -69,7 +69,7 @@ namespace redd096
 
             //save on disk On Disable
             if (saveOnDisable)
-                SaveManager.Save();
+                SaveManager.Save(fileName);
         }
 
         #region private API
