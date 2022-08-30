@@ -9,7 +9,7 @@ namespace redd096
     public class UIManager : MonoBehaviour
     {
         [Header("Menu")]
-        [Min(0)] [SerializeField] float delayInputWhenOpenMenu = 0.3f;
+        [Min(0)][SerializeField] float delayInputWhenOpenMenu = 0.3f;
         [SerializeField] GameObject pauseMenu = default;
         [SerializeField] GameObject endMenu = default;
 
