@@ -38,7 +38,7 @@ namespace redd096.GameTopDown2D
                 return;
 
             //when press input, interact
-            if (playerInput.actions.FindAction(inputName).triggered)
+            if (playerInput.actions.FindAction(inputName).WasPressedThisFrame())
                 interactComponent.Interact();
         }
 #else

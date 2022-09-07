@@ -41,7 +41,7 @@ namespace redd096.GameTopDown2D
                 return;
 
             //get input
-            inputValue = playerInput.actions.FindAction(inputName).phase == InputActionPhase.Started;
+            inputValue = playerInput.actions.FindAction(inputName).IsPressed();
 
             //when press, attack
             if (inputValue && isAttacking == false)

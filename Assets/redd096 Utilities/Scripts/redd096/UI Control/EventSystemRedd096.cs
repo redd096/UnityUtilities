@@ -54,9 +54,9 @@ namespace redd096
             {
                 //if press cancel button come back to old menu
                 if (
-                (currentInputModule is StandaloneInputModule && Input.GetButtonDown(((StandaloneInputModule)currentInputModule).cancelButton))      //old input system
+                (currentInputModule is StandaloneInputModule && Input.GetButtonDown(((StandaloneInputModule)currentInputModule).cancelButton))              //old input system
 #if ENABLE_INPUT_SYSTEM
-                || (currentInputModule is InputSystemUIInputModule && ((InputSystemUIInputModule)currentInputModule).cancel.action.triggered)       //new input system
+                || (currentInputModule is InputSystemUIInputModule && ((InputSystemUIInputModule)currentInputModule).cancel.action.WasPressedThisFrame())   //new input system
 #endif
                 )
                 {

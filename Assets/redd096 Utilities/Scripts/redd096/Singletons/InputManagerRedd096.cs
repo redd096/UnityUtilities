@@ -37,7 +37,19 @@ namespace redd096
             if (inputActionAsset == null)
                 inputActionAsset = InputManagerRedd096.instance.inputActionAsset;
 
-            return inputActionAsset.FindAction(inputName).triggered;
+            return inputActionAsset.FindAction(inputName).WasPressedThisFrame();
+        }
+
+        /// <summary>
+        /// Returns true during the frame the user released the virtual button identified by inputName
+        /// </summary>
+        public static bool GetButtonUp(string inputName, InputActionAsset inputActionAsset = null)
+        {
+            //use singleton if no input action asset
+            if (inputActionAsset == null)
+                inputActionAsset = InputManagerRedd096.instance.inputActionAsset;
+
+            return inputActionAsset.FindAction(inputName).WasReleasedThisFrame();
         }
 
         /// <summary>
@@ -49,7 +61,7 @@ namespace redd096
             if (inputActionAsset == null)
                 inputActionAsset = InputManagerRedd096.instance.inputActionAsset;
 
-            return inputActionAsset.FindAction(inputName).phase == InputActionPhase.Started;
+            return inputActionAsset.FindAction(inputName).IsPressed();
         }
 
         /// <summary>

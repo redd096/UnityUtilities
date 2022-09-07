@@ -75,7 +75,7 @@ namespace redd096.GameTopDown2D
                 return false;
 
             //if press, switch to number 1
-            if (playerInput.actions.FindAction(inputSwitchToWeapon1).triggered)
+            if (playerInput.actions.FindAction(inputSwitchToWeapon1).WasPressedThisFrame())
             {
                 //be sure has no equipped this weapon
                 if (weaponComponent.IndexEquippedWeapon != 0)
@@ -89,7 +89,7 @@ namespace redd096.GameTopDown2D
                 return true;
             }
             //or switch to number 2
-            else if (playerInput.actions.FindAction(inputSwitchToWeapon2).triggered)
+            else if (playerInput.actions.FindAction(inputSwitchToWeapon2).WasPressedThisFrame())
             {
                 //be sure has no equipped this weapon
                 if (weaponComponent.IndexEquippedWeapon != 1)
@@ -116,7 +116,7 @@ namespace redd096.GameTopDown2D
                 return false;
 
             //on input down
-            if (playerInput.actions.FindAction(inputName).triggered)
+            if (playerInput.actions.FindAction(inputName).WasPressedThisFrame())
             {
                 //switch weapon
                 weaponComponent.SwitchWeapon();
