@@ -1413,9 +1413,8 @@ GameObject:
   - component: {fileID: 1157380333}
   - component: {fileID: 1157380332}
   - component: {fileID: 1157380331}
-  - component: {fileID: 1157380334}
   m_Layer: 0
-  m_Name: GameObject (1)
+  m_Name: Scripts
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1445,6 +1444,7 @@ MonoBehaviour:
   volumeMusicDefault: 1
   volumeSFXDefault: 1
   fullScreenDefault: 1
+  saveOnDisable: 1
 --- !u!114 &1157380332
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1477,21 +1477,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1157380334
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1157380330}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f36253ba4012a1640a02ea252f222c6a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  saveFolder: 0
-  directoryName: Saves
-  ShowDebugLogs: 0
 --- !u!1 &1267857854
 GameObject:
   m_ObjectHideFlags: 0
@@ -1823,7 +1808,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01614664b831546d2ae94a42149d80ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_SendPointerHoverToParent: 1
   m_MoveRepeatDelay: 0.5
   m_MoveRepeatRate: 0.1
   m_XRTrackingOrigin: {fileID: 0}

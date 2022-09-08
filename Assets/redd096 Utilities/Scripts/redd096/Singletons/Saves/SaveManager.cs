@@ -13,11 +13,14 @@ namespace redd096
     [CustomEditor(typeof(SaveManager))]
     public class SaveManagerEditor : Editor
     {
+        SaveManager saveManager;
+
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
 
-            SaveManager saveLoad = target as SaveManager;
+            //get ref
+            saveManager = target as SaveManager;
 
             EditorGUILayout.BeginVertical();
             EditorGUILayout.Space(5);
@@ -28,12 +31,18 @@ namespace redd096
             EditorGUILayout.Space(-15);
 
             //show path directory
-            EditorGUILayout.SelectableLabel(saveLoad.PathDirectory);
+            EditorGUILayout.SelectableLabel(saveManager.PathDirectory);
 
             EditorGUILayout.Space(10);
 
-            //button
-            if (GUILayout.Button("Delete Saves"))
+            //button open folder
+            if (GUILayout.Button("Open Saves Folder"))
+            {
+                OpenFolder();
+            }
+
+            //button delete folder
+            if (GUILayout.Button("Delete Saves Folder"))
             {
                 DeleteAll();
             }
@@ -41,24 +50,30 @@ namespace redd096
             EditorGUILayout.EndVertical();
         }
 
+        void OpenFolder()
+        {
+            //use this SaveLoadSystem, cause instance is not setted
+            if (saveManager == null)
+                return;
+
+            //check there is a directory - open folder, else debug log
+            if (Directory.Exists(saveManager.PathDirectory))
+                EditorUtility.RevealInFinder(saveManager.PathDirectory);
+            else
+                Debug.Log("Directory not found: " + saveManager.PathDirectory);
+        }
+
         void DeleteAll()
         {
             //use this SaveLoadSystem, cause instance is not setted
-            SaveManager saveLoadSystem = target as SaveManager;
-            if (saveLoadSystem == null)
+            if (saveManager == null)
                 return;
 
-            //check there is a directory
-            if (Directory.Exists(saveLoadSystem.PathDirectory) == false)
-            {
-                if (saveLoadSystem.ShowDebugLogs)
-                    Debug.Log("Directory not found: " + saveLoadSystem.PathDirectory);
-
-                return;
-            }
-
-            //delete directory
-            Directory.Delete(saveLoadSystem.PathDirectory, true);
+            //check there is a directory - delete directory, else debug log
+            if (Directory.Exists(saveManager.PathDirectory))
+                Directory.Delete(saveManager.PathDirectory, true);
+            else
+                Debug.Log("Directory not found: " + saveManager.PathDirectory);
         }
     }
 
@@ -130,7 +145,7 @@ namespace redd096
         {
             base.Awake();
 
-            //if this is the instance and load everything at start
+            //if this is the instance
             if (instance == this)
             {
                 //set save load system based on platform
@@ -138,10 +153,13 @@ namespace redd096
 #elif UNITY_STANDALONE
                 saveLoadSystem = new SaveLoadSystem_PC();
 #elif UNITY_IOS || UNITY_ANDROID
+                saveLoadSystem = new SaveLoadSystem_Mobile();
 #elif UNITY_GAMECORE
 #elif UNITY_PS4
 #elif UNITY_PS5
 #elif UNITY_SWITCH
+#else
+                Debug.LogError("SaveManager doesn't have a SaveLoadSystem for this platform");
 #endif
 
                 //preload every file
@@ -204,7 +222,7 @@ namespace redd096
         /// </summary>
         public static void SaveOnDisk(string fileName)
         {
-            System.Text.StringBuilder fileString = new System.Text.StringBuilder("redd096File with more variables\n");
+            System.Text.StringBuilder fileString = new System.Text.StringBuilder("redd096 FWMV\n"); //redd096 File With More Variables
             if (instance.filesWithMoreVariables.ContainsKey(fileName))
             {
                 //create a string "1stVarName\n1stJson\n2ndVarName\n2ndJson\n..."
@@ -248,7 +266,7 @@ namespace redd096
         {
             //load from disk
             string fileString = Load(fileName);
-            if (fileString == null || fileString.StartsWith("redd096File with more variables") == false)
+            if (fileString == null || fileString.StartsWith("redd096 FWMV") == false) //redd096 File With More Variables
             {
                 if (instance.ShowDebugLogs)
                     Debug.Log("Incorrect file: " + instance.saveLoadSystem.GetPathFile(fileName));
