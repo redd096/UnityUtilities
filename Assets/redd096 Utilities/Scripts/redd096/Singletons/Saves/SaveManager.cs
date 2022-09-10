@@ -319,6 +319,25 @@ namespace redd096
                 Debug.Log("Save file not found: " + instance.saveLoadSystem.GetPathFile(fileName));
         }
 
+        /// <summary>
+        /// Return a list of every variable name saved in this file
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        public static List<string> GetEveryVariableInThisFile(string fileName)
+        {
+            List<string> vars = new List<string>();
+
+            //add every variable name in this file
+            if (instance.filesWithMoreVariables.ContainsKey(fileName))
+            {
+                foreach (string variableName in instance.filesWithMoreVariables[fileName].Keys)
+                    vars.Add(variableName);
+            }
+
+            return vars;
+        }
+
         #endregion
 
         #region custom
