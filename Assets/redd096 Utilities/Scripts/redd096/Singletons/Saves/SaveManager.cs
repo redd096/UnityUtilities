@@ -121,21 +121,17 @@ namespace redd096
         [Header("Debug Mode")]
         public bool ShowDebugLogs = false;
 
+        public string DirectoryName => directoryName;
         public string PathDirectory
         {
             get
             {
-#if UNITY_EDITOR || UNITY_STEAM || UNITY_STANDALONE || UNITY_IOS || UNITY_ANDROID
                 if (saveFolder == SaveFolder.persistentDataPath)
                     return Path.Combine(Application.persistentDataPath, directoryName);     //return persistent data path + directory path
                 else if (saveFolder == SaveFolder.gameFolder)
                     return Path.Combine(Application.dataPath, directoryName);               //return game folder path + directory path
                 else
                     return directoryName;                                                   //return only directory path
-#else
-                //on console return only directory name, because console doesn't have same path as PC
-                return directoryName;
-#endif
             }
         }
 
