@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
@@ -7,6 +8,20 @@ namespace redd096
 {
     public class SaveLoadSystem_PC : ISaveLoadSystem
     {
+        /// <summary>
+        /// Some platforms need to be initialized before access saves. So use this to wait before call preload or other functions
+        /// </summary>
+        /// <param name="usePreload"></param>
+        /// <returns></returns>
+        public IEnumerator Initialize(bool usePreload)
+        {
+            //call preload if necessary
+            if (usePreload)
+                Preload();
+
+            yield return null;
+        }
+
         /// <summary>
         /// Get path to the file (directory path + name of the file (key) + format (.json))
         /// </summary>
@@ -77,13 +92,13 @@ namespace redd096
         {
             try
             {
-                //if there is no file, return null
+                //if there is no file, return
                 if (File.Exists(GetPathFile(key)) == false)
                 {
                     if (SaveManager.instance.ShowDebugLogs)
                         Debug.Log("Save file not found: " + GetPathFile(key));
 
-                    return default;
+                    return string.Empty;
                 }
 
                 //load file
@@ -92,7 +107,7 @@ namespace redd096
             catch (System.Exception e)
             {
                 Debug.LogError(e.Message);
-                return default;
+                return string.Empty;
             }
         }
 
@@ -132,13 +147,13 @@ namespace redd096
         {
             try
             {
-                //if there is no file, return null
+                //if there is no file, return
                 if (File.Exists(GetPathFile(key)) == false)
                 {
                     if (SaveManager.instance.ShowDebugLogs)
                         Debug.Log("Save file not found: " + GetPathFile(key));
 
-                    return default;
+                    return string.Empty;
                 }
 
                 //load file async
@@ -147,7 +162,7 @@ namespace redd096
             catch (System.Exception e)
             {
                 Debug.LogError(e.Message);
-                return default;
+                return string.Empty;
             }
         }
 

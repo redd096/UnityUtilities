@@ -1,9 +1,17 @@
+using System.Collections;
 using System.Threading.Tasks;
 
 namespace redd096
 {
     public interface ISaveLoadSystem
     {
+        /// <summary>
+        /// Some platforms need to be initialized before access saves. So use this to wait before call preload or other functions
+        /// </summary>
+        /// <param name="usePreload"></param>
+        /// <returns></returns>
+        IEnumerator Initialize(bool usePreload);
+
         /// <summary>
         /// Get path to the file (directory path + name of the file (key) + format (.json))
         /// </summary>

@@ -125,12 +125,17 @@ namespace redd096
         {
             get
             {
+#if UNITY_EDITOR || UNITY_STEAM || UNITY_STANDALONE || UNITY_IOS || UNITY_ANDROID
                 if (saveFolder == SaveFolder.persistentDataPath)
                     return Path.Combine(Application.persistentDataPath, directoryName);     //return persistent data path + directory path
                 else if (saveFolder == SaveFolder.gameFolder)
                     return Path.Combine(Application.dataPath, directoryName);               //return game folder path + directory path
                 else
                     return directoryName;                                                   //return only directory path
+#else
+                //on console return only directory name, because console doesn't have same path as PC
+                return directoryName;
+#endif
             }
         }
 
@@ -150,21 +155,25 @@ namespace redd096
             {
                 //set save load system based on platform
 #if UNITY_STEAM
+                saveLoadSystem = new SaveLoadSystem_Steam();
 #elif UNITY_STANDALONE
                 saveLoadSystem = new SaveLoadSystem_PC();
 #elif UNITY_IOS || UNITY_ANDROID
                 saveLoadSystem = new SaveLoadSystem_Mobile();
 #elif UNITY_GAMECORE
+                saveLoadSystem = new SaveLoadSystem_GameCore();
 #elif UNITY_PS4
+                saveLoadSystem = new SaveLoadSystem_PS4();
 #elif UNITY_PS5
+                saveLoadSystem = new SaveLoadSystem_PS5();
 #elif UNITY_SWITCH
+                saveLoadSystem = new SaveLoadSystem_Switch();
 #else
                 Debug.LogError("SaveManager doesn't have a SaveLoadSystem for this platform");
 #endif
 
-                //preload every file
-                if (usePreload)
-                    saveLoadSystem.Preload();
+                //initialize SaveLoadSystem (e.g. call Preload)
+                StartCoroutine(saveLoadSystem.Initialize(usePreload));
             }
         }
 
