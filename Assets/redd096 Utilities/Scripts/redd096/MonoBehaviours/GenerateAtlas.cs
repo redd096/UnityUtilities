@@ -86,8 +86,6 @@ namespace redd096
             //get texture (or null)
             Texture2D texture = (sprite == null || sprite.texture == null) ? null : sprite.texture;
 
-            Debug.Log(texture);
-
             //and draw every pixel
             for (int x = 0; x < widthSprites; x++)
             {
