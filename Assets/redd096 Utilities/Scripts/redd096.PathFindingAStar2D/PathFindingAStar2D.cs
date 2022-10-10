@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
 
-namespace redd096.PathFinding2D
+namespace redd096.PathFindingAStar2D
 {
     /// <summary>
     /// Call this to calculate a path using pathfinding or to update the grid
     /// </summary>
-    [AddComponentMenu("redd096/.PathFinding2D/Path Finding A Star 2D")]
+    [AddComponentMenu("redd096/.PathFindingAStar2D/Path Finding A Star 2D")]
     public class PathFindingAStar2D : PathRequestManagerAStar2D
     {
         public static PathFindingAStar2D instance;

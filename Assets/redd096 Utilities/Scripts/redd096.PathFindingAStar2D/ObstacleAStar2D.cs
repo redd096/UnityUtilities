@@ -2,12 +2,12 @@
 using UnityEngine;
 using redd096.Attributes;
 
-namespace redd096.PathFinding2D
+namespace redd096.PathFindingAStar2D
 {
     /// <summary>
     /// Used to create dynamic NotWalkable nodes on the grid. Or set penalty to them
     /// </summary>
-    [AddComponentMenu("redd096/.PathFinding2D/Obstacle A Star 2D")]
+    [AddComponentMenu("redd096/.PathFindingAStar2D/Obstacle A Star 2D")]
     public class ObstacleAStar2D : MonoBehaviour
     {
         enum ETypeCollider { circle, box }

@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace redd096.PathFinding2D
+namespace redd096.PathFindingAStar2D
 {
     /// <summary>
     /// Used to create a single grid using every grid in the scene
     /// </summary>
-    [AddComponentMenu("redd096/.PathFinding2D/Composite Grid A Star 2D")]
+    [AddComponentMenu("redd096/.PathFindingAStar2D/Composite Grid A Star 2D")]
     public class CompositeGridAStar2D : GridAStar2D
     {
         [Header("Composite")]

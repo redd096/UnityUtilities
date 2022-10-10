@@ -1,12 +1,12 @@
 ﻿using UnityEngine;
 using redd096.Attributes;
 
-namespace redd096.PathFinding2D
+namespace redd096.PathFindingAStar2D
 {
     /// <summary>
     /// Used to know size of the agent. When call PathFinding you can pass it as parameter
     /// </summary>
-    [AddComponentMenu("redd096/.PathFinding2D/Agent A Star 2D")]
+    [AddComponentMenu("redd096/.PathFindingAStar2D/Agent A Star 2D")]
     public class AgentAStar2D : MonoBehaviour
     {
         enum ETypeCollider { circle, box }
