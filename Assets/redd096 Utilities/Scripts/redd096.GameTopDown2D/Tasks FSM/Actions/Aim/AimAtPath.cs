@@ -1,6 +1,6 @@
 using UnityEngine;
 using redd096.Attributes;
-using redd096.PathFindingAStar2D;
+using redd096.AStar2DPathFinding;
 
 namespace redd096.GameTopDown2D
 {

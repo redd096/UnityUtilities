@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace redd096.PathFindingAStar2D
+namespace redd096.AStar2DPathFinding
 {
     public class Node2D : IHeapItem2D<Node2D>
     {

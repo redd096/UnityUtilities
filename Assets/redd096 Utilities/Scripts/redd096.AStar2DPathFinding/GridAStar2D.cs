@@ -2,7 +2,7 @@
 
 using UnityEngine;
 
-namespace redd096.PathFindingAStar2D
+namespace redd096.AStar2DPathFinding
 {
     #region unity editor
 
@@ -46,7 +46,7 @@ namespace redd096.PathFindingAStar2D
     /// <summary>
     /// Grid used for pathfinding
     /// </summary>
-    [AddComponentMenu("redd096/.PathFindingAStar2D/Grid A Star 2D")]
+    [AddComponentMenu("redd096/.AStar2DPathFinding/Grid A Star 2D")]
     public class GridAStar2D : MonoBehaviour
     {
         #region structs

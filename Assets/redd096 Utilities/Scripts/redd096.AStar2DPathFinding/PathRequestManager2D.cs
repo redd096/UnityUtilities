@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace redd096.PathFinding3D
+namespace redd096.AStar2DPathFinding
 {
     #region classes
 
     public class PathRequest
     {
-        public Vector3 startPosition;
-        public Vector3 targetPosition;
+        public Vector2 startPosition;
+        public Vector2 targetPosition;
         public System.Action<Path> func;
-        public AgentAStar3D agent;
+        public AgentAStar2D agent;
         public bool returnNearestPointToTarget;
 
         /// <summary>
@@ -22,7 +22,7 @@ namespace redd096.PathFinding3D
         /// <param name="func">function to call when finish processing path. Will pass the path as parameter</param>
         /// <param name="agent"></param>
         /// <param name="returnNearestPointToTarget">if no path to target position, return path to nearest point</param>
-        public PathRequest(Vector3 startPosition, Vector3 targetPosition, System.Action<Path> func, AgentAStar3D agent, bool returnNearestPointToTarget = true)
+        public PathRequest(Vector2 startPosition, Vector2 targetPosition, System.Action<Path> func, AgentAStar2D agent, bool returnNearestPointToTarget = true)
         {
             this.startPosition = startPosition;
             this.targetPosition = targetPosition;
@@ -32,15 +32,18 @@ namespace redd096.PathFinding3D
         }
     }
 
+    [System.Serializable]
     public class Path
     {
-        public List<Vector3> vectorPath;
+        public List<Vector2> vectorPath;
+
+        public Vector2 nextNode => vectorPath != null && vectorPath.Count > 0 ? vectorPath[0] : Vector2.zero;
 
         /// <summary>
         /// Struct used to pass found path
         /// </summary>
         /// <param name="vectorPath"></param>
-        public Path(List<Vector3> vectorPath)
+        public Path(List<Vector2> vectorPath)
         {
             this.vectorPath = vectorPath;
         }
@@ -48,8 +51,8 @@ namespace redd096.PathFinding3D
 
     #endregion
 
-    [AddComponentMenu("redd096/.PathFinding3D/Path Request Manager A Star 3D")]
-    public abstract class PathRequestManagerAStar3D : MonoBehaviour
+    [AddComponentMenu("redd096/.AStar2DPathFinding/Path Request Manager A Star 2D")]
+    public abstract class PathRequestManagerAStar2D : MonoBehaviour
     {
         List<PathRequest> pathRequestQueue = new List<PathRequest>();
         PathRequest currentPathRequest;
