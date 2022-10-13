@@ -2,47 +2,12 @@
 
 using UnityEngine;
 
-namespace redd096.AStar2DPathFinding
-{
-    #region unity editor
-
 #if UNITY_EDITOR
-
-    using UnityEditor;
-
-    [CustomEditor(typeof(GridAStar2D), true)]
-    public class GridAStar2DEditor : Editor
-    {
-        private GridAStar2D gridAStar;
-
-        private void OnEnable()
-        {
-            gridAStar = target as GridAStar2D;
-        }
-
-        public override void OnInspectorGUI()
-        {
-            base.OnInspectorGUI();
-
-            GUILayout.Space(10);
-
-            if (GUILayout.Button("Update Nodes"))
-            {
-                //update nodes
-                gridAStar.BuildGrid();
-                gridAStar.UpdateObstaclesPosition(FindObjectsOfType<ObstacleAStar2D>());
-
-                //repaint scene and set undo
-                SceneView.RepaintAll();
-                Undo.RegisterFullObjectHierarchyUndo(target, "Update Nodes");
-            }
-        }
-    }
-
+using UnityEditor;
 #endif
 
-    #endregion
-
+namespace redd096.AStar2DPathFinding
+{
     /// <summary>
     /// Grid used for pathfinding
     /// </summary>
@@ -64,7 +29,7 @@ namespace redd096.AStar2DPathFinding
 
         [Header("Layer Mask Unwalkable")]
         [SerializeField] protected LayerMask unwalkableMask = default;
-        [SerializeField] protected TerrainType[] walkableRegions = default;
+        [Tooltip("If not inside these regions, penalty is 0")][SerializeField] protected TerrainType[] penaltyRegions = default;
 
         [Header("Grid")]
         [SerializeField] protected bool updateOnAwake = true;
@@ -80,11 +45,11 @@ namespace redd096.AStar2DPathFinding
         Node2D[,] grid;
 
         float nodeRadius;
-        float overlapRadius;
-        Vector2Int gridSize;
-        protected LayerMask walkableRegionsMask;
+        float overlapRadius;                        //node radius - 0.05f to not hit adjacent colliders
+        Vector2Int gridSize;                        //rows and columns (number of nodes)
+        LayerMask penaltyRegionsMask;               //layerMask with every penalty region
 
-        //properties
+        //public properties
         public int MaxSize => gridSize.x * gridSize.y;
         public virtual Vector2 GridWorldPosition => transform.position;
         public Vector2 GridWorldSize => gridWorldSize;
@@ -136,10 +101,10 @@ namespace redd096.AStar2DPathFinding
             gridSize.y = Mathf.RoundToInt(gridWorldSize.y / nodeDiameter);
 
             //add every walkable regions to a single layer mask, to use when raycast to calculate penalty
-            walkableRegionsMask.value = default;
-            foreach (TerrainType terrain in walkableRegions)
+            penaltyRegionsMask.value = default;
+            foreach (TerrainType terrain in penaltyRegions)
             {
-                walkableRegionsMask.value = walkableRegionsMask | terrain.TerrainLayer.value;
+                penaltyRegionsMask.value = penaltyRegionsMask | terrain.TerrainLayer.value;
             }
         }
 
@@ -187,12 +152,12 @@ namespace redd096.AStar2DPathFinding
             //raycast to check terrain
             RaycastHit2D hit;
             movementPenalty = 0;
-            if (hit = Physics2D.Raycast((Vector3)worldPosition - Vector3.forward, Vector3.forward, 1.1f, walkableRegionsMask))
+            if (hit = Physics2D.Raycast((Vector3)worldPosition - Vector3.forward, Vector3.forward, 1.1f, penaltyRegionsMask))
             {
                 int hittedLayer = hit.collider.gameObject.layer;
 
                 //find terrain inside walkable regions
-                foreach (TerrainType region in walkableRegions)
+                foreach (TerrainType region in penaltyRegions)
                 {
                     if (region.TerrainLayer == (region.TerrainLayer | (1 << hittedLayer)))  //if this region contains layer
                     {
@@ -379,4 +344,41 @@ namespace redd096.AStar2DPathFinding
 
         #endregion
     }
+
+    #region unity editor
+
+#if UNITY_EDITOR
+
+    [CustomEditor(typeof(GridAStar2D), true)]
+    public class GridAStar2DEditor : Editor
+    {
+        private GridAStar2D gridAStar;
+
+        private void OnEnable()
+        {
+            gridAStar = target as GridAStar2D;
+        }
+
+        public override void OnInspectorGUI()
+        {
+            base.OnInspectorGUI();
+
+            GUILayout.Space(10);
+
+            if (GUILayout.Button("Update Nodes"))
+            {
+                //update nodes
+                gridAStar.BuildGrid();
+                gridAStar.UpdateObstaclesPosition(FindObjectsOfType<ObstacleAStar2D>());
+
+                //repaint scene and set undo
+                SceneView.RepaintAll();
+                Undo.RegisterFullObjectHierarchyUndo(target, "Update Nodes");
+            }
+        }
+    }
+
+#endif
+
+    #endregion
 }
