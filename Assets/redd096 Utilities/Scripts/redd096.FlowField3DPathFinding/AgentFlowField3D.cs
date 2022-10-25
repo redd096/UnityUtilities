@@ -1,76 +1,76 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace redd096.FlowField3DPathFinding
 {
-    [AddComponentMenu("redd096/.AStar3DPathFinding/Agent FlowField 3D")]
+    /// <summary>
+    /// Used to find path using a PathFindingFlowField and to know if still processing it
+    /// </summary>
+    [AddComponentMenu("redd096/.FlowField3DPathFinding/Agent FlowField 3D")]
     public class AgentFlowField3D : MonoBehaviour
     {
-        public PathFindingFlowField3D gridController;
-        public GameObject unitPrefab;
-        public int numUnitsPerSpawn;
-        public float moveSpeed;
+        bool isWaitingPath;
+        PathRequest lastPathRequest;
 
-        private List<GameObject> unitsInGame;
+        #region public API
 
-        private void Awake()
+        /// <summary>
+        /// Calculate path, then call function passing the path as parameter. If called before receive path, will stop previous request. Call IsDone() to check when has finished
+        /// </summary>
+        /// <param name="startPosition"></param>
+        /// <param name="targetPosition"></param>
+        /// <param name="func">function to call when finish processing path. Will pass the path as parameter</param>
+        public void FindPath(Vector3 startPosition, Vector3 targetPosition, System.Action<Path> func)
         {
-            unitsInGame = new List<GameObject>();
-        }
-
-        void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.Alpha1))
+            //call find path on Path Finding
+            if (PathFindingFlowField3D.instance)
             {
-                SpawnUnits();
-            }
-
-            if (Input.GetKeyDown(KeyCode.Alpha2))
-            {
-                DestroyUnits();
-            }
-        }
-
-        private void FixedUpdate()
-        {
-            if (gridController.curFlowField == null) { return; }
-            foreach (GameObject unit in unitsInGame)
-            {
-                Node3D cellBelow = gridController.curFlowField.GetCellFromWorldPos(unit.transform.position);
-                Vector3 moveDirection = new Vector3(cellBelow.bestDirection.Vector.x, 0, cellBelow.bestDirection.Vector.y);
-                Rigidbody unitRB = unit.GetComponent<Rigidbody>();
-                unitRB.velocity = moveDirection * moveSpeed;
-            }
-        }
-
-        private void SpawnUnits()
-        {
-            Vector2Int gridSize = gridController.gridSize;
-            float nodeRadius = gridController.cellRadius;
-            Vector2 maxSpawnPos = new Vector2(gridSize.x * nodeRadius * 2 + nodeRadius, gridSize.y * nodeRadius * 2 + nodeRadius);
-            int colMask = LayerMask.GetMask("Impassible", "Units");
-            Vector3 newPos;
-            for (int i = 0; i < numUnitsPerSpawn; i++)
-            {
-                GameObject newUnit = Instantiate(unitPrefab);
-                newUnit.transform.parent = transform;
-                unitsInGame.Add(newUnit);
-                do
+                //if still waiting previous path, stop that request
+                if (isWaitingPath)
                 {
-                    newPos = new Vector3(Random.Range(0, maxSpawnPos.x), 0, Random.Range(0, maxSpawnPos.y));
-                    newUnit.transform.position = newPos;
+                    PathFindingFlowField3D.instance.CancelRequest(lastPathRequest);
                 }
-                while (Physics.OverlapSphere(newPos, 0.25f, colMask).Length > 0);
+
+                isWaitingPath = true;                                                           //set is waiting path
+                lastPathRequest = new PathRequest(startPosition, targetPosition, func, this);   //save last path request
+                PathFindingFlowField3D.instance.FindPath(lastPathRequest);
             }
         }
 
-        private void DestroyUnits()
+        /// <summary>
+        /// Remove last path request from queue. If already processing, do nothing
+        /// </summary>
+        public void CancelLastPathRequest()
         {
-            foreach (GameObject go in unitsInGame)
+            //stop request
+            if (PathFindingFlowField3D.instance)
             {
-                Destroy(go);
+                if (PathFindingFlowField3D.instance.CancelRequest(lastPathRequest))
+                    isWaitingPath = false;                                                              //if succeeded, set is not waiting path
             }
-            unitsInGame.Clear();
         }
+
+        /// <summary>
+        /// Called from pathfinding, when finish processing path
+        /// </summary>
+        public void OnFinishProcessingPath(PathRequest pathRequest)
+        {
+            //if finish processing last request (if finish another request but not last, can't set isWaiting at false)
+            if (pathRequest == lastPathRequest)
+            {
+                //set has finished to wait path
+                isWaitingPath = false;
+            }
+        }
+
+        /// <summary>
+        /// Is not waiting path (already received or not requested)
+        /// </summary>
+        /// <returns></returns>
+        public bool IsDone()
+        {
+            return !isWaitingPath;
+        }
+
+        #endregion
     }
 }

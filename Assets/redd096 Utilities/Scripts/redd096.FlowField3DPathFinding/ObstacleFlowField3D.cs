@@ -13,7 +13,7 @@ namespace redd096.FlowField3DPathFinding
         enum ETypeCollider { sphere, box }
 
         [Header("Collider Obstacle")]
-        [SerializeField] bool useCustomCollider = true;
+        [SerializeField] bool useCustomCollider = false;
         [DisableIf("useCustomCollider")][SerializeField] Collider[] colliders = default;
         [ShowIf("useCustomCollider")][SerializeField] Vector3 offset = Vector3.zero;
         [ShowIf("useCustomCollider")][SerializeField] ETypeCollider typeCollider = ETypeCollider.box;
@@ -21,8 +21,8 @@ namespace redd096.FlowField3DPathFinding
         [ShowIf("useCustomCollider")][EnableIf("typeCollider", ETypeCollider.box)][SerializeField] Vector3 sizeCollider = Vector3.one;
 
         [Header("Type Obstacle (set unwalkable or add penalty)")]
-        [SerializeField] bool setUnwalkable = false;
-        [SerializeField] bool addPenalty = true;
+        [SerializeField] bool setUnwalkable = true;
+        [SerializeField] bool addPenalty = false;
         [EnableIf("addPenalty")][SerializeField] int penalty = 1;
 
         [Header("DEBUG (only custom collider)")]

@@ -26,14 +26,17 @@ namespace redd096.FlowField3DPathFinding
 
         #region variables
 
-        [Header("Layer Mask Unwalkable")]
+        [Header("Layer Mask Unwalkable (default penalty is 1)")]
         [SerializeField] protected LayerMask unwalkableMask = default;
-        [Tooltip("If not inside these regions, penalty is 0")][SerializeField] protected TerrainType[] penaltyRegions = default;
+        [Tooltip("If not inside these regions, penalty is 1")][SerializeField] protected TerrainType[] penaltyRegions = default;
 
         [Header("Grid")]
         [SerializeField] protected bool updateOnAwake = true;
         [SerializeField] protected Vector2 gridWorldSize = Vector2.one;
         [SerializeField][Min(0.1f)] protected float nodeDiameter = 1;
+
+        [Header("Extensions")]
+        [SerializeField] FlowField3D_AgentSize agentSize = default;
 
         [Header("Gizmos - cyan Area - green/red walkable node - magenta obstacle")]
         [SerializeField] protected bool drawGridArea = false;
@@ -79,11 +82,17 @@ namespace redd096.FlowField3DPathFinding
                         Gizmos.color = new Color(1, 1, 1, alphaNodes) * (node.isWalkable ? (drawObstacles && node.GetObstaclesOnThisNode().Count > 0 ? Color.magenta : Color.green) : Color.red);
                         //Gizmos.DrawSphere(node.worldPosition, overlapRadius);
                         Gizmos.DrawCube(node.worldPosition, Vector3.one * (nodeDiameter - 0.1f));
+
+
+                        Handles.Label(node.worldPosition, node.bestCost.ToString());
                     }
                 }
 
                 Gizmos.color = Color.white;
             }
+
+            //draw agent size
+            agentSize.OnDrawGizmos(transform);
         }
 
         #region create grid
@@ -149,7 +158,7 @@ namespace redd096.FlowField3DPathFinding
         {
             //raycast to check terrain
             RaycastHit hit;
-            movementPenalty = 0;
+            movementPenalty = 1;
             if (Physics.Raycast(worldPosition + Vector3.up, Vector3.down, out hit, 1.1f, penaltyRegionsMask))
             {
                 int hittedLayer = hit.collider.gameObject.layer;
@@ -235,6 +244,10 @@ namespace redd096.FlowField3DPathFinding
                 {
                     //if not walkable, ignore
                     if (currentNeghbour.isWalkable == false) { continue; }
+
+                    //if using agent and can't move on this node, skip to next Neighbour
+                    if (agentSize.CanMoveOnThisNode(currentNeghbour, this) == false)
+                        continue;
 
                     //else, calculate best cost
                     if (currentNeghbour.movementPenalty + currentNode.bestCost < currentNeghbour.bestCost)
@@ -354,20 +367,57 @@ namespace redd096.FlowField3DPathFinding
             return grid[x, y];
         }
 
-        #endregion
-
-        public Node3D GetCellFromWorldPos(Vector3 worldPos)
+        /// <summary>
+        /// From a start node, calculate node at the extremes of a box
+        /// </summary>
+        /// <param name="startNode">start node</param>
+        /// <param name="center">center of the box</param>
+        /// <param name="halfSize">half size of the box</param>
+        /// <param name="leftNode"></param>
+        /// <param name="rightNode"></param>
+        /// <param name="backNode"></param>
+        /// <param name="forwardNode"></param>
+        public void GetNodesExtremesOfABox(Node3D startNode, Vector3 center, Vector3 halfSize, out Node3D leftNode, out Node3D rightNode, out Node3D backNode, out Node3D forwardNode)
         {
-            float percentX = worldPos.x / (gridSize.x * nodeDiameter);
-            float percentY = worldPos.z / (gridSize.y * nodeDiameter);
-
-            percentX = Mathf.Clamp01(percentX);
-            percentY = Mathf.Clamp01(percentY);
-
-            int x = Mathf.Clamp(Mathf.FloorToInt((gridSize.x) * percentX), 0, gridSize.x - 1);
-            int y = Mathf.Clamp(Mathf.FloorToInt((gridSize.y) * percentY), 0, gridSize.y - 1);
-            return grid[x, y];
+            //set left node
+            leftNode = startNode;
+            for (int x = startNode.gridPosition.x - 1; x >= 0; x--)
+            {
+                if (grid[x, startNode.gridPosition.y].worldPosition.x + nodeRadius >= (center - halfSize).x)
+                    leftNode = grid[x, startNode.gridPosition.y];
+                else
+                    break;
+            }
+            //set right node
+            rightNode = startNode;
+            for (int x = startNode.gridPosition.x + 1; x < gridSize.x; x++)
+            {
+                if (grid[x, startNode.gridPosition.y].worldPosition.x - nodeRadius <= (center + halfSize).x)
+                    rightNode = grid[x, startNode.gridPosition.y];
+                else
+                    break;
+            }
+            //set up node
+            forwardNode = startNode;
+            for (int y = startNode.gridPosition.y + 1; y < gridSize.y; y++)
+            {
+                if (grid[startNode.gridPosition.x, y].worldPosition.z - nodeRadius <= (center + halfSize).z)
+                    forwardNode = grid[startNode.gridPosition.x, y];
+                else
+                    break;
+            }
+            //set down node
+            backNode = startNode;
+            for (int y = startNode.gridPosition.y - 1; y >= 0; y--)
+            {
+                if (grid[startNode.gridPosition.x, y].worldPosition.z + nodeRadius >= (center - halfSize).z)
+                    backNode = grid[startNode.gridPosition.x, y];
+                else
+                    break;
+            }
         }
+
+        #endregion
     }
 
     #region unity editor
