@@ -225,21 +225,6 @@ namespace redd096.AStar2DPathFinding
         }
 
         /// <summary>
-        /// Update obstacles position on the grid
-        /// </summary>
-        /// <param name="obstacles"></param>
-        public void UpdateObstaclesPosition(ObstacleAStar2D[] obstacles)
-        {
-            //update position of every obstacle
-            if (obstacles != null)
-            {
-                foreach (ObstacleAStar2D obstacle in obstacles)
-                    if (obstacle)
-                        obstacle.UpdatePositionOnGrid(this);
-            }
-        }
-
-        /// <summary>
         /// Is world position inside the grid?
         /// </summary>
         /// <param name="worldPosition"></param>
@@ -369,7 +354,11 @@ namespace redd096.AStar2DPathFinding
             {
                 //update nodes
                 gridAStar.BuildGrid();
-                gridAStar.UpdateObstaclesPosition(FindObjectsOfType<ObstacleAStar2D>());
+
+                //update position of every obstacle
+                foreach (ObstacleAStar2D obstacle in FindObjectsOfType<ObstacleAStar2D>())
+                    if (obstacle)
+                        obstacle.UpdatePositionOnGrid(gridAStar);
 
                 //repaint scene and set undo
                 SceneView.RepaintAll();

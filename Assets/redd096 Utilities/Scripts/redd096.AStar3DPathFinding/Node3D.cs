@@ -74,11 +74,9 @@ namespace redd096.AStar3DPathFinding
                     if (obstaclesNotWalkable.Contains(obstacle) == false)
                         obstaclesNotWalkable.Add(obstacle);
                 }
-                //or add movement penalty
-                else
-                {
-                    movementPenalty += obstacle.AddPenalty;
-                }
+
+                //add movement penalty (if add penalty is false, penalty will be 0)
+                movementPenalty += obstacle.AddPenalty;
             }
         }
 
@@ -100,11 +98,9 @@ namespace redd096.AStar3DPathFinding
                     if (obstaclesNotWalkable.Contains(obstacle))
                         obstaclesNotWalkable.Remove(obstacle);
                 }
-                //or remove movement penalty
-                else
-                {
-                    movementPenalty -= obstacle.AddPenalty;
-                }
+
+                //remove movement penalty (if add penalty is false, penalty will be 0)
+                movementPenalty -= obstacle.AddPenalty;
             }
         }
 

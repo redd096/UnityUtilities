@@ -30,7 +30,7 @@ namespace redd096.AStar2DPathFinding
         [SerializeField] Color colorDebugCustomCollider = Color.cyan;
 
         public bool IsUnwalkable => setUnwalkable;
-        public int AddPenalty => addPenalty ? penalty : 0;
+        public int AddPenalty => setUnwalkable == false && addPenalty ? penalty : 0;
 
         //vars
         GridAStar2D grid;

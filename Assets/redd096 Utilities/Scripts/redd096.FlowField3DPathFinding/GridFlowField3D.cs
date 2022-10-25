@@ -49,125 +49,312 @@ namespace redd096.FlowField3DPathFinding
         LayerMask penaltyRegionsMask;               //layerMask with every penalty region
 
         //public properties
-        public int MaxSize => gridSize.x * gridSize.y;
         public virtual Vector3 GridWorldPosition => transform.position;
         public Vector2 GridWorldSize => gridWorldSize;
         public float NodeRadius => nodeRadius;
 
         #endregion
 
-        public Node3D destinationCell;
-
-        public void CreateGrid()
+        void Awake()
         {
-            grid = new Node3D[gridSize.x, gridSize.y];
+            //create grid
+            if (updateOnAwake && IsGridCreated() == false)
+                BuildGrid();
+        }
 
+        void OnDrawGizmos()
+        {
+            if (drawGridArea)
+            {
+                //draw area
+                Gizmos.color = Color.cyan;
+                Gizmos.DrawWireCube(GridWorldPosition, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));
+
+                //draw every node in grid
+                if (grid != null)
+                {
+                    foreach (Node3D node in grid)
+                    {
+                        //set color if walkable or not (red = not walkable, green = walkable, magenta = walkable but with obstacles)
+                        Gizmos.color = new Color(1, 1, 1, alphaNodes) * (node.isWalkable ? (drawObstacles && node.GetObstaclesOnThisNode().Count > 0 ? Color.magenta : Color.green) : Color.red);
+                        //Gizmos.DrawSphere(node.worldPosition, overlapRadius);
+                        Gizmos.DrawCube(node.worldPosition, Vector3.one * (nodeDiameter - 0.1f));
+                    }
+                }
+
+                Gizmos.color = Color.white;
+            }
+        }
+
+        #region create grid
+
+        protected virtual void SetGrid()
+        {
+            //set radius for every node
+            nodeRadius = nodeDiameter * 0.5f;
+            overlapRadius = nodeRadius - 0.05f;
+
+            //set grid size
+            gridSize.x = Mathf.RoundToInt(gridWorldSize.x / nodeDiameter);
+            gridSize.y = Mathf.RoundToInt(gridWorldSize.y / nodeDiameter);
+
+            //add every walkable regions to a single layer mask, to use when raycast to calculate penalty
+            penaltyRegionsMask.value = default;
+            foreach (TerrainType terrain in penaltyRegions)
+            {
+                penaltyRegionsMask.value = penaltyRegionsMask | terrain.TerrainLayer.value;
+            }
+        }
+
+        void CreateGrid()
+        {
+            //reset grid and find bottom left world position
+            grid = new Node3D[gridSize.x, gridSize.y];
+            Vector3 worldBottomLeft = GridWorldPosition + (Vector3.left * gridWorldSize.x / 2) + (Vector3.back * gridWorldSize.y / 2);
+
+            //create grid
+            Vector3 worldPosition;
+            bool isWalkable;
+            bool agentCanMoveThrough;
+            int movementPenalty;
             for (int x = 0; x < gridSize.x; x++)
             {
                 for (int y = 0; y < gridSize.y; y++)
                 {
-                    Vector3 worldPos = new Vector3(nodeDiameter * x + nodeRadius, 0, nodeDiameter * y + nodeRadius);
-                    grid[x, y] = new Node3D(worldPos, new Vector2Int(x, y));
+                    //find world position and if walkable
+                    worldPosition = worldBottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.forward * (y * nodeDiameter + nodeRadius);
+                    isWalkable = IsWalkable(worldPosition, out agentCanMoveThrough);
+
+                    //if walkable, calculate movement penalty
+                    movementPenalty = 0;
+                    if (isWalkable)
+                    {
+                        CalculateMovementPenalty(worldPosition, out movementPenalty);
+                    }
+
+                    //set new node in grid
+                    grid[x, y] = new Node3D(isWalkable, agentCanMoveThrough, worldPosition, x, y, movementPenalty);
                 }
             }
         }
 
-        public void CreateCostField()
+        protected virtual bool IsWalkable(Vector3 worldPosition, out bool agentCanMoveThrough)
         {
-            Vector3 cellHalfExtents = Vector3.one * nodeRadius;
-            int terrainMask = LayerMask.GetMask("Impassible", "RoughTerrain");
-            foreach (Node3D curCell in grid)
+            //overlap sphere (agent can move through only on walkable nodes)
+            agentCanMoveThrough = gameObject.scene.GetPhysicsScene().OverlapSphere(worldPosition, overlapRadius, new Collider[1], unwalkableMask, QueryTriggerInteraction.UseGlobal) <= 0;
+            return agentCanMoveThrough;
+        }
+
+        void CalculateMovementPenalty(Vector3 worldPosition, out int movementPenalty)
+        {
+            //raycast to check terrain
+            RaycastHit hit;
+            movementPenalty = 0;
+            if (Physics.Raycast(worldPosition + Vector3.up, Vector3.down, out hit, 1.1f, penaltyRegionsMask))
             {
-                Collider[] obstacles = Physics.OverlapBox(curCell.worldPos, cellHalfExtents, Quaternion.identity, terrainMask);
-                bool hasIncreasedCost = false;
-                foreach (Collider col in obstacles)
+                int hittedLayer = hit.collider.gameObject.layer;
+
+                //find terrain inside walkable regions
+                foreach (TerrainType region in penaltyRegions)
                 {
-                    if (col.gameObject.layer == 8)
+                    if (region.TerrainLayer == (region.TerrainLayer | (1 << hittedLayer)))  //if this region contains layer
                     {
-                        curCell.IncreaseCost(255);
-                        continue;
-                    }
-                    else if (!hasIncreasedCost && col.gameObject.layer == 9)
-                    {
-                        curCell.IncreaseCost(3);
-                        hasIncreasedCost = true;
+                        //set this terrain movement penalty
+                        movementPenalty = region.TerrainPenalty;
+                        break;
                     }
                 }
             }
         }
 
-        public void CreateIntegrationField(Node3D _destinationCell)
+        void SetNeighbours()
         {
-            destinationCell = _destinationCell;
+            //set neighbours for every node
+            int checkX;
+            int checkY;
+            foreach (Node3D node in grid)
+            {
+                node.neighboursCardinalDirections.Clear();
+                node.neighbours.Clear();
 
-            destinationCell.cost = 0;
-            destinationCell.bestCost = 0;
+                for (int x = -1; x <= 1; x++)
+                {
+                    for (int y = -1; y <= 1; y++)
+                    {
+                        //this is the node we are using as parameter
+                        if (x == 0 && y == 0)
+                            continue;
 
+                        //find grid position
+                        checkX = node.gridPosition.x + x;
+                        checkY = node.gridPosition.y + y;
+
+                        //if that position is inside the grid, add to neighbours
+                        if (checkX >= 0 && checkX < gridSize.x && checkY >= 0 && checkY < gridSize.y)
+                        {
+                            node.neighbours.Add(grid[checkX, checkY]);
+
+                            //set another list with neighbours only in cardinal directions (up, down, left, right)
+                            if (x == 0 || y == 0)
+                                node.neighboursCardinalDirections.Add(grid[checkX, checkY]);
+                        }
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        #region flow field
+
+        void ResetFlowFieldGrid()
+        {
+            //reset every node in the grid (not neighbours or penalty, just reset best cost and direction used for FlowField Pathfinding)
+            foreach (Node3D node in grid)
+            {
+                //set default values
+                node.bestCost = ushort.MaxValue;
+                node.bestDirection = Vector2Int.zero;
+            }
+        }
+
+        void SetBestCostToThisNode(Node3D targetNode)
+        {
+            //set target node at 0
+            targetNode.bestCost = 0;
+
+            //start from target node
             Queue<Node3D> cellsToCheck = new Queue<Node3D>();
-
-            cellsToCheck.Enqueue(destinationCell);
+            cellsToCheck.Enqueue(targetNode);
 
             while (cellsToCheck.Count > 0)
             {
-                Node3D curCell = cellsToCheck.Dequeue();
-                List<Node3D> curNeighbors = GetNeighborCells(curCell.gridIndex, GridDirection.CardinalDirections);
-                foreach (Node3D curNeighbor in curNeighbors)
+                //get every neighbour in cardinal directions
+                Node3D currentNode = cellsToCheck.Dequeue();
+                foreach (Node3D currentNeghbour in currentNode.neighboursCardinalDirections)
                 {
-                    if (curNeighbor.cost == byte.MaxValue) { continue; }
-                    if (curNeighbor.cost + curCell.bestCost < curNeighbor.bestCost)
+                    //if not walkable, ignore
+                    if (currentNeghbour.isWalkable == false) { continue; }
+
+                    //else, calculate best cost
+                    if (currentNeghbour.movementPenalty + currentNode.bestCost < currentNeghbour.bestCost)
                     {
-                        curNeighbor.bestCost = (ushort)(curNeighbor.cost + curCell.bestCost);
-                        cellsToCheck.Enqueue(curNeighbor);
+                        currentNeghbour.bestCost = (ushort)(currentNeghbour.movementPenalty + currentNode.bestCost);
+                        cellsToCheck.Enqueue(currentNeghbour);
                     }
                 }
             }
         }
 
-        public void CreateFlowField()
+        void SetBestDirections()
         {
-            foreach (Node3D curCell in grid)
+            //foreach node in the grid
+            foreach (Node3D currentNode in grid)
             {
-                List<Node3D> curNeighbors = GetNeighborCells(curCell.gridIndex, GridDirection.AllDirections);
-
-                int bestCost = curCell.bestCost;
-
-                foreach (Node3D curNeighbor in curNeighbors)
+                //calculate best direction from this node to neighbours
+                int bestCost = currentNode.bestCost;
+                foreach (Node3D neighbour in currentNode.neighbours)
                 {
-                    if (curNeighbor.bestCost < bestCost)
+                    //if this best cost is lower then found one, this is the best node to move to
+                    if (neighbour.bestCost < bestCost)
                     {
-                        bestCost = curNeighbor.bestCost;
-                        curCell.bestDirection = GridDirection.GetDirectionFromV2I(curNeighbor.gridIndex - curCell.gridIndex);
+                        //save best cost and set direction
+                        bestCost = neighbour.bestCost;
+                        currentNode.bestDirection = neighbour.gridPosition - currentNode.gridPosition;
                     }
                 }
             }
         }
 
-        private List<Node3D> GetNeighborCells(Vector2Int nodeIndex, List<GridDirection> directions)
-        {
-            List<Node3D> neighborCells = new List<Node3D>();
+        #endregion
 
-            foreach (Vector2Int curDirection in directions)
-            {
-                Node3D newNeighbor = GetCellAtRelativePos(nodeIndex, curDirection);
-                if (newNeighbor != null)
-                {
-                    neighborCells.Add(newNeighbor);
-                }
-            }
-            return neighborCells;
+        #region public API
+
+        /// <summary>
+        /// Recreate grid (set which node is walkable and which not)
+        /// </summary>
+        public void BuildGrid()
+        {
+            SetGrid();
+            CreateGrid();
+            SetNeighbours();
         }
 
-        private Node3D GetCellAtRelativePos(Vector2Int orignPos, Vector2Int relativePos)
+        /// <summary>
+        /// Set best direction for every node in the grid, to target node
+        /// </summary>
+        /// <param name="targetNode"></param>
+        public void SetFlowField(Node3D targetNode)
         {
-            Vector2Int finalPos = orignPos + relativePos;
-
-            if (finalPos.x < 0 || finalPos.x >= gridSize.x || finalPos.y < 0 || finalPos.y >= gridSize.y)
-            {
-                return null;
-            }
-
-            else { return grid[finalPos.x, finalPos.y]; }
+            ResetFlowFieldGrid();
+            SetBestCostToThisNode(targetNode);
+            SetBestDirections();
         }
+
+        /// <summary>
+        /// Is grid created or is null?
+        /// </summary>
+        /// <returns></returns>
+        public bool IsGridCreated()
+        {
+            //return if the grid was being created
+            return grid != null;
+        }
+
+        /// <summary>
+        /// Is world position inside the grid?
+        /// </summary>
+        /// <param name="worldPosition"></param>
+        /// <returns></returns>
+        public bool IsInsideGrid(Vector3 worldPosition)
+        {
+            //outside left or right
+            if (worldPosition.x < GridWorldPosition.x - (gridWorldSize.x * 0.5f) || worldPosition.x > GridWorldPosition.x + (gridWorldSize.x * 0.5f))
+                return false;
+
+            //outside back or forward
+            if (worldPosition.z < GridWorldPosition.z - (gridWorldSize.y * 0.5f) || worldPosition.z > GridWorldPosition.z + (gridWorldSize.y * 0.5f))
+                return false;
+
+            //else is inside
+            return true;
+        }
+
+        /// <summary>
+        /// Get node from world position
+        /// </summary>
+        /// <param name="worldPosition"></param>
+        /// <returns></returns>
+        public Node3D GetNodeFromWorldPosition(Vector3 worldPosition)
+        {
+            //be sure to get right result also if grid doesn't start at [0,0]
+            worldPosition -= GridWorldPosition;
+
+            //find percent
+            float percentX = (worldPosition.x + gridWorldSize.x / 2) / gridWorldSize.x;
+            float percentY = (worldPosition.z + gridWorldSize.y / 2) / gridWorldSize.y;     //use Z position
+            percentX = Mathf.Clamp01(percentX);
+            percentY = Mathf.Clamp01(percentY);
+
+            //get coordinates from it
+            int x = Mathf.RoundToInt((gridSize.x - 1) * percentX);
+            int y = Mathf.RoundToInt((gridSize.y - 1) * percentY);
+
+            //return node
+            return grid[x, y];
+        }
+
+        /// <summary>
+        /// Get node at grid position
+        /// </summary>
+        /// <param name="gridPosition"></param>
+        /// <returns></returns>
+        public Node3D GetNodeByCoordinates(int x, int y)
+        {
+            return grid[x, y];
+        }
+
+        #endregion
 
         public Node3D GetCellFromWorldPos(Vector3 worldPos)
         {
@@ -182,4 +369,45 @@ namespace redd096.FlowField3DPathFinding
             return grid[x, y];
         }
     }
+
+    #region unity editor
+
+#if UNITY_EDITOR
+
+    [CustomEditor(typeof(GridFlowField3D), true)]
+    public class GridFlowField3DEditor : Editor
+    {
+        private GridFlowField3D grid;
+
+        private void OnEnable()
+        {
+            grid = target as GridFlowField3D;
+        }
+
+        public override void OnInspectorGUI()
+        {
+            base.OnInspectorGUI();
+
+            GUILayout.Space(10);
+
+            if (GUILayout.Button("Update Nodes"))
+            {
+                //update nodes
+                grid.BuildGrid();
+
+                //update position of every obstacle
+                foreach (ObstacleFlowField3D obstacle in FindObjectsOfType<ObstacleFlowField3D>())
+                    if (obstacle)
+                        obstacle.UpdatePositionOnGrid(grid);
+
+                //repaint scene and set undo
+                SceneView.RepaintAll();
+                Undo.RegisterFullObjectHierarchyUndo(target, "Update Nodes");
+            }
+        }
+    }
+
+#endif
+
+    #endregion
 }
