@@ -116,7 +116,7 @@ namespace redd096
 
         [Header("Optimization")]
         [SerializeField] bool saveAsync = true;
-        [SerializeField] bool usePreload = true;
+        [Tooltip("Load everything at start and put in a dictionary, so in game just read dictionary")][SerializeField] bool usePreload = true;
 
         [Header("Debug Mode")]
         public bool ShowDebugLogs = false;
