@@ -22,7 +22,7 @@ namespace redd096.AStar3DPathFinding
         /// <param name="func">function to call when finish processing path. Will pass the path as parameter</param>
         /// <param name="agent"></param>
         /// <param name="returnNearestPointToTarget">if no path to target position, return path to nearest point</param>
-        public PathRequest(Vector3 startPosition, Vector3 targetPosition, System.Action<Path> func, AgentAStar3D agent, bool returnNearestPointToTarget = true)
+        public PathRequest(Vector3 startPosition, Vector3 targetPosition, System.Action<Path> func, AgentAStar3D agent = null, bool returnNearestPointToTarget = true)
         {
             this.startPosition = startPosition;
             this.targetPosition = targetPosition;
@@ -48,7 +48,6 @@ namespace redd096.AStar3DPathFinding
 
     #endregion
 
-    [AddComponentMenu("redd096/.AStar3DPathFinding/Path Request Manager A Star 3D")]
     public abstract class PathRequestManagerAStar3D : MonoBehaviour
     {
         List<PathRequest> pathRequestQueue = new List<PathRequest>();

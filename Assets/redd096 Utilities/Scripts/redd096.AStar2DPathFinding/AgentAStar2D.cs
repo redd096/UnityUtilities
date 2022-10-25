@@ -247,7 +247,7 @@ namespace redd096.AStar2DPathFinding
         }
 
         /// <summary>
-        /// Remove last path request from queue. If already processing, do nothiing
+        /// Remove last path request from queue. If already processing, do nothing
         /// </summary>
         public void CancelLastPathRequest()
         {

@@ -238,7 +238,7 @@ namespace redd096.AStar3DPathFinding
         /// <param name="startPosition"></param>
         /// <param name="targetPosition"></param>
         /// <param name="func">function to call when finish processing path. Will pass the path as parameter</param>
-        public void FindPath(Vector2 startPosition, Vector2 targetPosition, System.Action<Path> func)
+        public void FindPath(Vector3 startPosition, Vector3 targetPosition, System.Action<Path> func)
         {
             //call find path on Path Finding
             if (PathFindingAStar3D.instance)
@@ -256,7 +256,7 @@ namespace redd096.AStar3DPathFinding
         }
 
         /// <summary>
-        /// Remove last path request from queue. If already processing, do nothiing
+        /// Remove last path request from queue. If already processing, do nothing
         /// </summary>
         public void CancelLastPathRequest()
         {
