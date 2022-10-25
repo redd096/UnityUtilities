@@ -39,8 +39,9 @@ namespace redd096.GameTopDown2D
         [Header("DEBUG")]
         [ReadOnly][SerializeField] Vector2 direction = Vector2.zero;
         [ReadOnly][SerializeField] float damage = 0;
-        [ReadOnly][SerializeField] float bulletSpeed = 0;
+        [SerializeField] float bulletSpeed = 0;
         [SerializeField] ShowDebugRedd096 drawAreaDamage = Color.red;
+        [SerializeField] ShowDebugRedd096 drawDistanceAutodestruction = Color.magenta;
 
         [HideInInspector] public Character Owner;
         WeaponRange weapon;
@@ -78,6 +79,16 @@ namespace redd096.GameTopDown2D
                 {
                     Gizmos.color = drawAreaDamage.ColorDebug;
                     Gizmos.DrawWireSphere(transform.position, radiusAreaDamage);
+                }
+            }
+
+            //draw distance auto destruction
+            if (drawDistanceAutodestruction)
+            {
+                if (delayAutodestruction > 0)
+                {
+                    Gizmos.color = drawDistanceAutodestruction.ColorDebug;
+                    Gizmos.DrawLine(transform.position, (Vector2)transform.position + (direction != Vector2.zero ? direction : Vector2.right) * bulletSpeed * delayAutodestruction);
                 }
             }
         }
