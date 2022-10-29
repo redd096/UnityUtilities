@@ -38,9 +38,12 @@ namespace redd096.FlowField3DPathFinding
         [Header("Extensions")]
         [SerializeField] FlowField3D_AgentSize agentSize = default;
 
-        [Header("Gizmos - cyan Area - green/red walkable node - magenta obstacle")]
+        [Header("Gizmos - cyan Area - green/red walkable node - magenta walkable with obstacle")]
         [SerializeField] protected bool drawGridArea = false;
+        [SerializeField] protected bool drawWalkableNodes = false;
+        [SerializeField] protected bool drawUnwalkableNodes = false;
         [SerializeField] protected bool drawObstacles = false;
+        [SerializeField] protected bool drawCost = false;
         [SerializeField] protected float alphaNodes = 0.3f;
 
         //grid
@@ -72,24 +75,46 @@ namespace redd096.FlowField3DPathFinding
                 //draw area
                 Gizmos.color = Color.cyan;
                 Gizmos.DrawWireCube(GridWorldPosition, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));
+            }
 
-                //draw every node in grid
+            //draw every node in grid
+            if (drawWalkableNodes || drawUnwalkableNodes || drawObstacles || drawCost)
+            {
                 if (grid != null)
                 {
                     foreach (Node3D node in grid)
                     {
                         //set color if walkable or not (red = not walkable, green = walkable, magenta = walkable but with obstacles)
-                        Gizmos.color = new Color(1, 1, 1, alphaNodes) * (node.isWalkable ? (drawObstacles && node.GetObstaclesOnThisNode().Count > 0 ? Color.magenta : Color.green) : Color.red);
+                        //Gizmos.color = new Color(1, 1, 1, alphaNodes) * (node.isWalkable ? (drawObstacles && node.GetObstaclesOnThisNode().Count > 0 ? Color.magenta : Color.green) : Color.red);
                         //Gizmos.DrawSphere(node.worldPosition, overlapRadius);
-                        Gizmos.DrawCube(node.worldPosition, Vector3.one * (nodeDiameter - 0.1f));
 
+                        //draw if unwalkable
+                        if (node.isWalkable == false && drawUnwalkableNodes)
+                        {
+                            Gizmos.color = new Color(1, 1, 1, alphaNodes) * Color.red;
+                            Gizmos.DrawCube(node.worldPosition, Vector3.one * (nodeDiameter - 0.1f));
+                        }
+                        //draw if walkable but obstacle
+                        else if (node.isWalkable && node.GetObstaclesOnThisNode().Count > 0 && drawObstacles)
+                        {
+                            Gizmos.color = new Color(1, 1, 1, alphaNodes) * Color.magenta;
+                            Gizmos.DrawCube(node.worldPosition, Vector3.one * (nodeDiameter - 0.1f));
+                        }
+                        //draw if walkable
+                        else if (node.isWalkable && drawWalkableNodes)
+                        {
+                            Gizmos.color = new Color(1, 1, 1, alphaNodes) * Color.green;
+                            Gizmos.DrawCube(node.worldPosition, Vector3.one * (nodeDiameter - 0.1f));
+                        }
 
-                        Handles.Label(node.worldPosition, node.bestCost.ToString());
+                        //draw cost
+                        if (drawCost)
+                            Handles.Label(node.worldPosition, node.bestCost.ToString());
                     }
                 }
-
-                Gizmos.color = Color.white;
             }
+
+            Gizmos.color = Color.white;
 
             //draw agent size
             agentSize.OnDrawGizmos(transform);
@@ -447,8 +472,13 @@ namespace redd096.FlowField3DPathFinding
 
                 //update position of every obstacle
                 foreach (ObstacleFlowField3D obstacle in FindObjectsOfType<ObstacleFlowField3D>())
+                {
                     if (obstacle)
+                    {
+                        obstacle.SetColliders_Editor();
                         obstacle.UpdatePositionOnGrid(grid);
+                    }
+                }
 
                 //repaint scene and set undo
                 SceneView.RepaintAll();
