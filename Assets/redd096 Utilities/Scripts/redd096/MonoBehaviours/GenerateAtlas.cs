@@ -9,17 +9,16 @@ namespace redd096
     {
         [Header("New Texture")]
         [SerializeField] string textureName = "Atlas";
-        [SerializeField] int widthSprites = 100;
-        [SerializeField] int heightSprites = 100;
         [SerializeField] TextureFormat textureFormat = TextureFormat.RGBA32;
         [SerializeField] bool mipChain = false;
 
         [Header("Where to Save")]
         [SerializeField] SaveFolder saveFolder = SaveFolder.gameFolder;
-        [SerializeField] string directoryName = "Test/Textures";
-
+        [SerializeField] string directoryName = "PORTING/Resources/Sprite Assets";
 
         [Header("Sprites to use (enable Read/Write in inspector)")]
+        [SerializeField] int widthSprites = 100;
+        [SerializeField] int heightSprites = 100;
         [SerializeField] Color colorEmptySpaces = new Color(0, 0, 0, 0);
         [SerializeField] Sprite[] spritesToUse = default;
 
@@ -38,7 +37,13 @@ namespace redd096
             for (int i = 0; i < rows * rows; i++)
             {
                 //when reach rows, move down
-                DrawSprite(i < spritesToUse.Length ? spritesToUse[i] : null, (i % rows) * widthSprites, (i / rows) * heightSprites);
+                //Y doesn't start from 0 and move up, but start from up and move to 0. We are drawing starting from up left
+                DrawSprite(i < spritesToUse.Length ? spritesToUse[i] : null, (i % rows) * widthSprites, ((rows - 1) - (i / rows)) * heightSprites);
+
+                //example with an atlas of 5 rows (5x5 sprites)
+                // (x = i % rows) so x follow i when is 0, 1, 2, 3, 4. Then restart from 0 for next row
+                // (y = i / rows) so y is 0 when i is 0, 1, 2, 3, 4. Then increase by one for next row
+                // (y = (rows - 1) - y) so y doesn't start from 0, but start from 4 and move to 0 following the result described above
             }
 
             //apply all SetPixel to texture
