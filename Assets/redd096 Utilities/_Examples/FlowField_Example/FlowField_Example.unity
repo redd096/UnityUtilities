@@ -7222,6 +7222,7 @@ GameObject:
   - component: {fileID: 1029280331}
   - component: {fileID: 1029280330}
   - component: {fileID: 1029280332}
+  - component: {fileID: 1029280333}
   m_Layer: 0
   m_Name: PathFinding FlowField
   m_TagString: Untagged
@@ -7241,7 +7242,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b459fa780c361bd479488021260d859c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Grid: {fileID: 1029280332}
+  Grid: {fileID: 1029280333}
 --- !u!4 &1029280331
 Transform:
   m_ObjectHideFlags: 0
@@ -7286,6 +7287,36 @@ MonoBehaviour:
   drawGridArea: 0
   drawObstacles: 0
   alphaNodes: 0.3
+--- !u!114 &1029280333
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1029280329}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ce08119867417a488f6dc5232b1064e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  unwalkableMask:
+    serializedVersion: 2
+    m_Bits: 0
+  penaltyRegions: []
+  updateOnAwake: 1
+  gridWorldSize: {x: 1, y: 1}
+  nodeDiameter: 1
+  agentSize:
+    useCustomCollider: 0
+    typeCollider: 1
+    sizeCollider: {x: 1, y: 1, z: 1}
+    radiusCollider: 1
+    drawCustomCollider: 0
+    colorDebugCustomCollider: {r: 0, g: 1, b: 1, a: 1}
+  drawGridArea: 0
+  drawObstacles: 0
+  alphaNodes: 0.3
+  agentCanOverlapNodesOutsideGrids: 1
 --- !u!1 &1070540896
 GameObject:
   m_ObjectHideFlags: 0
@@ -12803,7 +12834,7 @@ GameObject:
   - component: {fileID: 1736740518}
   - component: {fileID: 1736740517}
   m_Layer: 0
-  m_Name: Test
+  m_Name: Click to Set Destination
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -85,6 +85,14 @@ namespace redd096.FlowField3DPathFinding
             RemoveFromPreviousNodes();
         }
 
+        [Button("Find Children Colliders")]
+        public void SetColliders_Editor()
+        {
+            //if not use custom collider, automatically get reference to unity colliders
+            if (useCustomCollider == false && (colliders == null || colliders.Length <= 0))
+                colliders = GetComponentsInChildren<Collider>();
+        }
+
         #region public API
 
         /// <summary>
