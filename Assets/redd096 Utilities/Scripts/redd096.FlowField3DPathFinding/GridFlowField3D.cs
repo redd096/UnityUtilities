@@ -107,9 +107,11 @@ namespace redd096.FlowField3DPathFinding
                             Gizmos.DrawCube(node.worldPosition, Vector3.one * (nodeDiameter - 0.1f));
                         }
 
+#if UNITY_EDITOR
                         //draw cost
                         if (drawCost)
                             Handles.Label(node.worldPosition, node.bestCost.ToString());
+#endif
                     }
                 }
             }
