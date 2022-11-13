@@ -51,8 +51,10 @@ namespace redd096.Attributes
                     return CompareInt(at, (int)comparedObject);
                 else if (comparedObject is float)
                     return CompareFloat(at, (float)comparedObject);
+                else
+                    return CompareEqual(at, comparedObject);
 
-                return false;
+                //return false;
             }
             //or normally check every value
             else
