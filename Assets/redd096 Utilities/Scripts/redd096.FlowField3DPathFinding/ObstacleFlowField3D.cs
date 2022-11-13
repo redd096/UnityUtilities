@@ -35,6 +35,7 @@ namespace redd096.FlowField3DPathFinding
         //vars
         GridFlowField3D grid;
         List<Node3D> nodesPosition = new List<Node3D>();    //nodes with this obstacle
+        Vector3 previousPosition;
 
         //nodes to calculate
         Node3D centerNode;
@@ -72,11 +73,20 @@ namespace redd096.FlowField3DPathFinding
                 colliders = GetComponentsInChildren<Collider>();
         }
 
+        void OnEnable()
+        {
+            //set obstacle on nodes
+            UpdatePosition();
+        }
+
         void Update()
         {
-            //update obstacle position
-            if (PathFindingFlowField3D.instance)
-                PathFindingFlowField3D.instance.UpdateObstaclePositionOnGrid(this);
+            //if moved
+            if (transform.position != previousPosition)
+            {
+                //set obstacle on nodes
+                UpdatePosition();
+            }
         }
 
         void OnDisable()
@@ -155,6 +165,16 @@ namespace redd096.FlowField3DPathFinding
         #endregion
 
         #region private API
+
+        void UpdatePosition()
+        {
+            //set vars
+            previousPosition = transform.position;
+
+            //set obstacle position
+            if (PathFindingFlowField3D.instance)
+                PathFindingFlowField3D.instance.UpdateObstaclePositionOnGrid(this);
+        }
 
         void SetNodesUsingBox()
         {
