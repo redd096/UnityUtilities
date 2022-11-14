@@ -1,3 +1,4 @@
+using redd096.Attributes;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -46,6 +47,11 @@ namespace redd096.FlowField3DPathFinding
             {
                 currentPathRequest = pathRequestList[0];
                 isProcessingPath = true;
+
+                //save transform positions, because can't use transform.position in async functions, and ProcessPath will be async
+                for (int i = 0; i < currentPathRequest.targetRequests.Length; i++)
+                    currentPathRequest.targetRequests[i].SavePosition();
+
                 ProcessPath(currentPathRequest);
             }
         }
@@ -57,38 +63,116 @@ namespace redd096.FlowField3DPathFinding
 
     public class PathRequest
     {
-        public Vector3 startPosition;
-        public Vector3 targetPosition;
-        public System.Action<Path> func;
+        public TargetRequest[] targetRequests;
         public AgentFlowField3D agent;
 
         /// <summary>
-        /// Struct used to request a path to PathFinding
+        /// Used to request a path to PathFinding
         /// </summary>
-        /// <param name="startPosition"></param>
-        /// <param name="targetPosition"></param>
-        /// <param name="func">function to call when finish processing path. Will pass the path as parameter</param>
+        /// <param name="targetRequests">Targets and/or positions to reach</param>
         /// <param name="agent"></param>
-        public PathRequest(Vector3 startPosition, Vector3 targetPosition, System.Action<Path> func, AgentFlowField3D agent = null)
+        public PathRequest(TargetRequest[] targetRequests, AgentFlowField3D agent = null)
         {
-            this.startPosition = startPosition;
-            this.targetPosition = targetPosition;
-            this.func = func;
+            this.targetRequests = targetRequests;
             this.agent = agent;
+        }
+
+        /// <summary>
+        /// Used to request a path to PathFinding
+        /// </summary>
+        /// <param name="targets">Targets to reach</param>
+        /// <param name="agent"></param>
+        public PathRequest(Transform[] targets, AgentFlowField3D agent = null)
+        {
+            TargetRequest[] targetRequests = new TargetRequest[targets.Length];
+            for (int i = 0; i < targets.Length; i++)
+                targetRequests[i] = new TargetRequest(targets[i]);
+
+            new PathRequest(targetRequests, agent);
+        }
+
+        /// <summary>
+        /// Used to request a path to PathFinding
+        /// </summary>
+        /// <param name="positions">Positions to reach</param>
+        /// <param name="agent"></param>
+        public PathRequest(Vector3[] positions, AgentFlowField3D agent = null)
+        {
+            TargetRequest[] targetRequests = new TargetRequest[positions.Length];
+            for (int i = 0; i < positions.Length; i++)
+                targetRequests[i] = new TargetRequest(positions[i]);
+
+            new PathRequest(targetRequests, agent);
+        }
+
+        /// <summary>
+        /// Used to request a path to PathFinding
+        /// </summary>
+        /// <param name="target">Target to reach</param>
+        /// <param name="agent"></param>
+        public PathRequest(TargetRequest targetRequest, AgentFlowField3D agent = null)
+        {
+            new PathRequest(new TargetRequest[1] { targetRequest }, agent);
+        }
+
+        /// <summary>
+        /// Used to request a path to PathFinding
+        /// </summary>
+        /// <param name="target">Target to reach</param>
+        /// <param name="agent"></param>
+        public PathRequest(Transform target, AgentFlowField3D agent = null)
+        {
+            new PathRequest(new TargetRequest(target), agent);
+        }
+
+        /// <summary>
+        /// Used to request a path to PathFinding
+        /// </summary>
+        /// <param name="position">Position to reach</param>
+        /// <param name="agent"></param>
+        public PathRequest(Vector3 position, AgentFlowField3D agent = null)
+        {
+            new PathRequest(new TargetRequest(position), agent);
         }
     }
 
-    public class Path
+    [System.Serializable]
+    public struct TargetRequest
     {
-        public List<Vector3> vectorPath;
+        [SerializeField] Transform target;
+        [SerializeField][EnableIf("target", null, EnableIfAttribute.EComparisonType.isEqual)] Vector3 position;
+
+        public short weight;
+        public Vector3 targetPosition => target != null ? target.position : position;
+
+        //Transform position, saved before processing path, to use in async functions
+        public Vector3 savedPosition { get; private set; }
+        public void SavePosition() => savedPosition = targetPosition;
 
         /// <summary>
-        /// Struct used to pass found path
+        /// Set a target and its weight. More weight is equivalent to more importance
         /// </summary>
-        /// <param name="vectorPath"></param>
-        public Path(List<Vector3> vectorPath)
+        /// <param name="target"></param>
+        /// <param name="weight"></param>
+        public TargetRequest(Transform target, short weight = 0)
         {
-            this.vectorPath = vectorPath;
+            this.target = target;
+            position = default;
+            this.weight = weight;
+            savedPosition = target ? target.position : default;
+        }
+
+        /// <summary>
+        /// Set a target and its weight. More weight is equivalent to more importance
+        /// </summary>
+        /// <param name="position"></param>
+        /// <param name="weight"></param>
+        public TargetRequest(Vector3 position, short weight = 0)
+        {
+            target = null;
+            this.position = position;
+            this.weight = weight;
+            savedPosition = position;
         }
     }
 

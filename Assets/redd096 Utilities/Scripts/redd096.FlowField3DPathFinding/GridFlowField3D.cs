@@ -249,38 +249,43 @@ namespace redd096.FlowField3DPathFinding
             foreach (Node3D node in grid)
             {
                 //set default values
-                node.bestCost = ushort.MaxValue;
+                node.bestCost = short.MaxValue;
                 node.bestDirection = Vector2Int.zero;
             }
         }
 
-        void SetBestCostToThisNode(Node3D targetNode)
+        void SetBestCostToThisNode(TargetRequest[] targetRequests)
         {
-            //set target node at 0
-            targetNode.bestCost = 0;
-
-            //start from target node
-            Queue<Node3D> cellsToCheck = new Queue<Node3D>();
-            cellsToCheck.Enqueue(targetNode);
-
-            while (cellsToCheck.Count > 0)
+            foreach (TargetRequest targetRequest in targetRequests)
             {
-                //get every neighbour in cardinal directions
-                Node3D currentNode = cellsToCheck.Dequeue();
-                foreach (Node3D currentNeghbour in currentNode.neighboursCardinalDirections)
+                Node3D targetNode = GetNodeFromWorldPosition(targetRequest.savedPosition);
+
+                //set target node at 0 or minor
+                targetNode.bestCost = (short)-targetRequest.weight;
+
+                //start from target node
+                Queue<Node3D> cellsToCheck = new Queue<Node3D>();
+                cellsToCheck.Enqueue(targetNode);
+
+                while (cellsToCheck.Count > 0)
                 {
-                    //if not walkable, ignore
-                    if (currentNeghbour.isWalkable == false) { continue; }
-
-                    //if using agent and can't move on this node, skip to next Neighbour
-                    if (agentSize.CanMoveOnThisNode(currentNeghbour, this) == false)
-                        continue;
-
-                    //else, calculate best cost
-                    if (currentNeghbour.movementPenalty + currentNode.bestCost < currentNeghbour.bestCost)
+                    //get every neighbour in cardinal directions
+                    Node3D currentNode = cellsToCheck.Dequeue();
+                    foreach (Node3D currentNeghbour in currentNode.neighboursCardinalDirections)
                     {
-                        currentNeghbour.bestCost = (ushort)(currentNeghbour.movementPenalty + currentNode.bestCost);
-                        cellsToCheck.Enqueue(currentNeghbour);
+                        //if not walkable, ignore
+                        if (currentNeghbour.isWalkable == false) { continue; }
+
+                        //if using agent and can't move on this node, skip to next Neighbour
+                        if (agentSize.CanMoveOnThisNode(currentNeghbour, this) == false)
+                            continue;
+
+                        //else, calculate best cost
+                        if (currentNeghbour.movementPenalty + currentNode.bestCost < currentNeghbour.bestCost)
+                        {
+                            currentNeghbour.bestCost = (short)(currentNeghbour.movementPenalty + currentNode.bestCost);
+                            cellsToCheck.Enqueue(currentNeghbour);
+                        }
                     }
                 }
             }
@@ -323,11 +328,11 @@ namespace redd096.FlowField3DPathFinding
         /// <summary>
         /// Set best direction for every node in the grid, to target node
         /// </summary>
-        /// <param name="targetNode"></param>
-        public void SetFlowField(Node3D targetNode)
+        /// <param name="targetRequests"></param>
+        public void SetFlowField(TargetRequest[] targetRequests)
         {
             ResetFlowFieldGrid();
-            SetBestCostToThisNode(targetNode);
+            SetBestCostToThisNode(targetRequests);
             SetBestDirections();
         }
 

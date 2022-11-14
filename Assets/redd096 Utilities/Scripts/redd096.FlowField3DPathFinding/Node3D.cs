@@ -16,7 +16,7 @@ namespace redd096.FlowField3DPathFinding
         public bool isWalkable => isNodeWalkable && obstaclesNotWalkable.Count <= 0;
 
         //variables path finding
-        public ushort bestCost;
+        public short bestCost;
         public Vector2Int bestDirection;
 
         //other variables

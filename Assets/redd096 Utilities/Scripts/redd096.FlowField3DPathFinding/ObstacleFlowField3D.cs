@@ -168,12 +168,12 @@ namespace redd096.FlowField3DPathFinding
 
         void UpdatePosition()
         {
-            //set vars
-            previousPosition = transform.position;
-
             //set obstacle position
             if (PathFindingFlowField3D.instance)
+            {
+                previousPosition = transform.position;
                 PathFindingFlowField3D.instance.UpdateObstaclePositionOnGrid(this);
+            }
         }
 
         void SetNodesUsingBox()
