@@ -118,7 +118,7 @@ namespace redd096.PathFinding.FlowField2D
                         if (drawArrow)
                         {
                             Handles.ArrowHandleCap(0, node.worldPosition,
-                                Quaternion.LookRotation(node.worldPosition + new Vector2(node.bestDirection.x, node.bestDirection.y)), overlapRadius, EventType.Repaint);
+                                Quaternion.LookRotation(new Vector2(node.bestDirection.x, node.bestDirection.y)), overlapRadius, EventType.Repaint);
                         }
 #endif
                     }

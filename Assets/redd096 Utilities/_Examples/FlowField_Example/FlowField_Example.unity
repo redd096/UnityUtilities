@@ -7624,8 +7624,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1029280331}
   - component: {fileID: 1029280330}
-  - component: {fileID: 1029280332}
   - component: {fileID: 1029280333}
+  - component: {fileID: 1029280332}
   m_Layer: 0
   m_Name: PathFinding FlowField
   m_TagString: Untagged
@@ -7692,7 +7692,7 @@ MonoBehaviour:
   drawUnwalkableNodes: 0
   drawObstacles: 0
   drawWalkableNodes: 0
-  drawCost: 1
+  drawCost: 0
   drawArrow: 0
   alphaNodes: 1
 --- !u!114 &1029280333

@@ -118,7 +118,7 @@ namespace redd096.PathFinding.FlowField3D
                         if (drawArrow)
                         {
                             Handles.ArrowHandleCap(0, node.worldPosition,
-                                Quaternion.LookRotation(node.worldPosition + new Vector3(node.bestDirection.x, 0, node.bestDirection.y)), overlapRadius, EventType.Repaint);
+                                Quaternion.LookRotation(new Vector3(node.bestDirection.x, 0, node.bestDirection.y)), overlapRadius, EventType.Repaint);
                         }
 #endif
                     }
