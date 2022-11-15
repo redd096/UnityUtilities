@@ -78,19 +78,19 @@ namespace redd096.PathFinding.FlowField3D
         void SetGridExtremes(GridFlowField grid)
         {
             //set points same as on grid parameter
-            leftCompositeGrid = grid.GridWorldPosition.x - (grid.GridWorldSize.x / 2);
-            rightCompositeGrid = grid.GridWorldPosition.x + (grid.GridWorldSize.x / 2);
-            forwardCompositeGrid = grid.GridWorldPosition.z + (grid.GridWorldSize.y / 2);
-            backCompositeGrid = grid.GridWorldPosition.z - (grid.GridWorldSize.y / 2);
+            leftCompositeGrid = grid.GridWorldPosition.x - (grid.GridWorldSize.x * 0.5f);
+            rightCompositeGrid = grid.GridWorldPosition.x + (grid.GridWorldSize.x * 0.5f);
+            forwardCompositeGrid = grid.GridWorldPosition.z + (grid.GridWorldSize.y * 0.5f);
+            backCompositeGrid = grid.GridWorldPosition.z - (grid.GridWorldSize.y * 0.5f);
         }
 
         void UpdateGridExtremes(GridFlowField grid)
         {
             //calculate points on grid parameter
-            float left = grid.GridWorldPosition.x - (grid.GridWorldSize.x / 2);
-            float right = grid.GridWorldPosition.x + (grid.GridWorldSize.x / 2);
-            float forward = grid.GridWorldPosition.z + (grid.GridWorldSize.y / 2);
-            float back = grid.GridWorldPosition.z - (grid.GridWorldSize.y / 2);
+            float left = grid.GridWorldPosition.x - (grid.GridWorldSize.x * 0.5f);
+            float right = grid.GridWorldPosition.x + (grid.GridWorldSize.x * 0.5f);
+            float forward = grid.GridWorldPosition.z + (grid.GridWorldSize.y * 0.5f);
+            float back = grid.GridWorldPosition.z - (grid.GridWorldSize.y * 0.5f);
 
             //check if update current points
             if (left < leftCompositeGrid)

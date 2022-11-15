@@ -14,15 +14,11 @@ namespace redd096.PathFinding.FlowField3D
         Vector3 previousPosition;
         Node previousNode;
 
-        public Vector3 nextPosition { get 
-            {
-                UpdateCurrentNode();
-
-                return PathFindingFlowField.instance.Grid.GetNodeByCoordinates(
-                    previousNode.gridPosition.x + previousNode.bestDirection.x, previousNode.gridPosition.y + previousNode.bestDirection.y).worldPosition; 
-            } }
-        public Vector3 nextDirection => (nextPosition - transform.position).normalized;
         public Node currentNode { get { UpdateCurrentNode(); return previousNode; } }
+        public Node nextNode => PathFindingFlowField.instance.Grid.GetNodeByCoordinates(
+                    currentNode.gridPosition.x + currentNode.bestDirection.x, currentNode.gridPosition.y + currentNode.bestDirection.y);
+        public Vector3 nextPosition => nextNode.worldPosition;
+        public Vector3 nextDirection => (nextPosition - transform.position).normalized;
 
         #region private API
 
@@ -124,8 +120,9 @@ namespace redd096.PathFinding.FlowField3D
             //stop request
             if (PathFindingFlowField.instance)
             {
+                //if succeeded, set is not waiting path
                 if (PathFindingFlowField.instance.CancelRequest(lastPathRequest))
-                    isWaitingPath = false;                                                              //if succeeded, set is not waiting path
+                    isWaitingPath = false;
             }
         }
 

@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace redd096.PathFinding.FlowField2D
 {
-    [AddComponentMenu("redd096/.PathFinding/FlowField 3D/Path Finding FlowField 2D")]
+    [AddComponentMenu("redd096/.PathFinding/FlowField 2D/Path Finding FlowField 2D")]
     public class PathFindingFlowField : PathRequestManager
     {
         public static PathFindingFlowField instance;

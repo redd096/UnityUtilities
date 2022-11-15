@@ -15,15 +15,15 @@ namespace redd096.PathFinding.FlowField2D
         [SerializeField] bool agentCanOverlapNodesOutsideGrids = true;
 
         List<GridFlowField> grids = new List<GridFlowField>();
-        Vector3 gridWorldPosition;
+        Vector2 gridWorldPosition;
 
         float leftCompositeGrid;
         float rightCompositeGrid;
-        float forwardCompositeGrid;
-        float backCompositeGrid;
+        float upCompositeGrid;
+        float downCompositeGrid;
 
         //return setted position
-        public override Vector3 GridWorldPosition => gridWorldPosition;
+        public override Vector2 GridWorldPosition => gridWorldPosition;
 
         protected override void SetGrid()
         {
@@ -33,7 +33,7 @@ namespace redd096.PathFinding.FlowField2D
             base.SetGrid();
         }
 
-        protected override bool IsWalkable(Vector3 worldPosition, out bool agentCanMoveThrough)
+        protected override bool IsWalkable(Vector2 worldPosition, out bool agentCanMoveThrough)
         {
             //check is walkable, only if inside one of the grids in the array
             foreach (GridFlowField grid in grids)
@@ -78,40 +78,40 @@ namespace redd096.PathFinding.FlowField2D
         void SetGridExtremes(GridFlowField grid)
         {
             //set points same as on grid parameter
-            leftCompositeGrid = grid.GridWorldPosition.x - (grid.GridWorldSize.x / 2);
-            rightCompositeGrid = grid.GridWorldPosition.x + (grid.GridWorldSize.x / 2);
-            forwardCompositeGrid = grid.GridWorldPosition.z + (grid.GridWorldSize.y / 2);
-            backCompositeGrid = grid.GridWorldPosition.z - (grid.GridWorldSize.y / 2);
+            leftCompositeGrid = grid.GridWorldPosition.x - (grid.GridWorldSize.x * 0.5f);
+            rightCompositeGrid = grid.GridWorldPosition.x + (grid.GridWorldSize.x * 0.5f);
+            upCompositeGrid = grid.GridWorldPosition.y + (grid.GridWorldSize.y * 0.5f);
+            downCompositeGrid = grid.GridWorldPosition.y - (grid.GridWorldSize.y * 0.5f);
         }
 
         void UpdateGridExtremes(GridFlowField grid)
         {
             //calculate points on grid parameter
-            float left = grid.GridWorldPosition.x - (grid.GridWorldSize.x / 2);
-            float right = grid.GridWorldPosition.x + (grid.GridWorldSize.x / 2);
-            float forward = grid.GridWorldPosition.z + (grid.GridWorldSize.y / 2);
-            float back = grid.GridWorldPosition.z - (grid.GridWorldSize.y / 2);
+            float left = grid.GridWorldPosition.x - (grid.GridWorldSize.x * 0.5f);
+            float right = grid.GridWorldPosition.x + (grid.GridWorldSize.x * 0.5f);
+            float up = grid.GridWorldPosition.y + (grid.GridWorldSize.y * 0.5f);
+            float down = grid.GridWorldPosition.y - (grid.GridWorldSize.y * 0.5f);
 
             //check if update current points
             if (left < leftCompositeGrid)
                 leftCompositeGrid = left;
             if (right > rightCompositeGrid)
                 rightCompositeGrid = right;
-            if (forward > forwardCompositeGrid)
-                forwardCompositeGrid = forward;
-            if (back < backCompositeGrid)
-                backCompositeGrid = back;
+            if (up > upCompositeGrid)
+                upCompositeGrid = up;
+            if (down < downCompositeGrid)
+                downCompositeGrid = down;
         }
 
         void UpdateGridWorldSize()
         {
             //set world center of the grid
             gridWorldPosition =
-                Vector3.right * (rightCompositeGrid - (rightCompositeGrid - leftCompositeGrid) * 0.5f)              //x
-                + Vector3.forward * (forwardCompositeGrid - (forwardCompositeGrid - backCompositeGrid) * 0.5f);     //z
+                Vector2.right * (rightCompositeGrid - (rightCompositeGrid - leftCompositeGrid) * 0.5f)  //x
+                + Vector2.up * (upCompositeGrid - (upCompositeGrid - downCompositeGrid) * 0.5f);        //z
 
             //set grid world size
-            gridWorldSize = new Vector2(rightCompositeGrid - leftCompositeGrid, forwardCompositeGrid - backCompositeGrid);
+            gridWorldSize = new Vector2(rightCompositeGrid - leftCompositeGrid, upCompositeGrid - downCompositeGrid);
         }
 
         #endregion

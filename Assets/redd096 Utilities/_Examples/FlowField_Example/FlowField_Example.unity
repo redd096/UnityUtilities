@@ -3083,8 +3083,8 @@ MonoBehaviour:
   - {fileID: 1085874581}
   offset: {x: 0, y: 0, z: 0}
   typeCollider: 1
-  radiusCollider: 1
   sizeCollider: {x: 1, y: 1, z: 1}
+  radiusCollider: 1
   setUnwalkable: 1
   addPenalty: 0
   penalty: 1
@@ -7687,12 +7687,14 @@ MonoBehaviour:
     radiusCollider: 0.5
     drawCustomCollider: 0
     colorDebugCustomCollider: {r: 0, g: 1, b: 1, a: 1}
+  canMoveDiagonal: 1
   drawGridArea: 0
-  drawWalkableNodes: 0
   drawUnwalkableNodes: 0
   drawObstacles: 0
-  drawCost: 0
-  alphaNodes: 0.3
+  drawWalkableNodes: 0
+  drawCost: 1
+  drawArrow: 0
+  alphaNodes: 1
 --- !u!114 &1029280333
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7719,11 +7721,13 @@ MonoBehaviour:
     radiusCollider: 0.5
     drawCustomCollider: 0
     colorDebugCustomCollider: {r: 0, g: 1, b: 1, a: 1}
+  canMoveDiagonal: 1
   drawGridArea: 0
-  drawWalkableNodes: 0
   drawUnwalkableNodes: 1
   drawObstacles: 0
+  drawWalkableNodes: 0
   drawCost: 0
+  drawArrow: 0
   alphaNodes: 1
   agentCanOverlapNodesOutsideGrids: 1
 --- !u!1 &1070540896
@@ -8643,8 +8647,8 @@ MonoBehaviour:
   - {fileID: 1116646750}
   offset: {x: 0, y: 0, z: 0}
   typeCollider: 1
-  radiusCollider: 1
   sizeCollider: {x: 1, y: 1, z: 1}
+  radiusCollider: 1
   setUnwalkable: 1
   addPenalty: 0
   penalty: 1
@@ -9946,8 +9950,8 @@ MonoBehaviour:
   - {fileID: 1270553730}
   offset: {x: 0, y: 0, z: 0}
   typeCollider: 1
-  radiusCollider: 1
   sizeCollider: {x: 1, y: 1, z: 1}
+  radiusCollider: 1
   setUnwalkable: 1
   addPenalty: 0
   penalty: 1
@@ -12073,8 +12077,8 @@ MonoBehaviour:
   - {fileID: 1578831599}
   offset: {x: 0, y: 0, z: 0}
   typeCollider: 1
-  radiusCollider: 1
   sizeCollider: {x: 1, y: 1, z: 1}
+  radiusCollider: 1
   setUnwalkable: 1
   addPenalty: 0
   penalty: 1
@@ -12759,8 +12763,8 @@ MonoBehaviour:
   - {fileID: 1631432725}
   offset: {x: 0, y: 0, z: 0}
   typeCollider: 1
-  radiusCollider: 1
   sizeCollider: {x: 1, y: 1, z: 1}
+  radiusCollider: 1
   setUnwalkable: 1
   addPenalty: 0
   penalty: 1

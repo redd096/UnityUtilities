@@ -96,7 +96,7 @@ namespace redd096.PathFinding.FlowField2D
         /// </summary>
         /// <param name="positions">Positions to reach</param>
         /// <param name="agent"></param>
-        public PathRequest(Vector3[] positions, AgentFlowField agent = null)
+        public PathRequest(Vector2[] positions, AgentFlowField agent = null)
         {
             TargetRequest[] targetRequests = new TargetRequest[positions.Length];
             for (int i = 0; i < positions.Length; i++)
@@ -130,7 +130,7 @@ namespace redd096.PathFinding.FlowField2D
         /// </summary>
         /// <param name="position">Position to reach</param>
         /// <param name="agent"></param>
-        public PathRequest(Vector3 position, AgentFlowField agent = null)
+        public PathRequest(Vector2 position, AgentFlowField agent = null)
         {
             new PathRequest(new TargetRequest(position), agent);
         }
@@ -140,13 +140,13 @@ namespace redd096.PathFinding.FlowField2D
     public struct TargetRequest
     {
         [SerializeField] Transform target;
-        [SerializeField][EnableIf("target", null, EnableIfAttribute.EComparisonType.isEqual)] Vector3 position;
+        [SerializeField][EnableIf("target", null, EnableIfAttribute.EComparisonType.isEqual)] Vector2 position;
 
         public short weight;
-        public Vector3 targetPosition => target != null ? target.position : position;
+        public Vector2 targetPosition => target != null ? target.position : position;
 
         //Transform position, saved before processing path, to use in async functions
-        public Vector3 savedPosition { get; private set; }
+        public Vector2 savedPosition { get; private set; }
         public void SavePosition() => savedPosition = targetPosition;
 
         /// <summary>
@@ -167,7 +167,7 @@ namespace redd096.PathFinding.FlowField2D
         /// </summary>
         /// <param name="position"></param>
         /// <param name="weight"></param>
-        public TargetRequest(Vector3 position, short weight = 0)
+        public TargetRequest(Vector2 position, short weight = 0)
         {
             target = null;
             this.position = position;

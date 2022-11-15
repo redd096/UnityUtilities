@@ -11,25 +11,21 @@ namespace redd096.PathFinding.FlowField2D
         bool isWaitingPath;
         PathRequest lastPathRequest;
 
-        Vector3 previousPosition;
+        Vector2 previousPosition;
         Node previousNode;
 
-        public Vector3 nextPosition { get 
-            {
-                UpdateCurrentNode();
-
-                return PathFindingFlowField.instance.Grid.GetNodeByCoordinates(
-                    previousNode.gridPosition.x + previousNode.bestDirection.x, previousNode.gridPosition.y + previousNode.bestDirection.y).worldPosition; 
-            } }
-        public Vector3 nextDirection => (nextPosition - transform.position).normalized;
         public Node currentNode { get { UpdateCurrentNode(); return previousNode; } }
+        public Node nextNode => PathFindingFlowField.instance.Grid.GetNodeByCoordinates(
+                    currentNode.gridPosition.x + currentNode.bestDirection.x, currentNode.gridPosition.y + currentNode.bestDirection.y);
+        public Vector2 nextPosition => nextNode.worldPosition;
+        public Vector2 nextDirection => (nextPosition - (Vector2)transform.position).normalized;
 
         #region private API
 
         void UpdateCurrentNode()
         {
             //get current node
-            if (transform.position != previousPosition || previousNode == null)
+            if ((Vector2)transform.position != previousPosition || previousNode == null)
             {
                 previousPosition = transform.position;
                 previousNode = PathFindingFlowField.instance.Grid.GetNodeFromWorldPosition(previousPosition);
@@ -78,7 +74,7 @@ namespace redd096.PathFinding.FlowField2D
         /// Calculate path. If called before finish processing path, will stop previous request. Call IsDone() to check when has finished
         /// </summary>
         /// <param name="positions"></param>
-        public void FindPath(Vector3[] positions)
+        public void FindPath(Vector2[] positions)
         {
             TargetRequest[] targetRequests = new TargetRequest[positions.Length];
             for (int i = 0; i < positions.Length; i++)
@@ -109,7 +105,7 @@ namespace redd096.PathFinding.FlowField2D
         /// Calculate path. If called before finish processing path, will stop previous request. Call IsDone() to check when has finished
         /// </summary>
         /// <param name="position"></param>
-        public void FindPath(Vector3 position)
+        public void FindPath(Vector2 position)
         {
             FindPath(new TargetRequest(position));
         }
@@ -124,8 +120,9 @@ namespace redd096.PathFinding.FlowField2D
             //stop request
             if (PathFindingFlowField.instance)
             {
+                //if succeeded, set is not waiting path
                 if (PathFindingFlowField.instance.CancelRequest(lastPathRequest))
-                    isWaitingPath = false;                                                              //if succeeded, set is not waiting path
+                    isWaitingPath = false;
             }
         }
 

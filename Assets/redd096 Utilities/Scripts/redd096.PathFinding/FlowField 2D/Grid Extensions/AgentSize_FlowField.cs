@@ -14,7 +14,7 @@ namespace redd096.PathFinding.FlowField2D
         [Header("Collider Agent - Only Box And Sphere")]
         [SerializeField] bool useCustomCollider = false;
         [ShowIf("useCustomCollider")][SerializeField] ETypeCollider typeCollider = ETypeCollider.box;
-        [ShowIf("useCustomCollider")][EnableIf("typeCollider", ETypeCollider.box)][SerializeField] Vector3 sizeCollider = Vector3.one;
+        [ShowIf("useCustomCollider")][EnableIf("typeCollider", ETypeCollider.box)][SerializeField] Vector2 sizeCollider = Vector2.one;
         [ShowIf("useCustomCollider")][EnableIf("typeCollider", ETypeCollider.sphere)][SerializeField] float radiusCollider = 1;
 
         [Header("DEBUG (only custom collider)")]
@@ -28,8 +28,8 @@ namespace redd096.PathFinding.FlowField2D
         //nodes to calculate
         Node leftNode;
         Node rightNode;
-        Node forwardNode;
-        Node backNode;
+        Node upNode;
+        Node downNode;
         Node nodeToCheck;
 
         public void OnDrawGizmos(Transform transform)
@@ -92,12 +92,12 @@ namespace redd096.PathFinding.FlowField2D
         {
             //calculate nodes
             //use node as center, because agent is calculated along the path (not transform.position)
-            grid.GetNodesExtremesOfABox(node, node.worldPosition, sizeCollider * 0.5f, out leftNode, out rightNode, out backNode, out forwardNode);
+            grid.GetNodesExtremesOfABox(node, node.worldPosition, sizeCollider * 0.5f, out leftNode, out rightNode, out downNode, out upNode);
 
             //check every node
             for (int x = leftNode.gridPosition.x; x <= rightNode.gridPosition.x; x++)
             {
-                for (int y = backNode.gridPosition.y; y <= forwardNode.gridPosition.y; y++)
+                for (int y = downNode.gridPosition.y; y <= upNode.gridPosition.y; y++)
                 {
                     nodeToCheck = grid.GetNodeByCoordinates(x, y);
 
@@ -116,17 +116,17 @@ namespace redd096.PathFinding.FlowField2D
         {
             //calculate nodes
             //use node as center, because agent is calculated along the path (not transform.position)
-            grid.GetNodesExtremesOfABox(node, node.worldPosition, Vector3.one * radiusCollider, out leftNode, out rightNode, out backNode, out forwardNode);
+            grid.GetNodesExtremesOfABox(node, node.worldPosition, Vector2.one * radiusCollider, out leftNode, out rightNode, out downNode, out upNode);
 
             //check every node
             for (int x = leftNode.gridPosition.x; x <= rightNode.gridPosition.x; x++)
             {
-                for (int y = backNode.gridPosition.y; y <= forwardNode.gridPosition.y; y++)
+                for (int y = downNode.gridPosition.y; y <= upNode.gridPosition.y; y++)
                 {
                     nodeToCheck = grid.GetNodeByCoordinates(x, y);
 
                     //if inside radius
-                    if (Vector3.Distance(node.worldPosition, nodeToCheck.worldPosition) <= radiusCollider)
+                    if (Vector2.Distance(node.worldPosition, nodeToCheck.worldPosition) <= radiusCollider)
                     {
                         ////if agent can not move through OR there are obstacles, return false
                         //if (nodeToCheck.agentCanMoveThrough == false || ThereAreObstacles(nodeToCheck))

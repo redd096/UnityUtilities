@@ -37,14 +37,16 @@ namespace redd096.PathFinding.FlowField3D
 
         [Header("Extensions")]
         [SerializeField] AgentSize_FlowField agentSize = default;
+        [SerializeField] bool canMoveDiagonal = true;
 
-        [Header("Gizmos - cyan Area - green/red walkable node - magenta walkable with obstacle")]
+        [Header("Gizmos - cyan GridArea - red unwalkable - magenta obstacle - green walkable")]
         [SerializeField] protected bool drawGridArea = false;
-        [SerializeField] protected bool drawWalkableNodes = false;
         [SerializeField] protected bool drawUnwalkableNodes = false;
         [SerializeField] protected bool drawObstacles = false;
+        [SerializeField] protected bool drawWalkableNodes = false;
         [SerializeField] protected bool drawCost = false;
-        [SerializeField] protected float alphaNodes = 0.3f;
+        [SerializeField] protected bool drawArrow = false;
+        [SerializeField] protected float alphaNodes = 1f;
 
         //grid
         Node[,] grid;
@@ -78,7 +80,7 @@ namespace redd096.PathFinding.FlowField3D
             }
 
             //draw every node in grid
-            if (drawWalkableNodes || drawUnwalkableNodes || drawObstacles || drawCost)
+            if (drawWalkableNodes || drawUnwalkableNodes || drawObstacles || drawCost || drawArrow)
             {
                 if (grid != null)
                 {
@@ -94,7 +96,7 @@ namespace redd096.PathFinding.FlowField3D
                             Gizmos.color = new Color(1, 1, 1, alphaNodes) * Color.red;
                             Gizmos.DrawCube(node.worldPosition, Vector3.one * (nodeDiameter - 0.1f));
                         }
-                        //draw if walkable but obstacle
+                        //draw if obstacle
                         else if (node.GetObstaclesOnThisNode().Count > 0 && drawObstacles)
                         {
                             Gizmos.color = new Color(1, 1, 1, alphaNodes) * Color.magenta;
@@ -111,6 +113,13 @@ namespace redd096.PathFinding.FlowField3D
                         //draw cost
                         if (drawCost)
                             Handles.Label(node.worldPosition, node.bestCost.ToString());
+
+                        //draw arrow
+                        if (drawArrow)
+                        {
+                            Handles.ArrowHandleCap(0, node.worldPosition,
+                                Quaternion.LookRotation(node.worldPosition + new Vector3(node.bestDirection.x, 0, node.bestDirection.y)), overlapRadius, EventType.Repaint);
+                        }
 #endif
                     }
                 }
@@ -146,7 +155,7 @@ namespace redd096.PathFinding.FlowField3D
         {
             //reset grid and find bottom left world position
             grid = new Node[gridSize.x, gridSize.y];
-            Vector3 worldBottomLeft = GridWorldPosition + (Vector3.left * gridWorldSize.x / 2) + (Vector3.back * gridWorldSize.y / 2);
+            Vector3 worldBottomLeft = GridWorldPosition + (Vector3.left * gridWorldSize.x * 0.5f) + (Vector3.back * gridWorldSize.y * 0.5f);
 
             //create grid
             Vector3 worldPosition;
@@ -162,7 +171,7 @@ namespace redd096.PathFinding.FlowField3D
                     isWalkable = IsWalkable(worldPosition, out agentCanMoveThrough);
 
                     //if walkable, calculate movement penalty
-                    movementPenalty = 0;
+                    movementPenalty = 1;
                     if (isWalkable)
                     {
                         CalculateMovementPenalty(worldPosition, out movementPenalty);
@@ -260,7 +269,7 @@ namespace redd096.PathFinding.FlowField3D
             {
                 Node targetNode = GetNodeFromWorldPosition(targetRequest.savedPosition);
 
-                //set target node at 0 or minor
+                //set target node at 0 or lower
                 targetNode.bestCost = (short)-targetRequest.weight;
 
                 //start from target node
@@ -298,7 +307,7 @@ namespace redd096.PathFinding.FlowField3D
             {
                 //calculate best direction from this node to neighbours
                 int bestCost = currentNode.bestCost;
-                foreach (Node neighbour in currentNode.neighbours)
+                foreach (Node neighbour in canMoveDiagonal ? currentNode.neighbours : currentNode.neighboursCardinalDirections)
                 {
                     //if this best cost is lower then found one, this is the best node to move to
                     if (neighbour.bestCost < bestCost)
@@ -376,8 +385,8 @@ namespace redd096.PathFinding.FlowField3D
             worldPosition -= GridWorldPosition;
 
             //find percent
-            float percentX = (worldPosition.x + gridWorldSize.x / 2) / gridWorldSize.x;
-            float percentY = (worldPosition.z + gridWorldSize.y / 2) / gridWorldSize.y;     //use Z position
+            float percentX = (worldPosition.x + gridWorldSize.x * 0.5f) / gridWorldSize.x;
+            float percentY = (worldPosition.z + gridWorldSize.y * 0.5f) / gridWorldSize.y;     //use Z position
             percentX = Mathf.Clamp01(percentX);
             percentY = Mathf.Clamp01(percentY);
 
@@ -457,7 +466,7 @@ namespace redd096.PathFinding.FlowField3D
 #if UNITY_EDITOR
 
     [CustomEditor(typeof(GridFlowField), true)]
-    public class GridFlowField3DEditor : Editor
+    public class GridFlowFieldEditor : Editor
     {
         private GridFlowField grid;
 

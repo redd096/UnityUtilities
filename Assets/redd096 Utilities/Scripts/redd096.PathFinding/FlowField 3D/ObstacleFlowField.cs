@@ -17,8 +17,8 @@ namespace redd096.PathFinding.FlowField3D
         [DisableIf("useCustomCollider")][SerializeField] Collider[] colliders = default;
         [ShowIf("useCustomCollider")][SerializeField] Vector3 offset = Vector3.zero;
         [ShowIf("useCustomCollider")][SerializeField] ETypeCollider typeCollider = ETypeCollider.box;
-        [ShowIf("useCustomCollider")][EnableIf("typeCollider", ETypeCollider.sphere)][SerializeField] float radiusCollider = 1;
         [ShowIf("useCustomCollider")][EnableIf("typeCollider", ETypeCollider.box)][SerializeField] Vector3 sizeCollider = Vector3.one;
+        [ShowIf("useCustomCollider")][EnableIf("typeCollider", ETypeCollider.sphere)][SerializeField] float radiusCollider = 1;
 
         [Header("Type Obstacle (set unwalkable or add penalty)")]
         [SerializeField] bool setUnwalkable = true;
@@ -138,10 +138,21 @@ namespace redd096.PathFinding.FlowField3D
             nodesPosition.Clear();
         }
 
-        /// <summary>
-        /// Calculate new position on the grid and add to new nodes (is better use UpdatePositionOnGrid to set grid and remove from previous nodes)
-        /// </summary>
-        public void SetNewNodes()
+        #endregion
+
+        #region private API
+
+        void UpdatePosition()
+        {
+            //set obstacle position
+            if (PathFindingFlowField.instance)
+            {
+                previousPosition = transform.position;
+                PathFindingFlowField.instance.UpdateObstaclePositionOnGrid(this);
+            }
+        }
+
+        void SetNewNodes()
         {
             //only if active in scene
             if (gameObject.activeInHierarchy == false || grid == null)
@@ -159,20 +170,6 @@ namespace redd096.PathFinding.FlowField3D
             else
             {
                 SetNodesUsingColliders();
-            }
-        }
-
-        #endregion
-
-        #region private API
-
-        void UpdatePosition()
-        {
-            //set obstacle position
-            if (PathFindingFlowField.instance)
-            {
-                previousPosition = transform.position;
-                PathFindingFlowField.instance.UpdateObstaclePositionOnGrid(this);
             }
         }
 

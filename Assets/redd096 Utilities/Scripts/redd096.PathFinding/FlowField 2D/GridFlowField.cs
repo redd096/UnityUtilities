@@ -37,14 +37,16 @@ namespace redd096.PathFinding.FlowField2D
 
         [Header("Extensions")]
         [SerializeField] AgentSize_FlowField agentSize = default;
+        [SerializeField] bool canMoveDiagonal = true;
 
-        [Header("Gizmos - cyan Area - green/red walkable node - magenta walkable with obstacle")]
+        [Header("Gizmos - cyan GridArea - red unwalkable - magenta obstacle - green walkable")]
         [SerializeField] protected bool drawGridArea = false;
-        [SerializeField] protected bool drawWalkableNodes = false;
         [SerializeField] protected bool drawUnwalkableNodes = false;
         [SerializeField] protected bool drawObstacles = false;
+        [SerializeField] protected bool drawWalkableNodes = false;
         [SerializeField] protected bool drawCost = false;
-        [SerializeField] protected float alphaNodes = 0.3f;
+        [SerializeField] protected bool drawArrow = false;
+        [SerializeField] protected float alphaNodes = 1f;
 
         //grid
         Node[,] grid;
@@ -55,7 +57,7 @@ namespace redd096.PathFinding.FlowField2D
         LayerMask penaltyRegionsMask;               //layerMask with every penalty region
 
         //public properties
-        public virtual Vector3 GridWorldPosition => transform.position;
+        public virtual Vector2 GridWorldPosition => transform.position;
         public Vector2 GridWorldSize => gridWorldSize;
         public float NodeRadius => nodeRadius;
 
@@ -74,11 +76,11 @@ namespace redd096.PathFinding.FlowField2D
             {
                 //draw area
                 Gizmos.color = Color.cyan;
-                Gizmos.DrawWireCube(GridWorldPosition, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));
+                Gizmos.DrawWireCube(GridWorldPosition, new Vector2(gridWorldSize.x, gridWorldSize.y));
             }
 
             //draw every node in grid
-            if (drawWalkableNodes || drawUnwalkableNodes || drawObstacles || drawCost)
+            if (drawWalkableNodes || drawUnwalkableNodes || drawObstacles || drawCost || drawArrow)
             {
                 if (grid != null)
                 {
@@ -92,25 +94,32 @@ namespace redd096.PathFinding.FlowField2D
                         if (node.isWalkable == false && drawUnwalkableNodes)
                         {
                             Gizmos.color = new Color(1, 1, 1, alphaNodes) * Color.red;
-                            Gizmos.DrawCube(node.worldPosition, Vector3.one * (nodeDiameter - 0.1f));
+                            Gizmos.DrawCube(node.worldPosition, Vector2.one * (nodeDiameter - 0.1f));
                         }
-                        //draw if walkable but obstacle
-                        else if (node.isWalkable && node.GetObstaclesOnThisNode().Count > 0 && drawObstacles)
+                        //draw if obstacle
+                        else if (node.GetObstaclesOnThisNode().Count > 0 && drawObstacles)
                         {
                             Gizmos.color = new Color(1, 1, 1, alphaNodes) * Color.magenta;
-                            Gizmos.DrawCube(node.worldPosition, Vector3.one * (nodeDiameter - 0.1f));
+                            Gizmos.DrawCube(node.worldPosition, Vector2.one * (nodeDiameter - 0.1f));
                         }
                         //draw if walkable
                         else if (node.isWalkable && drawWalkableNodes)
                         {
                             Gizmos.color = new Color(1, 1, 1, alphaNodes) * Color.green;
-                            Gizmos.DrawCube(node.worldPosition, Vector3.one * (nodeDiameter - 0.1f));
+                            Gizmos.DrawCube(node.worldPosition, Vector2.one * (nodeDiameter - 0.1f));
                         }
 
 #if UNITY_EDITOR
                         //draw cost
                         if (drawCost)
                             Handles.Label(node.worldPosition, node.bestCost.ToString());
+
+                        //draw arrow
+                        if (drawArrow)
+                        {
+                            Handles.ArrowHandleCap(0, node.worldPosition,
+                                Quaternion.LookRotation(node.worldPosition + new Vector2(node.bestDirection.x, node.bestDirection.y)), overlapRadius, EventType.Repaint);
+                        }
 #endif
                     }
                 }
@@ -146,10 +155,10 @@ namespace redd096.PathFinding.FlowField2D
         {
             //reset grid and find bottom left world position
             grid = new Node[gridSize.x, gridSize.y];
-            Vector3 worldBottomLeft = GridWorldPosition + (Vector3.left * gridWorldSize.x / 2) + (Vector3.back * gridWorldSize.y / 2);
+            Vector2 worldBottomLeft = GridWorldPosition + (Vector2.left * gridWorldSize.x * 0.5f) + (Vector2.down * gridWorldSize.y * 0.5f);
 
             //create grid
-            Vector3 worldPosition;
+            Vector2 worldPosition;
             bool isWalkable;
             bool agentCanMoveThrough;
             int movementPenalty;
@@ -158,11 +167,11 @@ namespace redd096.PathFinding.FlowField2D
                 for (int y = 0; y < gridSize.y; y++)
                 {
                     //find world position and if walkable
-                    worldPosition = worldBottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.forward * (y * nodeDiameter + nodeRadius);
+                    worldPosition = worldBottomLeft + Vector2.right * (x * nodeDiameter + nodeRadius) + Vector2.up * (y * nodeDiameter + nodeRadius);
                     isWalkable = IsWalkable(worldPosition, out agentCanMoveThrough);
 
                     //if walkable, calculate movement penalty
-                    movementPenalty = 0;
+                    movementPenalty = 1;
                     if (isWalkable)
                     {
                         CalculateMovementPenalty(worldPosition, out movementPenalty);
@@ -174,19 +183,19 @@ namespace redd096.PathFinding.FlowField2D
             }
         }
 
-        protected virtual bool IsWalkable(Vector3 worldPosition, out bool agentCanMoveThrough)
+        protected virtual bool IsWalkable(Vector2 worldPosition, out bool agentCanMoveThrough)
         {
-            //overlap sphere (agent can move through only on walkable nodes)
-            agentCanMoveThrough = gameObject.scene.GetPhysicsScene().OverlapSphere(worldPosition, overlapRadius, new Collider[1], unwalkableMask, QueryTriggerInteraction.UseGlobal) <= 0;
+            //overlap circle (agent can move through only on walkable nodes)
+            agentCanMoveThrough = gameObject.scene.GetPhysicsScene2D().OverlapCircle(worldPosition, overlapRadius, unwalkableMask) == false;
             return agentCanMoveThrough;
         }
 
-        void CalculateMovementPenalty(Vector3 worldPosition, out int movementPenalty)
+        void CalculateMovementPenalty(Vector2 worldPosition, out int movementPenalty)
         {
             //raycast to check terrain
-            RaycastHit hit;
+            RaycastHit2D hit;
             movementPenalty = 1;
-            if (Physics.Raycast(worldPosition + Vector3.up, Vector3.down, out hit, 1.1f, penaltyRegionsMask))
+            if (hit = Physics2D.Raycast((Vector3)worldPosition - Vector3.forward, Vector3.forward, 1.1f, penaltyRegionsMask))
             {
                 int hittedLayer = hit.collider.gameObject.layer;
 
@@ -260,7 +269,7 @@ namespace redd096.PathFinding.FlowField2D
             {
                 Node targetNode = GetNodeFromWorldPosition(targetRequest.savedPosition);
 
-                //set target node at 0 or minor
+                //set target node at 0 or lower
                 targetNode.bestCost = (short)-targetRequest.weight;
 
                 //start from target node
@@ -298,7 +307,7 @@ namespace redd096.PathFinding.FlowField2D
             {
                 //calculate best direction from this node to neighbours
                 int bestCost = currentNode.bestCost;
-                foreach (Node neighbour in currentNode.neighbours)
+                foreach (Node neighbour in canMoveDiagonal ? currentNode.neighbours : currentNode.neighboursCardinalDirections)
                 {
                     //if this best cost is lower then found one, this is the best node to move to
                     if (neighbour.bestCost < bestCost)
@@ -351,14 +360,14 @@ namespace redd096.PathFinding.FlowField2D
         /// </summary>
         /// <param name="worldPosition"></param>
         /// <returns></returns>
-        public bool IsInsideGrid(Vector3 worldPosition)
+        public bool IsInsideGrid(Vector2 worldPosition)
         {
             //outside left or right
             if (worldPosition.x < GridWorldPosition.x - (gridWorldSize.x * 0.5f) || worldPosition.x > GridWorldPosition.x + (gridWorldSize.x * 0.5f))
                 return false;
 
-            //outside back or forward
-            if (worldPosition.z < GridWorldPosition.z - (gridWorldSize.y * 0.5f) || worldPosition.z > GridWorldPosition.z + (gridWorldSize.y * 0.5f))
+            //outside down or up
+            if (worldPosition.y < GridWorldPosition.y - (gridWorldSize.y * 0.5f) || worldPosition.y > GridWorldPosition.y + (gridWorldSize.y * 0.5f))
                 return false;
 
             //else is inside
@@ -370,14 +379,14 @@ namespace redd096.PathFinding.FlowField2D
         /// </summary>
         /// <param name="worldPosition"></param>
         /// <returns></returns>
-        public Node GetNodeFromWorldPosition(Vector3 worldPosition)
+        public Node GetNodeFromWorldPosition(Vector2 worldPosition)
         {
             //be sure to get right result also if grid doesn't start at [0,0]
             worldPosition -= GridWorldPosition;
 
             //find percent
-            float percentX = (worldPosition.x + gridWorldSize.x / 2) / gridWorldSize.x;
-            float percentY = (worldPosition.z + gridWorldSize.y / 2) / gridWorldSize.y;     //use Z position
+            float percentX = (worldPosition.x + gridWorldSize.x * 0.5f) / gridWorldSize.x;
+            float percentY = (worldPosition.y + gridWorldSize.y * 0.5f) / gridWorldSize.y;
             percentX = Mathf.Clamp01(percentX);
             percentY = Mathf.Clamp01(percentY);
 
@@ -407,9 +416,9 @@ namespace redd096.PathFinding.FlowField2D
         /// <param name="halfSize">half size of the box</param>
         /// <param name="leftNode"></param>
         /// <param name="rightNode"></param>
-        /// <param name="backNode"></param>
-        /// <param name="forwardNode"></param>
-        public void GetNodesExtremesOfABox(Node startNode, Vector3 center, Vector3 halfSize, out Node leftNode, out Node rightNode, out Node backNode, out Node forwardNode)
+        /// <param name="downNode"></param>
+        /// <param name="upNode"></param>
+        public void GetNodesExtremesOfABox(Node startNode, Vector2 center, Vector2 halfSize, out Node leftNode, out Node rightNode, out Node downNode, out Node upNode)
         {
             //set left node
             leftNode = startNode;
@@ -430,20 +439,20 @@ namespace redd096.PathFinding.FlowField2D
                     break;
             }
             //set up node
-            forwardNode = startNode;
+            upNode = startNode;
             for (int y = startNode.gridPosition.y + 1; y < gridSize.y; y++)
             {
-                if (grid[startNode.gridPosition.x, y].worldPosition.z - nodeRadius <= (center + halfSize).z)
-                    forwardNode = grid[startNode.gridPosition.x, y];
+                if (grid[startNode.gridPosition.x, y].worldPosition.y - nodeRadius <= (center + halfSize).y)
+                    upNode = grid[startNode.gridPosition.x, y];
                 else
                     break;
             }
             //set down node
-            backNode = startNode;
+            downNode = startNode;
             for (int y = startNode.gridPosition.y - 1; y >= 0; y--)
             {
-                if (grid[startNode.gridPosition.x, y].worldPosition.z + nodeRadius >= (center - halfSize).z)
-                    backNode = grid[startNode.gridPosition.x, y];
+                if (grid[startNode.gridPosition.x, y].worldPosition.y + nodeRadius >= (center - halfSize).y)
+                    downNode = grid[startNode.gridPosition.x, y];
                 else
                     break;
             }
@@ -457,7 +466,7 @@ namespace redd096.PathFinding.FlowField2D
 #if UNITY_EDITOR
 
     [CustomEditor(typeof(GridFlowField), true)]
-    public class GridFlowField3DEditor : Editor
+    public class GridFlowFieldEditor : Editor
     {
         private GridFlowField grid;
 

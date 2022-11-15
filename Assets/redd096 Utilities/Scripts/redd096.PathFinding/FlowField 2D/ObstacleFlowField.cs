@@ -14,11 +14,11 @@ namespace redd096.PathFinding.FlowField2D
 
         [Header("Collider Obstacle")]
         [SerializeField] bool useCustomCollider = false;
-        [DisableIf("useCustomCollider")][SerializeField] Collider[] colliders = default;
-        [ShowIf("useCustomCollider")][SerializeField] Vector3 offset = Vector3.zero;
+        [DisableIf("useCustomCollider")][SerializeField] Collider2D[] colliders = default;
+        [ShowIf("useCustomCollider")][SerializeField] Vector2 offset = Vector2.zero;
         [ShowIf("useCustomCollider")][SerializeField] ETypeCollider typeCollider = ETypeCollider.box;
+        [ShowIf("useCustomCollider")][EnableIf("typeCollider", ETypeCollider.box)][SerializeField] Vector2 sizeCollider = Vector2.one;
         [ShowIf("useCustomCollider")][EnableIf("typeCollider", ETypeCollider.sphere)][SerializeField] float radiusCollider = 1;
-        [ShowIf("useCustomCollider")][EnableIf("typeCollider", ETypeCollider.box)][SerializeField] Vector3 sizeCollider = Vector3.one;
 
         [Header("Type Obstacle (set unwalkable or add penalty)")]
         [SerializeField] bool setUnwalkable = true;
@@ -35,14 +35,14 @@ namespace redd096.PathFinding.FlowField2D
         //vars
         GridFlowField grid;
         List<Node> nodesPosition = new List<Node>();    //nodes with this obstacle
-        Vector3 previousPosition;
+        Vector2 previousPosition;
 
         //nodes to calculate
         Node centerNode;
         Node leftNode;
         Node rightNode;
-        Node forwardNode;
-        Node backNode;
+        Node upNode;
+        Node downNode;
         Node nodeToCheck;
 
         void OnDrawGizmos()
@@ -54,12 +54,12 @@ namespace redd096.PathFinding.FlowField2D
                 //draw box
                 if (typeCollider == ETypeCollider.box)
                 {
-                    Gizmos.DrawWireCube(transform.position + offset, sizeCollider);
+                    Gizmos.DrawWireCube((Vector2)transform.position + offset, sizeCollider);
                 }
                 //draw sphere
                 else
                 {
-                    Gizmos.DrawWireSphere(transform.position + offset, radiusCollider);
+                    Gizmos.DrawWireSphere((Vector2)transform.position + offset, radiusCollider);
                 }
 
                 Gizmos.color = Color.white;
@@ -70,7 +70,7 @@ namespace redd096.PathFinding.FlowField2D
         {
             //get references
             if (colliders == null || colliders.Length <= 0)
-                colliders = GetComponentsInChildren<Collider>();
+                colliders = GetComponentsInChildren<Collider2D>();
         }
 
         void OnEnable()
@@ -82,7 +82,7 @@ namespace redd096.PathFinding.FlowField2D
         void Update()
         {
             //if moved
-            if (transform.position != previousPosition)
+            if ((Vector2)transform.position != previousPosition)
             {
                 //set obstacle on nodes
                 UpdatePosition();
@@ -100,7 +100,7 @@ namespace redd096.PathFinding.FlowField2D
         {
             //if not use custom collider, automatically get reference to unity colliders
             if (useCustomCollider == false && (colliders == null || colliders.Length <= 0))
-                colliders = GetComponentsInChildren<Collider>();
+                colliders = GetComponentsInChildren<Collider2D>();
         }
 
         #region public API
@@ -138,10 +138,21 @@ namespace redd096.PathFinding.FlowField2D
             nodesPosition.Clear();
         }
 
-        /// <summary>
-        /// Calculate new position on the grid and add to new nodes (is better use UpdatePositionOnGrid to set grid and remove from previous nodes)
-        /// </summary>
-        public void SetNewNodes()
+        #endregion
+
+        #region private API
+
+        void UpdatePosition()
+        {
+            //set obstacle position
+            if (PathFindingFlowField.instance)
+            {
+                previousPosition = transform.position;
+                PathFindingFlowField.instance.UpdateObstaclePositionOnGrid(this);
+            }
+        }
+
+        private void SetNewNodes()
         {
             //only if active in scene
             if (gameObject.activeInHierarchy == false || grid == null)
@@ -162,31 +173,17 @@ namespace redd096.PathFinding.FlowField2D
             }
         }
 
-        #endregion
-
-        #region private API
-
-        void UpdatePosition()
-        {
-            //set obstacle position
-            if (PathFindingFlowField.instance)
-            {
-                previousPosition = transform.position;
-                PathFindingFlowField.instance.UpdateObstaclePositionOnGrid(this);
-            }
-        }
-
         void SetNodesUsingBox()
         {
             //calculate nodes
             //use an offset to check if node is inside also if collider not reach center of the node (add grid.NodeRadius in the half size)
-            centerNode = grid.GetNodeFromWorldPosition(transform.position + offset);
-            grid.GetNodesExtremesOfABox(centerNode, transform.position + offset, (sizeCollider * 0.5f) + (Vector3.one * grid.NodeRadius), out leftNode, out rightNode, out backNode, out forwardNode);
+            centerNode = grid.GetNodeFromWorldPosition((Vector2)transform.position + offset);
+            grid.GetNodesExtremesOfABox(centerNode, (Vector2)transform.position + offset, (sizeCollider * 0.5f) + (Vector2.one * grid.NodeRadius), out leftNode, out rightNode, out downNode, out upNode);
 
             //check every node
             for (int x = leftNode.gridPosition.x; x <= rightNode.gridPosition.x; x++)
             {
-                for (int y = backNode.gridPosition.y; y <= forwardNode.gridPosition.y; y++)
+                for (int y = downNode.gridPosition.y; y <= upNode.gridPosition.y; y++)
                 {
                     nodeToCheck = grid.GetNodeByCoordinates(x, y);
 
@@ -205,18 +202,18 @@ namespace redd096.PathFinding.FlowField2D
         {
             //calculate nodes
             //use an offset to check if node is inside also if collider not reach center of the node (add grid.NodeRadius in the half size)
-            centerNode = grid.GetNodeFromWorldPosition(transform.position + offset);
-            grid.GetNodesExtremesOfABox(centerNode, transform.position + offset, (Vector3.one * radiusCollider) + (Vector3.one * grid.NodeRadius), out leftNode, out rightNode, out backNode, out forwardNode);
+            centerNode = grid.GetNodeFromWorldPosition((Vector2)transform.position + offset);
+            grid.GetNodesExtremesOfABox(centerNode, (Vector2)transform.position + offset, (Vector2.one * radiusCollider) + (Vector2.one * grid.NodeRadius), out leftNode, out rightNode, out downNode, out upNode);
 
             //check every node
             for (int x = leftNode.gridPosition.x; x <= rightNode.gridPosition.x; x++)
             {
-                for (int y = backNode.gridPosition.y; y <= forwardNode.gridPosition.y; y++)
+                for (int y = downNode.gridPosition.y; y <= upNode.gridPosition.y; y++)
                 {
                     nodeToCheck = grid.GetNodeByCoordinates(x, y);
 
                     //if inside radius (+ node radius offset)
-                    if (Vector3.Distance(centerNode.worldPosition, nodeToCheck.worldPosition) <= radiusCollider + grid.NodeRadius)
+                    if (Vector2.Distance(centerNode.worldPosition, nodeToCheck.worldPosition) <= radiusCollider + grid.NodeRadius)
                     {
                         //set it
                         if (nodeToCheck != null)
@@ -233,7 +230,7 @@ namespace redd096.PathFinding.FlowField2D
         void SetNodesUsingColliders()
         {
             //foreach collider
-            foreach (Collider col in colliders)
+            foreach (Collider2D col in colliders)
             {
                 if (col == null)
                     continue;
@@ -241,17 +238,17 @@ namespace redd096.PathFinding.FlowField2D
                 //calculate nodes
                 //use an offset to check if node is inside also if collider not reach center of the node (add grid.NodeRadius in the half size)
                 centerNode = grid.GetNodeFromWorldPosition(col.bounds.center);
-                grid.GetNodesExtremesOfABox(centerNode, col.bounds.center, col.bounds.extents + (Vector3.one * grid.NodeRadius), out leftNode, out rightNode, out backNode, out forwardNode);
+                grid.GetNodesExtremesOfABox(centerNode, col.bounds.center, (Vector2)col.bounds.extents + (Vector2.one * grid.NodeRadius), out leftNode, out rightNode, out downNode, out upNode);
 
                 //check every node
                 for (int x = leftNode.gridPosition.x; x <= rightNode.gridPosition.x; x++)
                 {
-                    for (int y = backNode.gridPosition.y; y <= forwardNode.gridPosition.y; y++)
+                    for (int y = downNode.gridPosition.y; y <= upNode.gridPosition.y; y++)
                     {
                         nodeToCheck = grid.GetNodeByCoordinates(x, y);
 
                         //if node is inside collider (+ node radius offset)
-                        if (Vector3.Distance(col.ClosestPoint(nodeToCheck.worldPosition), nodeToCheck.worldPosition) < Mathf.Epsilon + grid.NodeRadius)
+                        if (Vector2.Distance(col.ClosestPoint(nodeToCheck.worldPosition), nodeToCheck.worldPosition) < Mathf.Epsilon + grid.NodeRadius)
                         {
                             //set it
                             if (nodeToCheck != null)

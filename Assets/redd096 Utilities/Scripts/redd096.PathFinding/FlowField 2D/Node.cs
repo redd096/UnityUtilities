@@ -8,7 +8,7 @@ namespace redd096.PathFinding.FlowField2D
         //variables constructor
         bool isNodeWalkable;
         public bool agentCanMoveThrough;        //used by agentAStar
-        public Vector3 worldPosition;
+        public Vector2 worldPosition;
         public Vector2Int gridPosition;
         public int movementPenalty;
 
