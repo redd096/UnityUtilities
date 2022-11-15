@@ -32,7 +32,7 @@ namespace Examples.FlowField
 
             //draw node from click position
             Gizmos.color = Color.cyan;
-            Node3D node = PathFindingFlowField3D.instance.Grid.GetNodeFromWorldPosition(worldMousePos);
+            Node node = PathFindingFlowField.instance.Grid.GetNodeFromWorldPosition(worldMousePos);
             Gizmos.DrawWireCube(node.worldPosition, Vector3.one * 2);
 
             Gizmos.color = Color.white;
@@ -58,7 +58,7 @@ namespace Examples.FlowField
 
                 foreach (TestAgent agent in agents)
                 {
-                    AgentFlowField3D agentFlowField3D = agent.GetComponent<AgentFlowField3D>();
+                    AgentFlowField agentFlowField3D = agent.GetComponent<AgentFlowField>();
                     if (agentFlowField3D && agentFlowField3D.IsDone())
                         agentFlowField3D.FindPath(requests);
                 }

@@ -3,19 +3,18 @@ using UnityEngine;
 
 namespace Examples.FlowField
 {
-    [RequireComponent(typeof(Rigidbody), typeof(AgentFlowField3D))]
+    [RequireComponent(typeof(Rigidbody), typeof(AgentFlowField))]
     public class TestAgent : MonoBehaviour
     {
         public float speed = 5;
-        public float distanceToNode = 0.5f;
 
         Rigidbody rb;
-        AgentFlowField3D agent;
+        AgentFlowField agent;
 
         private void Awake()
         {
             rb = GetComponent<Rigidbody>();
-            agent = GetComponent<AgentFlowField3D>();
+            agent = GetComponent<AgentFlowField>();
         }
 
         private void FixedUpdate()

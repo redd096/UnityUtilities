@@ -9,7 +9,7 @@ namespace redd096.GameTopDown2D
     {
         [Header("Necessary Components - default get in parent")]
         [SerializeField] MovementComponent movementComponent = default;
-        [SerializeField] AgentAStar2D agentAStar = default;
+        [SerializeField] AgentAStar agentAStar = default;
 
         [Header("Chase")]
         [SerializeField] VarOrBlackboard<Transform> target = new VarOrBlackboard<Transform>("Target");
@@ -52,7 +52,7 @@ namespace redd096.GameTopDown2D
 
             //get references
             if (movementComponent == null) movementComponent = GetStateMachineComponent<MovementComponent>();
-            if (agentAStar == null) agentAStar = GetStateMachineComponent<AgentAStar2D>();
+            if (agentAStar == null) agentAStar = GetStateMachineComponent<AgentAStar>();
         }
 
         public override void OnEnterTask()
