@@ -4,7 +4,7 @@
 
 using System;
 
-namespace redd096.AStar3DPathFinding
+namespace redd096.PathFinding.AStar3D
 {
     public class Heap3D<T> where T : IHeapItem3D<T>
     {

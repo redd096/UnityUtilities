@@ -1,5 +1,5 @@
 using redd096;
-using redd096.FlowField3DPathFinding;
+using redd096.PathFinding.FlowField3D;
 using System.Collections.Generic;
 using UnityEngine;
 

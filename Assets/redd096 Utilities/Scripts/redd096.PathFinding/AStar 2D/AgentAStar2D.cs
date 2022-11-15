@@ -1,49 +1,45 @@
 ﻿using UnityEngine;
 using redd096.Attributes;
 
-namespace redd096.AStar3DPathFinding
+namespace redd096.PathFinding.AStar2D
 {
     /// <summary>
     /// Used to know size of the agent. When call PathFinding you can pass it as parameter
     /// </summary>
-    [AddComponentMenu("redd096/.AStar3DPathFinding/Agent A Star 3D")]
-    public class AgentAStar3D : MonoBehaviour
+    [AddComponentMenu("redd096/.PathFinding/AStar 2D/Agent A Star 2D")]
+    public class AgentAStar2D : MonoBehaviour
     {
-        enum ETypeCollider { sphere, box }
+        enum ETypeCollider { circle, box }
 
-        [Header("Collider Agent - Only Box And Sphere")]
+        [Header("Collider Agent - Only Box and Circle")]
         [SerializeField] bool useCustomCollider = false;
-        [HideIf("useCustomCollider")][Tooltip("ONLY BOX AND SPHERE")][SerializeField] Collider[] colliders = default;
-        [ShowIf("useCustomCollider")][SerializeField] Vector3 offset = Vector3.zero;
+        [HideIf("useCustomCollider")][Tooltip("ONLY BOX AND CIRCLE")][SerializeField] Collider2D[] colliders = default;
+        [ShowIf("useCustomCollider")][SerializeField] Vector2 offset = Vector2.zero;
         [ShowIf("useCustomCollider")][SerializeField] ETypeCollider typeCollider = ETypeCollider.box;
-        [ShowIf("useCustomCollider")][EnableIf("typeCollider", ETypeCollider.box)] [SerializeField] Vector3 sizeCollider = Vector3.one;
-        [ShowIf("useCustomCollider")][EnableIf("typeCollider", ETypeCollider.sphere)] [SerializeField] float radiusCollider = 1;
+        [ShowIf("useCustomCollider")][EnableIf("typeCollider", ETypeCollider.box)][SerializeField] Vector2 sizeCollider = Vector2.one;
+        [ShowIf("useCustomCollider")][EnableIf("typeCollider", ETypeCollider.circle)][SerializeField] float radiusCollider = 1;
 
         [HelpBox("Ignore self is Deprecated! Better not set self as not walkable node", HelpBoxAttribute.EMessageType.Error)]
         [Header("If this object is an obstacle, ignore self (default get from this gameObject)")]
-        [SerializeField] ObstacleAStar3D obstacleAStar = default;
+        [SerializeField] ObstacleAStar2D obstacleAStar = default;
 
         [Header("DEBUG (only custom collider)")]
         [SerializeField] bool drawCustomCollider = false;
         [SerializeField] Color colorDebugCustomCollider = Color.cyan;
 
         //vars
-        Node3D node;
-        GridAStar3D grid;
+        Node2D node;
+        GridAStar2D grid;
         bool isWaitingPath;
         PathRequest lastPathRequest;
-
-        //colliders
-        BoxCollider[] boxColliders;         //for every collider, save which are box
-        SphereCollider[] sphereColliders;   //for every collider, save which are sphere
-        Vector3 offsetUnityCollider;
+        CircleCollider2D[] circleColliders;  //for every collider, save which are circle colliders
 
         //nodes to calculate
-        Node3D leftNode;
-        Node3D rightNode;
-        Node3D forwardNode;
-        Node3D backNode;
-        Node3D nodeToCheck;
+        Node2D leftNode;
+        Node2D rightNode;
+        Node2D upNode;
+        Node2D downNode;
+        Node2D nodeToCheck;
 
         void OnDrawGizmos()
         {
@@ -54,12 +50,12 @@ namespace redd096.AStar3DPathFinding
                 //draw box
                 if (typeCollider == ETypeCollider.box)
                 {
-                    Gizmos.DrawWireCube(transform.position + offset, sizeCollider);
+                    Gizmos.DrawWireCube((Vector2)transform.position + offset, sizeCollider);
                 }
-                //draw sphere
+                //draw circle
                 else
                 {
-                    Gizmos.DrawWireSphere(transform.position + offset, radiusCollider);
+                    Gizmos.DrawWireSphere((Vector2)transform.position + offset, radiusCollider);
                 }
 
                 Gizmos.color = Color.white;
@@ -69,17 +65,13 @@ namespace redd096.AStar3DPathFinding
         void Awake()
         {
             //get references
-            if (obstacleAStar == null) obstacleAStar = GetComponent<ObstacleAStar3D>();
-            if (colliders == null || colliders.Length <= 0) colliders = GetComponentsInChildren<Collider>();
+            if (obstacleAStar == null) obstacleAStar = GetComponent<ObstacleAStar2D>();
+            if (colliders == null || colliders.Length <= 0) colliders = GetComponentsInChildren<Collider2D>();
 
-            //colliders can only be box or sphere. Save which are sphere
-            boxColliders = new BoxCollider[colliders.Length];
-            sphereColliders = new SphereCollider[colliders.Length];
+            //colliders can only be box or circle. Save which are circles
+            circleColliders = new CircleCollider2D[colliders.Length];
             for (int i = 0; i < colliders.Length; i++)
-            {
-                boxColliders[i] = colliders[i] as BoxCollider;
-                sphereColliders[i] = colliders[i] as SphereCollider;
-            }
+                circleColliders[i] = colliders[i] as CircleCollider2D;
         }
 
         /// <summary>
@@ -88,7 +80,7 @@ namespace redd096.AStar3DPathFinding
         /// <param name="node"></param>
         /// <param name="nodes"></param>
         /// <returns></returns>
-        public bool CanMoveOnThisNode(Node3D node, GridAStar3D grid)
+        public bool CanMoveOnThisNode(Node2D node, GridAStar2D grid)
         {
             if (node == null || grid == null)
                 return false;
@@ -107,7 +99,7 @@ namespace redd096.AStar3DPathFinding
                 //circle
                 else
                 {
-                    return CanMove_Sphere();
+                    return CanMove_Circle();
                 }
             }
             //else use colliders
@@ -123,12 +115,12 @@ namespace redd096.AStar3DPathFinding
         {
             //calculate nodes
             //use node as center, because agent is calculated along the path (not transform.position)
-            grid.GetNodesExtremesOfABox(node, node.worldPosition + offset, sizeCollider * 0.5f, out leftNode, out rightNode, out backNode, out forwardNode);
+            grid.GetNodesExtremesOfABox(node, node.worldPosition + offset, sizeCollider * 0.5f, out leftNode, out rightNode, out downNode, out upNode);
 
             //check every node
             for (int x = leftNode.gridPosition.x; x <= rightNode.gridPosition.x; x++)
             {
-                for (int y = backNode.gridPosition.y; y <= forwardNode.gridPosition.y; y++)
+                for (int y = downNode.gridPosition.y; y <= upNode.gridPosition.y; y++)
                 {
                     nodeToCheck = grid.GetNodeByCoordinates(x, y);
 
@@ -143,21 +135,21 @@ namespace redd096.AStar3DPathFinding
             return true;
         }
 
-        bool CanMove_Sphere()
+        bool CanMove_Circle()
         {
             //calculate nodes
             //use node as center, because agent is calculated along the path (not transform.position)
-            grid.GetNodesExtremesOfABox(node, node.worldPosition + offset, Vector3.one * radiusCollider, out leftNode, out rightNode, out backNode, out forwardNode);
+            grid.GetNodesExtremesOfABox(node, node.worldPosition + offset, Vector2.one * radiusCollider, out leftNode, out rightNode, out downNode, out upNode);
 
             //check every node
             for (int x = leftNode.gridPosition.x; x <= rightNode.gridPosition.x; x++)
             {
-                for (int y = backNode.gridPosition.y; y <= forwardNode.gridPosition.y; y++)
+                for (int y = downNode.gridPosition.y; y <= upNode.gridPosition.y; y++)
                 {
                     nodeToCheck = grid.GetNodeByCoordinates(x, y);
 
                     //if inside radius
-                    if (Vector3.Distance(node.worldPosition, nodeToCheck.worldPosition) <= radiusCollider)
+                    if (Vector2.Distance(node.worldPosition, nodeToCheck.worldPosition) <= radiusCollider)
                     {
                         ////if agent can not move through OR there are obstacles, return false
                         //if (nodeToCheck.agentCanMoveThrough == false || ThereAreObstacles(nodeToCheck))
@@ -181,19 +173,18 @@ namespace redd096.AStar3DPathFinding
 
                 //calculate nodes
                 //use node as center, because agent is calculated along the path (not transform.position)
-                offsetUnityCollider = boxColliders[i] || sphereColliders[i] ? (boxColliders[i] ? boxColliders[i].center : sphereColliders[i].center) : Vector3.zero; //center from box or sphere collider
-                grid.GetNodesExtremesOfABox(node, node.worldPosition + Vector3.Scale(offsetUnityCollider, colliders[i].transform.lossyScale), colliders[i].bounds.extents, out leftNode, out rightNode, out backNode, out forwardNode);
+                grid.GetNodesExtremesOfABox(node, node.worldPosition + colliders[i].offset * colliders[i].transform.lossyScale, colliders[i].bounds.extents, out leftNode, out rightNode, out downNode, out upNode);
 
                 //check every node
                 for (int x = leftNode.gridPosition.x; x <= rightNode.gridPosition.x; x++)
                 {
-                    for (int y = backNode.gridPosition.y; y <= forwardNode.gridPosition.y; y++)
+                    for (int y = downNode.gridPosition.y; y <= upNode.gridPosition.y; y++)
                     {
                         nodeToCheck = grid.GetNodeByCoordinates(x, y);
 
                         //if inside collider
-                        //only box or sphere, can't use same check of ObstacleAStar cause agent is calculated along the path (not transform.position)
-                        if (sphereColliders[i] == null || Vector3.Distance(node.worldPosition, nodeToCheck.worldPosition) <= sphereColliders[i].radius)
+                        //only box or circle, can't use same check of ObstacleAStar cause agent is calculated along the path (not transform.position)
+                        if (circleColliders[i] == null || Vector2.Distance(node.worldPosition, nodeToCheck.worldPosition) <= circleColliders[i].radius)
                         {
                             ////if agent can not move through OR there are obstacles, return false
                             //if (nodeToCheck.agentCanMoveThrough == false || ThereAreObstacles(nodeToCheck))
@@ -208,7 +199,7 @@ namespace redd096.AStar3DPathFinding
             return true;
         }
 
-        bool ThereAreObstacles(Node3D nodeToCheck)
+        bool ThereAreObstacles(Node2D nodeToCheck)
         {
             //if there are obstacles
             if (nodeToCheck.GetObstaclesOnThisNode().Count > 0)
@@ -238,20 +229,20 @@ namespace redd096.AStar3DPathFinding
         /// <param name="startPosition"></param>
         /// <param name="targetPosition"></param>
         /// <param name="func">function to call when finish processing path. Will pass the path as parameter</param>
-        public void FindPath(Vector3 startPosition, Vector3 targetPosition, System.Action<Path> func)
+        public void FindPath(Vector2 startPosition, Vector2 targetPosition, System.Action<Path> func)
         {
             //call find path on Path Finding
-            if (PathFindingAStar3D.instance)
+            if (PathFindingAStar2D.instance)
             {
                 //if still waiting previous path, stop that request
                 if (isWaitingPath)
                 {
-                    PathFindingAStar3D.instance.CancelRequest(lastPathRequest);
+                    PathFindingAStar2D.instance.CancelRequest(lastPathRequest);
                 }
 
                 isWaitingPath = true;                                                                   //set is waiting path
                 lastPathRequest = new PathRequest(startPosition, targetPosition, func, this);           //save last path request
-                PathFindingAStar3D.instance.FindPath(lastPathRequest);
+                PathFindingAStar2D.instance.FindPath(lastPathRequest);
             }
         }
 
@@ -261,9 +252,9 @@ namespace redd096.AStar3DPathFinding
         public void CancelLastPathRequest()
         {
             //stop request
-            if (PathFindingAStar3D.instance)
+            if (PathFindingAStar2D.instance)
             {
-                if (PathFindingAStar3D.instance.CancelRequest(lastPathRequest))
+                if (PathFindingAStar2D.instance.CancelRequest(lastPathRequest))
                     isWaitingPath = false;                                                              //if succeeded, set is not waiting path
             }
         }

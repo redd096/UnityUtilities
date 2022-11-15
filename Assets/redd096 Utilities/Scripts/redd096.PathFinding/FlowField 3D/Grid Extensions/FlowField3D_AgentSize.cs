@@ -1,7 +1,7 @@
 using redd096.Attributes;
 using UnityEngine;
 
-namespace redd096.FlowField3DPathFinding
+namespace redd096.PathFinding.FlowField3D
 {
     /// <summary>
     /// Used to know size of the agent. In Flow Field it is generic for every possible agent

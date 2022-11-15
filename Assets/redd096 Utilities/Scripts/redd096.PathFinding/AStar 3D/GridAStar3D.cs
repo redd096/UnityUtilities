@@ -1,17 +1,18 @@
+﻿//miss smooth penalty https://www.youtube.com/watch?v=Tb-rM3wGwv4&list=PLFt_AvWsXl0cq5Umv3pMC9SPnKjfp9eGW&index=7
+
 using UnityEngine;
-using System.Collections.Generic;
 
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
-namespace redd096.FlowField3DPathFinding
+namespace redd096.PathFinding.AStar3D
 {
     /// <summary>
     /// Grid used for pathfinding
     /// </summary>
-    [AddComponentMenu("redd096/.FlowField3DPathFinding/Grid FlowField 3D")]
-    public class GridFlowField3D : MonoBehaviour
+    [AddComponentMenu("redd096/.PathFinding/AStar 3D/Grid A Star 3D")]
+    public class GridAStar3D : MonoBehaviour
     {
         #region structs
 
@@ -26,24 +27,18 @@ namespace redd096.FlowField3DPathFinding
 
         #region variables
 
-        [Header("Layer Mask Unwalkable (default penalty is 1)")]
+        [Header("Layer Mask Unwalkable")]
         [SerializeField] protected LayerMask unwalkableMask = default;
-        [Tooltip("If not inside these regions, penalty is 1")][SerializeField] protected TerrainType[] penaltyRegions = default;
+        [Tooltip("If not inside these regions, penalty is 0")][SerializeField] protected TerrainType[] penaltyRegions = default;
 
         [Header("Grid")]
         [SerializeField] protected bool updateOnAwake = true;
         [SerializeField] protected Vector2 gridWorldSize = Vector2.one;
-        [SerializeField][Min(0.1f)] protected float nodeDiameter = 1;
+        [SerializeField] [Min(0.1f)] protected float nodeDiameter = 1;
 
-        [Header("Extensions")]
-        [SerializeField] FlowField3D_AgentSize agentSize = default;
-
-        [Header("Gizmos - cyan Area - green/red walkable node - magenta walkable with obstacle")]
+        [Header("Gizmos - cyan Area - green/red walkable node - magenta obstacle")]
         [SerializeField] protected bool drawGridArea = false;
-        [SerializeField] protected bool drawWalkableNodes = false;
-        [SerializeField] protected bool drawUnwalkableNodes = false;
         [SerializeField] protected bool drawObstacles = false;
-        [SerializeField] protected bool drawCost = false;
         [SerializeField] protected float alphaNodes = 0.3f;
 
         //grid
@@ -55,6 +50,7 @@ namespace redd096.FlowField3DPathFinding
         LayerMask penaltyRegionsMask;               //layerMask with every penalty region
 
         //public properties
+        public int MaxSize => gridSize.x * gridSize.y;
         public virtual Vector3 GridWorldPosition => transform.position;
         public Vector2 GridWorldSize => gridWorldSize;
         public float NodeRadius => nodeRadius;
@@ -75,51 +71,21 @@ namespace redd096.FlowField3DPathFinding
                 //draw area
                 Gizmos.color = Color.cyan;
                 Gizmos.DrawWireCube(GridWorldPosition, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));
-            }
 
-            //draw every node in grid
-            if (drawWalkableNodes || drawUnwalkableNodes || drawObstacles || drawCost)
-            {
+                //draw every node in grid
                 if (grid != null)
                 {
                     foreach (Node3D node in grid)
                     {
                         //set color if walkable or not (red = not walkable, green = walkable, magenta = walkable but with obstacles)
-                        //Gizmos.color = new Color(1, 1, 1, alphaNodes) * (node.isWalkable ? (drawObstacles && node.GetObstaclesOnThisNode().Count > 0 ? Color.magenta : Color.green) : Color.red);
+                        Gizmos.color = new Color(1, 1, 1, alphaNodes) * (node.isWalkable ? (drawObstacles && node.GetObstaclesOnThisNode().Count > 0 ? Color.magenta : Color.green) : Color.red);
                         //Gizmos.DrawSphere(node.worldPosition, overlapRadius);
-
-                        //draw if unwalkable
-                        if (node.isWalkable == false && drawUnwalkableNodes)
-                        {
-                            Gizmos.color = new Color(1, 1, 1, alphaNodes) * Color.red;
-                            Gizmos.DrawCube(node.worldPosition, Vector3.one * (nodeDiameter - 0.1f));
-                        }
-                        //draw if walkable but obstacle
-                        else if (node.isWalkable && node.GetObstaclesOnThisNode().Count > 0 && drawObstacles)
-                        {
-                            Gizmos.color = new Color(1, 1, 1, alphaNodes) * Color.magenta;
-                            Gizmos.DrawCube(node.worldPosition, Vector3.one * (nodeDiameter - 0.1f));
-                        }
-                        //draw if walkable
-                        else if (node.isWalkable && drawWalkableNodes)
-                        {
-                            Gizmos.color = new Color(1, 1, 1, alphaNodes) * Color.green;
-                            Gizmos.DrawCube(node.worldPosition, Vector3.one * (nodeDiameter - 0.1f));
-                        }
-
-#if UNITY_EDITOR
-                        //draw cost
-                        if (drawCost)
-                            Handles.Label(node.worldPosition, node.bestCost.ToString());
-#endif
+                        Gizmos.DrawCube(node.worldPosition, Vector3.one * (nodeDiameter - 0.1f));
                     }
                 }
+
+                Gizmos.color = Color.white;
             }
-
-            Gizmos.color = Color.white;
-
-            //draw agent size
-            agentSize.OnDrawGizmos(transform);
         }
 
         #region create grid
@@ -185,7 +151,7 @@ namespace redd096.FlowField3DPathFinding
         {
             //raycast to check terrain
             RaycastHit hit;
-            movementPenalty = 1;
+            movementPenalty = 0;
             if (Physics.Raycast(worldPosition + Vector3.up, Vector3.down, out hit, 1.1f, penaltyRegionsMask))
             {
                 int hittedLayer = hit.collider.gameObject.layer;
@@ -210,7 +176,6 @@ namespace redd096.FlowField3DPathFinding
             int checkY;
             foreach (Node3D node in grid)
             {
-                node.neighboursCardinalDirections.Clear();
                 node.neighbours.Clear();
 
                 for (int x = -1; x <= 1; x++)
@@ -229,83 +194,7 @@ namespace redd096.FlowField3DPathFinding
                         if (checkX >= 0 && checkX < gridSize.x && checkY >= 0 && checkY < gridSize.y)
                         {
                             node.neighbours.Add(grid[checkX, checkY]);
-
-                            //set another list with neighbours only in cardinal directions (up, down, left, right)
-                            if (x == 0 || y == 0)
-                                node.neighboursCardinalDirections.Add(grid[checkX, checkY]);
                         }
-                    }
-                }
-            }
-        }
-
-        #endregion
-
-        #region flow field
-
-        void ResetFlowFieldGrid()
-        {
-            //reset every node in the grid (not neighbours or penalty, just reset best cost and direction used for FlowField Pathfinding)
-            foreach (Node3D node in grid)
-            {
-                //set default values
-                node.bestCost = short.MaxValue;
-                node.bestDirection = Vector2Int.zero;
-            }
-        }
-
-        void SetBestCostToThisNode(TargetRequest[] targetRequests)
-        {
-            foreach (TargetRequest targetRequest in targetRequests)
-            {
-                Node3D targetNode = GetNodeFromWorldPosition(targetRequest.savedPosition);
-
-                //set target node at 0 or minor
-                targetNode.bestCost = (short)-targetRequest.weight;
-
-                //start from target node
-                Queue<Node3D> cellsToCheck = new Queue<Node3D>();
-                cellsToCheck.Enqueue(targetNode);
-
-                while (cellsToCheck.Count > 0)
-                {
-                    //get every neighbour in cardinal directions
-                    Node3D currentNode = cellsToCheck.Dequeue();
-                    foreach (Node3D currentNeghbour in currentNode.neighboursCardinalDirections)
-                    {
-                        //if not walkable, ignore
-                        if (currentNeghbour.isWalkable == false) { continue; }
-
-                        //if using agent and can't move on this node, skip to next Neighbour
-                        if (agentSize.CanMoveOnThisNode(currentNeghbour, this) == false)
-                            continue;
-
-                        //else, calculate best cost
-                        if (currentNeghbour.movementPenalty + currentNode.bestCost < currentNeghbour.bestCost)
-                        {
-                            currentNeghbour.bestCost = (short)(currentNeghbour.movementPenalty + currentNode.bestCost);
-                            cellsToCheck.Enqueue(currentNeghbour);
-                        }
-                    }
-                }
-            }
-        }
-
-        void SetBestDirections()
-        {
-            //foreach node in the grid
-            foreach (Node3D currentNode in grid)
-            {
-                //calculate best direction from this node to neighbours
-                int bestCost = currentNode.bestCost;
-                foreach (Node3D neighbour in currentNode.neighbours)
-                {
-                    //if this best cost is lower then found one, this is the best node to move to
-                    if (neighbour.bestCost < bestCost)
-                    {
-                        //save best cost and set direction
-                        bestCost = neighbour.bestCost;
-                        currentNode.bestDirection = neighbour.gridPosition - currentNode.gridPosition;
                     }
                 }
             }
@@ -323,17 +212,6 @@ namespace redd096.FlowField3DPathFinding
             SetGrid();
             CreateGrid();
             SetNeighbours();
-        }
-
-        /// <summary>
-        /// Set best direction for every node in the grid, to target node
-        /// </summary>
-        /// <param name="targetRequests"></param>
-        public void SetFlowField(TargetRequest[] targetRequests)
-        {
-            ResetFlowFieldGrid();
-            SetBestCostToThisNode(targetRequests);
-            SetBestDirections();
         }
 
         /// <summary>
@@ -456,14 +334,14 @@ namespace redd096.FlowField3DPathFinding
 
 #if UNITY_EDITOR
 
-    [CustomEditor(typeof(GridFlowField3D), true)]
-    public class GridFlowField3DEditor : Editor
+    [CustomEditor(typeof(GridAStar3D), true)]
+    public class GridAStar3DEditor : Editor
     {
-        private GridFlowField3D grid;
+        private GridAStar3D gridAStar;
 
         private void OnEnable()
         {
-            grid = target as GridFlowField3D;
+            gridAStar = target as GridAStar3D;
         }
 
         public override void OnInspectorGUI()
@@ -475,17 +353,12 @@ namespace redd096.FlowField3DPathFinding
             if (GUILayout.Button("Update Nodes"))
             {
                 //update nodes
-                grid.BuildGrid();
+                gridAStar.BuildGrid();
 
                 //update position of every obstacle
-                foreach (ObstacleFlowField3D obstacle in FindObjectsOfType<ObstacleFlowField3D>())
-                {
+                foreach (ObstacleAStar3D obstacle in FindObjectsOfType<ObstacleAStar3D>())
                     if (obstacle)
-                    {
-                        obstacle.SetColliders_Editor();
-                        obstacle.UpdatePositionOnGrid(grid);
-                    }
-                }
+                        obstacle.UpdatePositionOnGrid(gridAStar);
 
                 //repaint scene and set undo
                 SceneView.RepaintAll();

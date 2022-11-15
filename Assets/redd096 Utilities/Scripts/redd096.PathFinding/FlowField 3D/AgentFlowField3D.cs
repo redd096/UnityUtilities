@@ -1,11 +1,11 @@
 using UnityEngine;
 
-namespace redd096.FlowField3DPathFinding
+namespace redd096.PathFinding.FlowField3D
 {
     /// <summary>
     /// Used to find path using a PathFindingFlowField and to know if still processing it
     /// </summary>
-    [AddComponentMenu("redd096/.FlowField3DPathFinding/Agent FlowField 3D")]
+    [AddComponentMenu("redd096/.PathFinding/FlowField 3D/Agent FlowField 3D")]
     public class AgentFlowField3D : MonoBehaviour
     {
         bool isWaitingPath;

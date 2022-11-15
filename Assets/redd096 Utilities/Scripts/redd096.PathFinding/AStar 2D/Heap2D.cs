@@ -4,7 +4,7 @@
 
 using System;
 
-namespace redd096.AStar2DPathFinding
+namespace redd096.PathFinding.AStar2D
 {
     public class Heap2D<T> where T : IHeapItem2D<T>
     {

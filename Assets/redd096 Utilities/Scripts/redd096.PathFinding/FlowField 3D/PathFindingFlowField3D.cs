@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace redd096.FlowField3DPathFinding
+namespace redd096.PathFinding.FlowField3D
 {
-    [AddComponentMenu("redd096/.FlowField3DPathFinding/Path Finding FlowField 3D")]
+    [AddComponentMenu("redd096/.PathFinding/FlowField 3D/Path Finding FlowField 3D")]
     public class PathFindingFlowField3D : PathRequestManager3D
     {
         public static PathFindingFlowField3D instance;

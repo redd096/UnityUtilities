@@ -1,14 +1,14 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
-namespace redd096.AStar2DPathFinding
+namespace redd096.PathFinding.FlowField3D
 {
-    public class Node2D : IHeapItem2D<Node2D>
+    public class Node3D
     {
         //variables constructor
         bool isNodeWalkable;
         public bool agentCanMoveThrough;        //used by agentAStar
-        public Vector2 worldPosition;
+        public Vector3 worldPosition;
         public Vector2Int gridPosition;
         public int movementPenalty;
 
@@ -16,19 +16,16 @@ namespace redd096.AStar2DPathFinding
         public bool isWalkable => isNodeWalkable && obstaclesNotWalkable.Count <= 0;
 
         //variables path finding
-        public int gCost;                       //distance from start point
-        public int hCost;                       //distance from end point
-        public int fCost => gCost + hCost;      //sum of G cost and H cost
-
-        //used to retrace path
-        public Node2D parentNode;
+        public short bestCost;
+        public Vector2Int bestDirection;
 
         //other variables
-        public List<Node2D> neighbours = new List<Node2D>();
-        List<ObstacleAStar2D> obstaclesOnThisNode = new List<ObstacleAStar2D>();
-        List<ObstacleAStar2D> obstaclesNotWalkable = new List<ObstacleAStar2D>();
+        public List<Node3D> neighboursCardinalDirections = new List<Node3D>();              //neighbours only up, down, right and left
+        public List<Node3D> neighbours = new List<Node3D>();                                //every neighbour, also in diagonal direction
+        List<ObstacleFlowField3D> obstaclesOnThisNode = new List<ObstacleFlowField3D>();
+        List<ObstacleFlowField3D> obstaclesNotWalkable = new List<ObstacleFlowField3D>();
 
-        public Node2D(bool isWalkable, bool agentCanMoveThrough, Vector2 worldPosition, int x, int y, int movementPenalty)
+        public Node3D(bool isWalkable, bool agentCanMoveThrough, Vector3 worldPosition, int x, int y, int movementPenalty)
         {
             this.isNodeWalkable = isWalkable;
             this.agentCanMoveThrough = agentCanMoveThrough;
@@ -37,30 +34,13 @@ namespace redd096.AStar2DPathFinding
             this.movementPenalty = movementPenalty;
         }
 
-        #region heap optimization
-
-        public int HeapIndex { get; set; }
-
-        public int CompareTo(Node2D nodeToCompare)
-        {
-            //compare F Cost, if equals, compare H Cost
-            int compare = fCost.CompareTo(nodeToCompare.fCost);
-            if (compare == 0)
-                compare = hCost.CompareTo(nodeToCompare.hCost);
-
-            //return negative value to check if lower
-            return -compare;
-        }
-
-        #endregion
-
         #region obstacles
 
         /// <summary>
         /// Add obstacle to node (set unwalkable or add penalty)
         /// </summary>
         /// <param name="obstacle"></param>
-        public void AddObstacle(ObstacleAStar2D obstacle)
+        public void AddObstacle(ObstacleFlowField3D obstacle)
         {
             //add obstacles to the list
             if (obstaclesOnThisNode.Contains(obstacle) == false)
@@ -84,7 +64,7 @@ namespace redd096.AStar2DPathFinding
         /// Remove obstacle from node (reset walkable status or remove penalty)
         /// </summary>
         /// <param name="obstacle"></param>
-        public void RemoveObstacle(ObstacleAStar2D obstacle)
+        public void RemoveObstacle(ObstacleFlowField3D obstacle)
         {
             //remove obstacles from the list
             if (obstaclesOnThisNode.Contains(obstacle))
@@ -104,12 +84,11 @@ namespace redd096.AStar2DPathFinding
             }
         }
 
-
         /// <summary>
         /// Get obstacles on this node
         /// </summary>
         /// <returns></returns>
-        public List<ObstacleAStar2D> GetObstaclesOnThisNode()
+        public List<ObstacleFlowField3D> GetObstaclesOnThisNode()
         {
             return obstaclesOnThisNode;
         }

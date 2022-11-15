@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace redd096.AStar3DPathFinding
+namespace redd096.PathFinding.AStar3D
 {
     public class Node3D : IHeapItem3D<Node3D>
     {

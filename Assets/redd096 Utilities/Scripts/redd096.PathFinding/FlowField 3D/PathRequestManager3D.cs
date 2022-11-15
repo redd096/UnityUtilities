@@ -2,7 +2,7 @@ using redd096.Attributes;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace redd096.FlowField3DPathFinding
+namespace redd096.PathFinding.FlowField3D
 {
     public abstract class PathRequestManager3D : MonoBehaviour
     {

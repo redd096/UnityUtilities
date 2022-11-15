@@ -1,4 +1,4 @@
-using redd096.FlowField3DPathFinding;
+using redd096.PathFinding.FlowField3D;
 using UnityEngine;
 
 namespace Examples.FlowField

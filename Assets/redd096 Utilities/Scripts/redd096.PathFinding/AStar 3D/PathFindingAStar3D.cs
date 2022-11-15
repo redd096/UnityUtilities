@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
 
-namespace redd096.AStar3DPathFinding
+namespace redd096.PathFinding.AStar3D
 {
     /// <summary>
     /// Call this to calculate a path using pathfinding or to update the grid
     /// </summary>
-    [AddComponentMenu("redd096/.AStar3DPathFinding/Path Finding A Star 3D")]
+    [AddComponentMenu("redd096/.PathFinding/AStar 3D/Path Finding A Star 3D")]
     public class PathFindingAStar3D : PathRequestManagerAStar3D
     {
         public static PathFindingAStar3D instance;

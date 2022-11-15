@@ -2,56 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace redd096.AStar2DPathFinding
+namespace redd096.PathFinding.AStar2D
 {
-    #region classes
-
-    public class PathRequest
-    {
-        public Vector2 startPosition;
-        public Vector2 targetPosition;
-        public System.Action<Path> func;
-        public AgentAStar2D agent;
-        public bool returnNearestPointToTarget;
-
-        /// <summary>
-        /// Struct used to request a path to PathFinding
-        /// </summary>
-        /// <param name="startPosition"></param>
-        /// <param name="targetPosition"></param>
-        /// <param name="func">function to call when finish processing path. Will pass the path as parameter</param>
-        /// <param name="agent"></param>
-        /// <param name="returnNearestPointToTarget">if no path to target position, return path to nearest point</param>
-        public PathRequest(Vector2 startPosition, Vector2 targetPosition, System.Action<Path> func, AgentAStar2D agent, bool returnNearestPointToTarget = true)
-        {
-            this.startPosition = startPosition;
-            this.targetPosition = targetPosition;
-            this.func = func;
-            this.agent = agent;
-            this.returnNearestPointToTarget = returnNearestPointToTarget;
-        }
-    }
-
-    [System.Serializable]
-    public class Path
-    {
-        public List<Vector2> vectorPath;
-
-        public Vector2 nextNode => vectorPath != null && vectorPath.Count > 0 ? vectorPath[0] : Vector2.zero;
-
-        /// <summary>
-        /// Struct used to pass found path
-        /// </summary>
-        /// <param name="vectorPath"></param>
-        public Path(List<Vector2> vectorPath)
-        {
-            this.vectorPath = vectorPath;
-        }
-    }
-
-    #endregion
-
-    [AddComponentMenu("redd096/.AStar2DPathFinding/Path Request Manager A Star 2D")]
     public abstract class PathRequestManagerAStar2D : MonoBehaviour
     {
         List<PathRequest> pathRequestQueue = new List<PathRequest>();
@@ -107,4 +59,51 @@ namespace redd096.AStar2DPathFinding
 
         protected abstract IEnumerator FindPathCoroutine(PathRequest pathRequest);
     }
+
+    #region classes
+
+    public class PathRequest
+    {
+        public Vector2 startPosition;
+        public Vector2 targetPosition;
+        public System.Action<Path> func;
+        public AgentAStar2D agent;
+        public bool returnNearestPointToTarget;
+
+        /// <summary>
+        /// Struct used to request a path to PathFinding
+        /// </summary>
+        /// <param name="startPosition"></param>
+        /// <param name="targetPosition"></param>
+        /// <param name="func">function to call when finish processing path. Will pass the path as parameter</param>
+        /// <param name="agent"></param>
+        /// <param name="returnNearestPointToTarget">if no path to target position, return path to nearest point</param>
+        public PathRequest(Vector2 startPosition, Vector2 targetPosition, System.Action<Path> func, AgentAStar2D agent, bool returnNearestPointToTarget = true)
+        {
+            this.startPosition = startPosition;
+            this.targetPosition = targetPosition;
+            this.func = func;
+            this.agent = agent;
+            this.returnNearestPointToTarget = returnNearestPointToTarget;
+        }
+    }
+
+    [System.Serializable]
+    public class Path
+    {
+        public List<Vector2> vectorPath;
+
+        public Vector2 nextNode => vectorPath != null && vectorPath.Count > 0 ? vectorPath[0] : Vector2.zero;
+
+        /// <summary>
+        /// Struct used to pass found path
+        /// </summary>
+        /// <param name="vectorPath"></param>
+        public Path(List<Vector2> vectorPath)
+        {
+            this.vectorPath = vectorPath;
+        }
+    }
+
+    #endregion
 }

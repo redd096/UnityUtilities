@@ -1,19 +1,19 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using redd096.Attributes;
 
-namespace redd096.AStar3DPathFinding
+namespace redd096.PathFinding.FlowField3D
 {
     /// <summary>
     /// Used to create dynamic NotWalkable nodes on the grid. Or set penalty to them
     /// </summary>
-    [AddComponentMenu("redd096/.AStar3DPathFinding/Obstacle A Star 3D")]
-    public class ObstacleAStar3D : MonoBehaviour
+    [AddComponentMenu("redd096/.PathFinding/FlowField 3D/Obstacle FlowField 3D")]
+    public class ObstacleFlowField3D : MonoBehaviour
     {
         enum ETypeCollider { sphere, box }
 
         [Header("Collider Obstacle")]
-        [SerializeField] bool useCustomCollider = true;
+        [SerializeField] bool useCustomCollider = false;
         [DisableIf("useCustomCollider")][SerializeField] Collider[] colliders = default;
         [ShowIf("useCustomCollider")][SerializeField] Vector3 offset = Vector3.zero;
         [ShowIf("useCustomCollider")][SerializeField] ETypeCollider typeCollider = ETypeCollider.box;
@@ -21,8 +21,8 @@ namespace redd096.AStar3DPathFinding
         [ShowIf("useCustomCollider")][EnableIf("typeCollider", ETypeCollider.box)][SerializeField] Vector3 sizeCollider = Vector3.one;
 
         [Header("Type Obstacle (set unwalkable or add penalty)")]
-        [SerializeField] bool setUnwalkable = false;
-        [SerializeField] bool addPenalty = true;
+        [SerializeField] bool setUnwalkable = true;
+        [SerializeField] bool addPenalty = false;
         [EnableIf("addPenalty")][SerializeField] int penalty = 1;
 
         [Header("DEBUG (only custom collider)")]
@@ -33,8 +33,9 @@ namespace redd096.AStar3DPathFinding
         public int AddPenalty => setUnwalkable == false && addPenalty ? penalty : 0;
 
         //vars
-        GridAStar3D grid;
+        GridFlowField3D grid;
         List<Node3D> nodesPosition = new List<Node3D>();    //nodes with this obstacle
+        Vector3 previousPosition;
 
         //nodes to calculate
         Node3D centerNode;
@@ -72,11 +73,20 @@ namespace redd096.AStar3DPathFinding
                 colliders = GetComponentsInChildren<Collider>();
         }
 
+        void OnEnable()
+        {
+            //set obstacle on nodes
+            UpdatePosition();
+        }
+
         void Update()
         {
-            //update obstacle position
-            if (PathFindingAStar3D.instance)
-                PathFindingAStar3D.instance.UpdateObstaclePositionOnGrid(this);
+            //if moved
+            if (transform.position != previousPosition)
+            {
+                //set obstacle on nodes
+                UpdatePosition();
+            }
         }
 
         void OnDisable()
@@ -85,13 +95,21 @@ namespace redd096.AStar3DPathFinding
             RemoveFromPreviousNodes();
         }
 
+        [Button("Find Children Colliders")]
+        public void SetColliders_Editor()
+        {
+            //if not use custom collider, automatically get reference to unity colliders
+            if (useCustomCollider == false && (colliders == null || colliders.Length <= 0))
+                colliders = GetComponentsInChildren<Collider>();
+        }
+
         #region public API
 
         /// <summary>
         /// Calculate new position on the grid and update nodes
         /// </summary>
         /// <param name="grid"></param>
-        public void UpdatePositionOnGrid(GridAStar3D grid)
+        public void UpdatePositionOnGrid(GridFlowField3D grid)
         {
             if (grid == null)
                 return;
@@ -147,6 +165,16 @@ namespace redd096.AStar3DPathFinding
         #endregion
 
         #region private API
+
+        void UpdatePosition()
+        {
+            //set obstacle position
+            if (PathFindingFlowField3D.instance)
+            {
+                previousPosition = transform.position;
+                PathFindingFlowField3D.instance.UpdateObstaclePositionOnGrid(this);
+            }
+        }
 
         void SetNodesUsingBox()
         {
@@ -209,19 +237,19 @@ namespace redd096.AStar3DPathFinding
             {
                 if (col == null)
                     continue;
-        
+
                 //calculate nodes
                 //use an offset to check if node is inside also if collider not reach center of the node (add grid.NodeRadius in the half size)
                 centerNode = grid.GetNodeFromWorldPosition(col.bounds.center);
                 grid.GetNodesExtremesOfABox(centerNode, col.bounds.center, col.bounds.extents + (Vector3.one * grid.NodeRadius), out leftNode, out rightNode, out backNode, out forwardNode);
-        
+
                 //check every node
                 for (int x = leftNode.gridPosition.x; x <= rightNode.gridPosition.x; x++)
                 {
                     for (int y = backNode.gridPosition.y; y <= forwardNode.gridPosition.y; y++)
                     {
                         nodeToCheck = grid.GetNodeByCoordinates(x, y);
-        
+
                         //if node is inside collider (+ node radius offset)
                         if (Vector3.Distance(col.ClosestPoint(nodeToCheck.worldPosition), nodeToCheck.worldPosition) < Mathf.Epsilon + grid.NodeRadius)
                         {

@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace redd096.FlowField3DPathFinding
+namespace redd096.PathFinding.FlowField3D
 {
     /// <summary>
     /// Used to create a single grid using every grid in the scene
     /// </summary>
-    [AddComponentMenu("redd096/.FlowField3DPathFinding/Composite Grid FlowField 3D")]
+    [AddComponentMenu("redd096/.PathFinding/FlowField 3D/Composite Grid FlowField 3D")]
     public class CompositeGridFlowField3D : GridFlowField3D
     {
         [Header("Composite")]
