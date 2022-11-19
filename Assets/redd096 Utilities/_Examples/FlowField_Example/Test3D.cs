@@ -5,14 +5,16 @@ using UnityEngine;
 
 namespace Examples.FlowField
 {
-    public class Test : MonoBehaviour
+    public class Test3D : MonoBehaviour
     {
         [Header("Left Click to set destinations. Right click to start pathfinding")]
-        [SerializeField] TestAgent[] agents;
+        [SerializeField] float speed = 5;
+        [SerializeField] GameObject[] agents;
 
-        [Header("Target with weights")]
-        [SerializeField] TargetRequest[] targetRequests;
+        [Header("Targets with weights")]
+        [SerializeField] TargetRequest[] targetRequests = default;
 
+        //targets on click
         Vector3 worldMousePos;
         List<Vector3> targetsPosition = new List<Vector3>();
 
@@ -20,8 +22,9 @@ namespace Examples.FlowField
         {
             //draw every target request
             Gizmos.color = Color.yellow;
-            foreach (TargetRequest targetRequest in targetRequests)
-                Gizmos.DrawWireCube(targetRequest.targetPosition, Vector3.one * 2);
+            if (targetRequests != null)
+                foreach (TargetRequest targetRequest in targetRequests)
+                    Gizmos.DrawWireCube(targetRequest.targetPosition, Vector3.one * 2);
 
             if (Application.isPlaying == false)
                 return;
@@ -36,6 +39,25 @@ namespace Examples.FlowField
             Gizmos.DrawWireCube(node.worldPosition, Vector3.one * 2);
 
             Gizmos.color = Color.white;
+        }
+
+        void Start()
+        {
+            //add components
+            foreach (GameObject agent in agents)
+            {
+                Rigidbody rb = agent.GetComponent<Rigidbody>();
+                if (rb == null)
+                    rb = agent.AddComponent<Rigidbody>();
+
+                //be sure rigidbody has no gravity
+                rb.useGravity = false;
+                rb.freezeRotation = true;
+
+                if (agent.GetComponent<AgentFlowField>() == null)
+                    agent.AddComponent<AgentFlowField>();
+
+            }
         }
 
         void Update()
@@ -56,14 +78,27 @@ namespace Examples.FlowField
                 for (int i = 0; i < requests.Length; i++)
                     requests[i] = i < targetRequests.Length ? targetRequests[i] : new TargetRequest(targetsPosition[i - targetRequests.Length]);
 
-                foreach (TestAgent agent in agents)
+                foreach (GameObject agent in agents)
                 {
-                    AgentFlowField agentFlowField3D = agent.GetComponent<AgentFlowField>();
-                    if (agentFlowField3D && agentFlowField3D.IsDone())
-                        agentFlowField3D.FindPath(requests);
+                    AgentFlowField agentFlowField = agent.GetComponent<AgentFlowField>();
+                    if (agentFlowField && agentFlowField.IsDone())
+                        agentFlowField.FindPath(requests);
                 }
 
                 targetsPosition.Clear();
+            }
+        }
+
+        void FixedUpdate()
+        {
+            //move every agent
+            foreach (GameObject agent in agents)
+            {
+                Rigidbody rb = agent.GetComponent<Rigidbody>();
+                AgentFlowField agentFlowField = agent.GetComponent<AgentFlowField>();
+
+                if (rb && agentFlowField)
+                    rb.velocity = agentFlowField.nextDirection * speed;
             }
         }
     }
