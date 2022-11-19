@@ -152,7 +152,7 @@ namespace redd096.PathFinding.FlowField2D
             }
         }
 
-        private void SetNewNodes()
+        void SetNewNodes()
         {
             //only if active in scene
             if (gameObject.activeInHierarchy == false || grid == null)

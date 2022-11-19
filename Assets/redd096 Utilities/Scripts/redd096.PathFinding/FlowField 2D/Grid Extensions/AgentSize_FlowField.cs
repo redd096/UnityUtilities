@@ -126,7 +126,7 @@ namespace redd096.PathFinding.FlowField2D
                     nodeToCheck = grid.GetNodeByCoordinates(x, y);
 
                     //if inside radius
-                    if (Vector2.Distance(node.worldPosition, nodeToCheck.worldPosition) <= radiusCollider * grid.NodeRadius)
+                    if (Vector2.Distance(node.worldPosition, nodeToCheck.worldPosition) <= radiusCollider + grid.NodeRadius)
                     {
                         ////if agent can not move through OR there are obstacles, return false
                         //if (nodeToCheck.agentCanMoveThrough == false || ThereAreObstacles(nodeToCheck))

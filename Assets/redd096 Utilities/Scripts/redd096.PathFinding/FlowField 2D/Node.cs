@@ -25,7 +25,7 @@ namespace redd096.PathFinding.FlowField2D
         List<ObstacleFlowField> obstaclesOnThisNode = new List<ObstacleFlowField>();
         List<ObstacleFlowField> obstaclesNotWalkable = new List<ObstacleFlowField>();
 
-        public Node(bool isWalkable, bool agentCanMoveThrough, Vector3 worldPosition, int x, int y, int movementPenalty)
+        public Node(bool isWalkable, bool agentCanMoveThrough, Vector2 worldPosition, int x, int y, int movementPenalty)
         {
             this.isNodeWalkable = isWalkable;
             this.agentCanMoveThrough = agentCanMoveThrough;

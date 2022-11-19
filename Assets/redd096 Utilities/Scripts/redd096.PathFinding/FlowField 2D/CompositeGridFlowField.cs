@@ -107,8 +107,8 @@ namespace redd096.PathFinding.FlowField2D
         {
             //set world center of the grid
             gridWorldPosition =
-                Vector2.right * (rightCompositeGrid - (rightCompositeGrid - leftCompositeGrid) * 0.5f)  //x
-                + Vector2.up * (upCompositeGrid - (upCompositeGrid - downCompositeGrid) * 0.5f);        //z
+                Vector2.right * (rightCompositeGrid - (rightCompositeGrid - leftCompositeGrid) * 0.5f)              //x
+                + Vector2.up * (upCompositeGrid - (upCompositeGrid - downCompositeGrid) * 0.5f);                    //y
 
             //set grid world size
             gridWorldSize = new Vector2(rightCompositeGrid - leftCompositeGrid, upCompositeGrid - downCompositeGrid);
