@@ -57,8 +57,8 @@ namespace redd096.PathFinding.FlowField2D
             //find every grid in scene
             foreach (GridFlowField grid in FindObjectsOfType<GridFlowField>())
             {
-                //remove self
-                if (grid == this)
+                //remove self and grids not used by composite
+                if (grid == this || grid.UsedByComposite == false)
                     continue;
 
                 //and set or update extremes of the grid
