@@ -6275,7 +6275,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 856496407}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.3, z: -8.69}
+  m_LocalPosition: {x: 0.78, y: 1.3, z: -8.69}
   m_LocalScale: {x: 3, y: 3, z: 3}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -7673,13 +7673,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96e540166b5ee19478fb49f0f3a7f004, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  usedByComposite: 1
+  updateOnAwake: 1
+  gridWorldSize: {x: 100, y: 100}
+  nodeDiameter: 1
   unwalkableMask:
     serializedVersion: 2
     m_Bits: 16
   penaltyRegions: []
-  updateOnAwake: 1
-  gridWorldSize: {x: 100, y: 100}
-  nodeDiameter: 1
   agentSize:
     useCustomCollider: 1
     typeCollider: 0
@@ -7689,11 +7690,13 @@ MonoBehaviour:
     colorDebugCustomCollider: {r: 0, g: 1, b: 1, a: 1}
   canMoveDiagonal: 1
   drawGridArea: 0
+  calculateAgentForUnwalkableNodes: 1
   drawUnwalkableNodes: 0
   drawObstacles: 0
   drawWalkableNodes: 0
-  drawCost: 0
-  drawArrow: 0
+  drawCosts: 0
+  drawDirections: 0
+  drawAgentSizeOnEveryNode: 0
   alphaNodes: 1
 --- !u!114 &1029280333
 MonoBehaviour:
@@ -7707,27 +7710,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ce08119867417a488f6dc5232b1064e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  usedByComposite: 0
+  updateOnAwake: 1
+  gridWorldSize: {x: 100, y: 100}
+  nodeDiameter: 1
   unwalkableMask:
     serializedVersion: 2
     m_Bits: 16
   penaltyRegions: []
-  updateOnAwake: 1
-  gridWorldSize: {x: 100, y: 100}
-  nodeDiameter: 1
   agentSize:
     useCustomCollider: 1
     typeCollider: 0
     sizeCollider: {x: 1, y: 1, z: 1}
     radiusCollider: 0.5
-    drawCustomCollider: 0
+    drawCustomCollider: 1
     colorDebugCustomCollider: {r: 0, g: 1, b: 1, a: 1}
   canMoveDiagonal: 1
   drawGridArea: 0
+  calculateAgentForUnwalkableNodes: 1
   drawUnwalkableNodes: 1
   drawObstacles: 0
   drawWalkableNodes: 0
-  drawCost: 0
-  drawArrow: 0
+  drawCosts: 0
+  drawDirections: 0
+  drawAgentSizeOnEveryNode: 0
   alphaNodes: 1
   agentCanOverlapNodesOutsideGrids: 1
 --- !u!1 &1070540896
@@ -9060,7 +9066,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1214319318}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.62, y: 1.3, z: -8.69}
+  m_LocalPosition: {x: -3.54, y: 1.3, z: -8.69}
   m_LocalScale: {x: 3, y: 3, z: 3}
   m_ConstrainProportionsScale: 0
   m_Children: []

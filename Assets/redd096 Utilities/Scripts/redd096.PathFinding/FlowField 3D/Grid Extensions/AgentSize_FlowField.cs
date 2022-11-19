@@ -32,7 +32,7 @@ namespace redd096.PathFinding.FlowField3D
         Node backNode;
         Node nodeToCheck;
 
-        public void OnDrawGizmos(Transform transform)
+        public void OnDrawGizmos(Vector3 position)
         {
             if (drawCustomCollider && useCustomCollider)
             {
@@ -41,12 +41,12 @@ namespace redd096.PathFinding.FlowField3D
                 //draw box
                 if (typeCollider == ETypeCollider.box)
                 {
-                    Gizmos.DrawWireCube(transform.position, sizeCollider);
+                    Gizmos.DrawWireCube(position, sizeCollider);
                 }
                 //draw sphere
                 else
                 {
-                    Gizmos.DrawWireSphere(transform.position, radiusCollider);
+                    Gizmos.DrawWireSphere(position, radiusCollider);
                 }
 
                 Gizmos.color = Color.white;
@@ -126,7 +126,7 @@ namespace redd096.PathFinding.FlowField3D
                     nodeToCheck = grid.GetNodeByCoordinates(x, y);
 
                     //if inside radius
-                    if (Vector3.Distance(node.worldPosition, nodeToCheck.worldPosition) <= radiusCollider)
+                    if (Vector3.Distance(node.worldPosition, nodeToCheck.worldPosition) <= radiusCollider + grid.NodeRadius)
                     {
                         ////if agent can not move through OR there are obstacles, return false
                         //if (nodeToCheck.agentCanMoveThrough == false || ThereAreObstacles(nodeToCheck))

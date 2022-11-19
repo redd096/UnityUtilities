@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using redd096.Attributes;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -26,27 +27,30 @@ namespace redd096.PathFinding.FlowField3D
 
         #region variables
 
-        [Header("Layer Mask Unwalkable (default penalty is 1)")]
-        [SerializeField] protected LayerMask unwalkableMask = default;
-        [Tooltip("If not inside these regions, penalty is 1")][SerializeField] protected TerrainType[] penaltyRegions = default;
-
         [Header("Grid")]
-        [SerializeField] protected bool updateOnAwake = true;
-        [SerializeField] protected Vector2 gridWorldSize = Vector2.one;
-        [SerializeField][Min(0.1f)] protected float nodeDiameter = 1;
+        [ShowIf("isGrid_Editor")][SerializeField] bool usedByComposite = false;                         //show only on grids, not on composite
+        [SerializeField] bool updateOnAwake = true;
+        [EnableIf("isGrid_Editor")][SerializeField] protected Vector2 gridWorldSize = Vector2.one;      //enable only on grids, composite size is based on every grid
+        [SerializeField][Min(0.1f)] float nodeDiameter = 1;
+
+        [Header("Layer Mask Unwalkable (default penalty is 1)")]
+        [SerializeField] LayerMask unwalkableMask = default;
+        [Tooltip("If not inside these regions, penalty is 1")][SerializeField] TerrainType[] penaltyRegions = default;
 
         [Header("Extensions")]
         [SerializeField] AgentSize_FlowField agentSize = default;
         [SerializeField] bool canMoveDiagonal = true;
 
         [Header("Gizmos - cyan GridArea - red unwalkable - magenta obstacle - green walkable")]
-        [SerializeField] protected bool drawGridArea = false;
-        [SerializeField] protected bool drawUnwalkableNodes = false;
-        [SerializeField] protected bool drawObstacles = false;
-        [SerializeField] protected bool drawWalkableNodes = false;
-        [SerializeField] protected bool drawCost = false;
-        [SerializeField] protected bool drawArrow = false;
-        [SerializeField] protected float alphaNodes = 1f;
+        [SerializeField] bool drawGridArea = false;
+        [Tooltip("Calculate agent size to check if a node is walkable")][SerializeField] bool calculateAgentForUnwalkableNodes = true;
+        [SerializeField] bool drawUnwalkableNodes = false;
+        [SerializeField] bool drawObstacles = false;
+        [SerializeField] bool drawWalkableNodes = false;
+        [SerializeField] bool drawCosts = false;
+        [SerializeField] bool drawDirections = false;
+        [Tooltip("Enable gizmos also on agent")][SerializeField] bool drawAgentSizeOnEveryNode = false;
+        [SerializeField] float alphaNodes = 1f;
 
         //grid
         Node[,] grid;
@@ -57,9 +61,13 @@ namespace redd096.PathFinding.FlowField3D
         LayerMask penaltyRegionsMask;               //layerMask with every penalty region
 
         //public properties
+        public bool UsedByComposite => usedByComposite;
         public virtual Vector3 GridWorldPosition => transform.position;
         public Vector2 GridWorldSize => gridWorldSize;
         public float NodeRadius => nodeRadius;
+
+        //private properties, used only by editor
+        bool isGrid_Editor => GetType() == typeof(GridFlowField);
 
         #endregion
 
@@ -72,6 +80,10 @@ namespace redd096.PathFinding.FlowField3D
 
         void OnDrawGizmos()
         {
+            //don't draw gizmos if this grid is used by a composite
+            if (usedByComposite)
+                return;
+
             if (drawGridArea)
             {
                 //draw area
@@ -80,7 +92,7 @@ namespace redd096.PathFinding.FlowField3D
             }
 
             //draw every node in grid
-            if (drawWalkableNodes || drawUnwalkableNodes || drawObstacles || drawCost || drawArrow)
+            if (drawWalkableNodes || drawUnwalkableNodes || drawObstacles || drawCosts || drawDirections || drawAgentSizeOnEveryNode)
             {
                 if (grid != null)
                 {
@@ -91,19 +103,19 @@ namespace redd096.PathFinding.FlowField3D
                         //Gizmos.DrawSphere(node.worldPosition, overlapRadius);
 
                         //draw if unwalkable
-                        if (node.isWalkable == false && drawUnwalkableNodes)
+                        if (drawUnwalkableNodes && (node.isWalkable == false || (calculateAgentForUnwalkableNodes && agentSize.CanMoveOnThisNode(node, this) == false)))
                         {
                             Gizmos.color = new Color(1, 1, 1, alphaNodes) * Color.red;
                             Gizmos.DrawCube(node.worldPosition, Vector3.one * (nodeDiameter - 0.1f));
                         }
                         //draw if obstacle
-                        else if (node.GetObstaclesOnThisNode().Count > 0 && drawObstacles)
+                        else if (drawObstacles && node.GetObstaclesOnThisNode().Count > 0)
                         {
                             Gizmos.color = new Color(1, 1, 1, alphaNodes) * Color.magenta;
                             Gizmos.DrawCube(node.worldPosition, Vector3.one * (nodeDiameter - 0.1f));
                         }
                         //draw if walkable
-                        else if (node.isWalkable && drawWalkableNodes)
+                        else if (drawWalkableNodes && node.isWalkable && (calculateAgentForUnwalkableNodes == false || agentSize.CanMoveOnThisNode(node, this)))
                         {
                             Gizmos.color = new Color(1, 1, 1, alphaNodes) * Color.green;
                             Gizmos.DrawCube(node.worldPosition, Vector3.one * (nodeDiameter - 0.1f));
@@ -111,16 +123,19 @@ namespace redd096.PathFinding.FlowField3D
 
 #if UNITY_EDITOR
                         //draw cost
-                        if (drawCost)
+                        if (drawCosts)
                             Handles.Label(node.worldPosition, node.bestCost.ToString());
 
-                        //draw arrow
-                        if (drawArrow)
+                        //draw arrow direction
+                        if (drawDirections)
                         {
                             Handles.ArrowHandleCap(0, node.worldPosition,
                                 Quaternion.LookRotation(new Vector3(node.bestDirection.x, 0, node.bestDirection.y)), overlapRadius, EventType.Repaint);
                         }
 #endif
+                        //draw agent on every node
+                        if (drawAgentSizeOnEveryNode)
+                            agentSize.OnDrawGizmos(node.worldPosition);
                     }
                 }
             }
@@ -128,7 +143,7 @@ namespace redd096.PathFinding.FlowField3D
             Gizmos.color = Color.white;
 
             //draw agent size
-            agentSize.OnDrawGizmos(transform);
+            agentSize.OnDrawGizmos(transform.position);
         }
 
         #region create grid
@@ -469,15 +484,41 @@ namespace redd096.PathFinding.FlowField3D
     public class GridFlowFieldEditor : Editor
     {
         private GridFlowField grid;
+        SerializedProperty usedByComposite;
+        SerializedProperty gridWorldSize;
 
         private void OnEnable()
         {
             grid = target as GridFlowField;
+            usedByComposite = serializedObject.FindProperty("usedByComposite");
+            gridWorldSize = serializedObject.FindProperty("gridWorldSize");
         }
 
         public override void OnInspectorGUI()
         {
+            //when this grid is used by a composite, show only few variables
+            if (usedByComposite.boolValue)
+            {
+                //show script on top (as base.OnInspectorGUI())
+                GUI.enabled = false;
+                EditorGUILayout.ObjectField("Script", MonoScript.FromMonoBehaviour(grid), serializedObject.GetType(), false);
+                GUI.enabled = true;
+
+                //show only few variables
+                EditorGUILayout.PropertyField(usedByComposite);
+                EditorGUILayout.PropertyField(gridWorldSize);
+
+                //apply changes to serialized properties
+                serializedObject.ApplyModifiedProperties();
+                return;
+            }
+
+            //==============================================
+
+            //else show normally everything
             base.OnInspectorGUI();
+
+            //==============================================
 
             GUILayout.Space(10);
 
