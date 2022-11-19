@@ -92,7 +92,7 @@ namespace redd096.Attributes
 		/// <returns></returns>
 		public static FieldInfo[] GetFields(this object targetObject)
 		{
-			return targetObject.GetType().GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.DeclaredOnly);
+			return targetObject.GetType().GetFieldsRecursively();
 		}
 
 		/// <summary>
@@ -102,7 +102,7 @@ namespace redd096.Attributes
 		/// <returns></returns>
 		public static PropertyInfo[] GetProperties(this object targetObject)
 		{
-			return targetObject.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.DeclaredOnly);
+			return targetObject.GetType().GetPropertiesRecursively();
 		}
 
 		/// <summary>
@@ -112,19 +112,71 @@ namespace redd096.Attributes
 		/// <returns></returns>
 		public static MethodInfo[] GetMethods(this object targetObject)
 		{
-			return targetObject.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.DeclaredOnly);
+			return targetObject.GetType().GetMethodsRecursively();
 		}
 
-		#endregion
+        #endregion
 
-		#region generic
+        #region return array recursively
 
-		/// <summary>
-		/// Return type of a list
-		/// </summary>
-		/// <param name="listType"></param>
-		/// <returns></returns>
-		public static System.Type GetListElementType(System.Type listType)
+        /// <summary>
+        /// Return every field in this type and parents' type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static FieldInfo[] GetFieldsRecursively(this System.Type type)
+        {
+            BindingFlags flags = BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.DeclaredOnly;
+
+            //call this function until there is no base type
+            if (type.BaseType == null || type.BaseType == type)
+                return type.GetFields(flags);
+            else
+                return type.GetFields(flags).Concat(GetFieldsRecursively(type.BaseType)).ToArray();
+        }
+
+        /// <summary>
+        /// Return every property in this type and parents' type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static PropertyInfo[] GetPropertiesRecursively(this System.Type type)
+        {
+            BindingFlags flags = BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.DeclaredOnly;
+
+            //call this function until there is no base type
+            if (type.BaseType == null || type.BaseType == type)
+                return type.GetProperties(flags);
+            else
+                return type.GetProperties(flags).Concat(GetPropertiesRecursively(type.BaseType)).ToArray();
+        }
+
+        /// <summary>
+        /// Return every property in this type and parents' type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static MethodInfo[] GetMethodsRecursively(this System.Type type)
+        {
+            BindingFlags flags = BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.DeclaredOnly;
+
+            //call this function until there is no base type
+            if (type.BaseType == null || type.BaseType == type)
+                return type.GetMethods(flags);
+            else
+                return type.GetMethods(flags).Concat(GetMethodsRecursively(type.BaseType)).ToArray();
+        }
+
+        #endregion
+
+        #region generic
+
+        /// <summary>
+        /// Return type of a list
+        /// </summary>
+        /// <param name="listType"></param>
+        /// <returns></returns>
+        public static System.Type GetListElementType(System.Type listType)
 		{
 			//if generic, get first argument type
 			if (listType.IsGenericType)
