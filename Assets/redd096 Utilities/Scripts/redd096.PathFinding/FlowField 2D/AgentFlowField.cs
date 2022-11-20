@@ -40,7 +40,7 @@ namespace redd096.PathFinding.FlowField2D
         /// Calculate path. If called before finish processing path, will stop previous request. Call IsDone() to check when has finished
         /// </summary>
         /// <param name="targetRequests"></param>
-        public void FindPath(TargetRequest[] targetRequests)
+        public void FindPath(TargetRequest[] targetRequests, System.Action onEndProcessingPath = null)
         {
             //call find path on Path Finding
             if (PathFindingFlowField.instance)
@@ -51,8 +51,8 @@ namespace redd096.PathFinding.FlowField2D
                     PathFindingFlowField.instance.CancelRequest(lastPathRequest);
                 }
 
-                isWaitingPath = true;                                               //set is waiting path
-                lastPathRequest = new PathRequest(targetRequests, this);            //save last path request
+                isWaitingPath = true;                                                               //set is waiting path
+                lastPathRequest = new PathRequest(targetRequests, onEndProcessingPath, this);       //save last path request
                 PathFindingFlowField.instance.FindPath(lastPathRequest);
             }
         }
@@ -61,53 +61,53 @@ namespace redd096.PathFinding.FlowField2D
         /// Calculate path. If called before finish processing path, will stop previous request. Call IsDone() to check when has finished
         /// </summary>
         /// <param name="targets"></param>
-        public void FindPath(Transform[] targets)
+        public void FindPath(Transform[] targets, System.Action onEndProcessingPath = null)
         {
             TargetRequest[] targetRequests = new TargetRequest[targets.Length];
             for (int i = 0; i < targets.Length; i++)
                 targetRequests[i] = new TargetRequest(targets[i]);
 
-            FindPath(targetRequests);
+            FindPath(targetRequests, onEndProcessingPath);
         }
 
         /// <summary>
         /// Calculate path. If called before finish processing path, will stop previous request. Call IsDone() to check when has finished
         /// </summary>
         /// <param name="positions"></param>
-        public void FindPath(Vector2[] positions)
+        public void FindPath(Vector2[] positions, System.Action onEndProcessingPath = null)
         {
             TargetRequest[] targetRequests = new TargetRequest[positions.Length];
             for (int i = 0; i < positions.Length; i++)
                 targetRequests[i] = new TargetRequest(positions[i]);
 
-            FindPath(targetRequests);
+            FindPath(targetRequests, onEndProcessingPath);
         }
 
         /// <summary>
         /// Calculate path. If called before finish processing path, will stop previous request. Call IsDone() to check when has finished
         /// </summary>
         /// <param name="targetRequest"></param>
-        public void FindPath(TargetRequest targetRequest)
+        public void FindPath(TargetRequest targetRequest, System.Action onEndProcessingPath = null)
         {
-            FindPath(new TargetRequest[1] { targetRequest });
+            FindPath(new TargetRequest[1] { targetRequest }, onEndProcessingPath);
         }
 
         /// <summary>
         /// Calculate path. If called before finish processing path, will stop previous request. Call IsDone() to check when has finished
         /// </summary>
         /// <param name="target"></param>
-        public void FindPath(Transform target)
+        public void FindPath(Transform target, System.Action onEndProcessingPath = null)
         {
-            FindPath(new TargetRequest(target));
+            FindPath(new TargetRequest(target), onEndProcessingPath);
         }
 
         /// <summary>
         /// Calculate path. If called before finish processing path, will stop previous request. Call IsDone() to check when has finished
         /// </summary>
         /// <param name="position"></param>
-        public void FindPath(Vector2 position)
+        public void FindPath(Vector2 position, System.Action onEndProcessingPath = null)
         {
-            FindPath(new TargetRequest(position));
+            FindPath(new TargetRequest(position), onEndProcessingPath);
         }
 
         #endregion

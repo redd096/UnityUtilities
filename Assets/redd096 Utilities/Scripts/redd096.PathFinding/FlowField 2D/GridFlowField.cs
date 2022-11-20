@@ -121,6 +121,8 @@ namespace redd096.PathFinding.FlowField2D
                             Gizmos.DrawCube(node.worldPosition, Vector2.one * (nodeDiameter - 0.1f));
                         }
 
+                        Gizmos.color = Color.white;
+
 #if UNITY_EDITOR
                         //draw cost
                         if (drawCosts)
@@ -129,8 +131,10 @@ namespace redd096.PathFinding.FlowField2D
                         //draw arrow direction
                         if (drawDirections)
                         {
-                            Handles.ArrowHandleCap(0, node.worldPosition,
-                                Quaternion.LookRotation(new Vector2(node.bestDirection.x, node.bestDirection.y)), overlapRadius, EventType.Repaint);
+                            Gizmos.DrawWireCube(node.worldPosition + new Vector2(node.bestDirection.x, node.bestDirection.y) * overlapRadius, Vector2.one * 0.05f);
+                            if (node.bestDirection != Vector2Int.zero)
+                                Gizmos.DrawLine(node.worldPosition, node.worldPosition + new Vector2(node.bestDirection.x, node.bestDirection.y) * overlapRadius);
+                                //Handles.ArrowHandleCap(0, node.worldPosition, Quaternion.LookRotation(new Vector2(node.bestDirection.x, node.bestDirection.y)), overlapRadius, EventType.Repaint);
                         }
 #endif
                         //draw agent on every node
@@ -139,8 +143,6 @@ namespace redd096.PathFinding.FlowField2D
                     }
                 }
             }
-
-            Gizmos.color = Color.white;
 
             //draw agent size
             agentSize.OnDrawGizmos(transform.position);

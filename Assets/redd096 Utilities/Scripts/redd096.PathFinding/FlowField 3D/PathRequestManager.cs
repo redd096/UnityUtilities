@@ -64,6 +64,7 @@ namespace redd096.PathFinding.FlowField3D
     public class PathRequest
     {
         public TargetRequest[] targetRequests;
+        public System.Action onEndProcessingPath;
         public AgentFlowField agent;
 
         /// <summary>
@@ -71,9 +72,10 @@ namespace redd096.PathFinding.FlowField3D
         /// </summary>
         /// <param name="targetRequests">Targets and/or positions to reach</param>
         /// <param name="agent"></param>
-        public PathRequest(TargetRequest[] targetRequests, AgentFlowField agent = null)
+        public PathRequest(TargetRequest[] targetRequests, System.Action onEndProcessingPath = null, AgentFlowField agent = null)
         {
             this.targetRequests = targetRequests;
+            this.onEndProcessingPath = onEndProcessingPath;
             this.agent = agent;
         }
 
@@ -82,13 +84,13 @@ namespace redd096.PathFinding.FlowField3D
         /// </summary>
         /// <param name="targets">Targets to reach</param>
         /// <param name="agent"></param>
-        public PathRequest(Transform[] targets, AgentFlowField agent = null)
+        public PathRequest(Transform[] targets, System.Action onEndProcessingPath = null, AgentFlowField agent = null)
         {
             TargetRequest[] targetRequests = new TargetRequest[targets.Length];
             for (int i = 0; i < targets.Length; i++)
                 targetRequests[i] = new TargetRequest(targets[i]);
 
-            new PathRequest(targetRequests, agent);
+            new PathRequest(targetRequests, onEndProcessingPath, agent);
         }
 
         /// <summary>
@@ -96,13 +98,13 @@ namespace redd096.PathFinding.FlowField3D
         /// </summary>
         /// <param name="positions">Positions to reach</param>
         /// <param name="agent"></param>
-        public PathRequest(Vector3[] positions, AgentFlowField agent = null)
+        public PathRequest(Vector3[] positions, System.Action onEndProcessingPath = null, AgentFlowField agent = null)
         {
             TargetRequest[] targetRequests = new TargetRequest[positions.Length];
             for (int i = 0; i < positions.Length; i++)
                 targetRequests[i] = new TargetRequest(positions[i]);
 
-            new PathRequest(targetRequests, agent);
+            new PathRequest(targetRequests, onEndProcessingPath, agent);
         }
 
         /// <summary>
@@ -110,9 +112,9 @@ namespace redd096.PathFinding.FlowField3D
         /// </summary>
         /// <param name="target">Target to reach</param>
         /// <param name="agent"></param>
-        public PathRequest(TargetRequest targetRequest, AgentFlowField agent = null)
+        public PathRequest(TargetRequest targetRequest, System.Action onEndProcessingPath = null, AgentFlowField agent = null)
         {
-            new PathRequest(new TargetRequest[1] { targetRequest }, agent);
+            new PathRequest(new TargetRequest[1] { targetRequest }, onEndProcessingPath, agent);
         }
 
         /// <summary>
@@ -120,9 +122,9 @@ namespace redd096.PathFinding.FlowField3D
         /// </summary>
         /// <param name="target">Target to reach</param>
         /// <param name="agent"></param>
-        public PathRequest(Transform target, AgentFlowField agent = null)
+        public PathRequest(Transform target, System.Action onEndProcessingPath = null, AgentFlowField agent = null)
         {
-            new PathRequest(new TargetRequest(target), agent);
+            new PathRequest(new TargetRequest(target), onEndProcessingPath, agent);
         }
 
         /// <summary>
@@ -130,9 +132,9 @@ namespace redd096.PathFinding.FlowField3D
         /// </summary>
         /// <param name="position">Position to reach</param>
         /// <param name="agent"></param>
-        public PathRequest(Vector3 position, AgentFlowField agent = null)
+        public PathRequest(Vector3 position, System.Action onEndProcessingPath = null, AgentFlowField agent = null)
         {
-            new PathRequest(new TargetRequest(position), agent);
+            new PathRequest(new TargetRequest(position), onEndProcessingPath, agent);
         }
     }
 
