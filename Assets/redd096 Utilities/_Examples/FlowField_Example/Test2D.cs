@@ -1,11 +1,11 @@
 using redd096;
-using redd096.PathFinding.FlowField3D;
+using redd096.PathFinding.FlowField2D;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Examples.FlowField
 {
-    public class Test3D : MonoBehaviour
+    public class Test2D : MonoBehaviour
     {
         [Header("Left Click to set destinations. Right click to start pathfinding")]
         [SerializeField] float speed = 5;
@@ -15,7 +15,7 @@ namespace Examples.FlowField
         [SerializeField] TargetRequest[] targetRequests = default;
 
         //targets on click
-        List<Vector3> targetsPosition = new List<Vector3>();
+        List<Vector2> targetsPosition = new List<Vector2>();
 
         private void OnDrawGizmos()
         {
@@ -23,21 +23,21 @@ namespace Examples.FlowField
             Gizmos.color = Color.yellow;
             if (targetRequests != null)
                 foreach (TargetRequest targetRequest in targetRequests)
-                    Gizmos.DrawWireCube(targetRequest.targetPosition, Vector3.one * 2);
+                    Gizmos.DrawWireCube(targetRequest.targetPosition, Vector2.one * 2);
 
             if (Application.isPlaying == false)
                 return;
 
-            foreach (Vector3 targetPosition in targetsPosition)
+            foreach (Vector2 targetPosition in targetsPosition)
             {
                 //draw click position
                 Gizmos.color = Color.red;
-                Gizmos.DrawWireCube(targetPosition, Vector3.one * 2);
+                Gizmos.DrawWireCube(targetPosition, Vector2.one * 2);
 
                 //draw node from click position
                 Gizmos.color = Color.cyan;
                 Node node = PathFindingFlowField.instance.Grid.GetNodeFromWorldPosition(targetPosition);
-                Gizmos.DrawWireCube(node.worldPosition, Vector3.one * 2);
+                Gizmos.DrawWireCube(node.worldPosition, Vector2.one * 2);
             }
 
             Gizmos.color = Color.white;
@@ -48,12 +48,12 @@ namespace Examples.FlowField
             //add components
             foreach (GameObject agent in agents)
             {
-                Rigidbody rb = agent.GetComponent<Rigidbody>();
+                Rigidbody2D rb = agent.GetComponent<Rigidbody2D>();
                 if (rb == null)
-                    rb = agent.AddComponent<Rigidbody>();
+                    rb = agent.AddComponent<Rigidbody2D>();
 
                 //be sure rigidbody has no gravity
-                rb.useGravity = false;
+                rb.gravityScale = 0;
                 rb.freezeRotation = true;
 
                 if (agent.GetComponent<AgentFlowField>() == null)
@@ -67,8 +67,8 @@ namespace Examples.FlowField
             //left click to set targets
             if (InputRedd096.GetLeftMouseButtonDown())
             {
-                Vector3 mousePos = new Vector3(InputRedd096.mousePosition.x, InputRedd096.mousePosition.y, Camera.main.transform.position.y);
-                Vector3 worldMousePos = Camera.main.ScreenToWorldPoint(mousePos);
+                Vector3 mousePos = new Vector3(InputRedd096.mousePosition.x, InputRedd096.mousePosition.y, -Camera.main.transform.position.z);
+                Vector2 worldMousePos = Camera.main.ScreenToWorldPoint(mousePos);
 
                 targetsPosition.Add(worldMousePos);
             }
@@ -96,7 +96,7 @@ namespace Examples.FlowField
             //move every agent
             foreach (GameObject agent in agents)
             {
-                Rigidbody rb = agent.GetComponent<Rigidbody>();
+                Rigidbody2D rb = agent.GetComponent<Rigidbody2D>();
                 AgentFlowField agentFlowField = agent.GetComponent<AgentFlowField>();
 
                 if (rb && agentFlowField)
