@@ -280,7 +280,7 @@ namespace redd096.PathFinding.FlowField3D
             }
         }
 
-        void SetBestCostToThisNode(TargetRequest[] targetRequests)
+        void SetBestCosts(TargetRequest[] targetRequests)
         {
             foreach (TargetRequest targetRequest in targetRequests)
             {
@@ -358,7 +358,7 @@ namespace redd096.PathFinding.FlowField3D
         public void SetFlowField(TargetRequest[] targetRequests)
         {
             ResetFlowFieldGrid();
-            SetBestCostToThisNode(targetRequests);
+            SetBestCosts(targetRequests);
             SetBestDirections();
         }
 
