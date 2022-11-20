@@ -85,6 +85,9 @@ namespace redd096.PathFinding.FlowField3D
                     if (request.agent)
                         request.agent.OnFinishProcessingPath(request);
 
+                    //call event
+                    request.onEndProcessingPath?.Invoke();
+
                     //remove from the list
                     pathRequestList.Remove(request);
                 }
