@@ -104,7 +104,7 @@ namespace redd096.PathFinding.FlowField2D
                     ////if agent can not move through OR there are obstacles, return false
                     //if (nodeToCheck.agentCanMoveThrough == false || ThereAreObstacles(nodeToCheck))
                     //if agent can not move through, return false
-                    if (nodeToCheck.agentCanMoveThrough == false)
+                    if (nodeToCheck.AgentCanOverlap == false)
                         return false;
                 }
             }
@@ -131,7 +131,7 @@ namespace redd096.PathFinding.FlowField2D
                         ////if agent can not move through OR there are obstacles, return false
                         //if (nodeToCheck.agentCanMoveThrough == false || ThereAreObstacles(nodeToCheck))
                         //if agent can not move through, return false
-                        if (nodeToCheck.agentCanMoveThrough == false)
+                        if (nodeToCheck.AgentCanOverlap == false)
                             return false;
                     }
                 }

@@ -6,14 +6,15 @@ namespace redd096.PathFinding.FlowField3D
     public class Node
     {
         //variables constructor
-        bool isNodeWalkable;
-        public bool agentCanMoveThrough;        //used by agentAStar
+        bool isWalkable;
+        bool agentCanOverlap;        //created by composite. If a node is out of grids, is not walkable, but agents can overlap with it
         public Vector3 worldPosition;
         public Vector2Int gridPosition;
         public int movementPenalty;
 
-        //property is walkable, to check also obstacles
-        public bool isWalkable => isNodeWalkable && obstaclesNotWalkable.Count <= 0;
+        //properties
+        public bool IsWalkable => isWalkable && obstaclesNotWalkable.Count <= 0;                //is walkable, to check also obstacles
+        public bool AgentCanOverlap => agentCanOverlap && obstaclesNotWalkable.Count <= 0;      //if there are obstacles, they prevent agents from overlap with this
 
         //variables path finding
         public short bestCost;
@@ -25,10 +26,10 @@ namespace redd096.PathFinding.FlowField3D
         List<ObstacleFlowField> obstaclesOnThisNode = new List<ObstacleFlowField>();
         List<ObstacleFlowField> obstaclesNotWalkable = new List<ObstacleFlowField>();
 
-        public Node(bool isWalkable, bool agentCanMoveThrough, Vector3 worldPosition, int x, int y, int movementPenalty)
+        public Node(bool isWalkable, bool agentCanOverlap, Vector3 worldPosition, int x, int y, int movementPenalty)
         {
-            this.isNodeWalkable = isWalkable;
-            this.agentCanMoveThrough = agentCanMoveThrough;
+            this.isWalkable = isWalkable;
+            this.agentCanOverlap = agentCanOverlap;
             this.worldPosition = worldPosition;
             this.gridPosition = new Vector2Int(x, y);
             this.movementPenalty = movementPenalty;

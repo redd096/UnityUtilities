@@ -38,8 +38,8 @@ namespace redd096.PathFinding.FlowField3D
         [Tooltip("If not inside these regions, penalty is 1")][SerializeField] TerrainType[] penaltyRegions = default;
 
         [Header("Extensions")]
-        [SerializeField] AgentSize_FlowField agentSize = default;
         [SerializeField] bool canMoveDiagonal = true;
+        [SerializeField] AgentSize_FlowField agentSize = default;
 
         [Header("Gizmos - cyan GridArea - red unwalkable - magenta obstacle - green walkable")]
         [SerializeField] bool drawGridArea = false;
@@ -103,7 +103,7 @@ namespace redd096.PathFinding.FlowField3D
                         //Gizmos.DrawSphere(node.worldPosition, overlapRadius);
 
                         //draw if unwalkable
-                        if (drawUnwalkableNodes && (node.isWalkable == false || (calculateAgentForUnwalkableNodes && agentSize.CanMoveOnThisNode(node, this) == false)))
+                        if (drawUnwalkableNodes && (node.IsWalkable == false || (calculateAgentForUnwalkableNodes && agentSize.CanMoveOnThisNode(node, this) == false)))
                         {
                             Gizmos.color = new Color(1, 1, 1, alphaNodes) * Color.red;
                             Gizmos.DrawCube(node.worldPosition, Vector3.one * (nodeDiameter - 0.1f));
@@ -115,7 +115,7 @@ namespace redd096.PathFinding.FlowField3D
                             Gizmos.DrawCube(node.worldPosition, Vector3.one * (nodeDiameter - 0.1f));
                         }
                         //draw if walkable
-                        else if (drawWalkableNodes && node.isWalkable && (calculateAgentForUnwalkableNodes == false || agentSize.CanMoveOnThisNode(node, this)))
+                        else if (drawWalkableNodes && node.IsWalkable && (calculateAgentForUnwalkableNodes == false || agentSize.CanMoveOnThisNode(node, this)))
                         {
                             Gizmos.color = new Color(1, 1, 1, alphaNodes) * Color.green;
                             Gizmos.DrawCube(node.worldPosition, Vector3.one * (nodeDiameter - 0.1f));
@@ -177,7 +177,7 @@ namespace redd096.PathFinding.FlowField3D
             //create grid
             Vector3 worldPosition;
             bool isWalkable;
-            bool agentCanMoveThrough;
+            bool agentCanOverlap;
             int movementPenalty;
             for (int x = 0; x < gridSize.x; x++)
             {
@@ -185,7 +185,7 @@ namespace redd096.PathFinding.FlowField3D
                 {
                     //find world position and if walkable
                     worldPosition = worldBottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.forward * (y * nodeDiameter + nodeRadius);
-                    isWalkable = IsWalkable(worldPosition, out agentCanMoveThrough);
+                    isWalkable = IsWalkable(worldPosition, out agentCanOverlap);
 
                     //if walkable, calculate movement penalty
                     movementPenalty = 1;
@@ -195,16 +195,16 @@ namespace redd096.PathFinding.FlowField3D
                     }
 
                     //set new node in grid
-                    grid[x, y] = new Node(isWalkable, agentCanMoveThrough, worldPosition, x, y, movementPenalty);
+                    grid[x, y] = new Node(isWalkable, agentCanOverlap, worldPosition, x, y, movementPenalty);
                 }
             }
         }
 
-        protected virtual bool IsWalkable(Vector3 worldPosition, out bool agentCanMoveThrough)
+        protected virtual bool IsWalkable(Vector3 worldPosition, out bool agentCanOverlap)
         {
-            //overlap sphere (agent can move through only on walkable nodes)
-            agentCanMoveThrough = gameObject.scene.GetPhysicsScene().OverlapSphere(worldPosition, overlapRadius, new Collider[1], unwalkableMask, QueryTriggerInteraction.UseGlobal) <= 0;
-            return agentCanMoveThrough;
+            //overlap sphere (normally, agent can move overlap only with walkable nodes)
+            agentCanOverlap = gameObject.scene.GetPhysicsScene().OverlapSphere(worldPosition, overlapRadius, new Collider[1], unwalkableMask, QueryTriggerInteraction.UseGlobal) <= 0;
+            return agentCanOverlap;
         }
 
         void CalculateMovementPenalty(Vector3 worldPosition, out int movementPenalty)
@@ -300,7 +300,7 @@ namespace redd096.PathFinding.FlowField3D
                     foreach (Node currentNeghbour in currentNode.neighboursCardinalDirections)
                     {
                         //if not walkable, ignore
-                        if (currentNeghbour.isWalkable == false) { continue; }
+                        if (currentNeghbour.IsWalkable == false) { continue; }
 
                         //if using agent and can't move on this node, skip to next Neighbour
                         if (agentSize.CanMoveOnThisNode(currentNeghbour, this) == false)

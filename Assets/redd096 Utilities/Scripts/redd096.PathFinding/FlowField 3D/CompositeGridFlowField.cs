@@ -10,7 +10,7 @@ namespace redd096.PathFinding.FlowField3D
     public class CompositeGridFlowField : GridFlowField
     {
         [Header("Composite")]
-        [Tooltip("If the node we want to reach makes the agent overlap with a node outside of every grid, we want our agent to move anyway? Then set true.\n" +
+        [Tooltip("If the node we want to reach makes the agent overlaps with a node outside of every grid, we want our agent to move anyway? Then set true.\n" +
             "Or maybe we prefer to calculate it like a wall? Then set false")]
         [SerializeField] bool agentCanOverlapNodesOutsideGrids = true;
 
@@ -33,17 +33,17 @@ namespace redd096.PathFinding.FlowField3D
             base.SetGrid();
         }
 
-        protected override bool IsWalkable(Vector3 worldPosition, out bool agentCanMoveThrough)
+        protected override bool IsWalkable(Vector3 worldPosition, out bool agentCanOverlap)
         {
             //check is walkable, only if inside one of the grids in the array
             foreach (GridFlowField grid in grids)
             {
                 if (grid.IsInsideGrid(worldPosition))
-                    return base.IsWalkable(worldPosition, out agentCanMoveThrough);
+                    return base.IsWalkable(worldPosition, out agentCanOverlap);
             }
 
-            //else return false if outside of any grid (but if setted, agent can move through because is not a really wall, just is not walkable)
-            agentCanMoveThrough = agentCanOverlapNodesOutsideGrids;
+            //else return false if outside of any grid (but if setted, agent can overlap because is not a real wall, just is not walkable)
+            agentCanOverlap = agentCanOverlapNodesOutsideGrids;
             return false;
         }
 
