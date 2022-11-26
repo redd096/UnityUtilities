@@ -178,7 +178,7 @@ namespace redd096.PathFinding.FlowField2D
             //calculate nodes
             //use an offset to check if node is inside also if collider not reach center of the node (add grid.NodeRadius in the half size)
             centerNode = grid.GetNodeFromWorldPosition((Vector2)transform.position + offset);
-            grid.GetNodesExtremesOfABox(centerNode, (Vector2)transform.position + offset, (sizeCollider * 0.5f) + (Vector2.one * grid.NodeRadius), out leftNode, out rightNode, out downNode, out upNode);
+            grid.GetNodesExtremesOfABox(centerNode, (Vector2)transform.position + offset, sizeCollider * 0.5f, out leftNode, out rightNode, out downNode, out upNode);
 
             //check every node
             for (int x = leftNode.gridPosition.x; x <= rightNode.gridPosition.x; x++)
@@ -203,7 +203,7 @@ namespace redd096.PathFinding.FlowField2D
             //calculate nodes
             //use an offset to check if node is inside also if collider not reach center of the node (add grid.NodeRadius in the half size)
             centerNode = grid.GetNodeFromWorldPosition((Vector2)transform.position + offset);
-            grid.GetNodesExtremesOfABox(centerNode, (Vector2)transform.position + offset, (Vector2.one * radiusCollider) + (Vector2.one * grid.NodeRadius), out leftNode, out rightNode, out downNode, out upNode);
+            grid.GetNodesExtremesOfABox(centerNode, (Vector2)transform.position + offset, Vector2.one * radiusCollider, out leftNode, out rightNode, out downNode, out upNode);
 
             //check every node
             for (int x = leftNode.gridPosition.x; x <= rightNode.gridPosition.x; x++)
@@ -238,7 +238,7 @@ namespace redd096.PathFinding.FlowField2D
                 //calculate nodes
                 //use an offset to check if node is inside also if collider not reach center of the node (add grid.NodeRadius in the half size)
                 centerNode = grid.GetNodeFromWorldPosition(col.bounds.center);
-                grid.GetNodesExtremesOfABox(centerNode, col.bounds.center, (Vector2)col.bounds.extents + (Vector2.one * grid.NodeRadius), out leftNode, out rightNode, out downNode, out upNode);
+                grid.GetNodesExtremesOfABox(centerNode, col.bounds.center, (Vector2)col.bounds.extents, out leftNode, out rightNode, out downNode, out upNode);
 
                 //check every node
                 for (int x = leftNode.gridPosition.x; x <= rightNode.gridPosition.x; x++)
