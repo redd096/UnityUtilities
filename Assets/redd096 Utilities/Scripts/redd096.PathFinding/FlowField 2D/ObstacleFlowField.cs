@@ -176,7 +176,6 @@ namespace redd096.PathFinding.FlowField2D
         void SetNodesUsingBox()
         {
             //calculate nodes
-            //use an offset to check if node is inside also if collider not reach center of the node (add grid.NodeRadius in the half size)
             centerNode = grid.GetNodeFromWorldPosition((Vector2)transform.position + offset);
             grid.GetNodesExtremesOfABox(centerNode, (Vector2)transform.position + offset, sizeCollider * 0.5f, out leftNode, out rightNode, out downNode, out upNode);
 
@@ -201,7 +200,6 @@ namespace redd096.PathFinding.FlowField2D
         void SetNodesUsingSphere()
         {
             //calculate nodes
-            //use an offset to check if node is inside also if collider not reach center of the node (add grid.NodeRadius in the half size)
             centerNode = grid.GetNodeFromWorldPosition((Vector2)transform.position + offset);
             grid.GetNodesExtremesOfABox(centerNode, (Vector2)transform.position + offset, Vector2.one * radiusCollider, out leftNode, out rightNode, out downNode, out upNode);
 
@@ -236,7 +234,6 @@ namespace redd096.PathFinding.FlowField2D
                     continue;
 
                 //calculate nodes
-                //use an offset to check if node is inside also if collider not reach center of the node (add grid.NodeRadius in the half size)
                 centerNode = grid.GetNodeFromWorldPosition(col.bounds.center);
                 grid.GetNodesExtremesOfABox(centerNode, col.bounds.center, (Vector2)col.bounds.extents, out leftNode, out rightNode, out downNode, out upNode);
 
