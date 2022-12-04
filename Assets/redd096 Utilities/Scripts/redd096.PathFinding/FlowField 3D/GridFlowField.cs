@@ -73,6 +73,10 @@ namespace redd096.PathFinding.FlowField3D
 
         void Awake()
         {
+            //doesn't need to create grid, if used by a composite
+            if (usedByComposite)
+                return;
+
             //create grid
             if (updateOnAwake && IsGridCreated() == false)
                 BuildGrid();
