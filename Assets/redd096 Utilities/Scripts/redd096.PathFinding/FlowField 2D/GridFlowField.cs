@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections.Generic;
 using redd096.Attributes;
 
 #if UNITY_EDITOR
@@ -12,7 +11,7 @@ namespace redd096.PathFinding.FlowField2D
     /// Grid used for pathfinding
     /// </summary>
     [AddComponentMenu("redd096/.PathFinding/FlowField 2D/Grid FlowField 2D")]
-    public class GridFlowField : MonoBehaviour
+    public class GridFlowField : GridBASE
     {
         #region structs
 
@@ -38,7 +37,6 @@ namespace redd096.PathFinding.FlowField2D
         [Tooltip("If not inside these regions, penalty is 1")][SerializeField] TerrainType[] penaltyRegions = default;
 
         [Header("Extensions")]
-        [SerializeField] bool canMoveDiagonal = true;
         [SerializeField] AgentSize_FlowField agentSize = default;
 
         [Header("Gizmos - cyan GridArea - red unwalkable - magenta obstacle - green walkable")]
@@ -52,9 +50,6 @@ namespace redd096.PathFinding.FlowField2D
         [Tooltip("Enable gizmos also on agent")][SerializeField] bool drawAgentSizeOnEveryNode = false;
         [SerializeField] float alphaNodes = 1f;
 
-        //grid
-        Node[,] grid;
-
         float nodeRadius;
         float overlapRadius;                        //node radius - 0.05f to not hit adjacent colliders
         Vector2Int gridSize;                        //rows and columns (number of nodes)
@@ -62,7 +57,6 @@ namespace redd096.PathFinding.FlowField2D
 
         //public properties
         public bool UsedByComposite => usedByComposite;
-        public virtual Vector2 GridWorldPosition => transform.position;
         public Vector2 GridWorldSize => gridWorldSize;
         public float NodeRadius => nodeRadius;
 
@@ -154,7 +148,7 @@ namespace redd096.PathFinding.FlowField2D
 
         #region create grid
 
-        protected virtual void SetGrid()
+        protected override void SetGrid()
         {
             //set radius for every node
             nodeRadius = nodeDiameter * 0.5f;
@@ -172,7 +166,7 @@ namespace redd096.PathFinding.FlowField2D
             }
         }
 
-        void CreateGrid()
+        protected override void CreateGrid()
         {
             //reset grid and find bottom left world position
             grid = new Node[gridSize.x, gridSize.y];
@@ -233,7 +227,7 @@ namespace redd096.PathFinding.FlowField2D
             }
         }
 
-        void SetNeighbours()
+        protected override void SetNeighbours()
         {
             //set neighbours for every node
             int checkX;
@@ -271,109 +265,18 @@ namespace redd096.PathFinding.FlowField2D
 
         #endregion
 
-        #region flow field
-
-        void ResetFlowFieldGrid()
-        {
-            //reset every node in the grid (not neighbours or penalty, just reset best cost and direction used for FlowField Pathfinding)
-            foreach (Node node in grid)
-            {
-                //set default values
-                node.bestCost = short.MaxValue;
-                node.bestDirection = Vector2Int.zero;
-            }
-        }
-
-        void SetBestCosts(TargetRequest[] targetRequests)
-        {
-            foreach (TargetRequest targetRequest in targetRequests)
-            {
-                Node targetNode = GetNodeFromWorldPosition(targetRequest.savedPosition);
-
-                //set target node at 0 or lower
-                targetNode.bestCost = (short)-targetRequest.weight;
-
-                //start from target node
-                Queue<Node> cellsToCheck = new Queue<Node>();
-                cellsToCheck.Enqueue(targetNode);
-
-                while (cellsToCheck.Count > 0)
-                {
-                    //get every neighbour in cardinal directions
-                    Node currentNode = cellsToCheck.Dequeue();
-                    foreach (Node currentNeghbour in currentNode.neighboursCardinalDirections)
-                    {
-                        //if not walkable, ignore
-                        if (currentNeghbour.IsWalkable == false) { continue; }
-
-                        //if using agent and can't move on this node, skip to next Neighbour
-                        if (agentSize.CanMoveOnThisNode(currentNeghbour, this) == false)
-                            continue;
-
-                        //else, calculate best cost
-                        if (currentNeghbour.movementPenalty + currentNode.bestCost < currentNeghbour.bestCost)
-                        {
-                            currentNeghbour.bestCost = (short)(currentNeghbour.movementPenalty + currentNode.bestCost);
-                            cellsToCheck.Enqueue(currentNeghbour);
-                        }
-                    }
-                }
-            }
-        }
-
-        void SetBestDirections()
-        {
-            //foreach node in the grid
-            foreach (Node currentNode in grid)
-            {
-                //calculate best direction from this node to neighbours
-                int bestCost = currentNode.bestCost;
-                foreach (Node neighbour in canMoveDiagonal ? currentNode.neighbours : currentNode.neighboursCardinalDirections)
-                {
-                    //if this best cost is lower then found one, this is the best node to move to
-                    if (neighbour.bestCost < bestCost)
-                    {
-                        //save best cost and set direction
-                        bestCost = neighbour.bestCost;
-                        currentNode.bestDirection = neighbour.gridPosition - currentNode.gridPosition;
-                    }
-                }
-            }
-        }
-
-        #endregion
-
         #region public API
-
-        /// <summary>
-        /// Recreate grid (set which node is walkable and which not)
-        /// </summary>
-        public void BuildGrid()
-        {
-            SetGrid();
-            CreateGrid();
-            SetNeighbours();
-        }
 
         /// <summary>
         /// Set best direction for every node in the grid, to target node
         /// </summary>
         /// <param name="targetRequests"></param>
-        public void SetFlowField(TargetRequest[] targetRequests)
+        /// <param name="canMoveDiagonal">can move diagonal or only horizontal and vertical?</param>
+        public override void SetFlowField(TargetRequest[] targetRequests, bool canMoveDiagonal)
         {
             ResetFlowFieldGrid();
-            SetBestCosts(targetRequests);
-            SetBestDirections();
-        }
-
-        /// <summary>
-        /// Is grid created or is null?
-        /// </summary>
-        /// <returns></returns>
-        public bool IsGridCreated()
-        {
-            //return if the grid was being created
-            return grid != null;
+            SetBestCosts(targetRequests, (Node currentNeighbour) => agentSize.CanMoveOnThisNode(currentNeighbour, this));
+            SetBestDirections(canMoveDiagonal);
         }
 
         /// <summary>
@@ -396,11 +299,11 @@ namespace redd096.PathFinding.FlowField2D
         }
 
         /// <summary>
-        /// Get node from world position
+        /// Get node from world position (or nearest one)
         /// </summary>
         /// <param name="worldPosition"></param>
         /// <returns></returns>
-        public Node GetNodeFromWorldPosition(Vector2 worldPosition)
+        public override Node GetNodeFromWorldPosition(Vector2 worldPosition)
         {
             //be sure to get right result also if grid doesn't start at [0,0]
             worldPosition -= GridWorldPosition;
@@ -416,16 +319,6 @@ namespace redd096.PathFinding.FlowField2D
             int y = Mathf.RoundToInt((gridSize.y - 1) * percentY);
 
             //return node
-            return grid[x, y];
-        }
-
-        /// <summary>
-        /// Get node at grid position
-        /// </summary>
-        /// <param name="gridPosition"></param>
-        /// <returns></returns>
-        public Node GetNodeByCoordinates(int x, int y)
-        {
             return grid[x, y];
         }
 

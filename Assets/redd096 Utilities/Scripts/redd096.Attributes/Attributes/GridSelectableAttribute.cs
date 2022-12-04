@@ -43,7 +43,7 @@ namespace redd096.Attributes
     {
         GridSelectableAttribute at;
         int propertyHeight = 18;
-        int littleSpace = 10;
+        int littleSpace = 2;
         int sizeSquare = 40;
         float spaceBetweenSquares = 2;
 
@@ -55,7 +55,7 @@ namespace redd096.Attributes
 
             //property height + little space + every row * (size square + space between)
             int y = (attribute as GridSelectableAttribute).sizeY;
-            return EditorGUI.GetPropertyHeight(property) + littleSpace + propertySize + littleSpace + y * (sizeSquare + spaceBetweenSquares);
+            return littleSpace + propertySize + littleSpace + y * (sizeSquare + spaceBetweenSquares);
 
             //return base.GetPropertyHeight(property, label);
         }
