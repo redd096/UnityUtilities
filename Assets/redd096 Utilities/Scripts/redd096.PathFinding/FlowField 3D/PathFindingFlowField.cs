@@ -12,7 +12,8 @@ namespace redd096.PathFinding.FlowField3D
         public static PathFindingFlowField instance;
 
         [Header("Default use Find Object of Type")]
-        public GridFlowField Grid = default;
+        [SerializeField] bool canMoveDiagonal = true;
+        public GridBASE Grid = default;
 
         void Awake()
         {
@@ -53,7 +54,7 @@ namespace redd096.PathFinding.FlowField3D
             if (Grid.IsGridCreated() == false)
                 Grid.BuildGrid();
 
-            obstacle.UpdatePositionOnGrid(Grid);
+            obstacle.UpdatePositionOnGrid(Grid as GridFlowField);
         }
 
         #endregion
@@ -65,7 +66,7 @@ namespace redd096.PathFinding.FlowField3D
                 Grid.BuildGrid();
 
             //create flow field to targets
-            await Task.Run(() => Grid.SetFlowField(pathRequest.targetRequests));
+            await Task.Run(() => Grid.SetFlowField(pathRequest.targetRequests, canMoveDiagonal));
 
             //advice agents and remove requests from the list
             await Task.Run(() => FinishProcessing(pathRequest));

@@ -7,12 +7,12 @@ using redd096.Attributes;
 using UnityEditor;
 #endif
 
-namespace redd096.PathFinding.FlowField2D
+namespace redd096.PathFinding.FlowField3D
 {
     /// <summary>
     /// Grid used for pathfinding
     /// </summary>
-    [AddComponentMenu("redd096/.PathFinding/FlowField 2D/Grid Waypoints/Grid FlowField Waypoints 2D")]
+    [AddComponentMenu("redd096/.PathFinding/FlowField 3D/Grid Waypoints/Grid FlowField Waypoints 3D")]
     public class GridFlowFieldWaypoints : GridBASE
     {
         [Header("Use every waypoint in scene or just array?")]
@@ -37,11 +37,11 @@ namespace redd096.PathFinding.FlowField2D
         [SerializeField] float nodeDiameter = 1f;
         //instantiate prefab from down left to up right
         [Button] void GenerateAutomaticallyGrid()
-        { Vector2 worldBottomLeft = GridWorldPosition + (Vector2.left * gridWorldSize.x * 0.5f) + (Vector2.down * gridWorldSize.y * 0.5f);
+        { Vector3 worldBottomLeft = GridWorldPosition + (Vector3.left * gridWorldSize.x * 0.5f) + (Vector3.back * gridWorldSize.y * 0.5f);
             Vector2 halfSpace = spaceBetweenWaypoints * 0.5f;
             for (int x = 0; x < Mathf.RoundToInt(gridWorldSize.x / spaceBetweenWaypoints.x); x++)
             { for (int y = 0; y < Mathf.RoundToInt(gridWorldSize.y / spaceBetweenWaypoints.y); y++)
-                { Vector2 worldPosition = worldBottomLeft + Vector2.right * (x * spaceBetweenWaypoints.x + halfSpace.x) + Vector2.up * (y * spaceBetweenWaypoints.y + halfSpace.y);
+                { Vector3 worldPosition = worldBottomLeft + Vector3.right * (x * spaceBetweenWaypoints.x + halfSpace.x) + Vector3.forward * (y * spaceBetweenWaypoints.y + halfSpace.y);
                     WaypointFlowField waypoint = Instantiate(prefab, transform); waypoint.transform.position = worldPosition; } } }
         //find waypoints in scene and set in array
         [Button] void FindWaypointsInScene() => waypoints = FindObjectsOfType<WaypointFlowField>();
@@ -64,7 +64,7 @@ namespace redd096.PathFinding.FlowField2D
             {
                 //draw area
                 Gizmos.color = Color.cyan;
-                Gizmos.DrawWireCube(GridWorldPosition, new Vector2(gridWorldSize.x, gridWorldSize.y));
+                Gizmos.DrawWireCube(GridWorldPosition, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));
             }
 
             //draw every node in grid
@@ -82,13 +82,13 @@ namespace redd096.PathFinding.FlowField2D
                         if (drawUnwalkableNodes && (node.IsWalkable == false))
                         {
                             Gizmos.color = new Color(1, 1, 1, alphaNodes) * Color.red;
-                            Gizmos.DrawCube(node.worldPosition, Vector2.one * (nodeDiameter - 0.1f));
+                            Gizmos.DrawCube(node.worldPosition, Vector3.one * (nodeDiameter - 0.1f));
                         }
                         //draw if walkable
                         else if (drawWalkableNodes && node.IsWalkable)
                         {
                             Gizmos.color = new Color(1, 1, 1, alphaNodes) * Color.green;
-                            Gizmos.DrawCube(node.worldPosition, Vector2.one * (nodeDiameter - 0.1f));
+                            Gizmos.DrawCube(node.worldPosition, Vector3.one * (nodeDiameter - 0.1f));
                         }
 
                         Gizmos.color = Color.white;
@@ -102,10 +102,10 @@ namespace redd096.PathFinding.FlowField2D
                         if (drawDirections)
                         {
                             float overlapRadius = (nodeDiameter * 0.5f) - 0.05f;
-                            Gizmos.DrawWireCube(node.worldPosition + new Vector2(node.bestDirection.x, node.bestDirection.y) * overlapRadius, Vector2.one * 0.05f);
+                            Gizmos.DrawWireCube(node.worldPosition + new Vector3(node.bestDirection.x, 0, node.bestDirection.y) * overlapRadius, Vector3.one * 0.05f);
                             if (node.bestDirection != Vector2Int.zero)
-                                Gizmos.DrawLine(node.worldPosition, node.worldPosition + new Vector2(node.bestDirection.x, node.bestDirection.y) * overlapRadius);
-                            //Handles.ArrowHandleCap(0, node.worldPosition, Quaternion.LookRotation(new Vector2(node.bestDirection.x, node.bestDirection.y)), overlapRadius, EventType.Repaint);
+                                Gizmos.DrawLine(node.worldPosition, node.worldPosition + new Vector3(node.bestDirection.x, 0, node.bestDirection.y) * overlapRadius);
+                            //Handles.ArrowHandleCap(0, node.worldPosition, Quaternion.LookRotation(new Vector3(node.bestDirection.x, 0, node.bestDirection.y)), overlapRadius, EventType.Repaint);
                         }
 #endif
                     }
@@ -125,7 +125,7 @@ namespace redd096.PathFinding.FlowField2D
         protected override void CreateGrid()
         {
             //order on y then x
-            WaypointFlowField[] waypointsByOrder = waypoints.OrderBy(waypoint => Mathf.RoundToInt(waypoint.worldPosition.y))
+            WaypointFlowField[] waypointsByOrder = waypoints.OrderBy(waypoint => Mathf.RoundToInt(waypoint.worldPosition.z))
                 .ThenBy(waypoint => Mathf.RoundToInt(waypoint.worldPosition.x)).ToArray();
 
             //reset grid
@@ -137,7 +137,7 @@ namespace redd096.PathFinding.FlowField2D
                 return;
 
             //create waypoints grid
-            int currentY = Mathf.RoundToInt(waypointsByOrder[0].worldPosition.y);
+            int currentZ = Mathf.RoundToInt(waypointsByOrder[0].worldPosition.z);
             int coordinatesX = 0;
             int coordinatesY = 0;
             int maxX = 0;
@@ -147,11 +147,11 @@ namespace redd096.PathFinding.FlowField2D
                 WaypointFlowField currentWaypoint = waypointsByOrder[i];
 
                 //if go to next row, reset x and increase y
-                if (Mathf.RoundToInt(currentWaypoint.worldPosition.y) > currentY)
+                if (Mathf.RoundToInt(currentWaypoint.worldPosition.z) > currentZ)
                 {
                     coordinatesX = 0;
                     coordinatesY++;
-                    currentY = Mathf.RoundToInt(currentWaypoint.worldPosition.y);
+                    currentZ = Mathf.RoundToInt(currentWaypoint.worldPosition.z);
                 }
 
                 //add to grid and increase x
@@ -229,7 +229,7 @@ namespace redd096.PathFinding.FlowField2D
         /// </summary>
         /// <param name="worldPosition"></param>
         /// <returns></returns>
-        public override Node GetNodeFromWorldPosition(Vector2 worldPosition)
+        public override Node GetNodeFromWorldPosition(Vector3 worldPosition)
         {
             Vector2Int nearestCoordinates = default;
             float distance = -1;
@@ -238,7 +238,7 @@ namespace redd096.PathFinding.FlowField2D
             foreach (Vector2Int coordinates in gridWaypoints.Keys)
             {
                 //check distance to find nearest
-                float newDistance = Vector2.Distance(grid[coordinates.x, coordinates.y].worldPosition, worldPosition);
+                float newDistance = Vector3.Distance(grid[coordinates.x, coordinates.y].worldPosition, worldPosition);
                 if (distance < 0 || newDistance < distance)
                 {
                     distance = newDistance;
