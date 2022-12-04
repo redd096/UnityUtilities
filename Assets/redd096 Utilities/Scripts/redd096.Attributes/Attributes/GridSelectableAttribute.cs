@@ -7,16 +7,16 @@ using UnityEditor;
 namespace redd096.Attributes
 {
     /// <summary>
-    /// Draw a grid. Return Vector2Int for every selected square
+    /// Draw a grid. Return Vector2Int for every selected square. If this attribute is on an Integer or Vector2Int, can use it as size
     /// </summary>
     public class GridSelectableAttribute : PropertyAttribute
     {
         public readonly string vector2IntArrayProperty;
-        public readonly int sizeX;
-        public readonly int sizeY;
+        public int sizeX { get; private set; }
+        public int sizeY { get; private set; }
 
         /// <summary>
-        /// Draw a grid. Return Vector2Int for every selected square
+        /// Draw a grid. Return Vector2Int for every selected square. If this attribute is on an Integer or Vector2Int, can use it as size
         /// </summary>
         /// <param name="sizeX"></param>
         /// <param name="sizeY"></param>
@@ -24,6 +24,11 @@ namespace redd096.Attributes
         {
             this.vector2IntArrayProperty = vector2IntArrayProperty;
 
+            SetSize(sizeX, sizeY);
+        }
+
+        public void SetSize(int sizeX, int sizeY)
+        {
             //can't be negative
             this.sizeX = Mathf.Max(1, sizeX);
             this.sizeY = Mathf.Max(1, sizeY);
@@ -37,15 +42,20 @@ namespace redd096.Attributes
     public class GridSelectableDrawer : PropertyDrawer
     {
         GridSelectableAttribute at;
+        int propertyHeight = 18;
         int littleSpace = 10;
         int sizeSquare = 40;
         float spaceBetweenSquares = 2;
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
+            //size to draw first property (if int or vector2 int)
+            int propertySize = property.propertyType == SerializedPropertyType.Integer || property.propertyType == SerializedPropertyType.Vector2Int ?
+                propertyHeight : 0;
+
             //property height + little space + every row * (size square + space between)
             int y = (attribute as GridSelectableAttribute).sizeY;
-            return EditorGUI.GetPropertyHeight(property) + littleSpace + y * (sizeSquare + spaceBetweenSquares);
+            return EditorGUI.GetPropertyHeight(property) + littleSpace + propertySize + littleSpace + y * (sizeSquare + spaceBetweenSquares);
 
             //return base.GetPropertyHeight(property, label);
         }
@@ -55,14 +65,37 @@ namespace redd096.Attributes
             //get vector2IntArrayProperty value
             at = attribute as GridSelectableAttribute;
             Vector2Int[] arrayValues = property.GetValue(at.vector2IntArrayProperty) as Vector2Int[];
-            bool someValueIsChanged = false;
+
+            bool someValueIsChanged = false;    //check if update property
+            Vector2 startPosition = new Vector2(position.x, position.y + littleSpace);
+
+            //set size
+            if (property.propertyType == SerializedPropertyType.Integer)
+            {
+                EditorGUI.PropertyField(new Rect(position.x, position.y, position.width, propertyHeight), property, new GUIContent(property.name));
+                property.intValue = Mathf.Max(1, property.intValue);
+                property.serializedObject.ApplyModifiedProperties();
+
+                at.SetSize(property.intValue, property.intValue);
+
+                startPosition.y += propertyHeight + littleSpace;
+            }
+            else if (property.propertyType == SerializedPropertyType.Vector2Int)
+            {
+                EditorGUI.PropertyField(new Rect(position.x, position.y, position.width, propertyHeight), property, new GUIContent(property.name));
+                property.vector2IntValue = new Vector2Int(Mathf.Max(1, property.vector2IntValue.x), Mathf.Max(1, property.vector2IntValue.y));
+                property.serializedObject.ApplyModifiedProperties();
+
+                at.SetSize(property.vector2IntValue.x, property.vector2IntValue.y);
+
+                startPosition.y += propertyHeight + littleSpace;
+            }
 
             ValueStruct[,] values = new ValueStruct[at.sizeX, at.sizeY];
-            Vector2 startPosition = new Vector2(position.x, position.y + littleSpace);
-            bool xIsEven = at.sizeX % 2 == 0;   //if even skip coordinate 0
-            bool yIsEven = at.sizeY % 2 == 0;   //if even skip coordinate 0
-            int coordinatesX = -at.sizeX / 2;   //example odd with size 5 => -2, -1, 0, 1, 2
-            int coordinatesY = -at.sizeY / 2;   //example even with size 4 => -2, -1, 1, 2
+            bool xIsEven = at.sizeX % 2 == 0;       //if even skip coordinate 0
+            bool yIsEven = at.sizeY % 2 == 0;       //if even skip coordinate 0
+            int coordinatesX = -at.sizeX / 2;       //example odd with size 5 => -2, -1, 0, 1, 2
+            int coordinatesY = -at.sizeY / 2;       //example even with size 4 => -2, -1, 1, 2
 
             for (int x = 0; x < at.sizeX; x++)
             {

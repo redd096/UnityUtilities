@@ -7659,6 +7659,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 16
   penaltyRegions: []
+  canMoveDiagonal: 1
   agentSize:
     useCustomCollider: 1
     typeCollider: 0
@@ -7666,7 +7667,6 @@ MonoBehaviour:
     radiusCollider: 0.5
     drawCustomCollider: 1
     colorDebugCustomCollider: {r: 0, g: 1, b: 1, a: 1}
-  canMoveDiagonal: 1
   drawGridArea: 0
   calculateAgentForUnwalkableNodes: 1
   drawUnwalkableNodes: 1
@@ -13847,6 +13847,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   penaltyRegions: []
+  canMoveDiagonal: 1
   agentSize:
     useCustomCollider: 0
     typeCollider: 1
@@ -13854,7 +13855,6 @@ MonoBehaviour:
     radiusCollider: 1
     drawCustomCollider: 0
     colorDebugCustomCollider: {r: 0, g: 1, b: 1, a: 1}
-  canMoveDiagonal: 1
   drawGridArea: 0
   calculateAgentForUnwalkableNodes: 1
   drawUnwalkableNodes: 0
