@@ -7,6 +7,7 @@ namespace redd096.PathFinding.FlowField3D
     [AddComponentMenu("redd096/.PathFinding/FlowField 3D/Grid Waypoints/Waypoint Flowfield 3D")]
     public class WaypointFlowField : MonoBehaviour
     {
+        [HelpBox("If this waypoint can move, consider add WaypointPositionUpdater to this gameObject")]
         [Header("Reachable waypoints from this")]
 #pragma warning disable CS0414
         [GridSelectable("reachableWaypoints")][SerializeField] bool gridSelectableEditor = default;
