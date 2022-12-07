@@ -1,11 +1,31 @@
 using UnityEngine;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 namespace redd096
 {
+    [System.Serializable]
+    public class ShowDebugRedd096
+    {
+        public bool ShowDebug = false;
+        public Color ColorDebug = Color.cyan;
+
+        public ShowDebugRedd096(Color color)
+        {
+            ColorDebug = color;
+        }
+
+        //implicit convertor to do this: ShowDebugRedd096 varName = Color.cyan;
+        public static implicit operator ShowDebugRedd096(Color c) => new ShowDebugRedd096(c);
+
+        //implicit convertor to do this: if(s)
+        public static implicit operator bool(ShowDebugRedd096 s) => s.ShowDebug;
+    }
+
     #region editor
 #if UNITY_EDITOR
-
-    using UnityEditor;
 
     [CustomPropertyDrawer(typeof(ShowDebugRedd096))]
     public class ShowDebugRedd096Drawer : PropertyDrawer
@@ -40,22 +60,4 @@ namespace redd096
 
 #endif
     #endregion
-
-    [System.Serializable]
-    public class ShowDebugRedd096
-    {
-        public bool ShowDebug = false;
-        public Color ColorDebug = Color.cyan;
-
-        public ShowDebugRedd096(Color color)
-        {
-            ColorDebug = color;
-        }
-
-        //implicit convertor to do this: ShowDebugRedd096 varName = Color.cyan;
-        public static implicit operator ShowDebugRedd096(Color c) => new ShowDebugRedd096(c);
-
-        //implicit convertor to do this: if(s)
-        public static implicit operator bool(ShowDebugRedd096 s) => s.ShowDebug;
-    }
 }

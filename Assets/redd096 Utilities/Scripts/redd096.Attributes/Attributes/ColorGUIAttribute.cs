@@ -5,6 +5,23 @@ using UnityEditor;
 
 namespace redd096.Attributes
 {
+    /// <summary>
+    /// Attribute to show this variable in inspector as read only
+    /// </summary>
+    public class ColorGUIAttribute : PropertyAttribute
+    {
+        public enum EColorType { GUI, Background, Content }
+
+        public readonly AttributesUtility.EColor color;
+        public readonly EColorType colorType;
+
+        public ColorGUIAttribute(AttributesUtility.EColor color, EColorType colorType = EColorType.Content)
+        {
+            this.color = color;
+            this.colorType = colorType;
+        }
+    }
+
     #region editor
 
 #if UNITY_EDITOR
@@ -69,21 +86,4 @@ namespace redd096.Attributes
 #endif
 
     #endregion
-
-    /// <summary>
-    /// Attribute to show this variable in inspector as read only
-    /// </summary>
-    public class ColorGUIAttribute : PropertyAttribute
-    {
-        public enum EColorType { GUI, Background, Content }
-
-        public readonly AttributesUtility.EColor color;
-        public readonly EColorType colorType;
-
-        public ColorGUIAttribute(AttributesUtility.EColor color, EColorType colorType = EColorType.Content)
-        {
-            this.color = color;
-            this.colorType = colorType;
-        }
-    }
 }

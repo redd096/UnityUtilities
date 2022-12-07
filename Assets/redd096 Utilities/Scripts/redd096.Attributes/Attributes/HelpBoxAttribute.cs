@@ -6,6 +6,32 @@ using UnityEditor;
 
 namespace redd096.Attributes
 {
+    /// <summary>
+    /// Show help box above property
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Field, AllowMultiple = true, Inherited = true)]
+    public class HelpBoxAttribute : PropertyAttribute
+    {
+        public enum EMessageType { None, Info, Warning, Error }
+
+        public readonly EMessageType messageType;
+        public readonly string message;
+        public readonly bool wide;
+
+        /// <summary>
+        /// Show help box above property
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="messageType"></param>
+        /// <param name="wide">If true, the box will cover the whole width of the window; otherwise it will cover the controls part only</param>
+        public HelpBoxAttribute(string message, EMessageType messageType = EMessageType.Info, bool wide = true)
+        {
+            this.message = message;
+            this.messageType = messageType;
+            this.wide = wide;
+        }
+    }
+
     #region editor
 
 #if UNITY_EDITOR
@@ -49,30 +75,4 @@ namespace redd096.Attributes
 #endif
 
     #endregion
-
-    /// <summary>
-    /// Show help box above property
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Field, AllowMultiple = true, Inherited = true)]
-    public class HelpBoxAttribute : PropertyAttribute
-    {
-        public enum EMessageType { None, Info, Warning, Error }
-
-        public readonly EMessageType messageType;
-        public readonly string message;
-        public readonly bool wide;
-
-        /// <summary>
-        /// Show help box above property
-        /// </summary>
-        /// <param name="message"></param>
-        /// <param name="messageType"></param>
-        /// <param name="wide">If true, the box will cover the whole width of the window; otherwise it will cover the controls part only</param>
-        public HelpBoxAttribute(string message, EMessageType messageType = EMessageType.Info, bool wide = true)
-        {
-            this.message = message;
-            this.messageType = messageType;
-            this.wide = wide;
-        }
-    }
 }

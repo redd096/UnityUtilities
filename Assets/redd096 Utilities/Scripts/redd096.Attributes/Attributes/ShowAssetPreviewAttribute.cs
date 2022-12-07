@@ -5,6 +5,21 @@ using UnityEditor;
 
 namespace redd096.Attributes
 {
+    /// <summary>
+    /// Show sprite or texture preview
+    /// </summary>
+    public class ShowAssetPreviewAttribute : PropertyAttribute
+    {
+        public readonly int width;
+        public readonly int height;
+
+        public ShowAssetPreviewAttribute(int width = 60, int height = 60)
+        {
+            this.width = width;
+            this.height = height;
+        }
+    }
+
     #region editor
 
 #if UNITY_EDITOR
@@ -53,19 +68,4 @@ namespace redd096.Attributes
 #endif
 
     #endregion
-
-    /// <summary>
-    /// Show sprite or texture preview
-    /// </summary>
-    public class ShowAssetPreviewAttribute : PropertyAttribute
-    {
-        public readonly int width;
-        public readonly int height;
-
-        public ShowAssetPreviewAttribute(int width = 60, int height = 60)
-        {
-            this.width = width;
-            this.height = height;
-        }
-    }
 }

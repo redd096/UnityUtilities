@@ -9,11 +9,68 @@ using UnityEditor;
 
 namespace redd096.Attributes
 {
-	#region editor
+    /// <summary>
+    /// Show dropdown of values
+    /// </summary>
+    public class DropdownAttribute : PropertyAttribute
+    {
+        public readonly string valuesName;
+
+        public DropdownAttribute(string valuesName)
+        {
+            this.valuesName = valuesName;
+        }
+    }
+
+    #region DropdownList
+
+    public interface IDropdownList : IEnumerable<KeyValuePair<string, object>>
+    {
+    }
+
+    public class DropdownList<T> : IDropdownList
+    {
+        private List<KeyValuePair<string, object>> _values;
+
+        public DropdownList()
+        {
+            _values = new List<KeyValuePair<string, object>>();
+        }
+
+        public void Add(string displayName, T value)
+        {
+            _values.Add(new KeyValuePair<string, object>(displayName, value));
+        }
+
+        public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
+        {
+            return _values.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public static explicit operator DropdownList<object>(DropdownList<T> target)
+        {
+            DropdownList<object> result = new DropdownList<object>();
+            foreach (var kvp in target)
+            {
+                result.Add(kvp.Key, kvp.Value);
+            }
+
+            return result;
+        }
+    }
+
+    #endregion
+
+    #region editor
 
 #if UNITY_EDITOR
 
-	[CustomPropertyDrawer(typeof(DropdownAttribute))]
+    [CustomPropertyDrawer(typeof(DropdownAttribute))]
 	public class DropdownDrawer : PropertyDrawer
 	{
 		object targetObject;
@@ -187,62 +244,5 @@ namespace redd096.Attributes
 
 #endif
 
-	#endregion
-
-	/// <summary>
-	/// Show dropdown of values
-	/// </summary>
-	public class DropdownAttribute : PropertyAttribute
-	{
-		public readonly string valuesName;
-
-		public DropdownAttribute(string valuesName)
-		{
-			this.valuesName = valuesName;
-		}
-	}
-
-	#region DropdownList
-
-	public interface IDropdownList : IEnumerable<KeyValuePair<string, object>>
-	{
-	}
-
-	public class DropdownList<T> : IDropdownList
-	{
-		private List<KeyValuePair<string, object>> _values;
-
-		public DropdownList()
-		{
-			_values = new List<KeyValuePair<string, object>>();
-		}
-
-		public void Add(string displayName, T value)
-		{
-			_values.Add(new KeyValuePair<string, object>(displayName, value));
-		}
-
-		public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
-		{
-			return _values.GetEnumerator();
-		}
-
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return GetEnumerator();
-		}
-
-		public static explicit operator DropdownList<object>(DropdownList<T> target)
-		{
-			DropdownList<object> result = new DropdownList<object>();
-			foreach (var kvp in target)
-			{
-				result.Add(kvp.Key, kvp.Value);
-			}
-
-			return result;
-		}
-	}
-
-	#endregion
+    #endregion
 }

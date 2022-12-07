@@ -6,6 +6,23 @@ using UnityEditor;
 
 namespace redd096.Attributes
 {
+    /// <summary>
+    /// Show dropdown of every scene in Build Index
+    /// </summary>
+    public class SceneAttribute : PropertyAttribute
+    {
+        public readonly bool showAlsoNotEnabledScenes;
+
+        /// <summary>
+        /// Show dropdown of every scene in Build Index
+        /// </summary>
+        /// <param name="showAlsoNotEnabledScenes">It works only with string values</param>
+        public SceneAttribute(bool showAlsoNotEnabledScenes = false)
+        {
+            this.showAlsoNotEnabledScenes = showAlsoNotEnabledScenes;
+        }
+    }
+
     #region editor
 
 #if UNITY_EDITOR
@@ -104,21 +121,4 @@ namespace redd096.Attributes
 #endif
 
     #endregion
-
-    /// <summary>
-    /// Show dropdown of every scene in Build Index
-    /// </summary>
-    public class SceneAttribute : PropertyAttribute
-    {
-        public readonly bool showAlsoNotEnabledScenes;
-
-        /// <summary>
-        /// Show dropdown of every scene in Build Index
-        /// </summary>
-        /// <param name="showAlsoNotEnabledScenes">It works only with string values</param>
-        public SceneAttribute(bool showAlsoNotEnabledScenes = false)
-        {
-            this.showAlsoNotEnabledScenes = showAlsoNotEnabledScenes;
-        }
-    }
 }

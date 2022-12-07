@@ -3,13 +3,35 @@ using System;
 #if UNITY_EDITOR
 using System.Collections;
 using System.Reflection;
-using UnityEditor.Experimental.SceneManagement;
 using UnityEditor.SceneManagement;
 using UnityEditor;
 #endif
 
 namespace redd096.Attributes
 {
+    /// <summary>
+    /// Attribute to show button in inspector
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Method)]
+    public class ButtonAttribute : Attribute
+    {
+        public enum EEnableType { Always, Editor, PlayMode }
+
+        public readonly string buttonName;
+        public readonly EEnableType enableType = EEnableType.Always;
+
+        public ButtonAttribute(EEnableType enableType = EEnableType.Always)
+        {
+            this.enableType = enableType;
+        }
+
+        public ButtonAttribute(string buttonName, EEnableType enableType = EEnableType.Always)
+        {
+            this.buttonName = buttonName;
+            this.enableType = enableType;
+        }
+    }
+
     #region editor
 
 #if UNITY_EDITOR
@@ -79,27 +101,4 @@ namespace redd096.Attributes
 #endif
 
     #endregion
-
-    /// <summary>
-    /// Attribute to show button in inspector
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Method)]
-    public class ButtonAttribute : Attribute
-    {
-        public enum EEnableType { Always, Editor, PlayMode }
-
-        public readonly string buttonName;
-        public readonly EEnableType enableType = EEnableType.Always;
-
-        public ButtonAttribute(EEnableType enableType = EEnableType.Always)
-        {            
-            this.enableType = enableType;
-        }
-
-        public ButtonAttribute(string buttonName, EEnableType enableType = EEnableType.Always)
-        {
-            this.buttonName = buttonName;
-            this.enableType = enableType;
-        }
-    }
 }

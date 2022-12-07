@@ -5,6 +5,52 @@ using UnityEditor;
 
 namespace redd096.Attributes
 {
+    /// <summary>
+    /// Attribute to show variable only if condition is true
+    /// </summary>
+    public class ShowIfAttribute : PropertyAttribute
+    {
+        public enum EComparisonType { isEqual, isNotEqual, isGreater, isGreaterEqual, isLower, isLowerEqual }
+        public enum EConditionOperator { AND, OR }
+
+        public readonly bool comparing;
+
+        //check every value
+        public readonly string[] values;
+        public readonly EConditionOperator conditionOperator;
+
+        //compare value
+        public readonly string propertyA;
+        public readonly object valueToCompare;
+        public readonly EComparisonType comparisonType;
+
+        public ShowIfAttribute(params string[] values)
+        {
+            comparing = false;
+
+            //by default condition is AND
+            conditionOperator = EConditionOperator.AND;
+            this.values = values;
+        }
+
+        public ShowIfAttribute(EConditionOperator conditionOperator, params string[] values)
+        {
+            comparing = false;
+
+            this.conditionOperator = conditionOperator;
+            this.values = values;
+        }
+
+        public ShowIfAttribute(string propertyA, object valueToCompare, EComparisonType comparisonType = EComparisonType.isEqual)
+        {
+            comparing = true;
+
+            this.propertyA = propertyA;
+            this.valueToCompare = valueToCompare;
+            this.comparisonType = comparisonType;
+        }
+    }
+
     #region editor
 
 #if UNITY_EDITOR
@@ -33,7 +79,7 @@ namespace redd096.Attributes
             }
         }
 
-        #region private API
+    #region private API
 
         bool CanShow(SerializedProperty property)
         {
@@ -146,56 +192,10 @@ namespace redd096.Attributes
             }
         }
 
-        #endregion
+    #endregion
     }
 
 #endif
 
     #endregion
-
-    /// <summary>
-    /// Attribute to show variable only if condition is true
-    /// </summary>
-    public class ShowIfAttribute : PropertyAttribute
-    {
-        public enum EComparisonType { isEqual, isNotEqual, isGreater, isGreaterEqual, isLower, isLowerEqual }
-        public enum EConditionOperator { AND, OR }
-
-        public readonly bool comparing;
-
-        //check every value
-        public readonly string[] values;
-        public readonly EConditionOperator conditionOperator;
-
-        //compare value
-        public readonly string propertyA;
-        public readonly object valueToCompare;
-        public readonly EComparisonType comparisonType;
-
-        public ShowIfAttribute(params string[] values)
-        {
-            comparing = false;
-
-            //by default condition is AND
-            conditionOperator = EConditionOperator.AND;
-            this.values = values;
-        }
-
-        public ShowIfAttribute(EConditionOperator conditionOperator, params string[] values)
-        {
-            comparing = false;
-
-            this.conditionOperator = conditionOperator;
-            this.values = values;
-        }
-
-        public ShowIfAttribute(string propertyA, object valueToCompare, EComparisonType comparisonType = EComparisonType.isEqual)
-        {
-            comparing = true;
-
-            this.propertyA = propertyA;
-            this.valueToCompare = valueToCompare;
-            this.comparisonType = comparisonType;
-        }
-    }
 }

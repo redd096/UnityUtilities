@@ -5,6 +5,13 @@ using UnityEditor;
 
 namespace redd096.Attributes
 {
+    /// <summary>
+    /// Attribute to show this variable in inspector as read only
+    /// </summary>
+    public class ReadOnlyAttribute : PropertyAttribute
+    {
+    }
+
     #region editor
 
 #if UNITY_EDITOR
@@ -33,11 +40,4 @@ namespace redd096.Attributes
 #endif
 
     #endregion
-
-    /// <summary>
-    /// Attribute to show this variable in inspector as read only
-    /// </summary>
-    public class ReadOnlyAttribute : PropertyAttribute
-    {
-    }
 }

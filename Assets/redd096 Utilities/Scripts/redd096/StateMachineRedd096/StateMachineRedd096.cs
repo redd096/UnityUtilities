@@ -4,36 +4,14 @@ using redd096.Attributes;
 
 namespace redd096
 {
-    #region classes and enums
-
-    public enum ETransitionCheck { AllTrueRequired, AnyTrueSuffice }
-
-    [System.Serializable]
-    public class Transition
-    {
-        [DropdownState] public string DestinationState;
-        public ETransitionCheck TransitionCheck;
-        [DropdownTask(typeof(ConditionTask))] public List<ConditionTask> Conditions;
-    }
-
-    [System.Serializable]
-    public class State
-    {
-        [OnStateNameChanged] public string StateName;
-        [DropdownTask(typeof(ActionTask))] public ActionTask[] Actions;
-        public Transition[] Transitions;
-    }
-
-    #endregion
-
     [AddComponentMenu("redd096/StateMachineRedd096/State Machine redd096")]
     public class StateMachineRedd096 : MonoBehaviour
     {
-        /*[ReorderableList]*/ public State[] States = default;
+        public State[] States = default;
 
         [Header("DEBUG")]
-        /*[BoxGroup("DEBUG")]*/ [ReadOnly] public State CurrentState = default;
-        /*[BoxGroup("DEBUG")]*/ [ReadOnly] [SerializeField] List<string> blackboardDebug = new List<string>();
+        [ReadOnly] public State CurrentState = default;
+        [ReadOnly][SerializeField] List<string> blackboardDebug = new List<string>();
 
         //blackboard to save vars to use in differents tasks
         Dictionary<string, object> blackboard = new Dictionary<string, object>();
@@ -331,4 +309,26 @@ namespace redd096
 
         #endregion
     }
+
+    #region classes and enums
+
+    public enum ETransitionCheck { AllTrueRequired, AnyTrueSuffice }
+
+    [System.Serializable]
+    public class Transition
+    {
+        [DropdownState] public string DestinationState;
+        public ETransitionCheck TransitionCheck;
+        [DropdownTask(typeof(ConditionTask))] public List<ConditionTask> Conditions;
+    }
+
+    [System.Serializable]
+    public class State
+    {
+        [OnStateNameChanged] public string StateName;
+        [DropdownTask(typeof(ActionTask))] public ActionTask[] Actions;
+        public Transition[] Transitions;
+    }
+
+    #endregion
 }

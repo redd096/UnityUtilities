@@ -6,6 +6,29 @@ using UnityEditor;
 
 namespace redd096.Attributes
 {
+    /// <summary>
+    /// Attribute to call a method when value is changed. Method must have zero parameters, or optional. 
+    /// Otherwise must have 2 variable: previous value and new value
+    /// </summary>
+    [System.AttributeUsage(System.AttributeTargets.Field, AllowMultiple = true, Inherited = true)]
+    public class OnValueChangedAttribute : PropertyAttribute
+    {
+        public readonly string methodName;
+        public readonly bool callMethodInParent;
+
+        /// <summary>
+        /// Attribute to call a method when value is changed. Method must have zero parameters, or optional. 
+        /// Otherwise must have 2 variable: previous value and new value
+        /// </summary>
+        /// <param name="methodName"></param>
+        /// <param name="callMethodInParent">If this field is nested for example in a struct, call method in the struct or in the parent class</param>
+        public OnValueChangedAttribute(string methodName, bool callMethodInParent = false)
+        {
+            this.methodName = methodName;
+            this.callMethodInParent = callMethodInParent;
+        }
+    }
+
     #region editor
 
 #if UNITY_EDITOR
@@ -74,27 +97,4 @@ namespace redd096.Attributes
 #endif
 
     #endregion
-
-    /// <summary>
-    /// Attribute to call a method when value is changed. Method must have zero parameters, or optional. 
-    /// Otherwise must have 2 variable: previous value and new value
-    /// </summary>
-    [System.AttributeUsage(System.AttributeTargets.Field, AllowMultiple = true, Inherited = true)]
-    public class OnValueChangedAttribute : PropertyAttribute
-    {
-        public readonly string methodName;
-        public readonly bool callMethodInParent;
-
-        /// <summary>
-        /// Attribute to call a method when value is changed. Method must have zero parameters, or optional. 
-        /// Otherwise must have 2 variable: previous value and new value
-        /// </summary>
-        /// <param name="methodName"></param>
-        /// <param name="callMethodInParent">If this field is nested for example in a struct, call method in the struct or in the parent class</param>
-        public OnValueChangedAttribute(string methodName, bool callMethodInParent = false)
-        {
-            this.methodName = methodName;
-            this.callMethodInParent = callMethodInParent;
-        }
-    }
 }

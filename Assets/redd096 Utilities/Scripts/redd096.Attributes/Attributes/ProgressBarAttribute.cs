@@ -5,11 +5,55 @@ using UnityEditor;
 
 namespace redd096.Attributes
 {
-	#region editor
+    /// <summary>
+    /// Show a progress bar (property/max value)
+    /// </summary>
+    public class ProgressBarAttribute : PropertyAttribute
+    {
+        public readonly string name;
+        public readonly float maxValue;
+        public readonly string maxValueName;
+        public readonly AttributesUtility.EColor color;
+        public readonly bool canInteract;
+
+        public ProgressBarAttribute(string name, float maxValue, AttributesUtility.EColor color = AttributesUtility.EColor.Red, bool canInteract = true)
+        {
+            this.name = name;
+            this.maxValue = maxValue;
+            this.color = color;
+            this.canInteract = canInteract;
+        }
+
+        public ProgressBarAttribute(string name, string maxValueName, AttributesUtility.EColor color = AttributesUtility.EColor.Red, bool canInteract = true)
+        {
+            this.name = name;
+            this.maxValueName = maxValueName;
+            this.color = color;
+            this.canInteract = canInteract;
+        }
+
+        public ProgressBarAttribute(float maxValue, AttributesUtility.EColor color = AttributesUtility.EColor.Red, bool canInteract = true)
+        {
+            this.name = string.Empty;
+            this.maxValue = maxValue;
+            this.color = color;
+            this.canInteract = canInteract;
+        }
+
+        public ProgressBarAttribute(string maxValueName, AttributesUtility.EColor color = AttributesUtility.EColor.Red, bool canInteract = true)
+        {
+            this.name = string.Empty;
+            this.maxValueName = maxValueName;
+            this.color = color;
+            this.canInteract = canInteract;
+        }
+    }
+
+    #region editor
 
 #if UNITY_EDITOR
 
-	[CustomPropertyDrawer(typeof(ProgressBarAttribute))]
+    [CustomPropertyDrawer(typeof(ProgressBarAttribute))]
 	public class ProgressBarDrawer : PropertyDrawer
 	{
 		float value;
@@ -96,49 +140,5 @@ namespace redd096.Attributes
 
 #endif
 
-	#endregion
-
-	/// <summary>
-	/// Show a progress bar (property/max value)
-	/// </summary>
-	public class ProgressBarAttribute : PropertyAttribute
-	{
-		public readonly string name;
-		public readonly float maxValue;
-		public readonly string maxValueName;
-		public readonly AttributesUtility.EColor color;
-		public readonly bool canInteract;
-
-		public ProgressBarAttribute(string name, float maxValue, AttributesUtility.EColor color = AttributesUtility.EColor.Red, bool canInteract = true)
-		{
-			this.name = name;
-			this.maxValue = maxValue;
-			this.color = color;
-			this.canInteract = canInteract;
-		}
-
-		public ProgressBarAttribute(string name, string maxValueName, AttributesUtility.EColor color = AttributesUtility.EColor.Red, bool canInteract = true)
-		{
-			this.name = name;
-			this.maxValueName = maxValueName;
-			this.color = color;
-			this.canInteract = canInteract;
-		}
-
-		public ProgressBarAttribute(float maxValue, AttributesUtility.EColor color = AttributesUtility.EColor.Red, bool canInteract = true)
-		{
-			this.name = string.Empty;
-			this.maxValue = maxValue;
-			this.color = color;
-			this.canInteract = canInteract;
-		}
-
-		public ProgressBarAttribute(string maxValueName, AttributesUtility.EColor color = AttributesUtility.EColor.Red, bool canInteract = true)
-		{
-			this.name = string.Empty;
-			this.maxValueName = maxValueName;
-			this.color = color;
-			this.canInteract = canInteract;
-		}
-	}
+    #endregion
 }
