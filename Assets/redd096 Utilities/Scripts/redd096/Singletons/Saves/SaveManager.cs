@@ -49,6 +49,8 @@ namespace redd096
         private Dictionary<string, Dictionary<string, string>> filesWithMoreVariables = new Dictionary<string, Dictionary<string, string>>();
         //system to use for save and load
         private ISaveLoadSystem saveLoadSystem;
+        //string to identify files with more variables
+        private const string FWMV_STRING = "redd096FWMV";
 
         protected override void Awake()
         {
@@ -89,8 +91,37 @@ namespace redd096
             savesJson = new Dictionary<string, string>(jsons);
 
             //add also file with more variables to their dictionary
-            foreach (string fileName in savesJson.Keys) GenericFWMV.LoadFromDisk(fileName);
+            foreach (string fileName in savesJson.Keys) ReadFileWithMoreVariables(fileName, savesJson[fileName]);
         }
+
+        private void ReadFileWithMoreVariables(string fileName, string fileString)
+        {
+            if (fileString == null || fileString.StartsWith(FWMV_STRING) == false)  //redd096 File With More Variables
+            {
+                if (ShowDebugLogs)
+                    Debug.Log("Incorrect file: " + saveLoadSystem.GetPathFile(fileName));
+
+                return;
+            }
+
+            //add file to dictionary
+            if (filesWithMoreVariables.ContainsKey(fileName) == false)
+                filesWithMoreVariables.Add(fileName, new Dictionary<string, string>());
+
+            string[] lines = fileString.Split('\n');
+            for (int i = 2; i < lines.Length; i += 2)   //skip 0 because is our custom string, then move by 2 and read variable name and value
+            {
+                //first line is variable name
+                if (filesWithMoreVariables[fileName].ContainsKey(lines[i - 1]) == false)
+                    filesWithMoreVariables[fileName].Add(lines[i - 1], "");
+
+                //and second line is json
+                if (i < lines.Length)
+                    filesWithMoreVariables[fileName][lines[i - 1]] = lines[i];
+            }
+        }
+
+        #region classes for save and load
 
         /// <summary>
         /// Save/Load files
@@ -240,7 +271,7 @@ namespace redd096
             public static void SaveOnDisk(string fileName)
             {
                 //add this string as first line, to identify the files
-                System.Text.StringBuilder fileString = new System.Text.StringBuilder("redd096 FWMV\n"); //redd096 File With More Variables
+                System.Text.StringBuilder fileString = new System.Text.StringBuilder($"{FWMV_STRING}\n");   //redd096 File With More Variables
                 if (instance.filesWithMoreVariables.ContainsKey(fileName))
                 {
                     //create a string "1stVarName\n1stJson\n2ndVarName\n2ndJson\n..."
@@ -284,29 +315,9 @@ namespace redd096
             {
                 //load from disk
                 string fileString = Generic.Load(fileName);
-                if (fileString == null || fileString.StartsWith("redd096 FWMV") == false) //redd096 File With More Variables
-                {
-                    if (instance.ShowDebugLogs)
-                        Debug.Log("Incorrect file: " + instance.saveLoadSystem.GetPathFile(fileName));
 
-                    return;
-                }
-
-                //add file to dictionary
-                if (instance.filesWithMoreVariables.ContainsKey(fileName) == false)
-                    instance.filesWithMoreVariables.Add(fileName, new Dictionary<string, string>());
-
-                string[] lines = fileString.Split('\n');
-                for (int i = 2; i < lines.Length; i += 2)   //skip 0 because is our custom string, then move by 2 and read variable name and value
-                {
-                    //first line is variable name
-                    if (instance.filesWithMoreVariables[fileName].ContainsKey(lines[i - 1]) == false)
-                        instance.filesWithMoreVariables[fileName].Add(lines[i - 1], "");
-
-                    //and second line is json
-                    if (i < lines.Length)
-                        instance.filesWithMoreVariables[fileName][lines[i - 1]] = lines[i];
-                }
+                //add to dictionary
+                instance.ReadFileWithMoreVariables(fileName, fileString);
             }
 
             /// <summary>
@@ -816,6 +827,8 @@ namespace redd096
                 Generic.DeleteAll();
             }
         }
+
+        #endregion
     }
 
     #region example save class
