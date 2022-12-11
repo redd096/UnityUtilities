@@ -64,6 +64,8 @@ namespace redd096
                 saveLoadSystem = new SaveLoadSystem_Steam();
 #elif UNITY_STANDALONE
                 saveLoadSystem = new SaveLoadSystem_PC();
+#elif UNITY_WEBGL
+                saveLoadSystem = new SaveLoadSystem_WebGL();
 #elif UNITY_IOS || UNITY_ANDROID
                 saveLoadSystem = new SaveLoadSystem_Mobile();
 #elif UNITY_GAMECORE
