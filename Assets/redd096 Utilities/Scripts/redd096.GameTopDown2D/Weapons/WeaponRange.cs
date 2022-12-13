@@ -59,7 +59,7 @@ namespace redd096.GameTopDown2D
 
         string[] GetAllAmmoTypes()
         {
-            //get guid to every ammo in project
+            //get guid to every prefab in project
             string[] guids = UnityEditor.AssetDatabase.FindAssets("t:prefab");
             System.Collections.Generic.List<string> values = new System.Collections.Generic.List<string>();
 
@@ -70,6 +70,7 @@ namespace redd096.GameTopDown2D
             Ammo ammo;
             for (int i = 0; i < guids.Length; i++)
             {
+                //cast to be sure is an Ammo prefab
                 ammo = UnityEditor.AssetDatabase.LoadAssetAtPath<Ammo>(UnityEditor.AssetDatabase.GUIDToAssetPath(guids[i]));
                 if (ammo) values.Add(ammo.AmmoType);
             }
