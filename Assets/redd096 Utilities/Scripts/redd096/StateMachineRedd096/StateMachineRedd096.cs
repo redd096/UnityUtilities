@@ -38,11 +38,13 @@ namespace redd096
             }
         }
 
+        #region public API
+
         /// <summary>
         /// Exit from previous state and enter in new one
         /// </summary>
         /// <param name="nextState"></param>
-        public void SetState(int nextState)
+        public virtual void SetState(int nextState)
         {
             //exit from previous state
             if (CurrentState != null)
@@ -67,7 +69,7 @@ namespace redd096
         /// Exit from previous state and enter in new one
         /// </summary>
         /// <param name="nextState"></param>
-        public void SetState(string nextState)
+        public virtual void SetState(string nextState)
         {
             if (States != null)
             {
@@ -85,6 +87,92 @@ namespace redd096
             //else set null as state
             SetState(-1);
         }
+
+        /// <summary>
+        /// Get current state name. If state is null, return empty string
+        /// </summary>
+        /// <returns></returns>
+        public string GetCurrentState()
+        {
+            return CurrentState != null ? CurrentState.StateName : string.Empty;
+        }
+
+        #endregion
+
+        #region blackboard public API
+
+        /// <summary>
+        /// Add or Set element inside blackboard
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        public void SetBlackboardElement(string key, object value)
+        {
+            //add element if not inside blackboard
+            if (blackboard.ContainsKey(key) == false)
+            {
+                blackboard.Add(key, value);
+            }
+            //else set it
+            else
+            {
+                blackboard[key] = value;
+            }
+
+            //in editor, update debug blackboard
+            if (Application.isEditor)
+            {
+                //add value in blackboard
+                if (blackboardDebug.Contains(key) == false)
+                {
+                    blackboardDebug.Add(key);
+                }
+            }
+
+            //call event
+            onSetBlackboardValue?.Invoke(key);
+        }
+
+        /// <summary>
+        /// Remove element from blackboard
+        /// </summary>
+        /// <param name="key"></param>
+        public void RemoveBlackboardElement(string key)
+        {
+            //remove element from blackboard
+            if (blackboard.ContainsKey(key))
+                blackboard.Remove(key);
+
+            //in editor, update debug blackboard
+            if (Application.isEditor)
+            {
+                //remove value from blackboard
+                if (blackboardDebug.Contains(key))
+                {
+                    blackboardDebug.Remove(key);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get element from blackboard
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public T GetBlackboardElement<T>(string key)
+        {
+            //return element from blackboard
+            if (blackboard.ContainsKey(key))
+            {
+                return (T)blackboard[key];
+            }
+
+            //if there is no key, return null
+            return default;
+        }
+
+        #endregion
 
         #region private API
 
@@ -217,94 +305,6 @@ namespace redd096
                 }
             }
 
-        }
-
-        #endregion
-
-        #region public API
-
-        /// <summary>
-        /// Get current state name. If state is null, return empty string
-        /// </summary>
-        /// <returns></returns>
-        public string GetCurrentState()
-        {
-            return CurrentState != null ? CurrentState.StateName : string.Empty;
-        }
-
-        #endregion
-
-        #region blackboard public API
-
-        /// <summary>
-        /// Add or Set element inside blackboard
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        public void SetBlackboardElement(string key, object value)
-        {
-            //add element if not inside blackboard
-            if (blackboard.ContainsKey(key) == false)
-            {
-                blackboard.Add(key, value);
-            }
-            //else set it
-            else
-            {
-                blackboard[key] = value;
-            }
-
-            //in editor, update debug blackboard
-            if (Application.isEditor)
-            {
-                //add value in blackboard
-                if (blackboardDebug.Contains(key) == false)
-                {
-                    blackboardDebug.Add(key);
-                }
-            }
-
-            //call event
-            onSetBlackboardValue?.Invoke(key);
-        }
-
-        /// <summary>
-        /// Remove element from blackboard
-        /// </summary>
-        /// <param name="key"></param>
-        public void RemoveBlackboardElement(string key)
-        {
-            //remove element from blackboard
-            if (blackboard.ContainsKey(key))
-                blackboard.Remove(key);
-
-            //in editor, update debug blackboard
-            if (Application.isEditor)
-            {
-                //remove value from blackboard
-                if (blackboardDebug.Contains(key))
-                {
-                    blackboardDebug.Remove(key);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Get element from blackboard
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public T GetBlackboardElement<T>(string key)
-        {
-            //return element from blackboard
-            if (blackboard.ContainsKey(key))
-            {
-                return (T)blackboard[key];
-            }
-
-            //if there is no key, return null
-            return default;
         }
 
         #endregion
