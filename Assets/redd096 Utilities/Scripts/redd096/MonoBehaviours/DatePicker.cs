@@ -1,11 +1,9 @@
+using UnityEngine;
 using System;
 using TMPro;
-using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
+using redd096.Attributes;
 
 namespace redd096
 {
@@ -15,11 +13,17 @@ namespace redd096
     /// - a GridLayoutGroup with 7 columns.
     /// Firsts 7 child of GridLayoutGroup are 7 GameObjects with TMPro in self or child (unity button without button component). These are days of week (M,T,W,T,F,S,S)
     /// Buttons for every day, with TMPro in self or child (unity button). Text to show day of month and button to call OnResult event
+    /// - (facoltative) button to come back to CurrentMonth
+    /// 
+    /// You can use AutoGenerate button to generate DaysOfWeek and every day Button
     /// </summary>
+	[AddComponentMenu("redd096/MonoBehaviours/Date Picker")]
     public class DatePicker : MonoBehaviour
     {
         [Header("Calendar to open and close")]
         [SerializeField] GameObject calendar = default;
+        [SerializeField] bool closeOnAwake = true;
+        [Tooltip("On awake set DateTime.Now as default result, to have result to read without open calendar")][SerializeField] bool setDefaultOnAwake = true;
 
         [Header("Month Header")]
         [SerializeField] TextMeshProUGUI monthText = default;
@@ -33,27 +37,65 @@ namespace redd096
         [SerializeField] Button[] daysButtons = default;
 
         [Header("Not Clickable Days")]
-        [SerializeField] bool disableDaysBeforeThanToday = true;
-        [SerializeField] DayOfWeek[] disabledDaysOfTheWeek = new DayOfWeek[2] { DayOfWeek.Saturday, DayOfWeek.Sunday };
+        [Tooltip("Disable yesterday and before")][SerializeField] bool disableDaysBeforeThanToday = true;
+        [Tooltip("If bool enabled and TimePicker setted, disable also today if there are not selectable hours")][SerializeField] TimePicker timePicker = default;
+        [Tooltip("Disable these days of the week")][SerializeField] DayOfWeek[] disabledDaysOfTheWeek = new DayOfWeek[2] { DayOfWeek.Saturday, DayOfWeek.Sunday };
 
         [Header("Result")]
-        [SerializeField] string dateFormat = "dd/MM/yyyy";
+        [SerializeField] string resultFormat = "dd/MM/yyyy";
+        [SerializeField] string result = "19/12/2022";
         [SerializeField] UnityEvent<string> onResult = default;
 
         [Space(10)]
         [Header("DEBUG - AutoGenerate DaysOfWeek and Calendar")]
-        [SerializeField] Transform contentGridLayout = default;
-        [SerializeField] Button buttonPrefab = default;
+        [Tooltip("Parent where spawn")][SerializeField] Transform contentGridLayout = default;
+        [Tooltip("Prefab for DaysOfWeek and CalendarButtons")][SerializeField] Button buttonPrefab = default;
 
         DateTime monthToGenerate;
 
+        private void Awake()
+        {
+            //set today as default result
+            if (setDefaultOnAwake)
+                result = DateTime.Now.ToString(resultFormat);
+
+            //set current date (to show from previous selected month - default is DateTime.Now) as start month
+            monthToGenerate = DateTime.Parse(result).Date;
+            GenerateCalendar();
+
+            //close on awake
+            if (closeOnAwake)
+                CloseCalendar();
+        }
+
         public void OpenCalendar()
+        {
+            //set current date (to show from previous selected month - default is DateTime.Now) as start month
+            monthToGenerate = DateTime.Parse(result).Date;
+            GenerateCalendar();
+
+            //and open calendar
+            ActiveCalendar(true);
+
+            //show selected day
+            for (int i = 0; i < daysButtons.Length; i++)
+            {
+                if (int.TryParse(daysButtons[i].GetComponentInChildren<TextMeshProUGUI>().text, out int day))
+                {
+                    if (day == monthToGenerate.Day)
+                    {
+                        daysButtons[i].Select();
+                        break;
+                    }
+                }
+            }
+        }
+
+        public void CurrentMonth()
         {
             //set today as start month
             monthToGenerate = DateTime.Now.Date;
             GenerateCalendar();
-
-            ActiveCalendar(true);
         }
 
         public void NextMonth()
@@ -73,6 +115,14 @@ namespace redd096
         public void CloseCalendar()
         {
             ActiveCalendar(false);
+        }
+
+        /// <summary>
+        /// Used to force result. For example to set a default value before open calendar (to get from a variable instead of set DateTime.Now in awake)
+        /// </summary>
+        public void SetResult(string result)
+        {
+            this.result = result;
         }
 
         #region generate calendar
@@ -146,11 +196,7 @@ namespace redd096
                 b.transform.SetSiblingIndex(daysOfWeek != null ? daysOfWeek.Length + i : i);
 
                 //check if button is enabled
-                b.interactable = CanBeEnabledToday(dt);
-                if (b.interactable)
-                {
-                    b.interactable = IsDayEnabled(dt);
-                }
+                b.interactable = CanBeEnabledToday(dt) && IsDayEnabled(dt);
             }
         }
 
@@ -175,9 +221,12 @@ namespace redd096
 
         bool CanBeEnabledToday(DateTime dt)
         {
+            //if time picker is null, don't check hours
+            bool thereAreHoursToday = timePicker == null || timePicker.ThereAreHoursThisDate(dt);
+
             //if bool is disabled
-            //else check if DateTime is greater or equal than today (DateTime.Now without check the hours)
-            return disableDaysBeforeThanToday == false || dt.Date >= DateTime.Now.Date;
+            //or check if DateTime is greater or equal than today (DateTime.Now without check the hours) AND if there is a time picker, be sure it isn't after last possible hour
+            return disableDaysBeforeThanToday == false || (dt.Date >= DateTime.Now.Date && thereAreHoursToday);
         }
 
         bool IsDayEnabled(DateTime dt)
@@ -197,22 +246,39 @@ namespace redd096
 
         #endregion
 
-        void OnClick(DateTime date)
+        void OnClick(DateTime dt)
         {
             //on button click, call event
-            onResult?.Invoke(date.ToString(dateFormat));
+            result = dt.ToString(resultFormat);
+            onResult?.Invoke(result);
         }
+
+        #region editor only
 
         /// <summary>
         /// editor only
         /// </summary>
+        [Button]
         public void AutoGenerateCalendar()
         {
+            //remove old buttons
+            for (int i = contentGridLayout.childCount - 1; i >= 0; i--)
+            {
+                if (Application.isPlaying)
+                    Destroy(contentGridLayout.GetChild(0).gameObject);
+                else
+                    DestroyImmediate(contentGridLayout.GetChild(0).gameObject);
+            }
+
             //generate days of week
             daysOfWeek = new GameObject[7];
             for (int i = 0; i < daysOfWeek.Length; i++)
             {
+#if UNITY_EDITOR
+                daysOfWeek[i] = (UnityEditor.PrefabUtility.InstantiatePrefab(buttonPrefab, contentGridLayout) as Button).gameObject;
+#else
                 daysOfWeek[i] = Instantiate(buttonPrefab, contentGridLayout).gameObject;
+#endif
 
                 //remove button component
                 if (Application.isPlaying)
@@ -224,33 +290,19 @@ namespace redd096
             //create buttons for calendar from Monday to Sunday * number of rows (6 to be sure to show 31 days also when first day of the month is last day of week)
             daysButtons = new Button[7 * 6];
             for (int i = 0; i < daysButtons.Length; i++)
+            {
+#if UNITY_EDITOR
+                daysButtons[i] = UnityEditor.PrefabUtility.InstantiatePrefab(buttonPrefab, contentGridLayout) as Button;
+#else
                 daysButtons[i] = Instantiate(buttonPrefab, contentGridLayout);
+#endif
+            }
 
             //set today as start month and update buttons texts
             monthToGenerate = DateTime.Now.Date;
             GenerateCalendar();
         }
+
+        #endregion
     }
-
-    #region editor
-#if UNITY_EDITOR
-
-    [CustomEditor(typeof(DatePicker), true)]
-    public class DatePickerEditor : Editor
-    {
-        public override void OnInspectorGUI()
-        {
-            base.OnInspectorGUI();
-
-            if (GUILayout.Button("Generate Calendar"))
-            {
-                DatePicker datePicker = target as DatePicker;
-                if (datePicker)
-                    datePicker.AutoGenerateCalendar();
-            }
-        }
-    }
-
-#endif
-    #endregion
 }
