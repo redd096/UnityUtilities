@@ -134,7 +134,7 @@ namespace redd096
             //parse inspector variables
             DateTime.TryParse(startHours, out start);
             DateTime.TryParse(endHours, out end);
-            DateTime.TryParse(selectedDate, out date);
+            DateTime.TryParse(dateToUse, out date);
             date = date.Date;                                                       //be sure date has only date and not TimeOfDay
             now = DateTime.Now.Add(new TimeSpan(additiveHoursAfterNow, 0, 0));      //now + additive hours
 
