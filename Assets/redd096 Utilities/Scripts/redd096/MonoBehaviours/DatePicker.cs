@@ -52,6 +52,7 @@ namespace redd096
         [Tooltip("Prefab for DaysOfWeek and CalendarButtons")][SerializeField] Button buttonPrefab = default;
 
         DateTime monthToGenerate;
+        DateTime selectedDay;
 
         private void Awake()
         {
@@ -72,23 +73,11 @@ namespace redd096
         {
             //set current date (to show from previous selected month - default is DateTime.Now) as start month
             monthToGenerate = DateTime.Parse(result).Date;
+            selectedDay = DateTime.Parse(result).Date;          //set also selected day
             GenerateCalendar();
 
             //and open calendar
             ActiveCalendar(true);
-
-            //show selected day
-            for (int i = 0; i < daysButtons.Length; i++)
-            {
-                if (int.TryParse(daysButtons[i].GetComponentInChildren<TextMeshProUGUI>().text, out int day))
-                {
-                    if (day == monthToGenerate.Day)
-                    {
-                        daysButtons[i].Select();
-                        break;
-                    }
-                }
-            }
         }
 
         public void CurrentMonth()
@@ -197,6 +186,10 @@ namespace redd096
 
                 //check if button is enabled
                 b.interactable = CanBeEnabledToday(dt) && IsDayEnabled(dt);
+
+                //select current day
+                if (dt.Date == selectedDay.Date)
+                    b.Select();
             }
         }
 
