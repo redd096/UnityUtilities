@@ -77,7 +77,7 @@ namespace redd096
         void FixedUpdate()
         {
             //if calendar is open, check to close it
-            if (calendar.activeInHierarchy && closeWhenCalendarNotSelected)
+            if (calendar && calendar.activeInHierarchy && closeWhenCalendarNotSelected)
             {
                 //if some object in calendar is selected, don't close
                 Transform[] childs = calendar.GetComponentsInChildren<Transform>();
