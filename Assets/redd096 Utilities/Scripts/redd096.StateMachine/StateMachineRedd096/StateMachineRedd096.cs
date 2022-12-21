@@ -2,9 +2,9 @@
 using UnityEngine;
 using redd096.Attributes;
 
-namespace redd096
+namespace redd096.StateMachine.StateMachineRedd096
 {
-    [AddComponentMenu("redd096/StateMachineRedd096/State Machine redd096")]
+    [AddComponentMenu("redd096/StateMachine/StateMachineRedd096/State Machine redd096")]
     public class StateMachineRedd096 : MonoBehaviour
     {
         public State[] States = default;

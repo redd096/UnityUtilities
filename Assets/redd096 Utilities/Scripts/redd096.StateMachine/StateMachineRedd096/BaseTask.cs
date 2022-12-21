@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace redd096
+namespace redd096.StateMachine.StateMachineRedd096
 {
     public abstract class BaseTask : MonoBehaviour
     {

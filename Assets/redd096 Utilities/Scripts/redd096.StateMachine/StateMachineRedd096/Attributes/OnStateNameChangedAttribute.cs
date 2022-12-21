@@ -1,11 +1,9 @@
 using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
-using redd096.Attributes;
-using System.Collections.Generic;
 #endif
 
-namespace redd096
+namespace redd096.StateMachine.StateMachineRedd096
 {
     #region editor
 

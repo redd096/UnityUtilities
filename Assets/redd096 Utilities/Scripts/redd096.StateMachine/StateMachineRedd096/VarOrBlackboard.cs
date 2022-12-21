@@ -1,10 +1,9 @@
 using UnityEngine;
-
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
-namespace redd096
+namespace redd096.StateMachine.StateMachineRedd096
 {
     /// <summary>
     /// Display variable with a toggle to select Blackboard Variable or Normal Variable
@@ -38,7 +37,16 @@ namespace redd096
         /// <returns></returns>
         public T GetValue(StateMachineRedd096 stateMachine)
         {
-            return useBlackboard ? (stateMachine ? stateMachine.GetBlackboardElement<T>(blackboardName) : default) : (T)normalVariable;
+            return useBlackboard ? (stateMachine ? stateMachine.GetBlackboardElement<T>(blackboardName) : default) : normalVariable;
+        }
+
+        /// <summary>
+        /// Return blackboard name
+        /// </summary>
+        /// <returns></returns>
+        public string GetName()
+        {
+            return blackboardName;
         }
 
         /// <summary>

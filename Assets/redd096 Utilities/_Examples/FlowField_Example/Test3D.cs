@@ -1,10 +1,10 @@
-using redd096;
 using redd096.PathFinding.FlowField3D;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Examples.FlowField
+namespace redd096.Examples.FlowField
 {
+    [AddComponentMenu("redd096/Examples/FlowField/Test 3D")]
     public class Test3D : MonoBehaviour
     {
         [Header("Left Click to set destinations. Right click to start pathfinding")]

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using redd096.Attributes;
+using redd096.StateMachine.StateMachineRedd096;
 
 namespace redd096.GameTopDown2D
 {
