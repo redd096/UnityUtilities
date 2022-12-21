@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine.Events;
 using UnityEngine.UI;
 using redd096.Attributes;
+using UnityEngine.EventSystems;
 
 namespace redd096
 {
@@ -24,6 +25,10 @@ namespace redd096
         [SerializeField] GameObject calendar = default;
         [SerializeField] bool closeOnAwake = true;
         [Tooltip("On awake set DateTime.Now as default result, to have result to read without open calendar")][SerializeField] bool setDefaultOnAwake = true;
+
+        [Header("Close when not selected")]
+        [Tooltip("If click outside of calendar or change selection, close it")][SerializeField] bool closeWhenCalendarNotSelected = true;
+        [Tooltip("If click outside of calendar, but it something of this object, keep it open")][SerializeField] GameObject[] objectsCanBeSelectedWithoutCloseCalendar = default;
 
         [Header("Month Header")]
         [SerializeField] TextMeshProUGUI monthText = default;
@@ -67,6 +72,34 @@ namespace redd096
             //close on awake
             if (closeOnAwake)
                 CloseCalendar();
+        }
+
+        void FixedUpdate()
+        {
+            //if calendar is open, check to close it
+            if (calendar.activeInHierarchy && closeWhenCalendarNotSelected)
+            {
+                //if some object in calendar is selected, don't close
+                Transform[] childs = calendar.GetComponentsInChildren<Transform>();
+                for (int i = 0; i < childs.Length; i++)
+                {
+                    if (EventSystem.current.currentSelectedGameObject == childs[i].gameObject)
+                        return;
+                }
+
+                //if some of these objects is selected, don't close
+                if (objectsCanBeSelectedWithoutCloseCalendar != null)
+                {
+                    foreach (GameObject go in objectsCanBeSelectedWithoutCloseCalendar)
+                    {
+                        if (EventSystem.current.currentSelectedGameObject == go)
+                            return;
+                    }
+                }
+
+                //else close it
+                CloseCalendar();
+            }
         }
 
         public void OpenCalendar()
@@ -136,9 +169,11 @@ namespace redd096
 
         void SetHeader()
         {
+            string s = monthToGenerate.ToString(monthFormat);
+
             //set month text
             if (monthText)
-                monthText.text = monthToGenerate.ToString(monthFormat);
+                monthText.text = s[0].ToString().ToUpper() + s.Substring(1);
         }
 
         void UpdateDaysOfWeek()
