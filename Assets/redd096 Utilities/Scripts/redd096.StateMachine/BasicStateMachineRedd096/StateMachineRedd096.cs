@@ -67,9 +67,19 @@ namespace redd096.StateMachine.BasicStateMachineRedd096
         /// Get current state name. If state is null, return empty string
         /// </summary>
         /// <returns></returns>
-        public string GetCurrentState()
+        public string GetCurrentStateName()
         {
             return CurrentState != null ? CurrentState.StateName : string.Empty;
+        }
+
+        /// <summary>
+        /// Return CurrentState casted to inherited class
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public T GetCurrentState<T>() where T : State
+        {
+            return CurrentState as T;
         }
 
         #endregion
