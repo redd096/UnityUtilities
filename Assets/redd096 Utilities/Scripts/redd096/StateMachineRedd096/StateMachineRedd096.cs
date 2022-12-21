@@ -20,13 +20,13 @@ namespace redd096
         public System.Action<string> onSetState { get; set; }
         public System.Action<string> onSetBlackboardValue { get; set; }
 
-        void Start()
+        protected virtual void Start()
         {
             //start with first state
             SetState(0);
         }
 
-        void Update()
+        protected virtual void Update()
         {
             if (CurrentState != null)
             {
