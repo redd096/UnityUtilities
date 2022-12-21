@@ -18,7 +18,7 @@ namespace redd096
 
         [Header("Hours to show in dropdown")]
         [SerializeField] string hoursFormat = "HH:mm";
-        [Tooltip("Distance between hours, for example: 08:00, 08:30, 09:00 and so on")][SerializeField] int minutesBetween = 30;
+        [Tooltip("Step between hours, for example: 08:00, 08:30, 09:00 and so on")][SerializeField] int minutesStep = 30;
 
         [Header("Selected Date, to know if disable hours")]
         [SerializeField] string selectedDate = "16/12/2022";
@@ -27,18 +27,18 @@ namespace redd096
         [Tooltip("This only if selected date is today or earlier")][SerializeField] bool disableHoursBeforeNow = true;
         [Tooltip("If enabled, can for example disable hours if there isn't at least one hour of difference from now")][SerializeField] int additiveHoursAfterNow = 1;
         [Tooltip("Disable every hours before of this time")][SerializeField] string startHours = "08:00";
-        [Tooltip("Disable every hours equals or after of this time")][SerializeField] string endHours = "17:00";
+        [Tooltip("Disable every hours after of this time")][SerializeField] string endHours = "17:00";
 
         [Header("Result")]
         [SerializeField] string resultFormat = "HH:mm";
         [SerializeField] string result = "12:30";
         [SerializeField] UnityEvent<string> onResult = default;
 
-        DateTime date;                                          //selected date
+        DateTime date;                                          //selected date (or date to use)
         DateTime now;                                           //DateTime.Now + additiveHours
         DateTime start;                                         //startHours
         DateTime end;                                           //endHours
-        List<DateTime> hoursInDropdown = new List<DateTime>();  //hours showed in dropdown
+        List<DateTime> hoursInDropdown = new List<DateTime>();  //hours showed in dropdown (hours found with GetPossibleHoursForDropdown)
 
         private void Awake()
         {
@@ -51,12 +51,11 @@ namespace redd096
                 result = DateTime.Now.ToString(resultFormat);
             }
 
-            //generate default hours
-            SetHoursInDropdown();
-            dropdown.SetValueWithoutNotify(GetIndexStartTime());
-
             //register to dropdown event
             dropdown.onValueChanged.AddListener(OnClick);
+
+            //generate default hours
+            SetHoursInDropdown(true);
         }
 
         private void OnDestroy()
@@ -75,8 +74,7 @@ namespace redd096
             selectedDate = date;
 
             //update also hours in dropdown
-            SetHoursInDropdown();
-            dropdown.SetValueWithoutNotify(GetIndexStartTime());
+            SetHoursInDropdown(true);
         }
 
         /// <summary>
@@ -86,7 +84,36 @@ namespace redd096
         /// <returns></returns>
         public bool ThereAreHoursThisDate(DateTime date)
         {
+            //update list and check number of elements in list
             return GetPossibleHoursForDropdown(date.ToString("dd/MM/yyyy")).Count > 0;
+        }
+
+        /// <summary>
+        /// Check if with selected date, there is this hour in the list
+        /// </summary>
+        /// <param name="hour"></param>
+        /// <returns></returns>
+        public bool IsSelectableThisHour(DateTime hour)
+        {
+            //update list
+            GetPossibleHoursForDropdown(selectedDate);
+
+            //and check if contains this hour in the list
+            return hoursInDropdown.Contains(date.Add(hour.TimeOfDay));
+        }
+
+        /// <summary>
+        /// Check if with this date, there is this hour in the list
+        /// </summary>
+        /// <param name="dt"></param>
+        /// <returns></returns>
+        public bool IsSelectableThisDateTime(DateTime dt)
+        {
+            //update list
+            GetPossibleHoursForDropdown(dt.ToString("dd/MM/yyyy"));
+
+            //and check if contains this hour in the list
+            return hoursInDropdown.Contains(dt);
         }
 
         /// <summary>
@@ -97,17 +124,21 @@ namespace redd096
             this.result = result;
 
             //update also hours in dropdown
-            SetHoursInDropdown();
-            dropdown.SetValueWithoutNotify(GetIndexStartTime());
+            SetHoursInDropdown(false);
         }
 
         #region private API
 
-        void SetHoursInDropdown()
+        void SetHoursInDropdown(bool notify)
         {
             //update dropdown using selected date
             dropdown.ClearOptions();
             dropdown.AddOptions(GetPossibleHoursForDropdown(selectedDate));
+
+            if (notify)
+                dropdown.value = GetIndexStartTime();
+            else
+                dropdown.SetValueWithoutNotify(GetIndexStartTime());
         }
 
         int GetIndexStartTime()
@@ -141,7 +172,7 @@ namespace redd096
             //generate hours in dropdown
             hoursInDropdown = new List<DateTime>();
             List<string> hoursToShow = new List<string>();
-            for (DateTime dt = start; dt.TimeOfDay <= end.TimeOfDay; dt = dt.Add(new TimeSpan(0, minutesBetween, 0)))
+            for (DateTime dt = date.Add(start.TimeOfDay); dt.TimeOfDay <= end.TimeOfDay; dt = dt.Add(new TimeSpan(0, minutesStep, 0)))
             {
                 //only if enabled
                 if (CanBeEnabledNow(dt) && IsInsideHoursRange(dt))
@@ -162,13 +193,13 @@ namespace redd096
         {
             //bool is disabled
             //or DateTime is greater than now + additive hours
-            return disableHoursBeforeNow == false || date.Add(dt.TimeOfDay) > now;
+            return disableHoursBeforeNow == false || dt > now;
         }
 
         bool IsInsideHoursRange(DateTime dt)
         {
             //check DateTime is between Start and End
-            return dt.TimeOfDay >= start.TimeOfDay && dt.TimeOfDay < end.TimeOfDay;
+            return dt.TimeOfDay >= start.TimeOfDay && dt.TimeOfDay <= end.TimeOfDay;
         }
 
         #endregion
