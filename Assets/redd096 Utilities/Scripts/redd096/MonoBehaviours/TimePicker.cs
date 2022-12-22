@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using UnityEngine;
 using System;
 using TMPro;
+using UnityEngine;
 using UnityEngine.Events;
 
 namespace redd096
@@ -55,7 +55,7 @@ namespace redd096
             dropdown.onValueChanged.AddListener(OnClick);
 
             //generate default hours
-            SetHoursInDropdown(true);
+            SetHoursInDropdown();
         }
 
         private void OnDestroy()
@@ -64,6 +64,8 @@ namespace redd096
             if (dropdown)
                 dropdown.onValueChanged.RemoveListener(OnClick);
         }
+
+        #region public API
 
         /// <summary>
         /// Used to update selected date by script
@@ -74,7 +76,7 @@ namespace redd096
             selectedDate = date;
 
             //update also hours in dropdown
-            SetHoursInDropdown(true);
+            SetHoursInDropdown();
         }
 
         /// <summary>
@@ -122,9 +124,6 @@ namespace redd096
         public void SetResult(string result)
         {
             this.result = result;
-
-            //update also hours in dropdown
-            SetHoursInDropdown(false);
         }
 
         /// <summary>
@@ -132,29 +131,24 @@ namespace redd096
         /// </summary>
         public void UpdateResult()
         {
-            SetHoursInDropdown(true);
+            SetHoursInDropdown();
         }
+
+        #endregion
 
         #region private API
 
-        void SetHoursInDropdown(bool notify)
+        void SetHoursInDropdown()
         {
             //update dropdown using selected date
             dropdown.ClearOptions();
             dropdown.AddOptions(GetPossibleHoursForDropdown(selectedDate));
 
-            if (notify)
-            {
-                int index = GetIndexStartTime();
-                if (dropdown.value != index)
-                    dropdown.value = index;         //set value
-                else
-                    OnClick(index);                 //if value isn't changed, call anyway to update result
-            }
+            int index = GetIndexStartTime();
+            if (dropdown.value != index)
+                dropdown.value = index;         //set value
             else
-            {
-                dropdown.SetValueWithoutNotify(GetIndexStartTime());
-            }
+                OnClick(index);                 //if value isn't changed, call anyway to update result
         }
 
         int GetIndexStartTime()

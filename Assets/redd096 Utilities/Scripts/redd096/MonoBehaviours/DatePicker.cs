@@ -1,10 +1,10 @@
-using UnityEngine;
 using System;
 using TMPro;
+using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-using redd096.Attributes;
 using UnityEngine.EventSystems;
+using redd096.Attributes;
 
 namespace redd096
 {
@@ -28,7 +28,8 @@ namespace redd096
 
         [Header("Close when not selected")]
         [Tooltip("If click outside of calendar or change selection, close it")][SerializeField] bool closeWhenCalendarNotSelected = true;
-        [Tooltip("If click outside of calendar, but it something of this object, keep it open")][SerializeField] GameObject[] objectsCanBeSelectedWithoutCloseCalendar = default;
+        [Tooltip("If click calendar gameObject setted above or its childs, keep calendar open?")][SerializeField] bool calendarObjectIsInTheList = true;
+        [Tooltip("If click one of these objects or childs of them, keep calendar open")][SerializeField] GameObject[] objectsCanBeSelectedWithoutCloseCalendar = default;
 
         [Header("Month Header")]
         [SerializeField] TextMeshProUGUI monthText = default;
@@ -59,6 +60,10 @@ namespace redd096
         DateTime monthToGenerate = DateTime.Today;
         DateTime selectedDay = DateTime.Today;
 
+        //check where click
+        //this is used, cause if click calendar but miss day buttons, the background image isn't a Selectable, so EventSystem set selectedGameObject to null and close calendar (if setted in inspector to close when not selected)
+        GameObject lastSelectedGameObject;
+
         private void Awake()
         {
             //set today as default result
@@ -75,25 +80,30 @@ namespace redd096
                 CloseCalendar();
         }
 
-        void FixedUpdate()
+        void Update()
         {
             //if calendar is open, check to close it
-            if (calendar && calendar.activeInHierarchy && closeWhenCalendarNotSelected)
+            if (closeWhenCalendarNotSelected && IsCalendarOpen())
             {
-                //if some object in calendar is selected, don't close
-                Transform[] childs = calendar.GetComponentsInChildren<Transform>();
-                for (int i = 0; i < childs.Length; i++)
+                //check only if changed selected gameObject
+                if (EventSystem.current.currentSelectedGameObject == lastSelectedGameObject)
+                    return;
+
+                lastSelectedGameObject = EventSystem.current.currentSelectedGameObject;
+
+                //if some object in calendar is selected or cliked, don't close
+                if (calendarObjectIsInTheList)
                 {
-                    if (EventSystem.current.currentSelectedGameObject == childs[i].gameObject)
+                    if (CheckOneTransformIsSelected(calendar.GetComponentsInChildren<Transform>()) || CheckClickedInsideOneRectTransform(calendar.GetComponentsInChildren<RectTransform>()))
                         return;
                 }
 
-                //if some of these objects is selected, don't close
+                //if some of these objects is selected or cliked, don't close
                 if (objectsCanBeSelectedWithoutCloseCalendar != null)
                 {
                     foreach (GameObject go in objectsCanBeSelectedWithoutCloseCalendar)
                     {
-                        if (EventSystem.current.currentSelectedGameObject == go)
+                        if (CheckOneTransformIsSelected(go.GetComponentsInChildren<Transform>()) || CheckClickedInsideOneRectTransform(go.GetComponentsInChildren<RectTransform>()))
                             return;
                     }
                 }
@@ -102,6 +112,8 @@ namespace redd096
                 CloseCalendar();
             }
         }
+
+        #region public API
 
         public void OpenCalendar()
         {
@@ -140,17 +152,63 @@ namespace redd096
             ActiveCalendar(false);
         }
 
+        public bool IsCalendarOpen()
+        {
+            if (calendar)
+                return calendar.activeInHierarchy;
+
+            return false;
+        }
+
         /// <summary>
         /// Used to force result. For example to set a default value before open calendar (to get from a variable instead of set DateTime.Now in awake)
         /// </summary>
         public void SetResult(string result)
         {
             this.result = result;
+        }
 
+        public void UpdateResult()
+        {
             //update selected day
             selectedDay = DateTime.Parse(result).Date;
             GenerateCalendar();
         }
+
+        #endregion
+
+        #region checks to close calendar
+
+        bool CheckOneTransformIsSelected(Transform[] transforms)
+        {
+            for (int i = 0; i < transforms.Length; i++)
+            {
+                //if event system has this selected
+                if (lastSelectedGameObject == transforms[i].gameObject)
+                    return true;
+            }
+            return false;
+        }
+
+        bool CheckClickedInsideOneRectTransform(RectTransform[] rectTransforms)
+        {
+            //if click this frame
+            if (Input.GetMouseButtonDown(0) == false)
+                return false;
+
+            Camera cam = Camera.main;
+            Vector3 mousePosition = Input.mousePosition;
+
+            for (int i = 0; i < rectTransforms.Length; i++)
+            {
+                //if mouse position is inside rect transform
+                if (RectTransformUtility.RectangleContainsScreenPoint(rectTransforms[i], mousePosition, cam))
+                    return true;
+            }
+            return false;
+        }
+
+        #endregion
 
         #region generate calendar
 
