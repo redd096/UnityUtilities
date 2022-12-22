@@ -1,15 +1,16 @@
-﻿using UnityEngine;
+﻿using redd096.Attributes;
+using UnityEngine;
 
 namespace redd096.StateMachine.BasicStateMachineRedd096
 {
-    [System.Serializable]
     public abstract class State
     {
         [Header("Basic State")]
         public string StateName = "";
 
-        public StateMachineRedd096 StateMachine;
-        public bool IsActive;
+        [Header("DEBUG")]
+        [ReadOnly] public StateMachineRedd096 StateMachine;
+        [ReadOnly] public bool IsActive;
 
         bool isInitialized;
 

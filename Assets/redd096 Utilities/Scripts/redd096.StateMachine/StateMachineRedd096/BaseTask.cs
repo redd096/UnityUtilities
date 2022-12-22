@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using redd096.Attributes;
+using UnityEngine;
 
 namespace redd096.StateMachine.StateMachineRedd096
 {
@@ -7,8 +8,9 @@ namespace redd096.StateMachine.StateMachineRedd096
         [Header("Task")]
         public string TaskName = "";
 
-        public StateMachineRedd096 StateMachine;
-        public bool IsTaskActive;
+        [Header("DEBUG")]
+        [ReadOnly] public StateMachineRedd096 StateMachine;
+        [ReadOnly] public bool IsTaskActive;
 
         bool isInitialized;
 
