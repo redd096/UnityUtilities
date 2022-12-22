@@ -25,6 +25,7 @@ namespace redd096
         [SerializeField] GameObject calendar = default;
         [SerializeField] bool closeOnAwake = true;
         [Tooltip("On awake set DateTime.Now as default result, to have result to read without open calendar")][SerializeField] bool setDefaultOnAwake = true;
+        [Tooltip("If set default on awake, start from first day selectable")][SerializeField] bool findFirstDaySelectable = true;
 
         [Header("Close when not selected")]
         [Tooltip("If click outside of calendar or change selection, close it")][SerializeField] bool closeWhenCalendarNotSelected = true;
@@ -68,7 +69,23 @@ namespace redd096
         {
             //set today as default result
             if (setDefaultOnAwake)
+            {
                 result = DateTime.Now.ToString(resultFormat);
+
+                //or find first day selectable
+                if (findFirstDaySelectable)
+                {
+                    DateTime day = DateTime.Now;
+                    while (true)
+                    {
+                        if (timePicker) timePicker.SetSelectedDate(day.ToString(resultFormat));     //update time picker to check also if there are hours this day
+                        if (IsEnabledThisDay(day.Date))                                             //check is enabled (using variables setted for not clicable days)
+                            break;
+                        day = day.AddDays(1);                                                       //else check next day
+                    }
+                    result = day.ToString(resultFormat);
+                }
+            }
 
             //set current date (to show from previous selected month - default is DateTime.Now) as start month
             monthToGenerate = DateTime.Parse(result).Date;
@@ -173,6 +190,11 @@ namespace redd096
             //update selected day
             selectedDay = DateTime.Parse(result).Date;
             GenerateCalendar();
+        }
+
+        public bool IsEnabledThisDay(DateTime day)
+        {
+            return CanBeEnabledToday(day.Date) && IsDayEnabled(day.Date);
         }
 
         #endregion
@@ -356,7 +378,7 @@ namespace redd096
             for (int i = contentGridLayout.childCount - 1; i >= 0; i--)
             {
                 if (Application.isPlaying)
-                    Destroy(contentGridLayout.GetChild(0).gameObject);
+                    Destroy(contentGridLayout.GetChild(i).gameObject);
                 else
                     DestroyImmediate(contentGridLayout.GetChild(0).gameObject);
             }

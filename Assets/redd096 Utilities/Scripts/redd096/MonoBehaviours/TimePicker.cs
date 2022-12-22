@@ -12,9 +12,14 @@ namespace redd096
     [AddComponentMenu("redd096/MonoBehaviours/Time Picker")]
     public class TimePicker : MonoBehaviour
     {
-        [Header("Dropdown to use")]
+        [Header("Dropdown to use - else can instantiate objects in ScrollView")]
         [SerializeField] TMP_Dropdown dropdown = default;
-        [Tooltip("On awake set DateTime.Now as selected date and default result, to generate default dropdown and have result to read without open dropdown")][SerializeField] bool setDefaultOnAwake = true;
+        [SerializeField] bool instantiateInsteadOfUseDropdown = false;
+        [SerializeField] GameObject prefab = default;
+        [SerializeField] ScrollSnap scrollSnap = default;
+
+        [Header("On Awake")]
+        [Tooltip("On awake set DateTime.Now as selected date and default result, to generate default dropdown and have result to read without open dropdown")][SerializeField] bool setDefaultOnAwake = false;
 
         [Header("Hours to show in dropdown")]
         [SerializeField] string hoursFormat = "HH:mm";
@@ -34,14 +39,25 @@ namespace redd096
         [SerializeField] string result = "12:30";
         [SerializeField] UnityEvent<string> onResult = default;
 
+        public ScrollSnap Scroll => scrollSnap;
+        public List<string> SavedHours => savedHours;
+
         DateTime date = DateTime.Today;                         //selected date (or date to use)
         DateTime now = DateTime.Now;                            //DateTime.Now + additiveHours
         DateTime start = DateTime.Now;                          //startHours
         DateTime end = DateTime.Now;                            //endHours
-        List<DateTime> hoursInDropdown = new List<DateTime>();  //hours showed in dropdown (hours found with GetPossibleHoursForDropdown)
+        List<DateTime> hoursInDropdown = new List<DateTime>();  //hours showed in dropdown (hours found with GetPossibleHoursForDropdown) as DateTime
+
+        List<string> savedHours = new List<string>();           //hours showed in dropdown (hours found with GetPossibleHoursForDropdown). These are changed only when call SetHoursInDropdown
 
         private void Awake()
         {
+            //checks
+            if (instantiateInsteadOfUseDropdown == false && dropdown == null)
+                Debug.LogError("Miss dropdown");
+            else if (instantiateInsteadOfUseDropdown && (prefab == null || scrollSnap == null))
+                Debug.LogError("Miss prefab to instantiate or scrollSnap");
+
             if (setDefaultOnAwake)
             {
                 //set today as default date
@@ -52,7 +68,8 @@ namespace redd096
             }
 
             //register to dropdown event
-            dropdown.onValueChanged.AddListener(OnClick);
+            if (dropdown)
+                dropdown.onValueChanged.AddListener(OnClick);
 
             //generate default hours
             SetHoursInDropdown();
@@ -140,15 +157,43 @@ namespace redd096
 
         void SetHoursInDropdown()
         {
-            //update dropdown using selected date
-            dropdown.ClearOptions();
-            dropdown.AddOptions(GetPossibleHoursForDropdown(selectedDate));
+            savedHours = GetPossibleHoursForDropdown(selectedDate);
 
-            int index = GetIndexStartTime();
-            if (dropdown.value != index)
-                dropdown.value = index;         //set value
-            else
-                OnClick(index);                 //if value isn't changed, call anyway to update result
+            //update dropdown using selected date
+            if (dropdown)
+            {
+                dropdown.ClearOptions();
+                dropdown.AddOptions(savedHours);
+
+                //set value
+                int index = GetIndexStartTime();
+                if (dropdown.value != index)
+                    dropdown.value = index;         //set value
+                else
+                    OnClick(index);                 //if value isn't changed, call anyway to update result
+            }
+            //else instantiate objects in scrollview
+            else if (instantiateInsteadOfUseDropdown)
+            {
+                //remove previous childs
+                for (int i = scrollSnap.Content.childCount - 1; i >= 0; i--)
+                {
+                    Destroy(scrollSnap.Content.GetChild(i).gameObject);
+                }
+
+                //instantiate new ones
+                for (int i = 0; i < savedHours.Count; i++)
+                {
+                    GameObject go = Instantiate(prefab, scrollSnap.Content);
+                    go.GetComponentInChildren<TextMeshProUGUI>().text = savedHours[i];
+                }
+
+                //set value
+                int index = GetIndexStartTime();
+                scrollSnap.ScrollToItem(index); //TODO non si aggiorna perché è spento
+                OnClick(index);
+            }
+
         }
 
         int GetIndexStartTime()
@@ -216,12 +261,15 @@ namespace redd096
 
         void OnClick(int index)
         {
-            //parse option from dropdown
-            DateTime dt = DateTime.Parse(dropdown.options[index].text);
-            result = dt.ToString(resultFormat);
+            if (savedHours.Count > index)
+            {
+                //parse selected value
+                DateTime dt = DateTime.Parse(savedHours[index]);
+                result = dt.ToString(resultFormat);
 
-            //on select value, call event
-            onResult?.Invoke(result);
+                //on select value, call event
+                onResult?.Invoke(result);
+            }
         }
     }
 }
