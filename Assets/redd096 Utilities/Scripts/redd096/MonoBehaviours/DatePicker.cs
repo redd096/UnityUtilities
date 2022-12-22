@@ -56,8 +56,8 @@ namespace redd096
         [Tooltip("Parent where spawn")][SerializeField] Transform contentGridLayout = default;
         [Tooltip("Prefab for DaysOfWeek and CalendarButtons")][SerializeField] Button buttonPrefab = default;
 
-        DateTime monthToGenerate;
-        DateTime selectedDay;
+        DateTime monthToGenerate = DateTime.Today;
+        DateTime selectedDay = DateTime.Today;
 
         private void Awake()
         {
@@ -67,6 +67,7 @@ namespace redd096
 
             //set current date (to show from previous selected month - default is DateTime.Now) as start month
             monthToGenerate = DateTime.Parse(result).Date;
+            selectedDay = DateTime.Parse(result).Date;          //set also selected day
             GenerateCalendar();
 
             //close on awake
@@ -145,6 +146,10 @@ namespace redd096
         public void SetResult(string result)
         {
             this.result = result;
+
+            //update selected day
+            selectedDay = DateTime.Parse(result).Date;
+            GenerateCalendar();
         }
 
         #region generate calendar

@@ -34,10 +34,10 @@ namespace redd096
         [SerializeField] string result = "12:30";
         [SerializeField] UnityEvent<string> onResult = default;
 
-        DateTime date;                                          //selected date (or date to use)
-        DateTime now;                                           //DateTime.Now + additiveHours
-        DateTime start;                                         //startHours
-        DateTime end;                                           //endHours
+        DateTime date = DateTime.Today;                         //selected date (or date to use)
+        DateTime now = DateTime.Now;                            //DateTime.Now + additiveHours
+        DateTime start = DateTime.Now;                          //startHours
+        DateTime end = DateTime.Now;                            //endHours
         List<DateTime> hoursInDropdown = new List<DateTime>();  //hours showed in dropdown (hours found with GetPossibleHoursForDropdown)
 
         private void Awake()
@@ -127,6 +127,14 @@ namespace redd096
             SetHoursInDropdown(false);
         }
 
+        /// <summary>
+        /// Update. Maybe it's been an hour and now the result is different
+        /// </summary>
+        public void UpdateResult()
+        {
+            SetHoursInDropdown(true);
+        }
+
         #region private API
 
         void SetHoursInDropdown(bool notify)
@@ -136,9 +144,17 @@ namespace redd096
             dropdown.AddOptions(GetPossibleHoursForDropdown(selectedDate));
 
             if (notify)
-                dropdown.value = GetIndexStartTime();
+            {
+                int index = GetIndexStartTime();
+                if (dropdown.value != index)
+                    dropdown.value = index;         //set value
+                else
+                    OnClick(index);                 //if value isn't changed, call anyway to update result
+            }
             else
+            {
                 dropdown.SetValueWithoutNotify(GetIndexStartTime());
+            }
         }
 
         int GetIndexStartTime()
