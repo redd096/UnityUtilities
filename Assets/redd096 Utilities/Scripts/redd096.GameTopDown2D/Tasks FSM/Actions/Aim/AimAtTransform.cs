@@ -51,7 +51,7 @@ namespace redd096.GameTopDown2D
             if (aimComponent == null) aimComponent = GetStateMachineComponent<AimComponent>();
         }
 
-        public override void OnEnterTask()
+        protected override void OnEnterTask()
         {
             base.OnEnterTask();
 
@@ -59,7 +59,7 @@ namespace redd096.GameTopDown2D
             onStartAimAtTarget?.Invoke();
         }
 
-        public override void OnExitTask()
+        protected override void OnExitTask()
         {
             base.OnExitTask();
 

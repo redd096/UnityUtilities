@@ -39,7 +39,7 @@ namespace redd096.GameTopDown2D
 
             //show warnings if not found
             if (playerInput && playerInput.actions == null)
-                Debug.LogWarning("Miss Actions on PlayerInput on " + stateMachine);
+                Debug.LogWarning("Miss Actions on PlayerInput on " + StateMachine);
         }
 
         public override void OnUpdateTask()

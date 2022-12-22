@@ -14,7 +14,7 @@ namespace redd096.GameTopDown2D
 
         float timeToEnd;
 
-        public override void OnEnterTask()
+        protected override void OnEnterTask()
         {
             base.OnEnterTask();
 

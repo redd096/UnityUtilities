@@ -31,7 +31,7 @@ namespace redd096.GameTopDown2D
             if (weaponComponent == null) weaponComponent = GetStateMachineComponent<WeaponComponent>();
         }
 
-        public override void OnEnterTask()
+        protected override void OnEnterTask()
         {
             base.OnEnterTask();
 
@@ -41,7 +41,7 @@ namespace redd096.GameTopDown2D
             numberAttacksDone = 0;
         }
 
-        public override void OnExitTask()
+        protected override void OnExitTask()
         {
             base.OnExitTask();
 

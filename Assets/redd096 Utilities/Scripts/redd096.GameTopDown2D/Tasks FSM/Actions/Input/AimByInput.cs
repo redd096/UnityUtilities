@@ -37,9 +37,9 @@ namespace redd096.GameTopDown2D
 
             //show warnings if not found
             if (playerInput && playerInput.actions == null)
-                Debug.LogWarning("Miss Actions on PlayerInput on " + stateMachine);
+                Debug.LogWarning("Miss Actions on PlayerInput on " + StateMachine);
             if (cam == null)
-                Debug.LogWarning("Miss Camera for " + stateMachine);
+                Debug.LogWarning("Miss Camera for " + StateMachine);
         }
 
         public override void OnUpdateTask()

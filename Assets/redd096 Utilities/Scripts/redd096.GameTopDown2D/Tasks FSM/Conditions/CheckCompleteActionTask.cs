@@ -25,7 +25,7 @@ namespace redd096.GameTopDown2D
                 actionToComplete.onCompleteTask -= OnCompleteTask;
         }
 
-        public override void OnEnterTask()
+        protected override void OnEnterTask()
         {
             base.OnEnterTask();
 

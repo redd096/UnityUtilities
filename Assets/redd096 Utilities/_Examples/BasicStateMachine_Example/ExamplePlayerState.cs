@@ -19,12 +19,12 @@ namespace redd096.Examples.BasicStateMachine
             base.OnInit();
 
             //get references
-            player = stateMachine as ExamplePlayer;
+            player = GetStateMachine<ExamplePlayer>();
             rb = GetStateMachineComponent<Rigidbody>();
             cameraControl = player.cameraControl;
         }
 
-        public override void OnUpdate()
+        protected override void OnUpdate()
         {
             base.OnUpdate();
 
@@ -32,7 +32,7 @@ namespace redd096.Examples.BasicStateMachine
             MoveCamera();
             //Rotate(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
 
-            stateMachine.SetBlackboardElement(targetBlackboard.GetName(), transformState);
+            StateMachine.SetBlackboardElement(targetBlackboard.GetName(), transformState);
             Debug.Log(GetValue(targetBlackboard));
             Debug.Log(targetInspector);
         }

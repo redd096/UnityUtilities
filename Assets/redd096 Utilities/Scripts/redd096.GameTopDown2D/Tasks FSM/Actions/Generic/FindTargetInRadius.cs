@@ -42,7 +42,7 @@ namespace redd096.GameTopDown2D
             }
         }
 
-        public override void OnEnterTask()
+        protected override void OnEnterTask()
         {
             base.OnEnterTask();
 
@@ -78,7 +78,7 @@ namespace redd096.GameTopDown2D
 
             //if found targets, save nearest in the blackboard
             GetNearest();
-            stateMachine.SetBlackboardElement(saveTargetInBlackboardAs, target);
+            StateMachine.SetBlackboardElement(saveTargetInBlackboardAs, target);
 
             //call event
             if (callEvent)

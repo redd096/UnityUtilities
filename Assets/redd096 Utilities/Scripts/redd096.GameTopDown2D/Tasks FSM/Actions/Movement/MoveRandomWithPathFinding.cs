@@ -74,7 +74,7 @@ namespace redd096.GameTopDown2D
             startPosition = transformTask.position;
         }
 
-        public override void OnEnterTask()
+        protected override void OnEnterTask()
         {
             base.OnEnterTask();
 
@@ -136,7 +136,7 @@ namespace redd096.GameTopDown2D
             this.path = path;
 
             //and save on blackboard (used for example to aim at next node)
-            stateMachine.SetBlackboardElement(savePathInBlackboard, path);
+            StateMachine.SetBlackboardElement(savePathInBlackboard, path);
         }
 
         void Move()

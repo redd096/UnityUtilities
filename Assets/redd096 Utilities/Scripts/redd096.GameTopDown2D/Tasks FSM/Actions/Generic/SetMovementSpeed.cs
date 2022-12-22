@@ -39,7 +39,7 @@ namespace redd096.GameTopDown2D
             }
         }
 
-        public override void OnEnterTask()
+        protected override void OnEnterTask()
         {
             base.OnEnterTask();
 
@@ -58,7 +58,7 @@ namespace redd096.GameTopDown2D
             }
         }
 
-        public override void OnExitTask()
+        protected override void OnExitTask()
         {
             base.OnExitTask();
 

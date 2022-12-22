@@ -7,13 +7,25 @@ namespace redd096.StateMachine.StateMachineRedd096
         [Header("Task")]
         public string TaskName = "";
 
+        public StateMachineRedd096 StateMachine;
+        public bool IsTaskActive;
+
+        bool isInitialized;
+
+        /// <summary>
+        /// Return StateMachine casted to inherited class
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public T GetStateMachine<T>() where T : StateMachineRedd096
+        {
+            return StateMachine as T;
+        }
+
         #region protected
 
-        protected StateMachineRedd096 stateMachine;
-        protected bool isTaskActive;
-
         //as transform use statemachine if possible, else use this task
-        protected Transform transformTask => stateMachine ? stateMachine.transform : transform;
+        protected Transform transformTask => StateMachine ? StateMachine.transform : transform;
 
         /// <summary>
         /// Get component in parent. If not found, show warning
@@ -28,7 +40,7 @@ namespace redd096.StateMachine.StateMachineRedd096
 
             //show warning if not found
             if (showWarningIfNotFound && component == null)
-                Debug.LogWarning($"Miss {typeof(T).Name} on {stateMachine}");
+                Debug.LogWarning($"Miss {typeof(T).Name} on {StateMachine}");
 
             return component;
         }
@@ -39,11 +51,9 @@ namespace redd096.StateMachine.StateMachineRedd096
         /// <typeparam name="T"></typeparam>
         /// <param name="v"></param>
         /// <returns></returns>
-        protected T GetValue<T>(VarOrBlackboard<T> v) => v != null ? v.GetValue(stateMachine) : default;
+        protected T GetValue<T>(VarOrBlackboard<T> v) => v != null ? v.GetValue(StateMachine) : default;
 
         #endregion
-
-        bool isInitialized;
 
         #region statemachine functions
 
@@ -59,7 +69,7 @@ namespace redd096.StateMachine.StateMachineRedd096
             isInitialized = true;
 
             //set state machine and init
-            this.stateMachine = stateMachine;
+            this.StateMachine = stateMachine;
             OnInitTask();
         }
 
@@ -68,7 +78,7 @@ namespace redd096.StateMachine.StateMachineRedd096
         /// </summary>
         public void EnterTask()
         {
-            isTaskActive = true;
+            IsTaskActive = true;
             OnEnterTask();
         }
 
@@ -77,7 +87,7 @@ namespace redd096.StateMachine.StateMachineRedd096
         /// </summary>
         public void ExitTask()
         {
-            isTaskActive = false;
+            IsTaskActive = false;
             OnExitTask();
         }
 
@@ -90,10 +100,10 @@ namespace redd096.StateMachine.StateMachineRedd096
         /// <summary>
         /// Called every time enter in this task
         /// </summary>
-        public virtual void OnEnterTask() { }
+        protected virtual void OnEnterTask() { }
         /// <summary>
         /// Called every time exit from this task
         /// </summary>
-        public virtual void OnExitTask() { }
+        protected virtual void OnExitTask() { }
     }
 }

@@ -55,7 +55,7 @@ namespace redd096.GameTopDown2D
             if (movementComponent == null) movementComponent = GetStateMachineComponent<MovementComponent>();
         }
 
-        public override void OnEnterTask()
+        protected override void OnEnterTask()
         {
             base.OnEnterTask();
 

@@ -52,7 +52,7 @@ namespace redd096.GameTopDown2D
             if (movementComponent == null) movementComponent = GetComponent<MovementComponent>();
         }
 
-        public override void OnEnterTask()
+        protected override void OnEnterTask()
         {
             base.OnEnterTask();
 
@@ -60,7 +60,7 @@ namespace redd096.GameTopDown2D
             onStartAimAtPosition?.Invoke();
         }
 
-        public override void OnExitTask()
+        protected override void OnExitTask()
         {
             base.OnExitTask();
 
