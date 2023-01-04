@@ -25,13 +25,13 @@ namespace redd096
         public System.Action onEndRefreshAnimation { get; set; }
 
         Vector2 iconStartLocalPosition;
-        Vector2 startPosition;
+        Vector2 contentStartLocalPosition;
         bool isRefreshing;
 
         private void OnEnable()
         {
             //save start position
-            startPosition = scrollview.content.position;
+            contentStartLocalPosition = scrollview.content.localPosition;
             iconStartLocalPosition = iconToShow.localPosition;
 
             scrollview.onValueChanged.AddListener(OnScrollViewValueChanged);
@@ -48,14 +48,14 @@ namespace redd096
                 return;
 
             //check when move down content
-            float distance = startPosition.y - scrollview.content.position.y;
+            float distance = contentStartLocalPosition.y - scrollview.content.localPosition.y;
 
             //move also icon
-            iconToShow.localPosition = new Vector2(iconToShow.localPosition.x, iconStartLocalPosition.y - distance / iconToShow.lossyScale.y);
+            iconToShow.localPosition = new Vector2(iconToShow.localPosition.x, iconStartLocalPosition.y - distance);// / iconToShow.lossyScale.y);
 
 
             //when icon is visible, start animation
-            if (iconToShow.position.y < startPosition.y)
+            if (iconToShow.localPosition.y < contentStartLocalPosition.y)
             {
                 isRefreshing = true;
                 StartCoroutine(IconAnimationCoroutine());
