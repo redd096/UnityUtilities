@@ -28,12 +28,12 @@ namespace redd096.Attributes
     public class ShowAssetPreviewDrawer : PropertyDrawer
     {
         ShowAssetPreviewAttribute at;
-        Texture textureToShow;
+        Texture2D assetPreview;
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
             //if there is texture, add height and 10 (a bit of space between vars)
-            return EditorGUI.GetPropertyHeight(property, label, true) + (at != null && textureToShow ? at.height + 10 : 0);
+            return EditorGUI.GetPropertyHeight(property, label, true) + (at != null && assetPreview ? at.height + 10 : 0);
         }
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
@@ -44,24 +44,33 @@ namespace redd096.Attributes
             //get attribute
             at = attribute as ShowAssetPreviewAttribute;
 
-            //get texture or sprite
+            //get property value (texture or sprite) and get AssetPreview from it
             object obj = property.GetValue(property.name, typeof(Texture), typeof(Sprite));
-            if (obj is Texture)
-            {
-                textureToShow = obj as Texture;
-            }
-            else if (obj is Sprite)
-            {
-                Sprite sprite = obj as Sprite;
-                if (sprite)
-                    textureToShow = sprite.texture;
-            }
+            assetPreview = AssetPreview.GetAssetPreview(obj as Object);
 
             //show texture preview
-            if (at != null && textureToShow)
+            if (at != null && assetPreview)
             {
-                EditorGUI.DrawPreviewTexture(new Rect(position.x, position.y + position.height - at.height - 5, at.width, at.height), textureToShow);
+                GUI.DrawTexture(new Rect(position.x, position.y + position.height - at.height - 5, at.width, at.height), assetPreview);
             }
+
+
+            //Texture textureToShow = null;
+            //if (obj is Texture)
+            //{
+            //    textureToShow = obj as Texture;
+            //}
+            //else if (obj is Sprite)
+            //{
+            //    Sprite sprite = obj as Sprite;
+            //    if (sprite)
+            //        textureToShow = sprite.texture;
+            //}
+            //
+            //if (at != null && textureToShow)
+            //{
+            //    EditorGUI.DrawPreviewTexture(new Rect(position.x, position.y + position.height - at.height - 5, at.width, at.height), textureToShow);
+            //}
         }
     }
 
