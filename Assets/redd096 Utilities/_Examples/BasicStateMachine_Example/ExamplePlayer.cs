@@ -7,7 +7,7 @@ namespace redd096.Examples.BasicStateMachine
     public class ExamplePlayer : StateMachineRedd096
     {
         [Header("State Serialized")]
-        [SerializeField] ExamplePlayerState playerState = default;
+        [SerializeField] ExamplePlayerState playerState = new ExamplePlayerState();
 
         [Header("Camera")]
         public CameraBaseControl cameraControl;
