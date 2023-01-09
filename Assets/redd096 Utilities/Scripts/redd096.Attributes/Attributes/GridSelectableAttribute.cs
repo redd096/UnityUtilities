@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 #if UNITY_EDITOR
+using redd096.Attributes.AttributesEditorUtility;
 using UnityEditor;
 #endif
 

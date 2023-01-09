@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 #if UNITY_EDITOR
+using redd096.Attributes.AttributesEditorUtility;
 using UnityEditor;
 #endif
 

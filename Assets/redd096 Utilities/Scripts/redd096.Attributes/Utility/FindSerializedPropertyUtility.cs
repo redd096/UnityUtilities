@@ -5,7 +5,7 @@ using System.Reflection;
 using UnityEditor;
 #endif
 
-namespace redd096.Attributes
+namespace redd096.Attributes.AttributesEditorUtility
 {
     public static class FindSerializedPropertyUtility
     {
