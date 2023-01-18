@@ -3,19 +3,35 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+//use null as defaultIcon and Vector2.zero as defaultOffset.
+
+//For handIcon
+//get cursor aero_link.cur from C:\Windows\Cursors
+//convert to png https://convertio.co/it/cur-png/
+//will receive a zip with png of different sizes. Find 32x32 (normally is the smaller) and use it.
+//Set handOffset to new Vector2(7, 0).
+
+//CursorMode use Auto. The alternative is ForceSoftware but is laggy
+
+//in import, set texture to Cursor.
+//enable alphaIsTransparency, Read/Write
+//disable mip maps
+//set format to RGBA 32
+
 namespace redd096
 {
     [AddComponentMenu("redd096/Singletons/Utility Singleton")]
     public class CursorHandOver : Singleton<CursorHandOver>
     {
-        [Header("if null, use default cursor")]
+        [Header("If null, use default cursor")]
         [SerializeField] Texture2D defaultIcon = default;
         [SerializeField] Vector2 defaultOffset = Vector2.zero;
         [SerializeField] CursorMode defaultMode = CursorMode.Auto;
-        [Space(10)]
+
+        [Header("Original is aero_link in C:/Windows/Cursors")]
         [SerializeField] Texture2D handIcon = default;
-        [SerializeField] Vector2 handOffset = Vector2.zero;
-        [SerializeField] CursorMode handMode = CursorMode.ForceSoftware;
+        [SerializeField] Vector2 handOffset = new Vector2(7, 0);
+        [SerializeField] CursorMode handMode = CursorMode.Auto;
 
         private bool isHand;
 
