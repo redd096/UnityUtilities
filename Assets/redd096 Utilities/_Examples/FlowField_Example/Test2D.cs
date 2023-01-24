@@ -1,6 +1,9 @@
 using redd096.PathFinding.FlowField2D;
 using System.Collections.Generic;
 using UnityEngine;
+#if ENABLE_INPUT_SYSTEM
+using Input = redd096.InputRedd096;
+#endif
 
 namespace redd096.Examples.FlowField
 {
@@ -65,15 +68,15 @@ namespace redd096.Examples.FlowField
         void Update()
         {
             //left click to set targets
-            if (InputRedd096.GetLeftMouseButtonDown())
+            if (Input.GetMouseButtonDown(0))
             {
-                Vector3 mousePos = new Vector3(InputRedd096.mousePosition.x, InputRedd096.mousePosition.y, -Camera.main.transform.position.z);
+                Vector3 mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, -Camera.main.transform.position.z);
                 Vector2 worldMousePos = Camera.main.ScreenToWorldPoint(mousePos);
 
                 targetsPosition.Add(worldMousePos);
             }
             //right click to start pathfinding
-            else if (InputRedd096.GetRightMouseButtonDown())
+            else if (Input.GetMouseButtonDown(1))
             {
                 //sum target requests + target positions
                 TargetRequest[] requests = new TargetRequest[targetRequests.Length + targetsPosition.Count];

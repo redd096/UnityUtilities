@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using redd096.Attributes;
+using redd096.Attributes;   //help box when input system isn't enabled
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
@@ -22,10 +22,15 @@ namespace redd096
         {
             inputActionAsset.Disable();
         }
+#else
+        [HelpBox("This works only with new unity input system", HelpBoxAttribute.EMessageType.Error)]
+        public string Error = "It works only with new unity input system";
+#endif
     }
 
     public static class InputRedd096
     {
+#if ENABLE_INPUT_SYSTEM
         #region using input actions asset
 
         /// <summary>
@@ -265,6 +270,92 @@ namespace redd096
         #region get mouse button
 
         /// <summary>
+        /// Returns true during the frame the user pressed the given mouse button (0 left, 1 right, 2 middle)
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public static bool GetMouseButtonDown(int index)
+        {
+            if (index == 0)
+                return GetLeftMouseButtonDown();
+            else if (index == 1)
+                return GetRightMouseButtonDown();
+            else if (index == 2)
+                return GetMiddleMouseButtonDown();
+
+            return false;
+        }
+
+        /// <summary>
+        /// Returns whether the given mouse button is held down (0 left, 1 right, 2 middle)
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public static bool GetMouseButton(int index)
+        {
+            if (index == 0)
+                return GetLeftMouseButton();
+            else if (index == 1)
+                return GetRightMouseButton();
+            else if (index == 2)
+                return GetMiddleMouseButton();
+
+            return false;
+        }
+
+        /// <summary>
+        /// Returns true during the frame the user releases the given mouse button (0 left, 1 right, 2 middle)
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public static bool GetMouseButtonUp(int index)
+        {
+            if (index == 0)
+                return GetLeftMouseButtonUp();
+            else if (index == 1)
+                return GetRightMouseButtonUp();
+            else if (index == 2)
+                return GetMiddleMouseButtonUp();
+
+            return false;
+        }
+
+        #endregion
+
+        #region general
+
+        /// <summary>
+        /// Last measured linear acceleration of a device in three-dimensional space
+        /// </summary>
+        public static Vector3 acceleration => Accelerometer.current.acceleration.ReadValue();
+        /// <summary>
+        /// Is any key or mouse button currenttly held down?
+        /// </summary>
+        public static bool anyKey => Keyboard.current.anyKey.isPressed || Mouse.current.leftButton.isPressed || Mouse.current.rightButton.isPressed || Mouse.current.middleButton.isPressed;
+        /// <summary>
+        /// Returns true the first frame the user hits any key or mouse button
+        /// </summary>
+        public static bool anyKeyDown => Keyboard.current.anyKey.wasPressedThisFrame || Mouse.current.leftButton.wasPressedThisFrame || Mouse.current.rightButton.wasPressedThisFrame || Mouse.current.middleButton.wasPressedThisFrame;
+        /// <summary>
+        /// Returns the attitude (ie, orientation in space) of the device
+        /// </summary>
+        public static Quaternion gyroAttitude => AttitudeSensor.current.attitude.ReadValue();
+        /// <summary>
+        /// The current mouse position in pixel coordinates
+        /// </summary>
+        public static Vector2 mousePosition => Mouse.current.position.ReadValue();
+        /// <summary>
+        /// Number of touches
+        /// </summary>
+        public static int touchCount => Touchscreen.current.touches.Count;
+
+        #endregion
+
+        #endregion
+
+        #region mouse utility
+
+        /// <summary>
         /// Returns true during the frame the user pressed down the left mouse button
         /// </summary>
         public static bool GetLeftMouseButtonDown()
@@ -337,40 +428,6 @@ namespace redd096
         }
 
         #endregion
-
-        #region general
-
-        /// <summary>
-        /// Last measured linear acceleration of a device in three-dimensional space
-        /// </summary>
-        public static Vector3 acceleration => Accelerometer.current.acceleration.ReadValue();
-        /// <summary>
-        /// Is any key or mouse button currenttly held down?
-        /// </summary>
-        public static bool anyKey => Keyboard.current.anyKey.isPressed || Mouse.current.leftButton.isPressed || Mouse.current.rightButton.isPressed || Mouse.current.middleButton.isPressed;
-        /// <summary>
-        /// Returns true the first frame the user hits any key or mouse button
-        /// </summary>
-        public static bool anyKeyDown => Keyboard.current.anyKey.wasPressedThisFrame || Mouse.current.leftButton.wasPressedThisFrame || Mouse.current.rightButton.wasPressedThisFrame || Mouse.current.middleButton.wasPressedThisFrame;
-        /// <summary>
-        /// Returns the attitude (ie, orientation in space) of the device
-        /// </summary>
-        public static Quaternion gyroAttitude => AttitudeSensor.current.attitude.ReadValue();
-        /// <summary>
-        /// The current mouse position in pixel coordinates
-        /// </summary>
-        public static Vector2 mousePosition => Mouse.current.position.ReadValue();
-        /// <summary>
-        /// Number of touches
-        /// </summary>
-        public static int touchCount => Touchscreen.current.touches.Count;
-
-        #endregion
-
-        #endregion
-#else
-        [HelpBox("This works only with new unity input system", HelpBoxAttribute.EMessageType.Error)]
-        public string Error = "It works only with new unity input system";
 #endif
     }
 }

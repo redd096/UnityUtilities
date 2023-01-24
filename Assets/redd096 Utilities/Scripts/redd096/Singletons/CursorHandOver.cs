@@ -2,6 +2,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+#if ENABLE_INPUT_SYSTEM
+using Input = redd096.InputRedd096;
+#endif
 
 //use null as defaultIcon and Vector2.zero as defaultOffset.
 
@@ -100,7 +103,7 @@ namespace redd096
         Vector2 GetScreenInputPosition()
         {
 #if UNITY_ANDROID && !UNITY_EDITOR
-        return Input.GetTouch(0).position;
+            return Input.GetTouch(0).position;
 #else
             return Input.mousePosition;
 #endif

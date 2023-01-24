@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.Xml.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
+#if ENABLE_INPUT_SYSTEM
+using Input = redd096.InputRedd096;
+using TouchPhase = UnityEngine.InputSystem.TouchPhase;
+#endif
 
 namespace redd096
 {
@@ -143,7 +147,7 @@ namespace redd096
         public bool GetInputDown()
         {
 #if UNITY_ANDROID && !UNITY_EDITOR
-        return Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began;
+            return Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began;
 #else
             return Input.GetMouseButtonDown(0);
 #endif
@@ -163,7 +167,7 @@ namespace redd096
         bool GetInputUpWithoutDelay()
         {
 #if UNITY_ANDROID && !UNITY_EDITOR
-        return Input.touchCount > 0 && ( Input.GetTouch(0).phase == TouchPhase.Ended || Input.GetTouch(0).phase == TouchPhase.Canceled );
+            return Input.touchCount > 0 && ( Input.GetTouch(0).phase == TouchPhase.Ended || Input.GetTouch(0).phase == TouchPhase.Canceled );
 #else
             return Input.GetMouseButtonUp(0);
 #endif
@@ -172,7 +176,7 @@ namespace redd096
         public Vector2 GetScreenInputPosition()
         {
 #if UNITY_ANDROID && !UNITY_EDITOR
-        return Input.GetTouch(0).position;
+            return Input.GetTouch(0).position;
 #else
             return Input.mousePosition;
 #endif
