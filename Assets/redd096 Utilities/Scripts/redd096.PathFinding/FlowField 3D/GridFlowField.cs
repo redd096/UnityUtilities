@@ -104,19 +104,19 @@ namespace redd096.PathFinding.FlowField3D
                         if (drawUnwalkableNodes && (node.IsWalkable == false || (calculateAgentForUnwalkableNodes && agentSize.CanMoveOnThisNode(node, this) == false)))
                         {
                             Gizmos.color = new Color(1, 1, 1, alphaNodes) * Color.red;
-                            Gizmos.DrawCube(node.worldPosition, Vector3.one * (nodeDiameter - 0.1f));
+                            Gizmos.DrawCube(node.worldPosition, Vector3.one * (nodeDiameter - (nodeDiameter * 0.1f)));
                         }
                         //draw if obstacle
                         else if (drawObstacles && node.GetObstaclesOnThisNode().Count > 0)
                         {
                             Gizmos.color = new Color(1, 1, 1, alphaNodes) * Color.magenta;
-                            Gizmos.DrawCube(node.worldPosition, Vector3.one * (nodeDiameter - 0.1f));
+                            Gizmos.DrawCube(node.worldPosition, Vector3.one * (nodeDiameter - (nodeDiameter * 0.1f)));
                         }
                         //draw if walkable
                         else if (drawWalkableNodes && node.IsWalkable && (calculateAgentForUnwalkableNodes == false || agentSize.CanMoveOnThisNode(node, this)))
                         {
                             Gizmos.color = new Color(1, 1, 1, alphaNodes) * Color.green;
-                            Gizmos.DrawCube(node.worldPosition, Vector3.one * (nodeDiameter - 0.1f));
+                            Gizmos.DrawCube(node.worldPosition, Vector3.one * (nodeDiameter - (nodeDiameter * 0.1f)));
                         }
 
                         Gizmos.color = Color.white;
