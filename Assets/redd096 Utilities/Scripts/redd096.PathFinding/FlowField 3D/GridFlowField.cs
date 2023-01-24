@@ -78,16 +78,16 @@ namespace redd096.PathFinding.FlowField3D
 
         void OnDrawGizmos()
         {
-            //don't draw gizmos if this grid is used by a composite
-            if (usedByComposite)
-                return;
-
             if (drawGridArea)
             {
                 //draw area
                 Gizmos.color = Color.cyan;
                 Gizmos.DrawWireCube(GridWorldPosition, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));
             }
+
+            //don't draw other gizmos if this grid is used by a composite
+            if (usedByComposite)
+                return;
 
             //draw every node in grid
             if (drawWalkableNodes || drawUnwalkableNodes || drawObstacles || drawCosts || drawDirections || drawAgentSizeOnEveryNode)
@@ -132,7 +132,7 @@ namespace redd096.PathFinding.FlowField3D
                             Gizmos.DrawWireCube(node.worldPosition + new Vector3(node.bestDirection.x, 0, node.bestDirection.y) * overlapRadius, Vector3.one * 0.05f);
                             if (node.bestDirection != Vector2Int.zero)
                                 Gizmos.DrawLine(node.worldPosition, node.worldPosition + new Vector3(node.bestDirection.x, 0, node.bestDirection.y) * overlapRadius);
-                                //Handles.ArrowHandleCap(0, node.worldPosition, Quaternion.LookRotation(new Vector3(node.bestDirection.x, 0, node.bestDirection.y)), overlapRadius, EventType.Repaint);
+                            //Handles.ArrowHandleCap(0, node.worldPosition, Quaternion.LookRotation(new Vector3(node.bestDirection.x, 0, node.bestDirection.y)), overlapRadius, EventType.Repaint);
                         }
 #endif
                         //draw agent on every node
@@ -385,12 +385,14 @@ namespace redd096.PathFinding.FlowField3D
         private GridFlowField grid;
         SerializedProperty usedByComposite;
         SerializedProperty gridWorldSize;
+        SerializedProperty drawGridArea;
 
         private void OnEnable()
         {
             grid = target as GridFlowField;
             usedByComposite = serializedObject.FindProperty("usedByComposite");
             gridWorldSize = serializedObject.FindProperty("gridWorldSize");
+            drawGridArea = serializedObject.FindProperty("drawGridArea");
         }
 
         public override void OnInspectorGUI()
@@ -406,6 +408,9 @@ namespace redd096.PathFinding.FlowField3D
                 //show only few variables
                 EditorGUILayout.PropertyField(usedByComposite);
                 EditorGUILayout.PropertyField(gridWorldSize);
+
+                EditorGUILayout.PropertyField(drawGridArea);
+                EditorGUILayout.HelpBox("Update nodes on CompositeGrid to see nodes or obstacles", MessageType.Info);
 
                 //apply changes to serialized properties
                 serializedObject.ApplyModifiedProperties();
