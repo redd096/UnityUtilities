@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "com.redd096.redd096-utilities": {
-      "version": "file:redd096Utilities",
+      "version": "file:com.redd096.redd096-utilities",
       "depth": 0,
       "source": "embedded",
       "dependencies": {
