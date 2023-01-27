@@ -1,0 +1,34 @@
+{
+  "name": "com.redd096.redd096-utilities",
+  "version": "1.0.0",
+  "displayName": "redd096 Utilities",
+  "unity": "2021.3",
+  "unityRelease": "13f1",
+  "dependencies": 
+  {
+      "com.unity.inputsystem": "1.4.3",
+      "com.unity.textmeshpro": "3.0.6"
+  },
+  "samples": [
+    {
+      "displayName": "FlowField_Example",
+      "description": "Example of FlowField path finding, both 2D and 3D",
+      "path": "Samples~/FlowField_Example"
+    },
+    {
+      "displayName": "Save_Example",
+      "description": "Example of saving in every platform using SaveManager",
+      "path": "Samples~/Save_Example"
+    },
+    {
+      "displayName": "DateTimePicker_Example",
+      "description": "Example of DatePicker and TimePicker",
+      "path": "Samples~/DateTimePicker_Example"
+    },
+    {
+      "displayName": "BasicStateMachine_Example",
+      "description": "Example of class with BasicStateMachine and State",
+      "path": "Samples~/BasicStateMachine_Example"
+    }
+  ]
+}

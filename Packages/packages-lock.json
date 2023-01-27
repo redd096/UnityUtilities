@@ -1,5 +1,14 @@
 {
   "dependencies": {
+    "com.redd096.redd096-utilities": {
+      "version": "file:redd096Utilities",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "com.unity.inputsystem": "1.4.3",
+        "com.unity.textmeshpro": "3.0.6"
+      }
+    },
     "com.unity.2d.animation": {
       "version": "7.0.8",
       "depth": 1,
