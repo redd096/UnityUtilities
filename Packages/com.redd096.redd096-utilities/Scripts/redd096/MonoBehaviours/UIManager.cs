@@ -17,7 +17,7 @@ namespace redd096
         EventSystem eventSystem;
         Coroutine delayInputCoroutine;
 
-        void Start()
+        protected virtual void Start()
         {
             //by default, deactive menus
             PauseMenu(false);

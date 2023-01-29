@@ -6,7 +6,7 @@ namespace redd096
     [DefaultExecutionOrder(-100)]
     public class GameManager : Singleton<GameManager>
     {
-        public UIManager uiManager { get; private set; }
+        public static UIManager uiManager { get; private set; }
 
         protected override void SetDefaults()
         {

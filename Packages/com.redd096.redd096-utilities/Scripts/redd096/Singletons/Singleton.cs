@@ -30,6 +30,9 @@ namespace redd096
             instance.SetDefaults();
         }
 
+        /// <summary>
+        /// Called on Awake. This will be called every time is loaded a new scene, if in the new scene there is another object of this type
+        /// </summary>
         protected virtual void SetDefaults()
         {
             //things you must to call on every awake 
