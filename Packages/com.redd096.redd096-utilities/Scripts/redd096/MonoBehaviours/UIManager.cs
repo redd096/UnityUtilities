@@ -8,6 +8,9 @@ namespace redd096
     [AddComponentMenu("redd096/MonoBehaviours/UI Manager")]
     public class UIManager : MonoBehaviour
     {
+        [Header("Debug Mode")]
+        public bool ShowDebugLogs = false;
+
         [Header("Menu")]
         [Min(0)][SerializeField] float delayInputWhenOpenMenu = 0.3f;
         [SerializeField] GameObject pauseMenu = default;
@@ -29,7 +32,10 @@ namespace redd096
         public void OpenMenu(GameObject menu, bool active)
         {
             if (menu == null)
+            {
+                if (ShowDebugLogs) Debug.Log("Missing menu: " + menu);
                 return;
+            }
 
             //when active menu, deactive event system for a little time
             if (active && delayInputWhenOpenMenu > Mathf.Epsilon)
@@ -82,6 +88,7 @@ namespace redd096
         {
             if (endMenu == null)
             {
+                if (ShowDebugLogs) Debug.Log("Missing end menu: " + endMenu);
                 return;
             }
 
