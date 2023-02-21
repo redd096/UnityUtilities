@@ -8,9 +8,8 @@ namespace redd096.StateMachine.BasicStateMachineRedd096
         [Header("Basic State")]
         public string StateName = "";
 
-        [Header("DEBUG")]
-        [ReadOnly] public StateMachineRedd096 StateMachine;
-        [ReadOnly] public bool IsActive;
+        public StateMachineRedd096 StateMachine { get; set; }
+        public bool IsActive { get; set; }
 
         bool isInitialized;
 

@@ -1,5 +1,8 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+#if ENABLE_INPUT_SYSTEM
+using UnityEngine.InputSystem;
+#endif
 
 namespace redd096
 {
@@ -96,12 +99,21 @@ namespace redd096
 
         bool CheckClickedInsideOneRectTransform(RectTransform[] rectTransforms)
         {
-            //if click this frame
+#if ENABLE_INPUT_SYSTEM
+            //only if clicked this frame
+            if (Mouse.current.leftButton.wasPressedThisFrame == false)
+                return false;
+
+            if (cam == null) cam = Camera.main;
+            mousePosition = Mouse.current.position.ReadValue();
+#else
+            //only if clicked this frame
             if (Input.GetMouseButtonDown(0) == false)
                 return false;
 
             if (cam == null) cam = Camera.main;
             mousePosition = Input.mousePosition;
+#endif
 
             for (int i = 0; i < rectTransforms.Length; i++)
             {
@@ -114,12 +126,21 @@ namespace redd096
 
         bool CheckClickToKeepActive(RectTransform[] rectTransforms)
         {
+#if ENABLE_INPUT_SYSTEM
+            //if not click, keep active
+            if (Mouse.current.leftButton.wasPressedThisFrame == false)
+                return true;
+
+            if (cam == null) cam = Camera.main;
+            mousePosition = Mouse.current.position.ReadValue();
+#else
             //if not click, keep active
             if (Input.GetMouseButtonDown(0) == false)
                 return true;
 
             if (cam == null) cam = Camera.main;
             mousePosition = Input.mousePosition;
+#endif
 
             for (int i = 0; i < rectTransforms.Length; i++)
             {

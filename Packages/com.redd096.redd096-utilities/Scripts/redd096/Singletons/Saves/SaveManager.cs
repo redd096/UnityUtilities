@@ -903,11 +903,12 @@ namespace redd096
             if (saveManager == null)
                 return;
 
-            //check there is a directory - open folder, else debug log
-            if (Directory.Exists(saveManager.PathDirectory))
-                EditorUtility.RevealInFinder(saveManager.PathDirectory);
-            else
-                Debug.Log("Directory not found: " + saveManager.PathDirectory);
+            //if directory doesn't exists, create it
+            if (Directory.Exists(saveManager.PathDirectory) == false)
+                Directory.CreateDirectory(saveManager.PathDirectory);
+
+            //open directory
+            EditorUtility.RevealInFinder(saveManager.PathDirectory);
         }
 
         void DeleteAll()
