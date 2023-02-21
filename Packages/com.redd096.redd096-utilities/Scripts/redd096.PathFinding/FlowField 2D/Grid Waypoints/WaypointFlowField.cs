@@ -9,7 +9,7 @@ namespace redd096.PathFinding.FlowField2D
     {
         [HelpBox("If this waypoint can move, consider add WaypointsPositionUpdater")]
         [Header("Reachable waypoints from this")]
-#pragma warning disable CS0414
+#pragma warning disable CS0414  //disable warning variables declared but not used
         [GridSelectable("reachableWaypoints")][SerializeField] bool gridSelectableEditor = default;
 #pragma warning restore CS0414
         [HideInInspector] public Vector2Int[] reachableWaypoints = new Vector2Int[8] { new Vector2Int(-1, -1), Vector2Int.down, new Vector2Int(1, -1), Vector2Int.left, Vector2Int.right, new Vector2Int(-1, 1), Vector2Int.up, new Vector2Int(1, 1) };
