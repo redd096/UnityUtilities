@@ -5,6 +5,9 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using redd096.Attributes;
+#if ENABLE_INPUT_SYSTEM
+using UnityEngine.InputSystem;
+#endif
 
 namespace redd096
 {
@@ -214,12 +217,21 @@ namespace redd096
 
         bool CheckClickedInsideOneRectTransform(RectTransform[] rectTransforms)
         {
-            //if click this frame
+#if ENABLE_INPUT_SYSTEM
+            //only if clicked this frame
+            if (Mouse.current.leftButton.wasPressedThisFrame == false)
+                return false;
+
+            Camera cam = Camera.main;
+            Vector3 mousePosition = Mouse.current.position.ReadValue();
+#else
+            //only if clicked this frame
             if (Input.GetMouseButtonDown(0) == false)
                 return false;
 
             Camera cam = Camera.main;
             Vector3 mousePosition = Input.mousePosition;
+#endif
 
             for (int i = 0; i < rectTransforms.Length; i++)
             {
