@@ -30,6 +30,11 @@
       "displayName": "BasicStateMachine_Example",
       "description": "Example of class with BasicStateMachine and State",
       "path": "Samples~/BasicStateMachine_Example"
+    },
+    {
+      "displayName": "DynamicResAndFpsCounter_Example",
+      "description": "Example of use of DynamicResolution and FPSCounter",
+      "path": "Samples~/DynamicResAndFpsCounter_Example"
     }
   ]
 }
