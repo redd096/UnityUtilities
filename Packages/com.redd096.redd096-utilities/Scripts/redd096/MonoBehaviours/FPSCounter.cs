@@ -5,9 +5,10 @@ namespace redd096
     [AddComponentMenu("redd096/MonoBehaviours/FPS Counter")]
     public class FPSCounter : MonoBehaviour
     {
-        [Header("Show on Screen? Only editor or also in build?")]
-        [SerializeField] bool showOnScreen = true;
-        [SerializeField] bool showAlsoInBuild = false;
+        [Header("Show on Screen? Only in editor, in dev builds, or also normal builds?")]
+        [SerializeField] bool showInEditor = true;
+        [SerializeField] bool showInBuildDevelopment = true;
+        [SerializeField] bool showInBuild = false;
 
         [Header("Use GUI or UI Text")]
         [SerializeField] bool useOnGUI = false;
@@ -42,41 +43,16 @@ namespace redd096
             //create array
             frameDeltaTimeArray = new float[50];
 
-            //hide canvas if can't show
-            if (CanShow() == false)
-            {
-                if (uiText != null)
-                    uiText.gameObject.SetActive(false);
-            }
-            //else show warning if not setted
-            else
-            {
-                if (CanShow() && useOnGUI == false && uiText == null)
-                    Debug.LogWarning($"Missing UIText on {this} - {gameObject}");
-            }
+            OnValidateFunc();
 
-            //set fps limit if necessary
-            if (setFpsLimit)
-                Application.targetFrameRate = limitFps;
+            //show warning if necessary
+            if (CanShow() && useOnGUI == false && uiText == null)
+                Debug.LogWarning($"Missing UIText on {this}", gameObject);
         }
 
         private void OnValidate()
         {
-            //when change in inspector, be sure to update also canvas
-            if (CanShow() == false || useOnGUI)
-            {
-                if (uiText != null)
-                    uiText.gameObject.SetActive(false);
-            }
-            else if (CanShow() && useOnGUI == false)
-            {
-                if (uiText != null)
-                    uiText.gameObject.SetActive(true);
-            }
-
-            //set fps limit if necessary
-            if (setFpsLimit)
-                Application.targetFrameRate = limitFps;
+            OnValidateFunc();
         }
 
         private void Update()
@@ -102,10 +78,37 @@ namespace redd096
 
         #region private API
 
+        private void OnValidateFunc()
+        {
+            //when change in inspector, be sure to update also canvas
+            if (CanShow() == false || useOnGUI)
+            {
+                if (uiText != null)
+                    uiText.gameObject.SetActive(false);
+            }
+            else if (CanShow() && useOnGUI == false)
+            {
+                if (uiText != null)
+                    uiText.gameObject.SetActive(true);
+            }
+
+            //set fps limit if necessary
+            if (setFpsLimit)
+                Application.targetFrameRate = limitFps;
+        }
+
         private bool CanShow()
         {
-            //must be shown on screen, and is in editor or is enabled also in build
-            return showOnScreen && (Application.isEditor || showAlsoInBuild);
+            //check if it's in editor
+            if (Application.isEditor)
+                return showInEditor;
+
+            //or is dev build
+            if (Debug.isDebugBuild)
+                return showInBuildDevelopment;
+
+            //or a normal build
+            return showInBuild;
         }
 
         private float CalculateFPS()
@@ -120,6 +123,6 @@ namespace redd096
             return frameDeltaTimeArray.Length / total;
         }
 
-        #endregion
+#endregion
     }
 }

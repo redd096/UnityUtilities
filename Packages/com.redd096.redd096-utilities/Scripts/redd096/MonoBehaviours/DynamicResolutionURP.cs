@@ -22,9 +22,10 @@ namespace redd096
         [SerializeField] int minimumFPS = 30;
         [SerializeField] int maximumFPS = 45;
 
-        [Header("Show on Screen? Only editor or also in build?")]
-        [SerializeField] bool showOnScreen = true;
-        [SerializeField] bool showAlsoInBuild = false;
+        [Header("Show on Screen? Only in editor, in dev builds, or also normal builds?")]
+        [SerializeField] bool showInEditor = true;
+        [SerializeField] bool showInBuildDevelopment = true;
+        [SerializeField] bool showInBuild = false;
 
         [Header("Use GUI or UI Text")]
         [SerializeField] bool useOnGUI = false;
@@ -63,33 +64,16 @@ namespace redd096
             urp = (UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset)UnityEngine.Rendering.GraphicsSettings.currentRenderPipeline;
 #endif
 
-            //hide canvas if can't show
-            if (CanShow() == false)
-            {
-                if (uiText != null)
-                    uiText.gameObject.SetActive(false);
-            }
-            //else show warning if not setted
-            else
-            {
-                if (useOnGUI == false && uiText == null)
-                    Debug.LogWarning($"Missing UIText on {this} - {gameObject}");
-            }
+            OnValidateFunc();
+
+            //show warning if necessary
+            if (CanShow() && useOnGUI == false && uiText == null)
+                Debug.LogWarning($"Missing UIText on {this}", gameObject);
         }
 
         private void OnValidate()
         {
-            //when change in inspector, be sure to update also canvas
-            if (CanShow() == false || useOnGUI)
-            {
-                if (uiText != null)
-                    uiText.gameObject.SetActive(false);
-            }
-            else if (CanShow() && useOnGUI == false)
-            {
-                if (uiText != null)
-                    uiText.gameObject.SetActive(true);
-            }
+            OnValidateFunc();
         }
 
         private void Update()
@@ -134,7 +118,7 @@ namespace redd096
 
         private void OnGUI()
         {
-            if (useOnGUI)
+            if (useOnGUI && CanShow())
             {
                 GUI.Label(new Rect(30, 40, Screen.width / 2 - 60, Screen.height), DebugText());
             }
@@ -142,10 +126,33 @@ namespace redd096
 
         #region private API
 
+        private void OnValidateFunc()
+        {
+            //when change in inspector, be sure to update also canvas
+            if (CanShow() == false || useOnGUI)
+            {
+                if (uiText != null)
+                    uiText.gameObject.SetActive(false);
+            }
+            else if (CanShow() && useOnGUI == false)
+            {
+                if (uiText != null)
+                    uiText.gameObject.SetActive(true);
+            }
+        }
+
         private bool CanShow()
         {
-            //must be shown on screen, and is in editor or is enabled also in build
-            return showOnScreen && (Application.isEditor || showAlsoInBuild);
+            //check if it's in editor
+            if (Application.isEditor)
+                return showInEditor;
+
+            //or is dev build
+            if (Debug.isDebugBuild)
+                return showInBuildDevelopment;
+
+            //or a normal build
+            return showInBuild;
         }
 
         private void OnOperationModeChanged(bool isConsole)
