@@ -6,6 +6,9 @@ namespace redd096.GameTopDown2D
     [AddComponentMenu("redd096/.GameTopDown2D/Components/Aim Component")]
     public class AimComponent : MonoBehaviour
     {
+        [Header("When set at zero (e.g. release analog), keep last rotation")]
+        [SerializeField] bool ignoreDirectionZero = true;
+
         [Header("DEBUG")]
         [ReadOnly] public bool IsLookingRight = true;                           //check if looking right
         [ReadOnly] public Vector2 AimDirectionInput = Vector2.right;            //when aim, set it with only direction (used to know where this object is aiming)
@@ -52,6 +55,9 @@ namespace redd096.GameTopDown2D
         /// <param name="aimDirection"></param>
         public void AimInDirection(Vector2 aimDirection)
         {
+            if (ignoreDirectionZero && aimDirection == Vector2.zero)
+                return;
+
             //set direction aim
             AimPositionNotNormalized = (Vector2)transform.position + aimDirection;
             AimDirectionInput = aimDirection.normalized;
@@ -72,6 +78,9 @@ namespace redd096.GameTopDown2D
         /// <param name="aimPosition"></param>
         public void AimAt(Vector2 aimPosition)
         {
+            if (ignoreDirectionZero && (aimPosition - (Vector2)transform.position).normalized == Vector2.zero)
+                return;
+
             //set direction aim
             AimPositionNotNormalized = aimPosition;
             AimDirectionInput = (aimPosition - (Vector2)transform.position).normalized;
