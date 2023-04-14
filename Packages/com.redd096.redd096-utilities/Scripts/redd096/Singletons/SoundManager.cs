@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using redd096.Attributes;
 
 namespace redd096
 {
@@ -45,10 +44,6 @@ namespace redd096
         [Header("Sounds On Click Button (random from array)")]
         [SerializeField] AudioClassBase[] soundsOnClick = default;
 
-        [Header("Volume Settings")]
-        [ReadOnly][Range(0f, 1f)][SerializeField] float volumeMusic = 1;
-        [ReadOnly][Range(0f, 1f)][SerializeField] float volumeSFX = 1;
-
         //sound parent (instantiate if null)
         private Transform soundsParent;
         public Transform SoundsParent
@@ -70,6 +65,8 @@ namespace redd096
 
         //used for volume settings
         Dictionary<AudioSource, float> savedVolumes = new Dictionary<AudioSource, float>();
+        float volumeMusic = 1;
+        float volumeSFX = 1;
 
         #endregion
 
@@ -415,7 +412,7 @@ namespace redd096
         public void PlayOnClick()
         {
             //in instance, call Play 2D
-            instance.Play(false, soundsOnClick, Vector2.zero);
+            instance.Play(false, soundsOnClick, Vector3.zero);
         }
 
         /// <summary>
@@ -424,7 +421,7 @@ namespace redd096
         public void PlayOnClick(AudioClip sound)
         {
             //in instance, call Play 2D
-            instance.Play(false, sound, Vector2.zero);
+            instance.Play(false, sound, Vector3.zero);
         }
 
         #endregion
