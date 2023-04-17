@@ -181,8 +181,12 @@ namespace redd096
                 return;
             }
 
+            //find current event system, if not found (for example someone called fade while another fade is running), use previous one
+            EventSystem es = EventSystem.current;
+            if (es != null)
+                eventSystem = es;
+                
             //disable event system until finish fade
-            eventSystem = EventSystem.current;
             if (eventSystem)
                 eventSystem.enabled = false;
 
