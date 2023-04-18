@@ -2,8 +2,9 @@ using System.Collections.Generic;
 using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
-using UnityEditor.Build.Reporting;
-using UnityEditor.Build;
+//used by preprocess build, disabled now for the package. Enable if you need it
+//using UnityEditor.Build.Reporting;
+//using UnityEditor.Build;
 #endif
 
 public class ExampleProjectSettingsAndPreprocessBuild : ScriptableObject
@@ -12,12 +13,12 @@ public class ExampleProjectSettingsAndPreprocessBuild : ScriptableObject
     public Texture2D normalBuildIcon = default;
     public Texture2D testBuildIcon = default;
 
-    public const string PATH = "Assets/Resources/BuildCustomSettings.asset";    //asset path
-    public const string NAME_EDITOR = "Project/Build Custom Settings";          //name in editor
-    public const SettingsScope SETTINGS = SettingsScope.Project;                //project = project settings / user = preferences
-
     #region editor
 #if UNITY_EDITOR
+
+    public const string PATH = "Assets/Resources/BuildCustomSettings.asset";    //asset path
+    public const string NAME_EDITOR = "Project/Example Build Custom Settings";  //name in editor
+    public const SettingsScope SETTINGS = SettingsScope.Project;                //project = project settings / user = preferences
 
     public static SerializedProperty[] GetSerializedProperties(SerializedObject serializedObject)
     {
@@ -72,7 +73,7 @@ public class BuildCustomSettingsProvider : SettingsProvider
             if (AssetDatabase.IsValidFolder($"{currentPath}/{pathFolders[i]}") == false)
                 AssetDatabase.CreateFolder(currentPath, pathFolders[i]);
 
-            currentPath += $"/{pathFolders[i]}";                                        //update current reached path
+            currentPath += $"/{pathFolders[i]}";                                            //update current reached path
         }
 
         //try find scriptable or create one
@@ -128,23 +129,23 @@ public class BuildCustomSettingsProvider : SettingsProvider
 #region preprocess build
 #if UNITY_EDITOR
 
-public class BuildCustomPreprocessBuild : IPreprocessBuildWithReport
-{
-    public int callbackOrder { get { return 0; } }
-
-    public void OnPreprocessBuild(BuildReport report)
-    {
-        //Debug.Log("MyCustomBuildProcessor.OnPreprocessBuild for target " + report.summary.platform + " at path " + report.summary.outputPath);
-
-        //set icon if test or normal build
-        ExampleProjectSettingsAndPreprocessBuild buildCustomSettings = Resources.Load<ExampleProjectSettingsAndPreprocessBuild>("BuildCustomSettings");
-        if (buildCustomSettings)
-        {
-            Texture2D icon = buildCustomSettings.isTestBuild ? buildCustomSettings.testBuildIcon : buildCustomSettings.normalBuildIcon;
-            PlayerSettings.SetIcons(NamedBuildTarget.Unknown, new Texture2D[] { icon }, IconKind.Any);
-        }
-    }
-}
+//public class BuildCustomPreprocessBuild : IPreprocessBuildWithReport
+//{
+//    public int callbackOrder { get { return 0; } }
+//
+//    public void OnPreprocessBuild(BuildReport report)
+//    {
+//        //Debug.Log("MyCustomBuildProcessor.OnPreprocessBuild for target " + report.summary.platform + " at path " + report.summary.outputPath);
+//
+//        //set icon if test or normal build
+//        ExampleProjectSettingsAndPreprocessBuild buildCustomSettings = Resources.Load<ExampleProjectSettingsAndPreprocessBuild>("BuildCustomSettings");
+//        if (buildCustomSettings)
+//        {
+//            Texture2D icon = buildCustomSettings.isTestBuild ? buildCustomSettings.testBuildIcon : buildCustomSettings.normalBuildIcon;
+//            PlayerSettings.SetIcons(NamedBuildTarget.Unknown, new Texture2D[] { icon }, IconKind.Any);
+//        }
+//    }
+//}
 
 #endif
 #endregion

@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31ba66c2848ac5746a78982bc0bd8ea8, type: 3}
   m_Name: BuildCustomSettings
   m_EditorClassIdentifier: 
-  isTestBuild: 1
+  isTestBuild: 0
   normalBuildIcon: {fileID: 0}
   testBuildIcon: {fileID: 0}
