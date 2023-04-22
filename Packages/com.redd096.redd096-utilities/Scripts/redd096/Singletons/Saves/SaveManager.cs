@@ -5,6 +5,13 @@ using System.Collections.Generic;
 using UnityEditor;
 #endif
 
+//TODO
+//- add bool to use unity PlayerPrefs instead of json. They can't work with saveAsync, but must works with usePreload
+//- add bool to decide if save automatically instead of optional parameter
+//- do not create 4 class, just 2: GenericSave and PlayerPrefs
+//What I want is to just call at the top using PlayerPrefs = redd096.SaveManager.PlayerPrefs and everything is already done
+//- PlayerPrefs SetBool and GetBool must use SetInt inside, because unity PlayerPrefs doesn't have bool functions
+
 namespace redd096
 {
     enum SaveFolder
@@ -77,7 +84,8 @@ namespace redd096
 #elif UNITY_SWITCH
                 saveLoadSystem = new SaveLoadSystem_Switch();
 #else
-                Debug.LogError("SaveManager doesn't have a SaveLoadSystem for this platform");
+                Debug.LogWarning("SaveManager doesn't have a SaveLoadSystem for this platform. It will use the PC system");
+                saveLoadSystem = new SaveLoadSystem_PC();
 #endif
 
                 //initialize SaveLoadSystem (e.g. call Preload)
