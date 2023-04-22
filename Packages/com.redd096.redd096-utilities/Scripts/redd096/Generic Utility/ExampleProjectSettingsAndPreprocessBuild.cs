@@ -51,7 +51,7 @@ public class ExampleProjectSettingsAndPreprocessBuild : ScriptableObject
 
 #region settings provider
 #if UNITY_EDITOR
-
+/*
 public class BuildCustomSettingsProvider : SettingsProvider
 {
     private SerializedObject buildCustomSettings;
@@ -122,30 +122,30 @@ public class BuildCustomSettingsProvider : SettingsProvider
         return provider;
     }
 }
-
+*/
 #endif
 #endregion
 
 #region preprocess build
 #if UNITY_EDITOR
+/*
+public class BuildCustomPreprocessBuild : IPreprocessBuildWithReport
+{
+    public int callbackOrder { get { return 0; } }
 
-//public class BuildCustomPreprocessBuild : IPreprocessBuildWithReport
-//{
-//    public int callbackOrder { get { return 0; } }
-//
-//    public void OnPreprocessBuild(BuildReport report)
-//    {
-//        //Debug.Log("MyCustomBuildProcessor.OnPreprocessBuild for target " + report.summary.platform + " at path " + report.summary.outputPath);
-//
-//        //set icon if test or normal build
-//        ExampleProjectSettingsAndPreprocessBuild buildCustomSettings = Resources.Load<ExampleProjectSettingsAndPreprocessBuild>("BuildCustomSettings");
-//        if (buildCustomSettings)
-//        {
-//            Texture2D icon = buildCustomSettings.isTestBuild ? buildCustomSettings.testBuildIcon : buildCustomSettings.normalBuildIcon;
-//            PlayerSettings.SetIcons(NamedBuildTarget.Unknown, new Texture2D[] { icon }, IconKind.Any);
-//        }
-//    }
-//}
+    public void OnPreprocessBuild(BuildReport report)
+    {
+        //Debug.Log("MyCustomBuildProcessor.OnPreprocessBuild for target " + report.summary.platform + " at path " + report.summary.outputPath);
 
+        //set icon if test or normal build
+        ExampleProjectSettingsAndPreprocessBuild buildCustomSettings = Resources.Load<ExampleProjectSettingsAndPreprocessBuild>("BuildCustomSettings");
+        if (buildCustomSettings)
+        {
+            Texture2D icon = buildCustomSettings.isTestBuild ? buildCustomSettings.testBuildIcon : buildCustomSettings.normalBuildIcon;
+            PlayerSettings.SetIcons(NamedBuildTarget.Unknown, new Texture2D[] { icon }, IconKind.Any);
+        }
+    }
+}
+*/
 #endif
 #endregion
