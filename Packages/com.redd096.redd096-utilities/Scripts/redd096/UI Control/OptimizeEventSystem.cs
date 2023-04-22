@@ -5,6 +5,13 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
 #endif
 
+//TODO
+//- when use mouse, remove selected gameObject. 
+//Set again if try to move with keyboard or pad
+//- add a bool in inspector, to decide if always select a gameObject like now, or do nothing until someone try to move with pad or keyboard
+//- create ovveride menus instead of override object, because use object.parent is not always sure is a menu
+//- create an order between override menu. So if two override menus are actives, eventSystem will move only in the first one
+
 namespace redd096
 {
     [AddComponentMenu("redd096/UI Control/Optimize Event System")]

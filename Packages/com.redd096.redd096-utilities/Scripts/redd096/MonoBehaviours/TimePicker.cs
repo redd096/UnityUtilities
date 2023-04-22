@@ -190,7 +190,7 @@ namespace redd096
 
                 //set value
                 int index = GetIndexStartTime();
-                scrollSnap.ScrollToItem(index); //TODO non si aggiorna perché è spento
+                scrollSnap.ScrollToItem(index); //TODO it's not updating because is turned off
                 OnClick(index);
             }
 
