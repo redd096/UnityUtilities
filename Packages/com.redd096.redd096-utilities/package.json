@@ -5,11 +5,6 @@
   "description": "Unity generic utilities by redd096",
   "unity": "2021.3",
   "unityRelease": "13f1",
-  "dependencies": 
-  {
-      "com.unity.inputsystem": "1.4.3",
-      "com.unity.textmeshpro": "3.0.6"
-  },
   "samples": [
     {
       "displayName": "FlowField_Example",

@@ -4,10 +4,7 @@
       "version": "file:com.redd096.redd096-utilities",
       "depth": 0,
       "source": "embedded",
-      "dependencies": {
-        "com.unity.inputsystem": "1.4.3",
-        "com.unity.textmeshpro": "3.0.6"
-      }
+      "dependencies": {}
     },
     "com.unity.2d.animation": {
       "version": "7.0.8",
@@ -156,15 +153,6 @@
       "depth": 0,
       "source": "registry",
       "dependencies": {},
-      "url": "https://packages.unity.com"
-    },
-    "com.unity.inputsystem": {
-      "version": "1.4.3",
-      "depth": 0,
-      "source": "registry",
-      "dependencies": {
-        "com.unity.modules.uielements": "1.0.0"
-      },
       "url": "https://packages.unity.com"
     },
     "com.unity.mathematics": {
