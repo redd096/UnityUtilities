@@ -6,11 +6,11 @@ using UnityEditor;
 #endif
 
 //TODO
-//- add bool to use unity PlayerPrefs instead of json. They can't work with saveAsync, but must works with usePreload
+//- add bool to use unity PlayerPrefs instead of create file. They can't work with saveAsync, but must works with usePreload
 //- add bool to decide if save automatically instead of optional parameter
-//- do not create 4 class, just 2: GenericSave and PlayerPrefs
-//What I want is to just call at the top using PlayerPrefs = redd096.SaveManager.PlayerPrefs and everything is already done
-//- PlayerPrefs SetBool and GetBool must use SetInt inside, because unity PlayerPrefs doesn't have bool functions
+//- do not create 4 class, just 2: SaveGeneric and SavePlayerPrefs
+//What I want is to just call at the top using PlayerPrefs = redd096.SaveManager.SavePlayerPrefs and everything is already done
+//- SavePlayerPrefs SetBool and GetBool must use SetInt inside, because unity PlayerPrefs doesn't have bool functions
 
 namespace redd096
 {
@@ -23,16 +23,20 @@ namespace redd096
     [DefaultExecutionOrder(-200)]
     public class SaveManager : Singleton<SaveManager>
     {
-        [Header("Data Directory")]
+        [Header("Save Directory")]
         [SerializeField] SaveFolder saveFolder = SaveFolder.persistentDataPath;
         [SerializeField] string directoryName = "Saves";
 
-        [Header("Optimization")]
-        [SerializeField] bool saveAsync = true;
+        [Header("Rules")]
+        [Tooltip("Initialize (necessary for some platforms and for preload) at start or do it manually?")][SerializeField] bool initializeAtStart = true;
+        [Tooltip("Use PlayerPrefs instead of save a file. PlayerPrefs can't save async")][SerializeField] bool useUnityPlayerPrefs = false;
+        [Tooltip("Save async to not slow down the game. Impossible to use with PlayerPrefs")][SerializeField] bool saveAsync = true;
         [Tooltip("Load everything at start and put in a dictionary, so in game just read dictionary")][SerializeField] bool usePreload = true;
 
         [Header("Debug Mode")]
         public bool ShowDebugLogs = false;
+
+        public bool IsInitialized { get; set; }
 
         public string DirectoryName => directoryName;
         public string PathDirectory
@@ -50,63 +54,71 @@ namespace redd096
             }
         }
 
-        //used when "Use Preload" is enabled -> key: file name without extension, value: json
-        private Dictionary<string, string> savesJson = new Dictionary<string, string>();
-        //used when create one single file with more variables -> key: file name without extension, value: another dictionary with key: variableName, value: json
+        //used when "Use Preload" is enabled -> key: file name without extension, value: data
+        private Dictionary<string, string> savedFiles = new Dictionary<string, string>();
+        //used when create one single file with more variables -> key: file name without extension, value: another dictionary with key: variableName, value: data
         private Dictionary<string, Dictionary<string, string>> filesWithMoreVariables = new Dictionary<string, Dictionary<string, string>>();
         //system to use for save and load
         private ISaveLoadSystem saveLoadSystem;
         //string to identify files with more variables
         private const string FWMV_STRING = "redd096FWMV";
 
-        protected override void Awake()
+        protected override void InitializeSingleton()
         {
-            base.Awake();
+            base.InitializeSingleton();
 
-            //if this is the instance
-            if (instance == this)
-            {
-                //set save load system based on platform
+            //set save load system based on platform
 #if UNITY_STEAM
-                saveLoadSystem = new SaveLoadSystem_Steam();
+            saveLoadSystem = new SaveLoadSystem_Steam();
 #elif UNITY_STANDALONE
-                saveLoadSystem = new SaveLoadSystem_PC();
+            saveLoadSystem = new SaveLoadSystem_PC();
 #elif UNITY_WEBGL
-                saveLoadSystem = new SaveLoadSystem_WebGL();
+            saveLoadSystem = new SaveLoadSystem_WebGL();
 #elif UNITY_IOS || UNITY_ANDROID
-                saveLoadSystem = new SaveLoadSystem_Mobile();
+            saveLoadSystem = new SaveLoadSystem_Mobile();
 #elif UNITY_GAMECORE
-                saveLoadSystem = new SaveLoadSystem_GameCore();
+            saveLoadSystem = new SaveLoadSystem_GameCore();
 #elif UNITY_PS4
-                saveLoadSystem = new SaveLoadSystem_PS4();
+            saveLoadSystem = new SaveLoadSystem_PS4();
 #elif UNITY_PS5
-                saveLoadSystem = new SaveLoadSystem_PS5();
+            saveLoadSystem = new SaveLoadSystem_PS5();
 #elif UNITY_SWITCH
-                saveLoadSystem = new SaveLoadSystem_Switch();
+            saveLoadSystem = new SaveLoadSystem_Switch();
 #else
-                Debug.LogWarning("SaveManager doesn't have a SaveLoadSystem for this platform. It will use the PC system");
-                saveLoadSystem = new SaveLoadSystem_PC();
+            Debug.LogWarning("SaveManager doesn't have a SaveLoadSystem for this platform. It will use the unity_standalone system");
+            saveLoadSystem = new SaveLoadSystem_PC();
 #endif
 
-                //initialize SaveLoadSystem (e.g. call Preload)
-                StartCoroutine(saveLoadSystem.Initialize(usePreload));
-            }
+            //and initialize it
+            if (initializeAtStart)
+                InitializeSaveLoadSystem();
+        }
+
+        /// <summary>
+        /// Call this when "Initialize at Start" is disabled
+        /// </summary>
+        public void InitializeSaveLoadSystem()
+        {
+            //initialize SaveLoadSystem (necessary for some platforms, or just to call preload)
+            StartCoroutine(saveLoadSystem.Initialize(usePreload));
         }
 
         /// <summary>
         /// Called from Preload, to set dictionary (used when "Use Preload" is enabled)
         /// </summary>
-        public void FinishPreload(Dictionary<string, string> jsons)
+        public void FinishPreload(Dictionary<string, string> saves)
         {
-            savesJson = new Dictionary<string, string>(jsons);
+            savedFiles = new Dictionary<string, string>(saves);
 
             //add also file with more variables to their dictionary
-            foreach (string fileName in savesJson.Keys) ReadFileWithMoreVariables(fileName, savesJson[fileName]);
+            foreach (string fileName in savedFiles.Keys) 
+                ReadFileWithMoreVariables(fileName, savedFiles[fileName]);
         }
 
         private void ReadFileWithMoreVariables(string fileName, string fileString)
         {
-            if (fileString == null || fileString.StartsWith(FWMV_STRING) == false)  //redd096 File With More Variables
+            //check if the file has the identification string
+            if (fileString == null || fileString.StartsWith(FWMV_STRING) == false)
             {
                 if (ShowDebugLogs)
                     Debug.Log("Incorrect file: " + saveLoadSystem.GetPathFile(fileName));
@@ -125,13 +137,39 @@ namespace redd096
                 if (filesWithMoreVariables[fileName].ContainsKey(lines[i - 1]) == false)
                     filesWithMoreVariables[fileName].Add(lines[i - 1], "");
 
-                //and second line is json
+                //and second line is data
                 if (i < lines.Length)
                     filesWithMoreVariables[fileName][lines[i - 1]] = lines[i];
             }
         }
 
         #region classes for save and load
+
+        /// <summary>
+        /// Class with some utilities
+        /// </summary>
+        public class SaveUtilities
+        {
+            /// <summary>
+            /// From string to byte array
+            /// </summary>
+            /// <param name="data"></param>
+            /// <returns></returns>
+            public static byte[] GetBytes(string data)
+            {
+                return System.Text.Encoding.UTF8.GetBytes(data);
+            }
+
+            /// <summary>
+            /// From byte array to string
+            /// </summary>
+            /// <param name="data"></param>
+            /// <returns></returns>
+            public static string GetString(byte[] data)
+            {
+                return System.Text.Encoding.UTF8.GetString(data);
+            }
+        }
 
         /// <summary>
         /// Save/Load files
@@ -146,10 +184,10 @@ namespace redd096
             public static void Save(string key, string json)
             {
                 //add to dictionary
-                if (instance.savesJson.ContainsKey(key))
-                    instance.savesJson[key] = json;
+                if (instance.savedFiles.ContainsKey(key))
+                    instance.savedFiles[key] = json;
                 else
-                    instance.savesJson.Add(key, json);
+                    instance.savedFiles.Add(key, json);
 
                 //save async or normal
                 if (instance.saveAsync)
@@ -172,8 +210,8 @@ namespace redd096
                 //load from dictionary if use preload
                 if (instance.usePreload)
                 {
-                    if (instance.savesJson.ContainsKey(key))
-                        return instance.savesJson[key];
+                    if (instance.savedFiles.ContainsKey(key))
+                        return instance.savedFiles[key];
 
                     if (instance.ShowDebugLogs)
                         Debug.Log("Save file not found: " + instance.saveLoadSystem.GetPathFile(key));
@@ -197,7 +235,7 @@ namespace redd096
                 //if use preload, check if there is inside dictionary
                 if (instance.usePreload)
                 {
-                    return instance.savesJson.ContainsKey(key);
+                    return instance.savedFiles.ContainsKey(key);
                 }
                 //else, check if exists this file
                 else
@@ -215,8 +253,8 @@ namespace redd096
                 instance.saveLoadSystem.DeleteData(key);
 
                 //delete also from dictionaries
-                if (instance.savesJson.ContainsKey(key))
-                    instance.savesJson.Remove(key);
+                if (instance.savedFiles.ContainsKey(key))
+                    instance.savedFiles.Remove(key);
                 if (instance.filesWithMoreVariables.ContainsKey(key))   //also from filesWithMoreVariables to be sure
                     instance.filesWithMoreVariables.Remove(key);
             }
@@ -229,7 +267,7 @@ namespace redd096
                 instance.saveLoadSystem.DeleteAll();
 
                 //clear also dictionaries
-                instance.savesJson.Clear();
+                instance.savedFiles.Clear();
                 instance.filesWithMoreVariables.Clear();                //also filesWithMoreVariables to be sure
             }
         }
@@ -862,7 +900,6 @@ namespace redd096
     #endregion
 
     #region custom editor
-
 #if UNITY_EDITOR
 
     [CustomEditor(typeof(SaveManager))]
@@ -907,7 +944,7 @@ namespace redd096
 
         void OpenFolder()
         {
-            //use this SaveLoadSystem, cause instance is not setted
+            //use this SaveLoadSystem, cause instance is not setted in editor
             if (saveManager == null)
                 return;
 
@@ -921,19 +958,23 @@ namespace redd096
 
         void DeleteAll()
         {
-            //use this SaveLoadSystem, cause instance is not setted
+            //use this SaveLoadSystem, cause instance is not setted in editor
             if (saveManager == null)
                 return;
 
-            //check there is a directory - delete directory, else debug log
+            //check there is a directory and delete it
             if (Directory.Exists(saveManager.PathDirectory))
+            {
                 Directory.Delete(saveManager.PathDirectory, true);
+                Debug.Log("Deleted directory: " + saveManager.PathDirectory);
+            }
             else
+            {
                 Debug.Log("Directory not found: " + saveManager.PathDirectory);
+            }
         }
     }
 
 #endif
-
     #endregion
 }
