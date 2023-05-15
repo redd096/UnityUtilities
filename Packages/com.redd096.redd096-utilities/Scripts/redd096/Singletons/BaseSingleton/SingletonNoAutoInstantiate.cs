@@ -3,9 +3,11 @@
 namespace redd096
 {
     [DefaultExecutionOrder(-10)]
-    public class Singleton<T> : MonoBehaviour where T : Singleton<T>
+    public class SingletonNoAutoInstantiate<T> : MonoBehaviour where T : SingletonNoAutoInstantiate<T>
     {
         public static T instance { get; private set; }
+
+        protected virtual bool isDontDestroyOnLoad => true;
 
         protected virtual void Awake()
         {
@@ -29,7 +31,7 @@ namespace redd096
             {
                 //else, set this as unique instance and set don't destroy on load
                 instance = (T)this;
-                DontDestroyOnLoad(this);
+                if (isDontDestroyOnLoad) DontDestroyOnLoad(this);
             }
         }
 
