@@ -1,5 +1,7 @@
-﻿using UnityEngine;
+﻿#if UNITY_EDITOR
+using UnityEngine;
 using UnityEditor;
+
 namespace redd096
 {
     public class WindowParseCSV : EditorWindow
@@ -280,3 +282,4 @@ namespace redd096
         #endregion
     }
 }
+#endif

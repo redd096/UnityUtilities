@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿#if UNITY_EDITOR
+using UnityEngine;
 using UnityEditor;
 using UnityEngine.Networking;
 using System.IO;
@@ -448,3 +449,4 @@ namespace redd096
         }
     }
 }
+#endif

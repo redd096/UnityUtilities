@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if UNITY_EDITOR
+using System;
 using UnityEngine;
 using UnityEditor;
 using UnityEditorInternal;
@@ -192,3 +193,4 @@ namespace redd096.OLD
         */
     }
 }
+#endif
