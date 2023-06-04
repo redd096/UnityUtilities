@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using redd096.Attributes;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
@@ -41,7 +42,7 @@ namespace redd096.GameTopDown2D
             movementComponent.MoveInDirection(playerInput.actions.FindAction(inputName).ReadValue<Vector2>());
         }
 #else
-        [redd096.Attributes.HelpBox("This works only with new unity input system", redd096.Attributes.HelpBoxAttribute.EMessageType.Error)]
+        [HelpBox("This works only with new unity input system", HelpBoxAttribute.EMessageType.Error)]
         public string Error = "It works only with new unity input system";
 #endif
     }
