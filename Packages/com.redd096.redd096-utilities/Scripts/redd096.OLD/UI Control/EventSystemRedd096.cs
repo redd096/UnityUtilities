@@ -5,9 +5,9 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
 #endif
 
-namespace redd096
+namespace redd096.OLD
 {
-    [AddComponentMenu("redd096/UI Control/Event System redd096")]
+    [AddComponentMenu("redd096/.OLD/UI Control/Event System redd096")]
     public class EventSystemRedd096 : EventSystem
     {
         #region variables
