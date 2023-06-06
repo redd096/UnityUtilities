@@ -3,11 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
 using redd096.Attributes;
-#if ENABLE_INPUT_SYSTEM
-using UnityEngine.InputSystem;
-#endif
 
 namespace redd096
 {
@@ -30,11 +26,6 @@ namespace redd096
         [Tooltip("On awake set DateTime.Now as default result, to have result to read without open calendar")][SerializeField] bool setDefaultOnAwake = true;
         [Tooltip("If set default on awake, start from first day selectable")][SerializeField] bool findFirstDaySelectable = true;
 
-        [Header("Close when not selected")]
-        [Tooltip("If click outside of calendar or change selection, close it")][SerializeField] bool closeWhenCalendarNotSelected = true;
-        [Tooltip("If click calendar gameObject setted above or its childs, keep calendar open?")][SerializeField] bool calendarObjectIsInTheList = true;
-        [Tooltip("If click one of these objects or childs of them, keep calendar open")][SerializeField] GameObject[] objectsCanBeSelectedWithoutCloseCalendar = default;
-
         [Header("Month Header")]
         [SerializeField] TextMeshProUGUI monthText = default;
         [SerializeField] string monthFormat = "MMMM yyyy";
@@ -52,28 +43,31 @@ namespace redd096
         [Tooltip("Disable these days of the week")][SerializeField] DayOfWeek[] disabledDaysOfTheWeek = new DayOfWeek[2] { DayOfWeek.Saturday, DayOfWeek.Sunday };
 
         [Header("Result")]
-        [SerializeField] string resultFormat = "dd/MM/yyyy";
-        [SerializeField] string result = "19/12/2022";
-        [SerializeField] UnityEvent<string> onResult = default;
+        public string ResultStringFormat = "dd/MM/yyyy";
+        public string ResultString = "19/12/2022";
+        public DateTime Result = DateTime.Now;
+
+        [Header("Events")]
+        public UnityEvent<Button> OnShowSelectedDate = default;
+        public UnityEvent<string> OnResultString = default;
+        public UnityEvent<DateTime> OnResult = default;
 
         [Space(10)]
         [Header("DEBUG - AutoGenerate DaysOfWeek and Calendar")]
         [Tooltip("Parent where spawn")][SerializeField] Transform contentGridLayout = default;
         [Tooltip("Prefab for DaysOfWeek and CalendarButtons")][SerializeField] Button buttonPrefab = default;
 
+        public GameObject Calendar => calendar;
+
         DateTime monthToGenerate = DateTime.Today;
         DateTime selectedDay = DateTime.Today;
-
-        //check where click
-        //this is used, cause if click calendar but miss day buttons, the background image isn't a Selectable, so EventSystem set selectedGameObject to null and close calendar (if setted in inspector to close when not selected)
-        GameObject lastSelectedGameObject;
 
         private void Awake()
         {
             //set today as default result
             if (setDefaultOnAwake)
             {
-                result = DateTime.Now.ToString(resultFormat);
+                SetDate(DateTime.Now);
 
                 //or find first day selectable
                 if (findFirstDaySelectable)
@@ -81,18 +75,18 @@ namespace redd096
                     DateTime day = DateTime.Now;
                     while (true)
                     {
-                        if (timePicker) timePicker.SetSelectedDate(day.ToString(resultFormat));     //update time picker to check also if there are hours this day
-                        if (IsEnabledThisDay(day.Date))                                             //check is enabled (using variables setted for not clicable days)
+                        if (timePicker) timePicker.SetSelectedDate(day);    //update time picker to check also if there are hours this day
+                        if (IsEnabledThisDay(day.Date))                     //check is enabled (using variables setted for not clicable days)
                             break;
-                        day = day.AddDays(1);                                                       //else check next day
+                        day = day.AddDays(1);                               //else check next day
                     }
-                    result = day.ToString(resultFormat);
+                    SetDate(day);
                 }
             }
 
             //set current date (to show from previous selected month - default is DateTime.Now) as start month
-            monthToGenerate = DateTime.Parse(result).Date;
-            selectedDay = DateTime.Parse(result).Date;          //set also selected day
+            selectedDay = Result.Date;
+            monthToGenerate = Result.Date;
             GenerateCalendar();
 
             //close on awake
@@ -100,46 +94,13 @@ namespace redd096
                 CloseCalendar();
         }
 
-        void Update()
-        {
-            //if calendar is open, check to close it
-            if (closeWhenCalendarNotSelected && IsCalendarOpen())
-            {
-                //check only if changed selected gameObject
-                if (EventSystem.current.currentSelectedGameObject == lastSelectedGameObject)
-                    return;
-
-                lastSelectedGameObject = EventSystem.current.currentSelectedGameObject;
-
-                //if some object in calendar is selected or cliked, don't close
-                if (calendarObjectIsInTheList)
-                {
-                    if (CheckOneTransformIsSelected(calendar.GetComponentsInChildren<Transform>()) || CheckClickedInsideOneRectTransform(calendar.GetComponentsInChildren<RectTransform>()))
-                        return;
-                }
-
-                //if some of these objects is selected or cliked, don't close
-                if (objectsCanBeSelectedWithoutCloseCalendar != null)
-                {
-                    foreach (GameObject go in objectsCanBeSelectedWithoutCloseCalendar)
-                    {
-                        if (CheckOneTransformIsSelected(go.GetComponentsInChildren<Transform>()) || CheckClickedInsideOneRectTransform(go.GetComponentsInChildren<RectTransform>()))
-                            return;
-                    }
-                }
-
-                //else close it
-                CloseCalendar();
-            }
-        }
-
         #region public API
 
         public void OpenCalendar()
         {
             //set current date (to show from previous selected month - default is DateTime.Now) as start month
-            monthToGenerate = DateTime.Parse(result).Date;
-            selectedDay = DateTime.Parse(result).Date;          //set also selected day
+            selectedDay = Result.Date;
+            monthToGenerate = Result.Date;
             GenerateCalendar();
 
             //and open calendar
@@ -181,17 +142,12 @@ namespace redd096
         }
 
         /// <summary>
-        /// Used to force result. For example to set a default value before open calendar (to get from a variable instead of set DateTime.Now in awake)
+        /// Regenerate calendar. For example if someone called SetDate, or if is midnight and DisableDaysBeforeThanToday is true.
         /// </summary>
-        public void SetResult(string result)
-        {
-            this.result = result;
-        }
-
         public void UpdateResult()
         {
             //update selected day
-            selectedDay = DateTime.Parse(result).Date;
+            selectedDay = Result.Date;
             GenerateCalendar();
         }
 
@@ -200,46 +156,14 @@ namespace redd096
             return CanBeEnabledToday(day.Date) && IsDayEnabled(day.Date);
         }
 
-        #endregion
-
-        #region checks to close calendar
-
-        bool CheckOneTransformIsSelected(Transform[] transforms)
+        /// <summary>
+        /// Set Result variable
+        /// </summary>
+        /// <param name="newDate"></param>
+        public void SetDate(DateTime newDate)
         {
-            for (int i = 0; i < transforms.Length; i++)
-            {
-                //if event system has this selected
-                if (lastSelectedGameObject == transforms[i].gameObject)
-                    return true;
-            }
-            return false;
-        }
-
-        bool CheckClickedInsideOneRectTransform(RectTransform[] rectTransforms)
-        {
-#if ENABLE_INPUT_SYSTEM
-            //only if clicked this frame
-            if (Mouse.current.leftButton.wasPressedThisFrame == false)
-                return false;
-
-            Camera cam = Camera.main;
-            Vector3 mousePosition = Mouse.current.position.ReadValue();
-#else
-            //only if clicked this frame
-            if (Input.GetMouseButtonDown(0) == false)
-                return false;
-
-            Camera cam = Camera.main;
-            Vector3 mousePosition = Input.mousePosition;
-#endif
-
-            for (int i = 0; i < rectTransforms.Length; i++)
-            {
-                //if mouse position is inside rect transform
-                if (RectTransformUtility.RectangleContainsScreenPoint(rectTransforms[i], mousePosition, cam))
-                    return true;
-            }
-            return false;
+            Result = newDate;
+            ResultString = Result.ToString(ResultStringFormat);
         }
 
         #endregion
@@ -321,7 +245,10 @@ namespace redd096
 
                 //select current day
                 if (dt.Date == selectedDay.Date)
+                {
                     b.Select();
+                    OnShowSelectedDate?.Invoke(b);
+                }
             }
         }
 
@@ -333,9 +260,9 @@ namespace redd096
             //if 1st day isn't the one setted in inspector, use previous month
             for (int i = 0; i < 7; i++)
             {
-                dt = dt.AddDays(-1);
                 if (dt.DayOfWeek == firstDayOfWeek)
                     break;
+                dt = dt.AddDays(-1);
             }
 
             return dt;
@@ -374,8 +301,9 @@ namespace redd096
         void OnClick(DateTime dt)
         {
             //on button click, call event
-            result = dt.ToString(resultFormat);
-            onResult?.Invoke(result);
+            SetDate(dt);
+            OnResult?.Invoke(Result);
+            OnResultString?.Invoke(ResultString);
         }
 
         #region editor only
@@ -384,7 +312,7 @@ namespace redd096
         /// editor only
         /// </summary>
         [Button]
-        public void AutoGenerateCalendar()
+        void AutoGenerateCalendar()
         {
             //remove old buttons
             for (int i = contentGridLayout.childCount - 1; i >= 0; i--)

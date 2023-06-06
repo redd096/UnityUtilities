@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
@@ -16,12 +17,18 @@ namespace redd096
         [Tooltip("Close when currentSelectedGameObject isn't the checked object")][SerializeField] bool checkEventSystemSelection = true;
         [Tooltip("If checked object is an Image it isn't a Selectable, so if click it then selection will be anyway Null. Enable this to prevent to close")][SerializeField] bool preventSelectionCheckingClick = true;
 
-        [Header("Check where click")]
+        [Header("Check click")]
         [Tooltip("Instead of check EventSystem selection, could check only where user click")][SerializeField] bool checkWhereClick = false;
 
         [Header("Objects")]
-        [Tooltip("If click object setted above or its childs, keep it active?")][SerializeField] bool addObjectToTheList = true;
+        [Tooltip("If click the objectToClose or its childs, keep it active?")][SerializeField] bool addObjectToTheList = true;
         [Tooltip("If click one of these objects or childs of them, keep object active")][SerializeField] GameObject[] objectsCanBeSelectedWithoutClose = default;
+
+        [Header("Result")]
+        [Tooltip("Call objectToClose.SetActive(false) or just call OnClose event?")] [SerializeField] bool callSetActiveFalse = true;
+        public UnityEvent OnClose = default;
+
+        public GameObject ObjectToClose => objectToClose;
 
         //check where click
         //this is used, cause if click objectToClose, but its an image instead of button, textfield or other
@@ -35,6 +42,15 @@ namespace redd096
             //if it's active, check to close it
             if (objectToClose && objectToClose.activeInHierarchy)
             {
+                //if checking event system selection, check only if changed selected gameObject
+                if (checkEventSystemSelection)
+                {
+                    if (EventSystem.current.currentSelectedGameObject == lastSelectedGameObject)
+                        return;
+
+                    lastSelectedGameObject = EventSystem.current.currentSelectedGameObject;
+                }
+
                 //if some object in it is selected or cliked, don't close
                 if (addObjectToTheList)
                 {
@@ -53,7 +69,8 @@ namespace redd096
                 }
 
                 //else close it
-                objectToClose.SetActive(false);
+                if (callSetActiveFalse) objectToClose.SetActive(false);
+                OnClose?.Invoke();
             }
         }
 
@@ -61,12 +78,6 @@ namespace redd096
         {
             if (checkEventSystemSelection)
             {
-                //check only if changed selected gameObject
-                if (EventSystem.current.currentSelectedGameObject == lastSelectedGameObject)
-                    return true;
-
-                lastSelectedGameObject = EventSystem.current.currentSelectedGameObject;
-
                 //check selection
                 if (CheckOneTransformIsSelected(go.GetComponentsInChildren<Transform>()))
                     return true;
