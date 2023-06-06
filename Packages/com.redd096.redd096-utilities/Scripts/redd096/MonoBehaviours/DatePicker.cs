@@ -67,7 +67,7 @@ namespace redd096
             //set today as default result
             if (setDefaultOnAwake)
             {
-                SetDate(DateTime.Now);
+                Result = DateTime.Now;
 
                 //or find first day selectable
                 if (findFirstDaySelectable)
@@ -80,8 +80,10 @@ namespace redd096
                             break;
                         day = day.AddDays(1);                               //else check next day
                     }
-                    SetDate(day);
+                    Result = day;
                 }
+
+                OnClick(Result);
             }
 
             //set current date (to show from previous selected month - default is DateTime.Now) as start month
