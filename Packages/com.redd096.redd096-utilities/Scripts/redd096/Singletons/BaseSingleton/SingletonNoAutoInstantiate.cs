@@ -8,9 +8,15 @@ namespace redd096
         public static T instance { get; private set; }
 
         protected virtual bool isDontDestroyOnLoad => true;
+        protected virtual bool automaticallyUnparentOnAwake => true;
 
         protected virtual void Awake()
         {
+            if (automaticallyUnparentOnAwake)
+            {
+                transform.SetParent(null);
+            }
+
             CheckInstance();
 
             if (instance == this)

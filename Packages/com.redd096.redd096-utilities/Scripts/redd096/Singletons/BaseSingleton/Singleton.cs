@@ -10,9 +10,15 @@ namespace redd096
         {
             get
             {
-                //if not in scene, auto instantiate
+                //if null, try find it
                 if (_instance == null)
-                    _instance = new GameObject(nameof(T), typeof(T)).GetComponent<T>();
+                {
+                    _instance = FindObjectOfType<T>();
+
+                    //if not in scene, auto instantiate
+                    if (_instance == null)
+                        _instance = new GameObject(nameof(T) + " (AutoInstantiated)", typeof(T)).GetComponent<T>();
+                }
 
                 return _instance;
             }
@@ -20,9 +26,15 @@ namespace redd096
         }
 
         protected virtual bool isDontDestroyOnLoad => true;
+        protected virtual bool automaticallyUnparentOnAwake => true;
 
         protected virtual void Awake()
         {
+            if (automaticallyUnparentOnAwake)
+            {
+                transform.SetParent(null);
+            }
+
             CheckInstance();
 
             if (instance == this)
