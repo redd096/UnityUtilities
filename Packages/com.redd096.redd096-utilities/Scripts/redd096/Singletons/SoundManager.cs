@@ -16,7 +16,12 @@ namespace redd096
     [System.Serializable]
     public class AudioClass : AudioClassBase
     {
-        public bool is3D = false;
+        public EAudioType audioType = EAudioType.sfx2D;
+    }
+
+    public enum EAudioType
+    {
+        sfx3D, sfx2D, ui
     }
 
     #endregion
@@ -37,12 +42,13 @@ namespace redd096
         [SerializeField] bool loopMusicThisScene = true;
         [Tooltip("When change scene, if setted same clip and volume, restart anyway?")][SerializeField] bool forceReplayThisScene = false;
 
-        [Header("Instantiate sound at point")]
-        [Tooltip("Used also for SoundsOnClickButton")][SerializeField] AudioSource sound2DPrefab = default;
-        [SerializeField] AudioSource sound3DPrefab = default;
+        [Header("Prefabs to instantiate")]
+        [SerializeField] AudioSource sfx2DPrefab = default;
+        [SerializeField] AudioSource sfx3DPrefab = default;
+        [SerializeField] AudioSource uiPrefab = default;
 
-        [Header("Sounds On Click Button (random from array)")]
-        [SerializeField] AudioClassBase[] soundsOnClick = default;
+        [Header("UI Sounds On Click Button (random from array)")]
+        [SerializeField] AudioClassBase[] uiSoundsOnClick = default;
 
         //sound parent (instantiate if null)
         private Transform soundsParent;
@@ -57,8 +63,9 @@ namespace redd096
 
         //audio sources in scene
         AudioSource musicBackgroundAudioSource;
-        Pooling<AudioSource> pooling2D = new Pooling<AudioSource>();
-        Pooling<AudioSource> pooling3D = new Pooling<AudioSource>();
+        Pooling<AudioSource> sfx2DPooling = new Pooling<AudioSource>();
+        Pooling<AudioSource> sfx3DPooling = new Pooling<AudioSource>();
+        Pooling<AudioSource> uiPooling = new Pooling<AudioSource>();
 
         //coroutines
         Dictionary<AudioSource, Coroutine> coroutines = new Dictionary<AudioSource, Coroutine>();   //fade in and fade out coroutines, or deactive sound at point coroutines
@@ -67,6 +74,7 @@ namespace redd096
         Dictionary<AudioSource, float> savedVolumes = new Dictionary<AudioSource, float>();
         float volumeMusic = 1;
         float volumeSFX = 1;
+        float volumeUI = 1;
 
         #endregion
 
@@ -83,17 +91,23 @@ namespace redd096
                     musicPrefab.transform.SetParent(transform);     //set child to not destroy when change scene
                     musicPrefab.spatialBlend = 0.0f;                //set 2d sound
                 }
-                if (sound2DPrefab == null)
+                if (sfx2DPrefab == null)
                 {
-                    sound2DPrefab = new GameObject("Sound 2D Prefab", typeof(AudioSource)).GetComponent<AudioSource>();
-                    sound2DPrefab.transform.SetParent(transform);   //set child to not destroy when change scene
-                    sound2DPrefab.spatialBlend = 0.0f;              //set 2d sound
+                    sfx2DPrefab = new GameObject("Sfx 2D Prefab", typeof(AudioSource)).GetComponent<AudioSource>();
+                    sfx2DPrefab.transform.SetParent(transform);     //set child to not destroy when change scene
+                    sfx2DPrefab.spatialBlend = 0.0f;                //set 2d sound
                 }
-                if (sound3DPrefab == null)
+                if (sfx3DPrefab == null)
                 {
-                    sound3DPrefab = new GameObject("Sound 3D Prefab", typeof(AudioSource)).GetComponent<AudioSource>();
-                    sound3DPrefab.transform.SetParent(transform);   //set child to not destroy when change scene
-                    sound3DPrefab.spatialBlend = 1.0f;              //set 3d sound
+                    sfx3DPrefab = new GameObject("Sfx 3D Prefab", typeof(AudioSource)).GetComponent<AudioSource>();
+                    sfx3DPrefab.transform.SetParent(transform);     //set child to not destroy when change scene
+                    sfx3DPrefab.spatialBlend = 1.0f;                //set 3d sound
+                }
+                if (uiPrefab == null)
+                {
+                    uiPrefab = new GameObject("UI Prefab", typeof(AudioSource)).GetComponent<AudioSource>();
+                    uiPrefab.transform.SetParent(transform);        //set child to not destroy when change scene
+                    uiPrefab.spatialBlend = 0.0f;                   //set 2d sound
                 }
 
                 //set also fade in and fade out, if not setted
@@ -172,6 +186,26 @@ namespace redd096
             }
         }
 
+        public Pooling<AudioSource> GetPoolingByAudioType(EAudioType audioType)
+        {
+            if (audioType == EAudioType.sfx3D)
+                return sfx3DPooling;
+            else if (audioType == EAudioType.sfx2D)
+                return sfx2DPooling;
+            else
+                return uiPooling;
+        }
+
+        public AudioSource GetPrefabByAudioType(EAudioType audioType)
+        {
+            if (audioType == EAudioType.sfx3D)
+                return sfx3DPrefab;
+            else if (audioType == EAudioType.sfx2D)
+                return sfx2DPrefab;
+            else
+                return uiPrefab;
+        }
+
         #endregion
 
         #region static Play
@@ -200,7 +234,7 @@ namespace redd096
                 audioSource.loop = loop;
 
                 //save volume settings
-                instance.SaveVolumeAudioSource(audioSource, volume);
+                instance.SaveDefaultVolumeAudioSource(audioSource, volume);
 
                 audioSource.Play();
             }
@@ -226,7 +260,7 @@ namespace redd096
                 }
 
                 //save volume settings
-                instance.SaveVolumeAudioSource(audioSource, volume);
+                instance.SaveDefaultVolumeAudioSource(audioSource, volume);
 
                 //start coroutine
                 instance.coroutines.Add(audioSource, instance.StartCoroutine(instance.FadeAudioCoroutine(audioSource, clip, fadeIn, fadeOut, volume, loop)));
@@ -338,21 +372,21 @@ namespace redd096
         /// <summary>
         /// Start audio clip at point. Can set volume
         /// </summary>
-        public AudioSource Play(bool is3D, AudioClip clip, Vector3 position, float volume = 1)
+        public AudioSource Play(EAudioType audioType, AudioClip clip, Vector3 position, float volume = 1)
         {
-            //3d use 3dPooling and 3dPrefab, 2d use 2dPooling and 2dPrefab
-            return Play(is3D ? pooling3D : pooling2D, is3D ? sound3DPrefab : sound2DPrefab, clip, position, volume);
+            //3d use 3dPooling and 3dPrefab, 2d use 2dPooling and 2dPrefab, ui use uiPooling and uiPrefab
+            return Play(GetPoolingByAudioType(audioType), GetPrefabByAudioType(audioType), clip, position, volume);
         }
 
         /// <summary>
         /// Start audio clip at point. Can set volume. Get clip random from the array
         /// </summary>
-        public AudioSource Play(bool is3D, AudioClip[] clips, Vector3 position, float volume = 1)
+        public AudioSource Play(EAudioType audioType, AudioClip[] clips, Vector3 position, float volume = 1)
         {
             //do only if there are elements in the array
             if (clips.Length > 0)
             {
-                return Play(is3D, clips[Random.Range(0, clips.Length)], position, volume);
+                return Play(audioType, clips[Random.Range(0, clips.Length)], position, volume);
             }
 
             return null;
@@ -361,20 +395,20 @@ namespace redd096
         /// <summary>
         /// Start audio clip at point, with selected volume
         /// </summary>
-        public AudioSource Play(bool is3D, AudioClassBase audio, Vector3 position)
+        public AudioSource Play(EAudioType audioType, AudioClassBase audio, Vector3 position)
         {
-            return Play(is3D, audio.audioClip, position, audio.volume);
+            return Play(audioType, audio.audioClip, position, audio.volume);
         }
 
         /// <summary>
         /// Start audio clip at point. Get clip and volume random from the array
         /// </summary>
-        public AudioSource Play(bool is3D, AudioClassBase[] audios, Vector3 position)
+        public AudioSource Play(EAudioType audioType, AudioClassBase[] audios, Vector3 position)
         {
             //do only if there are elements in the array
             if (audios.Length > 0)
             {
-                return Play(is3D, audios[Random.Range(0, audios.Length)], position);
+                return Play(audioType, audios[Random.Range(0, audios.Length)], position);
             }
 
             return null;
@@ -385,7 +419,7 @@ namespace redd096
         /// </summary>
         public AudioSource Play(AudioClass audio, Vector3 position)
         {
-            return Play(audio.is3D, audio.audioClip, position, audio.volume);
+            return Play(audio.audioType, audio.audioClip, position, audio.volume);
         }
 
         /// <summary>
@@ -409,19 +443,19 @@ namespace redd096
         /// <summary>
         /// Called by buttons in UI - play random sound on click
         /// </summary>
-        public void PlayOnClick()
+        public void PlayUIOnClick()
         {
-            //in instance, call Play 2D
-            instance.Play(false, soundsOnClick, Vector3.zero);
+            //in instance, call Play ui
+            instance.Play(EAudioType.ui, uiSoundsOnClick, Vector3.zero);
         }
 
         /// <summary>
         /// Called by buttons in UI - play specific sound
         /// </summary>
-        public void PlayOnClick(AudioClip sound)
+        public void PlayUIOnClick(AudioClip sound)
         {
             //in instance, call Play 2D
-            instance.Play(false, sound, Vector3.zero);
+            instance.Play(EAudioType.ui, sound, Vector3.zero);
         }
 
         #endregion
@@ -449,17 +483,37 @@ namespace redd096
         {
             this.volumeSFX = volumeSFX;
 
-            //update every audio source's volume
-            foreach (AudioSource audioSource in savedVolumes.Keys)
+            //update every sfx audio source's volume
+            foreach (AudioSource audioSource in sfx2DPooling.PooledObjects)
             {
-                //be sure it isn't music audio source
-                if (audioSource && audioSource != musicBackgroundAudioSource)
+                if (audioSource && savedVolumes.ContainsKey(audioSource))
+                    audioSource.volume = savedVolumes[audioSource] * volumeSFX;
+            }
+            foreach (AudioSource audioSource in sfx3DPooling.PooledObjects)
+            {
+                if (audioSource && savedVolumes.ContainsKey(audioSource))
                     audioSource.volume = savedVolumes[audioSource] * volumeSFX;
             }
         }
 
         /// <summary>
-        /// Get volumeMusic or volumeSFX based on audioSource
+        /// Set volume settings for the UI
+        /// </summary>
+        /// <param name="volumeUI"></param>
+        public void SetVolumeUI(float volumeUI)
+        {
+            this.volumeUI = volumeUI;
+
+            //update every ui audio source's volume
+            foreach (AudioSource audioSource in uiPooling.PooledObjects)
+            {
+                if (audioSource && savedVolumes.ContainsKey(audioSource))
+                    audioSource.volume = savedVolumes[audioSource] * volumeUI;
+            }
+        }
+
+        /// <summary>
+        /// Get volume based on audioSource
         /// </summary>
         /// <param name="audioSource"></param>
         /// <returns></returns>
@@ -467,13 +521,20 @@ namespace redd096
         {
             if (audioSource == musicBackgroundAudioSource)
                 return volumeMusic;
+            else if (uiPooling.PooledObjects.Contains(audioSource))
+                return volumeUI;
             else //if (savedVolumes.ContainsKey(audioSource))
                 return volumeSFX;
             //else 
             //    return 1;
         }
 
-        public void SaveVolumeAudioSource(AudioSource audioSource, float volume)
+        /// <summary>
+        /// Save default volume for this audio source. This will be changed based on volume settings
+        /// </summary>
+        /// <param name="audioSource"></param>
+        /// <param name="volume"></param>
+        public void SaveDefaultVolumeAudioSource(AudioSource audioSource, float volume)
         {
             if (audioSource == null)
                 return;
@@ -490,6 +551,12 @@ namespace redd096
             }
         }
 
+        /// <summary>
+        /// Is this volume, the same as the saved one for this audio source?
+        /// </summary>
+        /// <param name="audioSource"></param>
+        /// <param name="volume"></param>
+        /// <returns></returns>
         public bool CheckIsEqualToSavedVolume(AudioSource audioSource, float volume)
         {
             //if there is no audio source or is not saved, return false

@@ -14,6 +14,8 @@ namespace redd096
         [SerializeField] Text volumeMusicText = default;
         [SerializeField] Slider volumeSFXSlider = default;
         [SerializeField] Text volumeSFXText = default;
+        [SerializeField] Slider volumeUISlider = default;
+        [SerializeField] Text volumeUIText = default;
 
         [Header("UI Graphic")]
         [SerializeField] Toggle fullScreenToggle = default;
@@ -23,6 +25,7 @@ namespace redd096
         [HideIf("takeFromUI")][SerializeField] float volumeMasterDefault = 1;
         [HideIf("takeFromUI")][SerializeField] float volumeMusicDefault = 1;
         [HideIf("takeFromUI")][SerializeField] float volumeSFXDefault = 1;
+        [HideIf("takeFromUI")][SerializeField] float volumeUIDefault = 1;
         [HideIf("takeFromUI")][SerializeField] bool fullScreenDefault = true;
 
         [Header("Optimization")]
@@ -33,6 +36,7 @@ namespace redd096
         float valueVolumeMaster;
         float valueVolumeMusic;
         float valueVolumeSFX;
+        float valueVolumeUI;
         bool valueFullScreen;
 
         void Start()
@@ -41,6 +45,7 @@ namespace redd096
             valueVolumeMaster = SaveManager.PlayerPrefsFWMV.GetFloat(FILENAME, "masterVolume", takeFromUI && volumeMasterSlider ? volumeMasterSlider.value : volumeMasterDefault);
             valueVolumeMusic = SaveManager.PlayerPrefsFWMV.GetFloat(FILENAME, "musicVolume", takeFromUI && volumeMusicSlider ? volumeMusicSlider.value : volumeMusicDefault);
             valueVolumeSFX = SaveManager.PlayerPrefsFWMV.GetFloat(FILENAME, "sfxVolume", takeFromUI && volumeSFXSlider ? volumeSFXSlider.value : volumeSFXDefault);
+            valueVolumeUI = SaveManager.PlayerPrefsFWMV.GetFloat(FILENAME, "uiVolume", takeFromUI && volumeUISlider ? volumeUISlider.value : volumeUIDefault);
             valueFullScreen = SaveManager.PlayerPrefsFWMV.GetBool(FILENAME, "fullScreen", takeFromUI && fullScreenToggle ? fullScreenToggle.isOn : fullScreenDefault);
 
             //update UI and set in game
@@ -54,6 +59,7 @@ namespace redd096
             if (volumeMasterSlider) volumeMasterSlider.onValueChanged.AddListener(OnSetVolumeMaster);
             if (volumeMusicSlider) volumeMusicSlider.onValueChanged.AddListener(OnSetVolumeMusic);
             if (volumeSFXSlider) volumeSFXSlider.onValueChanged.AddListener(OnSetVolumeSFX);
+            if (volumeUISlider) volumeUISlider.onValueChanged.AddListener(OnSetVolumeUI);
 
             if (fullScreenToggle) fullScreenToggle.onValueChanged.AddListener(OnSetFullScreen);
         }
@@ -64,6 +70,7 @@ namespace redd096
             if (volumeMasterSlider) volumeMasterSlider.onValueChanged.RemoveListener(OnSetVolumeMaster);
             if (volumeMusicSlider) volumeMusicSlider.onValueChanged.RemoveListener(OnSetVolumeMusic);
             if (volumeSFXSlider) volumeSFXSlider.onValueChanged.RemoveListener(OnSetVolumeSFX);
+            if (volumeUISlider) volumeUISlider.onValueChanged.RemoveListener(OnSetVolumeUI);
 
             if (fullScreenToggle) fullScreenToggle.onValueChanged.RemoveListener(OnSetFullScreen);
 
@@ -80,6 +87,7 @@ namespace redd096
             AudioListener.volume = valueVolumeMaster;
             if (SoundManager.instance) SoundManager.instance.SetVolumeMusic(valueVolumeMusic);
             if (SoundManager.instance) SoundManager.instance.SetVolumeSFX(valueVolumeSFX);
+            if (SoundManager.instance) SoundManager.instance.SetVolumeUI(valueVolumeUI);
 
             //set full screen
             Screen.fullScreen = valueFullScreen;
@@ -94,6 +102,8 @@ namespace redd096
             if (volumeMusicText) volumeMusicText.text = (valueVolumeMusic * 100).ToString("F0") + "%";
             if (volumeSFXSlider) volumeSFXSlider.SetValueWithoutNotify(valueVolumeSFX);
             if (volumeSFXText) volumeSFXText.text = (valueVolumeSFX * 100).ToString("F0") + "%";
+            if (volumeUISlider) volumeUISlider.SetValueWithoutNotify(valueVolumeUI);
+            if (volumeUIText) volumeUIText.text = (valueVolumeUI * 100).ToString("F0") + "%";
 
             //toggle
             if (fullScreenToggle) fullScreenToggle.SetIsOnWithoutNotify(valueFullScreen);
@@ -130,6 +140,17 @@ namespace redd096
             //save
             valueVolumeSFX = value;
             SaveManager.PlayerPrefsFWMV.SetFloat(FILENAME, "sfxVolume", value, saveOnDisable == false);
+
+            //update UI and set in game
+            UpdateUI();
+            SetInGame();
+        }
+
+        public void OnSetVolumeUI(float value)
+        {
+            //save
+            valueVolumeUI = value;
+            SaveManager.PlayerPrefsFWMV.SetFloat(FILENAME, "uiVolume", value, saveOnDisable == false);
 
             //update UI and set in game
             UpdateUI();
