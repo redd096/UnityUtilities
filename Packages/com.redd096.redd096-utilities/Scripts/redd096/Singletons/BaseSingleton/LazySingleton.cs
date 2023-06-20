@@ -3,9 +3,27 @@
 namespace redd096
 {
     [DefaultExecutionOrder(-10)]
-    public class SingletonNoAutoInstantiate<T> : MonoBehaviour where T : SingletonNoAutoInstantiate<T>
+    public class LazySingleton<T> : MonoBehaviour where T : LazySingleton<T>
     {
-        public static T instance { get; private set; }
+        private static T _instance;
+        public static T instance
+        {
+            get
+            {
+                //if null, try find it
+                if (_instance == null)
+                {
+                    _instance = FindObjectOfType<T>();
+
+                    //if not in scene, auto instantiate
+                    if (_instance == null)
+                        _instance = new GameObject(nameof(T) + " (AutoInstantiated)", typeof(T)).GetComponent<T>();
+                }
+
+                return _instance;
+            }
+            private set => _instance = value;
+        }
 
         protected virtual bool isDontDestroyOnLoad => true;
         protected virtual bool automaticallyUnparentOnAwake => true;

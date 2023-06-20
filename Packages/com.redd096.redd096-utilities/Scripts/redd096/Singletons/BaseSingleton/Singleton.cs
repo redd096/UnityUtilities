@@ -12,13 +12,7 @@ namespace redd096
             {
                 //if null, try find it
                 if (_instance == null)
-                {
                     _instance = FindObjectOfType<T>();
-
-                    //if not in scene, auto instantiate
-                    if (_instance == null)
-                        _instance = new GameObject(nameof(T) + " (AutoInstantiated)", typeof(T)).GetComponent<T>();
-                }
 
                 return _instance;
             }
