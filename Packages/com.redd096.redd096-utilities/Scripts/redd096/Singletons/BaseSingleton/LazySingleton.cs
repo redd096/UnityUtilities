@@ -2,6 +2,10 @@
 
 namespace redd096
 {
+    /// <summary>
+    /// This is the same as Singleton. The only difference is this auto instantiate the instance if it's not in scene
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     [DefaultExecutionOrder(-10)]
     public class LazySingleton<T> : MonoBehaviour where T : LazySingleton<T>
     {
@@ -30,11 +34,13 @@ namespace redd096
 
         protected virtual void Awake()
         {
+            //unparent
             if (automaticallyUnparentOnAwake)
             {
                 transform.SetParent(null);
             }
 
+            //set instance and initialize it
             CheckInstance();
 
             if (instance == this)

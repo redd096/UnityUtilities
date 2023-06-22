@@ -24,11 +24,13 @@ namespace redd096
 
         protected virtual void Awake()
         {
+            //unparent
             if (automaticallyUnparentOnAwake)
             {
                 transform.SetParent(null);
             }
 
+            //set instance and initialize it
             CheckInstance();
 
             if (instance == this)
