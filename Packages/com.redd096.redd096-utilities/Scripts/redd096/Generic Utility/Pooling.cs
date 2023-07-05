@@ -69,10 +69,10 @@ namespace redd096
             }
         }
 
-        #region cycle
-
         /// <summary>
-        /// If not enough objects in the pool, instantiate necessary to reach the cycleAmount
+        /// If not enough objects in the pool, instantiate necessary to reach the cycleAmount. 
+        /// This is necessary for cycles, because SetActive doesn't works in the same frame, 
+        /// so if we exceed the amount of object in the list it will try to reactivate a precedent object instead of instantiate new one
         /// </summary>
         public void InitCycle(T prefab, int cycleAmount)
         {
@@ -82,24 +82,6 @@ namespace redd096
                 Init(prefab, cycleAmount - PooledObjects.Count);
             }
         }
-
-        /// <summary>
-        /// Move to the end of the list every object unused in the cycle
-        /// </summary>
-        /// <param name="cycledAmount">The number of objects used in the cycle</param>
-        public void EndCycle(int cycledAmount)
-        {
-            for (int i = 0; i < PooledObjects.Count - cycledAmount; i++)
-            {
-                T obj = PooledObjects[i];
-
-                //move to the end of the list
-                PooledObjects.Remove(obj);
-                PooledObjects.Add(obj);
-            }
-        }
-
-        #endregion
 
         #region instantiate
 
