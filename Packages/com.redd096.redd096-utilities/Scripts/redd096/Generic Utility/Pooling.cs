@@ -154,7 +154,8 @@ namespace redd096
 
             if (obj != null)
             {
-                GetTransform(obj).SetParent(parent);
+                //by default Unity Object.Instantiate(T, transform) set worldPositionsStays at false
+                GetTransform(obj).SetParent(parent, worldPositionStays: false);
             }
 
             return obj;
