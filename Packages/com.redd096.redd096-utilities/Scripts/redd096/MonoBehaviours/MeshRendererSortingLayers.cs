@@ -8,6 +8,7 @@ using UnityEditorInternal;
 
 namespace redd096
 {
+    [AddComponentMenu("redd096/MonoBehaviours/Mesh Renderer Sorting Layers")]
     public class MeshRendererSortingLayers : MonoBehaviour
     {
     }
