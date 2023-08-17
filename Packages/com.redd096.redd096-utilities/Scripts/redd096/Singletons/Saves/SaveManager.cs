@@ -61,7 +61,7 @@ namespace redd096
         //system to use for save and load
         private ISaveLoadSystem saveLoadSystem;
         //string to identify files with more variables
-        private const string FWMV_STRING = "redd096FWMV";
+        private const string FWMV_STRING = "redd096FWMV";   //redd096 File With More Variables
 
         protected override void InitializeSingleton()
         {
@@ -130,7 +130,8 @@ namespace redd096
             if (filesWithMoreVariables.ContainsKey(fileName) == false)
                 filesWithMoreVariables.Add(fileName, new Dictionary<string, string>());
 
-            string[] lines = fileString.Split('\n');
+            //string[] lines = fileString.Split('\n');
+            string[] lines = fileString.Split(new string[] { ";\n" }, System.StringSplitOptions.None);
             for (int i = 2; i < lines.Length; i += 2)   //skip 0 because is our custom string, then move by 2 and read variable name and value
             {
                 //first line is variable name
@@ -141,6 +142,23 @@ namespace redd096
                 if (i < lines.Length)
                     filesWithMoreVariables[fileName][lines[i - 1]] = lines[i];
             }
+        }
+
+        private string WriteFileWithMoreVariables(string fileName)
+        {
+            //add this string as first line, to identify the files
+            System.Text.StringBuilder fileString = new System.Text.StringBuilder($"{FWMV_STRING};\n");
+            if (instance.filesWithMoreVariables.ContainsKey(fileName))
+            {
+                //create a string "1stVarName;\n1stJson;\n2ndVarName;\n2ndJson;\n..."
+                //use ;\n because \n could be used if someone save a string with more lines.
+                foreach (string variableName in instance.filesWithMoreVariables[fileName].Keys)
+                {
+                    fileString.Append(variableName).Append(";\n").Append(instance.filesWithMoreVariables[fileName][variableName]).Append(";\n");
+                }
+            }
+
+            return fileString.ToString();
         }
 
         #region classes for save and load
@@ -318,19 +336,10 @@ namespace redd096
             /// </summary>
             public static void SaveOnDisk(string fileName)
             {
-                //add this string as first line, to identify the files
-                System.Text.StringBuilder fileString = new System.Text.StringBuilder($"{FWMV_STRING}\n");   //redd096 File With More Variables
-                if (instance.filesWithMoreVariables.ContainsKey(fileName))
-                {
-                    //create a string "1stVarName\n1stJson\n2ndVarName\n2ndJson\n..."
-                    foreach (string variableName in instance.filesWithMoreVariables[fileName].Keys)
-                    {
-                        fileString.Append(variableName).Append("\n").Append(instance.filesWithMoreVariables[fileName][variableName]).Append("\n");
-                    }
-                }
+                string fileString = instance.WriteFileWithMoreVariables(fileName);
 
                 //save
-                Generic.Save(fileName, fileString.ToString());
+                Generic.Save(fileName, fileString);
             }
 
             /// <summary>
