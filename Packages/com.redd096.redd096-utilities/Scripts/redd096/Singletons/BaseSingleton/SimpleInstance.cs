@@ -26,13 +26,13 @@ namespace redd096
             CheckInstance();
 
             //if onlyOneInstance is true call this only on the correct instance, else call it always
-            if (onlyOneInstance == false || instance == this)
+            if (onlyOneInstance == false || _instance == this)
                 InitializeInstance();
         }
 
         void CheckInstance()
         {
-            if (instance && onlyOneInstance)
+            if (_instance && onlyOneInstance)
             {
                 //if there is already an instance, destroy this one (if must be only one instance)
                 Destroy(gameObject);
@@ -40,7 +40,7 @@ namespace redd096
             else
             {
                 //else, set this as instance
-                instance = (T)this;
+                _instance = (T)this;
             }
         }
 

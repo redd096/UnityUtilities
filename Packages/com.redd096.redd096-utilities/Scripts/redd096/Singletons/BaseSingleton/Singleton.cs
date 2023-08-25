@@ -33,16 +33,16 @@ namespace redd096
             //set instance and initialize it
             CheckInstance();
 
-            if (instance == this)
+            if (_instance == this)
                 InitializeSingleton();
 
             //call set defaults in the instance
-            instance.SetDefaults();
+            _instance.SetDefaults();
         }
 
         void CheckInstance()
         {
-            if (instance)
+            if (_instance)
             {
                 //if there is already an instance, destroy this one
                 Destroy(gameObject);
@@ -50,7 +50,7 @@ namespace redd096
             else
             {
                 //else, set this as unique instance and set don't destroy on load
-                instance = (T)this;
+                _instance = (T)this;
                 if (isDontDestroyOnLoad) DontDestroyOnLoad(this);
             }
         }
