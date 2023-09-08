@@ -338,6 +338,7 @@ namespace redd096.PathFinding.AStar2D
     public class GridAStar2DEditor : Editor
     {
         private GridAStar gridAStar;
+        private ObstacleAStar[] obstacles;
 
         private void OnEnable()
         {
@@ -352,17 +353,22 @@ namespace redd096.PathFinding.AStar2D
 
             if (GUILayout.Button("Update Nodes"))
             {
+                //set undo
+                obstacles = FindObjectsOfType<ObstacleAStar>();
+                System.Collections.Generic.List<Object> objs = new System.Collections.Generic.List<Object>(obstacles);  //obstacles
+                objs.Add(target);                                                                                       //grid
+                Undo.RecordObjects(objs.ToArray(), "Update Nodes");
+
                 //update nodes
                 gridAStar.BuildGrid();
 
                 //update position of every obstacle
-                foreach (ObstacleAStar obstacle in FindObjectsOfType<ObstacleAStar>())
+                foreach (ObstacleAStar obstacle in obstacles)
                     if (obstacle)
                         obstacle.UpdatePositionOnGrid(gridAStar);
 
-                //repaint scene and set undo
+                //repaint scene
                 SceneView.RepaintAll();
-                Undo.RegisterFullObjectHierarchyUndo(target, "Update Nodes");
             }
         }
     }

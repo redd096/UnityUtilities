@@ -383,6 +383,7 @@ namespace redd096.PathFinding.FlowField3D
     public class GridFlowFieldEditor : Editor
     {
         private GridFlowField grid;
+        private ObstacleFlowField[] obstacles;
         SerializedProperty usedByComposite;
         SerializedProperty gridWorldSize;
         SerializedProperty drawGridArea;
@@ -428,11 +429,17 @@ namespace redd096.PathFinding.FlowField3D
 
             if (GUILayout.Button("Update Nodes"))
             {
+                //set undo
+                obstacles = FindObjectsOfType<ObstacleFlowField>();
+                System.Collections.Generic.List<Object> objs = new System.Collections.Generic.List<Object>(obstacles);  //obstacles
+                objs.Add(target);                                                                                       //grid
+                Undo.RecordObjects(objs.ToArray(), "Update Nodes");
+
                 //update nodes
                 grid.BuildGrid();
 
                 //update position of every obstacle
-                foreach (ObstacleFlowField obstacle in FindObjectsOfType<ObstacleFlowField>())
+                foreach (ObstacleFlowField obstacle in obstacles)
                 {
                     if (obstacle)
                     {
@@ -441,9 +448,8 @@ namespace redd096.PathFinding.FlowField3D
                     }
                 }
 
-                //repaint scene and set undo
+                //repaint scene
                 SceneView.RepaintAll();
-                Undo.RegisterFullObjectHierarchyUndo(target, "Update Nodes");
             }
         }
     }

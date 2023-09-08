@@ -20,21 +20,25 @@ namespace redd096
             //button regen
             if (GUILayout.Button("Regen Limits"))
             {
+                //set undo
+                Undo.RegisterFullObjectHierarchyUndo(target, "Regen Limits");
+
                 ((LimitsManager)target).RegenLimits();
 
-                //repaint scene and set undo
+                //repaint scene
                 SceneView.RepaintAll();
-                Undo.RegisterFullObjectHierarchyUndo(target, "Regen Limits");
             }
 
             //button destroy
             if (GUILayout.Button("Destroy Limits"))
             {
+                //set undo
+                Undo.RegisterFullObjectHierarchyUndo(target, "Regen Limits");
+
                 ((LimitsManager)target).DestroyLimits();
 
-                //repaint scene and set undo
+                //repaint scene
                 SceneView.RepaintAll();
-                Undo.RegisterFullObjectHierarchyUndo(target, "Destroy Limits");
             }
         }
     }

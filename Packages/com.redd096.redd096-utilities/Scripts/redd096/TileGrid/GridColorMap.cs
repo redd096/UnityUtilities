@@ -19,18 +19,18 @@ namespace redd096
 
             if (GUILayout.Button("Regen Grid"))
             {
-                ((GridColorMap)target).RegenGrid();
-
                 //set undo
                 Undo.RegisterFullObjectHierarchyUndo(target, "Regen Grid");
+
+                ((GridColorMap)target).RegenGrid();
             }
 
             if(GUILayout.Button("Destroy Grid"))
             {
-                ((GridColorMap)target).DestroyGrid();
-
                 //set undo
                 Undo.RegisterFullObjectHierarchyUndo(target, "Destroy Grid");
+
+                ((GridColorMap)target).DestroyGrid();
             }
         }
     }

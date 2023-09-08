@@ -29,10 +29,10 @@ namespace redd096
 
             if (GUILayout.Button("Destroy Map"))
             {
-                mapManager.DestroyMap();
-
                 //set undo
                 Undo.RegisterFullObjectHierarchyUndo(target, "Regen World");
+
+                mapManager.DestroyMap();
             }
         }
     }
