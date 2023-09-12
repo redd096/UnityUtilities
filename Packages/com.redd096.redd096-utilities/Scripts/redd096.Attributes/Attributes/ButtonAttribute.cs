@@ -4,7 +4,8 @@ using System;
 using System.Collections;
 using System.Reflection;
 using redd096.Attributes.AttributesEditorUtility;
-using UnityEditor.SceneManagement;
+//using UnityEditor.SceneManagement;                //used for PrefabStage and PrefabStageUtility
+//using UnityEditor.Experimental.SceneManagement;   //old versions of unity
 using UnityEditor;
 #endif
 
@@ -67,7 +68,7 @@ namespace redd096.Attributes
                             //in editor mode, create undo
                             if (Application.isPlaying == false)
                             {
-                                Undo.RecordObject(target, string.IsNullOrEmpty(buttonAttribute.buttonName) ? method.Name : buttonAttribute.buttonName);
+                                Undo.RegisterFullObjectHierarchyUndo(target, string.IsNullOrEmpty(buttonAttribute.buttonName) ? method.Name : buttonAttribute.buttonName);
                             }
 
                             IEnumerator methodResult = method.Invoke(target, method.GetDefaultParameters()) as IEnumerator;             //pass default values, if there are optional parameters
