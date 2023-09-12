@@ -64,18 +64,25 @@ namespace redd096.Attributes
                         //if the user clicks the button, invoke the method (show button name or method name)
                         if (GUILayout.Button(string.IsNullOrEmpty(buttonAttribute.buttonName) ? method.Name : buttonAttribute.buttonName))
                         {
+                            //in editor mode, create undo
+                            if (Application.isPlaying == false)
+                            {
+                                Undo.RecordObject(target, string.IsNullOrEmpty(buttonAttribute.buttonName) ? method.Name : buttonAttribute.buttonName);
+                            }
+
                             IEnumerator methodResult = method.Invoke(target, method.GetDefaultParameters()) as IEnumerator;             //pass default values, if there are optional parameters
 
                             //in editor mode set target object and scene dirty to serialize changes to disk
                             if (Application.isPlaying == false)
                             {
-                                EditorUtility.SetDirty(target);
-
-                                PrefabStage stage = PrefabStageUtility.GetCurrentPrefabStage();
-                                if (stage != null)
-                                    EditorSceneManager.MarkSceneDirty(stage.scene);                             //prefab mode
-                                else
-                                    EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());     //normal scene
+                                //replaced with Undo
+                                //EditorUtility.SetDirty(target);
+                                //
+                                //PrefabStage stage = PrefabStageUtility.GetCurrentPrefabStage();
+                                //if (stage != null)
+                                //    EditorSceneManager.MarkSceneDirty(stage.scene);                             //prefab mode
+                                //else
+                                //    EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());     //normal scene
 
                                 ////repaint scene and inspector
                                 //SceneView.RepaintAll();
