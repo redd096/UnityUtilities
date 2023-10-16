@@ -52,7 +52,7 @@ namespace redd096
 
         void CheckInstance()
         {
-            if (_instance)
+            if (_instance && _instance != this) //check also != this, if someone set instance with FindObjectOfType or instantiate it
             {
                 //if there is already an instance, destroy this one
                 Destroy(gameObject);
