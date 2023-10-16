@@ -30,8 +30,7 @@ namespace redd096.Attributes
             if (property.propertyType == SerializedPropertyType.String)
             {
                 //get tags
-                SceneAttribute at = attribute as SceneAttribute;
-                tags = GetTags(property);
+                tags = UnityEditorInternal.InternalEditorUtility.tags;
 
                 //find current selected index, then show dropdown to select
                 index = GetCurrentIndex(property);
@@ -43,22 +42,10 @@ namespace redd096.Attributes
             //else show warning
             else
             {
-                Debug.LogWarning(property.serializedObject.targetObject + " - " + typeof(SceneAttribute).Name + " can't be used on '" + property.name + "'. It can be used only on string variables", property.serializedObject.targetObject);
+                Debug.LogWarning(property.serializedObject.targetObject + " - " + typeof(TagAttribute).Name + " can't be used on '" + property.name + "'. It can be used only on string variables", property.serializedObject.targetObject);
             }
 
             EditorGUI.EndProperty();
-        }
-
-        string[] GetTags(SerializedProperty property)
-        {
-            //get tags
-            string[] tagsList = new string[UnityEditorInternal.InternalEditorUtility.tags.Length];
-            for (int i = 0; i < tagsList.Length; i++)
-            {
-                tagsList[i] = UnityEditorInternal.InternalEditorUtility.tags[i];
-            }
-
-            return tagsList;
         }
 
         int GetCurrentIndex(SerializedProperty property)

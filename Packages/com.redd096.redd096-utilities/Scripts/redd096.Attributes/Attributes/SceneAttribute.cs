@@ -51,7 +51,7 @@ namespace redd096.Attributes
                 //set int or string value
                 if (property.propertyType == SerializedPropertyType.Integer)
                     property.intValue = index;
-                else if (property.propertyType == SerializedPropertyType.String)
+                else
                     property.stringValue = index < scenes.Length ? GetSceneNameFromSceneList(scenes[index]) : "";
             }
             //else show warning
