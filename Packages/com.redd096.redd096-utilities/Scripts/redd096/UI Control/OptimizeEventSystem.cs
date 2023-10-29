@@ -39,7 +39,7 @@ namespace redd096
             get
             {
                 //use EventSystem.current
-                if (eventSystemToUse == EEventSystemToUse.UseCurrent) 
+                if (eventSystemToUse == EEventSystemToUse.UseCurrent)
                     return EventSystem.current;
 
                 //or GetComponent
@@ -74,7 +74,7 @@ namespace redd096
 
             isFirstUpdateMousePosition = true;
         }
-        
+
         private void LateUpdate()
         {
             if (eventSystem == null)
@@ -98,7 +98,7 @@ namespace redd096
                     canSelect = true;
                     isUsingMouse = false;
                 }
-                
+
                 return;
             }
 
@@ -187,7 +187,7 @@ namespace redd096
             selected = go;
         }
 
-        #region check canSelect and isUsingMouse
+        #region check used device
 
         bool UsedKeyboardOrGamepad()
         {
@@ -230,7 +230,7 @@ namespace redd096
         {
             if (eventSystem.currentInputModule is StandaloneInputModule standaloneInput)
             {
-                return (mousePosition - lastMousePosition).sqrMagnitude > 0.0f || 
+                return (mousePosition - lastMousePosition).sqrMagnitude > 0.0f ||
                     standaloneInput.input.GetMouseButtonDown(0);
             }
 #if ENABLE_INPUT_SYSTEM
@@ -262,7 +262,7 @@ namespace redd096
             return isUsingMouse;
         }
 
-#endregion
+        #endregion
 
         #region selected and active
 
