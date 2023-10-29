@@ -30,6 +30,11 @@
       "displayName": "DynamicResAndFpsCounter_Example",
       "description": "Example of use of DynamicResolution and FPSCounter",
       "path": "Samples~/DynamicResAndFpsCounter_Example"
+    },
+    {
+      "displayName": "OptimizeEventSystem_Example",
+      "description": "Example of Optimize Event System",
+      "path": "Samples~/OptimizeEventSystem_Example"
     }
   ]
 }
