@@ -5,13 +5,6 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
 #endif
 
-//TODO
-//- when use mouse, remove selected gameObject. 
-//Set again if try to move with keyboard or pad
-//- add a bool in inspector, to decide if always select a gameObject like now, or do nothing until someone try to move with pad or keyboard
-//- create ovveride menus instead of override object, because use object.parent is not always sure is a menu
-//- create an order between override menu. So if two override menus are actives, eventSystem will move only in the first one
-
 namespace redd096
 {
     [AddComponentMenu("redd096/UI Control/Optimize Event System")]
@@ -24,13 +17,17 @@ namespace redd096
         [Header("GetComponent from this gameObject or use EventSystem.current?")]
         [SerializeField] EEventSystemToUse eventSystemToUse = EEventSystemToUse.GetComponent;
 
-        [Header("Start from this Menu")]
+        [Header("Start from this Menu - navigate with ChangeMenu and BackMenu to update it")]
         [SerializeField] GameObject startMenu = default;
+
+        [Header("Deselect objects when using mouse - at start keep everything disabled until first event")]
+        [SerializeField] bool deselectWhenUseMouse = true;
+        [SerializeField] bool waitFirstEventToSelect = true;
 
         [Header("For every menu, from which object start?")]
         [SerializeField] GameObject[] firstSelectedGameObjects = default;
 
-        [Header("When one of these objects is active, can navigate only in its menu")]
+        [Header("When one of these objects is active, can navigate only in objects with same parent")]
         [SerializeField] GameObject[] overrideObjects = default;
 
         [Header("Can't navigate to these objects")]
@@ -59,18 +56,63 @@ namespace redd096
         List<GameObject> previousMenu = new List<GameObject>();
         GameObject currentMenu;
 
+        bool canSelect;
+        bool isUsingMouse;
+        bool isFirstUpdateMousePosition;
+        Vector2 lastMousePosition;
+        Vector2 mousePosition;
+
         #endregion
 
         private void Start()
         {
             //set current menu
             currentMenu = startMenu;
+
+            //normally can select objects, but when waitFirstEventToSelect is enabled, we must wait a keyboard or pad event before select first object
+            canSelect = !waitFirstEventToSelect;
+
+            isFirstUpdateMousePosition = true;
         }
         
         private void LateUpdate()
         {
             if (eventSystem == null)
                 return;
+
+            //if first time to update mouse position, set both lastMousePosition and mousePosition at same position
+            if (isFirstUpdateMousePosition)
+            {
+                isFirstUpdateMousePosition = false;
+                UpdateMousePosition();
+            }
+
+            //keep updated mouse position
+            UpdateMousePosition();
+
+            //if previous can't select objects, check if now received a keyboard or pad event
+            if (canSelect == false)
+            {
+                if (UsedKeyboardOrGamepad())
+                {
+                    canSelect = true;
+                    isUsingMouse = false;
+                }
+                
+                return;
+            }
+
+            //if using mouse, don't select anything
+            if (deselectWhenUseMouse && CheckMouse())
+            {
+                canSelect = false;
+
+                //if selecting something, deselect it
+                if (selected)
+                    SetSelectedGameObject(null);
+
+                return;
+            }
 
             //set current selected and current override object active
             selected = eventSystem.currentSelectedGameObject;
@@ -119,7 +161,7 @@ namespace redd096
 
             //if selected something not active, select null
             if (selected && selected.activeInHierarchy == false)
-                eventSystem.SetSelectedGameObject(null);
+                SetSelectedGameObject(null);
         }
 
         GameObject GetCurrentOverrideObject()
@@ -127,11 +169,11 @@ namespace redd096
             //if is active an override object, return it
             if (overrideObjects != null)
             {
-                foreach (GameObject overrideObj in overrideObjects)
+                for (int i = 0; i < overrideObjects.Length; i++)
                 {
-                    if (overrideObj && overrideObj.activeInHierarchy)
+                    if (overrideObjects[i] && overrideObjects[i].activeInHierarchy)
                     {
-                        return overrideObj;
+                        return overrideObjects[i];
                     }
                 }
             }
@@ -145,6 +187,82 @@ namespace redd096
             selected = go;
         }
 
+        #region check canSelect and isUsingMouse
+
+        bool UsedKeyboardOrGamepad()
+        {
+            if (eventSystem.currentInputModule is StandaloneInputModule standaloneInput)
+            {
+                return standaloneInput.input.GetButtonDown(standaloneInput.cancelButton) ||
+                    standaloneInput.input.GetButtonDown(standaloneInput.submitButton) ||
+                    !Mathf.Approximately(standaloneInput.input.GetAxisRaw(standaloneInput.horizontalAxis), 0.0f) ||
+                    !Mathf.Approximately(standaloneInput.input.GetAxisRaw(standaloneInput.verticalAxis), 0.0f);
+            }
+#if ENABLE_INPUT_SYSTEM
+            if (eventSystem.currentInputModule is InputSystemUIInputModule inputSystemUIInput)
+            {
+                return inputSystemUIInput.cancel.action.WasPressedThisFrame() ||
+                    inputSystemUIInput.submit.action.WasPressedThisFrame() ||
+                    inputSystemUIInput.move.action.WasPressedThisFrame();
+
+            }
+#endif
+            return false;
+        }
+
+        void UpdateMousePosition()
+        {
+            if (eventSystem.currentInputModule is StandaloneInputModule standaloneInput)
+            {
+                lastMousePosition = mousePosition;
+                mousePosition = standaloneInput.input.mousePosition;
+            }
+#if ENABLE_INPUT_SYSTEM
+            if (eventSystem.currentInputModule is InputSystemUIInputModule inputSystemUIInput)
+            {
+                lastMousePosition = mousePosition;
+                mousePosition = inputSystemUIInput.point.action.ReadValue<Vector2>();
+            }
+#endif
+        }
+
+        bool UsedMouse()
+        {
+            if (eventSystem.currentInputModule is StandaloneInputModule standaloneInput)
+            {
+                return (mousePosition - lastMousePosition).sqrMagnitude > 0.0f || 
+                    standaloneInput.input.GetMouseButtonDown(0);
+            }
+#if ENABLE_INPUT_SYSTEM
+            if (eventSystem.currentInputModule is InputSystemUIInputModule inputSystemUIInput)
+            {
+                return (mousePosition - lastMousePosition).sqrMagnitude > 0.0f || 
+                    inputSystemUIInput.leftClick.action.WasPressedThisFrame();
+            }
+#endif
+
+            return isUsingMouse;
+        }
+
+        bool CheckMouse()
+        {
+            //check if press any key
+            if (isUsingMouse)
+            {
+                if (UsedKeyboardOrGamepad())
+                    isUsingMouse = false;
+            }
+            //check if move or click with mouse
+            else
+            {
+                if (UsedMouse())
+                    isUsingMouse = true;
+            }
+
+            return isUsingMouse;
+        }
+
+#endregion
 
         #region selected and active
 
@@ -207,11 +325,11 @@ namespace redd096
                 if (firstSelectedGameObjects == null || firstSelectedGameObjects.Length <= 0)
                     return;
 
-                foreach (GameObject firstSelect in firstSelectedGameObjects)
+                for (int i = 0; i < firstSelectedGameObjects.Length; i++)
                 {
-                    if (firstSelect && firstSelect.activeInHierarchy)
+                    if (firstSelectedGameObjects[i] && firstSelectedGameObjects[i].activeInHierarchy)
                     {
-                        SetSelectedGameObject(firstSelect);
+                        SetSelectedGameObject(firstSelectedGameObjects[i]);
                         break;
                     }
                 }
