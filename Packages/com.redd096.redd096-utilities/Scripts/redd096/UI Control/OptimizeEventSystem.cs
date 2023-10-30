@@ -164,6 +164,18 @@ namespace redd096
                 SetSelectedGameObject(null);
         }
 
+        #region public API
+
+        public void SetSelectedGameObject(GameObject go)
+        {
+            eventSystem.SetSelectedGameObject(go);
+            selected = go;
+        }
+
+        #endregion
+
+        #region get current override object
+
         GameObject GetCurrentOverrideObject()
         {
             //if is active an override object, return it
@@ -181,11 +193,7 @@ namespace redd096
             return null;
         }
 
-        void SetSelectedGameObject(GameObject go)
-        {
-            eventSystem.SetSelectedGameObject(go);
-            selected = go;
-        }
+        #endregion
 
         #region check used device
 
@@ -338,7 +346,7 @@ namespace redd096
 
         #endregion
 
-        #region menu
+        #region menu - public API
 
         /// <summary>
         /// Deactive current menu and active old one
