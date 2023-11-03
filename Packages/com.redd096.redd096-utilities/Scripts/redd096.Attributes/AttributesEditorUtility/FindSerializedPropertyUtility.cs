@@ -217,10 +217,11 @@ namespace redd096.Attributes.AttributesEditorUtility
             //if array, remove brackets and read index
             if (path[path.Length - 1] == ']')
             {
-                int bracketIndex = path.LastIndexOf('[');
-                path = path.Replace("[", "").Replace("]", "");
+                int open = path.LastIndexOf('[');
+                int close = path.LastIndexOf("]");
+                path = path.Substring(open + 1, close - open - 1);  //+1 to ignore open bracket, -1 to ignore close bracket
 
-                if (int.TryParse(path.Substring(bracketIndex), out int result))
+                if (int.TryParse(path, out int result))
                     return result;
             }
 
