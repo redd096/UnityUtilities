@@ -21,6 +21,7 @@ namespace redd096.Attributes
     {
         string[] tags;
         int index;
+        string newValue;
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
@@ -37,7 +38,9 @@ namespace redd096.Attributes
                 index = EditorGUI.Popup(position, label.text, index, tags);
 
                 //set value
-                property.stringValue = index < tags.Length ? tags[index] : "";
+                newValue = index < tags.Length ? tags[index] : "";
+                if (property.stringValue.Equals(newValue) == false)
+                    property.stringValue = newValue;
             }
             //else show warning
             else
