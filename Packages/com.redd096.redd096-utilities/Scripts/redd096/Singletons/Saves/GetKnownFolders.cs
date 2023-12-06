@@ -2,20 +2,38 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using System;
+using System.IO;
 
 namespace redd096
 {
     public static class GetKnownFolders
     {
-        public static string GetDownloadPath()
+        public static string GetPathDownload()
         {
-#if UNITY_STANDALONE
+#if UNITY_STANDALONE || UNITY_EDITOR
             return GetKnownFolders_Windows.GetDownloadPath();
 #elif UNITY_ANDROID
             return GetKnownFolders_Android.GetDownloadPath();
 #else
-            return string.Empty;
+            return Application.persistentDataPath;
 #endif
+        }
+
+        public static string GetPersistentDataPath()
+        {
+#if UNITY_IOS
+            string path = Path.Combine(Application.persistentDataPath, "Config");
+            CheckFolder(path);
+            return path;
+#else
+            return Application.persistentDataPath;
+#endif
+        }
+
+        private static void CheckFolder(string path)
+        {
+            if (Directory.Exists(path) == false)
+                Directory.CreateDirectory(path);
         }
     }
 
