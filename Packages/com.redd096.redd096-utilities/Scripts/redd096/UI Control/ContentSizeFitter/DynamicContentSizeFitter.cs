@@ -7,7 +7,7 @@ using UnityEditor.UI;
 
 namespace redd096
 {
-    [AddComponentMenu("redd096/UI Control/Dynamic Content Size Fitter")]
+    [AddComponentMenu("redd096/UI Control/Content Size Fitter/Dynamic Content Size Fitter")]
     public class DynamicContentSizeFitter : ContentSizeFitter
     {
         #region vars
@@ -110,7 +110,7 @@ namespace redd096
             HandleSelfFittingAlongAxis(1);
         }
 
-        private void HandleSelfFittingAlongAxis(int axis)
+        protected virtual void HandleSelfFittingAlongAxis(int axis)
         {
             //Unconstrained, do nothing
             FitMode fitting = (axis == 0 ? horizontalFit : verticalFit);
@@ -146,7 +146,7 @@ namespace redd096
 #endif
         }
 
-        float DynamicSize(float size, int axis, Vector2 defaultSize)
+        protected virtual float DynamicSize(float size, int axis, Vector2 defaultSize)
         {
             //if follow always rect, return its size
             if (dynamicFitMode == EDynamicFitMode.FollowAlwaysRect)
