@@ -48,7 +48,7 @@ namespace redd096
                 else if (saveFolder == SaveFolder.gameFolder)
                     return Path.Combine(Application.dataPath, directoryName);               //return game folder path + directory path
                 else if (saveFolder == SaveFolder.downloadFolder)
-                    return Path.Combine(GetKnownFolders.GetDownloadPath(), directoryName);  //return download folder + directory path
+                    return Path.Combine(GetKnownFolders.GetPathDownload(), directoryName);  //return download folder + directory path
                 else
                     return directoryName;                                                   //return only directory path
             }
