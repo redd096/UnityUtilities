@@ -24,6 +24,16 @@ namespace redd096
             this.limit = limit;
         }
 
+        /// <summary>
+        /// Get element in the list at index
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public T this[int index]
+        {
+            get { return PooledObjects[index]; }
+        }
+
         #region private API
 
         T Spawn(T prefab)
