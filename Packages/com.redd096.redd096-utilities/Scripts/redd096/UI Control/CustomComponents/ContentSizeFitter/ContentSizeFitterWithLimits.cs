@@ -7,7 +7,7 @@ using UnityEditor.UI;
 
 namespace redd096
 {
-    [AddComponentMenu("redd096/UI Control/Content Size Fitter/Content Size Fitter With Limits")]
+    [AddComponentMenu("redd096/UI Control/Custom Components/Content Size Fitter/Content Size Fitter With Limits")]
     public class ContentSizeFitterWithLimits : ContentSizeFitter
     {
         [Header("Content max limits")]

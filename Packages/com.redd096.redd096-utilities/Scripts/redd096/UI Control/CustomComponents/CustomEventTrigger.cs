@@ -4,8 +4,8 @@ using UnityEngine.EventSystems;
 
 namespace redd096
 {
-    [AddComponentMenu("redd096/UI Control/Event Trigger redd096")]
-    public class EventTriggerRedd096 : EventTrigger
+    [AddComponentMenu("redd096/UI Control/Custom Components/Custom Event Trigger")]
+    public class CustomEventTrigger : EventTrigger
     {
         /// <summary>
         /// Set UI Selected
