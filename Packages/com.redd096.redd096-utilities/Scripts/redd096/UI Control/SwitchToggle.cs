@@ -43,7 +43,7 @@ public class SwitchToggle : MonoBehaviour
         if (toggle) toggle.onValueChanged.AddListener(OnSwitch);
         if (button) button.onClick.AddListener(ToggleSwitch);
 
-        if (toggle.isOn)
+        if (toggle && toggle.isOn)
             OnSwitch(true);
         else if (toggle == null && button && defaultValue)
             OnSwitch(true);
