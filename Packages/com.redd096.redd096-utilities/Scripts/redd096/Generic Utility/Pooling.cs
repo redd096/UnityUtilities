@@ -7,7 +7,11 @@ namespace redd096
     {
         #region variables
 
-        int limit = -1;
+        /// <summary>
+        /// Limit of objects in the list. When reach this limit it can't instantiate other objects. If you call to instantiate, it "instantiate" only if there is an object deactivated in the list. 
+        /// If you prefer to deactivate the oldest object and instantiate a new one, you can call Pooling Destroy on the first element (0) of the list before call Instantiate
+        /// </summary>
+        public int Limit = -1;
 
         /// <summary>
         /// List of objects in the list
@@ -21,7 +25,7 @@ namespace redd096
         /// </summary>
         public Pooling(int limit = -1)
         {
-            this.limit = limit;
+            Limit = limit;
         }
 
         /// <summary>
@@ -81,7 +85,7 @@ namespace redd096
 
         /// <summary>
         /// If not enough objects in the pool, instantiate necessary to reach the cycleAmount. 
-        /// This is necessary for cycles, because SetActive doesn't works in the same frame, 
+        /// This is necessary for cycles, because SetActive doesn't work in the same frame, 
         /// so if we exceed the amount of object in the list it will try to reactivate a precedent object instead of instantiate new one
         /// </summary>
         public void InitCycle(T prefab, int cycleAmount)
@@ -97,7 +101,7 @@ namespace redd096
 
         /// <summary>
         /// Active first inactive in the list. If everything is already active, if not reached limit, instantiate new one. 
-        /// NB GameObject.SetActive not works in the same frame, so if you are instantiating in a cycle consider to use InitCycle()
+        /// NB SetActive doesn't work in the same frame, so if you are instantiating in a cycle consider to use InitCycle()
         /// </summary>
         public T Instantiate(T prefab)
         {
@@ -111,7 +115,7 @@ namespace redd096
                     return Instantiate(prefab);
                 }
 
-                if (GetGameObject(obj).activeInHierarchy == false)
+                if (GetGameObject(obj).activeSelf == false)
                 {
                     //set active
                     GetGameObject(obj).SetActive(true);
@@ -125,7 +129,7 @@ namespace redd096
             }
 
             //else if didn't reach limit, create new one and return it
-            if (limit < 0 || PooledObjects.Count < limit)
+            if (Limit < 0 || PooledObjects.Count < Limit)
             {
                 return Spawn(prefab);
             }
@@ -136,7 +140,7 @@ namespace redd096
         /// <summary>
         /// Active first inactive in the list. If everything is already active, if not reached limit, instantiate new one. 
         /// Then set position and rotation. 
-        /// NB GameObject.SetActive not works in the same frame, so if you are instantiating in a cycle consider to use InitCycle()
+        /// NB SetActive doesn't work in the same frame, so if you are instantiating in a cycle consider to use InitCycle()
         /// </summary>
         public T Instantiate(T prefab, Vector3 position, Quaternion rotation)
         {
@@ -155,7 +159,7 @@ namespace redd096
         /// <summary>
         /// Active first inactive in the list. If everything is already active, if not reached limit, instantiate new one. 
         /// Then set parent. 
-        /// NB GameObject.SetActive not works in the same frame, so if you are instantiating in a cycle consider to use InitCycle()
+        /// NB SetActive doesn't work in the same frame, so if you are instantiating in a cycle consider to use InitCycle()
         /// </summary>
         public T Instantiate(T prefab, Transform parent)
         {
@@ -174,7 +178,7 @@ namespace redd096
         /// <summary>
         /// Active first inactive in the list. If everything is already active, if not reached limit, instantiate new one. 
         /// Then set parent. 
-        /// NB GameObject.SetActive not works in the same frame, so if you are instantiating in a cycle consider to use InitCycle()
+        /// NB SetActive doesn't work in the same frame, so if you are instantiating in a cycle consider to use InitCycle()
         /// </summary>
         public T Instantiate(T prefab, Transform parent, bool worldPositionStays)
         {
@@ -203,7 +207,7 @@ namespace redd096
         }
 
         /// <summary>
-        /// Clear all the list
+        /// Clear the list (doesn't destroy objects. To destroy them call DestroyAll)
         /// </summary>
         public void Clear()
         {
