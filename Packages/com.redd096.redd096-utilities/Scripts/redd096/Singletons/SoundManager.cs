@@ -7,6 +7,9 @@ namespace redd096
     [AddComponentMenu("redd096/Singletons/Sound Manager")]
     public class SoundManager : Singleton<SoundManager>
     {
+        public void UpdateAudioSourcesVolume()
+        {
 
+        }
     }
 }
