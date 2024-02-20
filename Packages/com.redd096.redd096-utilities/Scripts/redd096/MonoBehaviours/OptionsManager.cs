@@ -85,9 +85,9 @@ namespace redd096
         {
             //set volumes
             AudioListener.volume = valueVolumeMaster;
-            if (SoundManager.instance) SoundManager.instance.SetVolumeMusic(valueVolumeMusic);
-            if (SoundManager.instance) SoundManager.instance.SetVolumeSFX(valueVolumeSFX);
-            if (SoundManager.instance) SoundManager.instance.SetVolumeUI(valueVolumeUI);
+            if (OldSoundManager.instance) OldSoundManager.instance.SetVolumeMusic(valueVolumeMusic);
+            if (OldSoundManager.instance) OldSoundManager.instance.SetVolumeSFX(valueVolumeSFX);
+            if (OldSoundManager.instance) OldSoundManager.instance.SetVolumeUI(valueVolumeUI);
 
             //set full screen
             Screen.fullScreen = valueFullScreen;
