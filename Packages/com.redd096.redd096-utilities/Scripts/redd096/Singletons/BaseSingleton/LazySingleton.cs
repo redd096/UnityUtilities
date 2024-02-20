@@ -6,7 +6,6 @@ namespace redd096
     /// This is the same as Singleton. The only difference is this auto instantiate the instance if it's not in scene
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    [DefaultExecutionOrder(-10)]
     public class LazySingleton<T> : MonoBehaviour where T : LazySingleton<T>
     {
         private static T _instance;
@@ -45,9 +44,6 @@ namespace redd096
 
             if (_instance == this)
                 InitializeSingleton();
-
-            //call set defaults in the instance
-            _instance.SetDefaults();
         }
 
         void CheckInstance()
@@ -66,21 +62,11 @@ namespace redd096
         }
 
         /// <summary>
-        /// Called one time in Awake, only if this is the correct instance. Called before SetDefaults
+        /// Called one time in Awake, only if this is the correct instance
         /// </summary>
         protected virtual void InitializeSingleton()
         {
 
-        }
-
-        /// <summary>
-        /// Called on Awake, after InitializeSingleton. 
-        /// This will be called every time is loaded a new scene, if in the new scene there is another object of this type
-        /// </summary>
-        protected virtual void SetDefaults()
-        {
-            //things you must to call on every awake 
-            //(every change of scene where there is another instance of this object)
         }
     }
 }

@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 namespace redd096
 {
     [AddComponentMenu("redd096/MonoBehaviours/UI Manager")]
-    public class UIManager : MonoBehaviour
+    public class UIManager : SimpleInstance<UIManager>
     {
         [Header("Debug Mode")]
         public bool ShowDebugLogs = false;

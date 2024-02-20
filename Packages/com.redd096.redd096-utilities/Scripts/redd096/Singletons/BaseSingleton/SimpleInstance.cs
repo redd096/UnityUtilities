@@ -2,6 +2,10 @@ using UnityEngine;
 
 namespace redd096
 {
+    /// <summary>
+    /// This to have the instance static variable, but can't be DontDestroyOnLoad and can have multiple instances
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class SimpleInstance<T> : MonoBehaviour where T : SimpleInstance<T>
     {
         private static T _instance;
@@ -45,7 +49,7 @@ namespace redd096
         }
 
         /// <summary>
-        /// Called one time in Awake
+        /// Called one time in Awake, only if can have multiple instances or this is the correct one
         /// </summary>
         protected virtual void InitializeInstance()
         {

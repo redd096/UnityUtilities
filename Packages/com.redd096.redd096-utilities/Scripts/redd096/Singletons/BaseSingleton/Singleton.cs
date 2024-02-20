@@ -2,7 +2,10 @@
 
 namespace redd096
 {
-    [DefaultExecutionOrder(-10)]
+    /// <summary>
+    /// Singleton with FindObjectOfType instance if null and automatically unparent
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class Singleton<T> : MonoBehaviour where T : Singleton<T>
     {
         private static T _instance;
@@ -35,9 +38,6 @@ namespace redd096
 
             if (_instance == this)
                 InitializeSingleton();
-
-            //call set defaults in the instance
-            _instance.SetDefaults();
         }
 
         void CheckInstance()
@@ -56,21 +56,11 @@ namespace redd096
         }
 
         /// <summary>
-        /// Called one time in Awake, only if this is the correct instance. Called before SetDefaults
+        /// Called one time in Awake, only if this is the correct instance
         /// </summary>
         protected virtual void InitializeSingleton()
         {
 
-        }
-
-        /// <summary>
-        /// Called on Awake, after InitializeSingleton. 
-        /// This will be called every time is loaded a new scene, if in the new scene there is another object of this type
-        /// </summary>
-        protected virtual void SetDefaults()
-        {
-            //things you must to call on every awake 
-            //(every change of scene where there is another instance of this object)
         }
     }
 }

@@ -3,6 +3,7 @@ using UnityEngine.EventSystems;
 using System.Collections;
 using redd096.Attributes;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 //Create a material with unity shader UI/Default and set:
 //- Stencil Comparison      6
@@ -85,11 +86,12 @@ namespace redd096
             if (canvasRect == null) canvasRect = canvas.GetComponent<RectTransform>();
             if (maskRect == null) maskRect = mask.GetComponent<RectTransform>();
             if (blackScreenRect == null) blackScreenRect = blackScreen.GetComponent<RectTransform>();
+
+            SceneManager.sceneLoaded += OnSceneLoaded;
         }
 
-        protected override void SetDefaults()
+        private void OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
         {
-            base.SetDefaults();
 
             //fade in when enter in scene
             if (fadeInOnAwake)
