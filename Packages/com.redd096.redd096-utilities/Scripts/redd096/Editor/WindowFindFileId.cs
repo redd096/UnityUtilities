@@ -5,24 +5,49 @@ using UnityEditor;
 
 namespace redd096
 {
-    public static class FindFileId
+    public class WindowFindFileId : EditorWindow
     {
+        string fileIDString;
+
         [MenuItem("redd096/Select in scene by fileID")]
-        public static void SelectInSceneByFileId()
+        static void SelectInSceneByFileId()
         {
-            long fileID = 804738792;
+            //open window (and set title)
+            GetWindow<WindowFindFileId>("Window Find File ID");
+        }
+
+        private void OnGUI()
+        {
+            //text field
+            fileIDString = EditorGUILayout.TextField("File ID: ", fileIDString);
+
+            //button
+            if (GUILayout.Button("Find file"))
+            {
+                if (long.TryParse(fileIDString, out long fileID))
+                    FindFile(fileID);
+                else
+                    Debug.LogError("Text must be a File ID (long value)");
+            }
+        }
+
+        private void FindFile(long fileID)
+        {
+            //find file ID
             GameObject resultGo = GetGameObjectFromFileID(fileID);
             if (resultGo == null)
             {
                 Debug.LogError("FileID not found for fileID = " + fileID);
                 return;
             }
+
+            //select it
             Debug.Log("GameObject for fileID " + fileID + " is " + resultGo, resultGo);
             GameObject[] newSelection = new GameObject[] { resultGo };
             Selection.objects = newSelection;
         }
 
-        public static GameObject GetGameObjectFromFileID(long fileID) // also called local identifier
+        private GameObject GetGameObjectFromFileID(long fileID) // also called local identifier
         {
             GameObject resultGo = null;
             var gameObjects = Resources.FindObjectsOfTypeAll<GameObject>();
@@ -49,5 +74,23 @@ namespace redd096
             return resultGo;
         }
     }
+
+    //public static class FindFileId
+    //{
+    //    [MenuItem("redd096/Select in scene by fileID")]
+    //    public static void SelectInSceneByFileId()
+    //    {
+    //        long fileID = 804738792;
+    //        GameObject resultGo = GetGameObjectFromFileID(fileID);
+    //        if (resultGo == null)
+    //        {
+    //            Debug.LogError("FileID not found for fileID = " + fileID);
+    //            return;
+    //        }
+    //        Debug.Log("GameObject for fileID " + fileID + " is " + resultGo, resultGo);
+    //        GameObject[] newSelection = new GameObject[] { resultGo };
+    //        Selection.objects = newSelection;
+    //    }
+    //}
 }
 #endif

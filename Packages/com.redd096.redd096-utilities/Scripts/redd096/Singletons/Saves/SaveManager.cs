@@ -29,7 +29,7 @@ namespace redd096
 
         [Header("Rules")]
         [Tooltip("Initialize (necessary for some platforms and for preload) at start or do it manually?")][SerializeField] bool initializeAtStart = true;
-        [Tooltip("Use PlayerPrefs instead of save a file. PlayerPrefs can't save async")][SerializeField] bool useUnityPlayerPrefs = false;
+        //[Tooltip("Use PlayerPrefs instead of save a file. PlayerPrefs can't save async")][SerializeField] bool useUnityPlayerPrefs = false;
         [Tooltip("Save async to not slow down the game. Impossible to use with PlayerPrefs")][SerializeField] bool saveAsync = true;
         [Tooltip("Load everything at start and put in a dictionary, so in game just read dictionary")][SerializeField] bool usePreload = true;
 
