@@ -12,7 +12,6 @@ namespace redd096.Attributes
     public class RenameAttribute : PropertyAttribute
     {
         public readonly string name;
-        public readonly bool useValue;
         public readonly string value;
 
         /// <summary>
@@ -22,7 +21,7 @@ namespace redd096.Attributes
         public RenameAttribute(string name)
         {
             this.name = name;
-            this.useValue = false;
+            this.value = string.Empty;
         }
 
         /// <summary>
@@ -33,7 +32,6 @@ namespace redd096.Attributes
         public RenameAttribute(string name, string value)
         {
             this.name = name;
-            this.useValue = true;
             this.value = value;
         }
     }
@@ -59,7 +57,7 @@ namespace redd096.Attributes
             //name + value
             at = attribute as RenameAttribute;
             newLabel = at.name;            
-            if (at.useValue)
+            if (string.IsNullOrEmpty(at.value) == false)
                 newLabel += property.GetValue(at.value).ToString();
 
             //draw property

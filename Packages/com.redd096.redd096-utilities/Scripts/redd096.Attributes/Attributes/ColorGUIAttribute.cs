@@ -1,23 +1,32 @@
 using UnityEngine;
 #if UNITY_EDITOR
+using redd096.Attributes.AttributesEditorUtility;
 using UnityEditor;
 #endif
 
 namespace redd096.Attributes
 {
     /// <summary>
-    /// Attribute to show this variable in inspector as read only
+    /// Attribute to change color for this property
     /// </summary>
     public class ColorGUIAttribute : PropertyAttribute
     {
-        public enum EColorType { GUI, Background, Content }
-
         public readonly AttributesUtility.EColor color;
+        public readonly string colorValue;
         public readonly EColorType colorType;
+
+        public enum EColorType { GUI, Background, Content }
 
         public ColorGUIAttribute(AttributesUtility.EColor color, EColorType colorType = EColorType.Content)
         {
             this.color = color;
+            this.colorValue = string.Empty;
+            this.colorType = colorType;
+        }
+
+        public ColorGUIAttribute(string colorValue, EColorType colorType = EColorType.Content)
+        {
+            this.colorValue = colorValue;
             this.colorType = colorType;
         }
     }
@@ -40,46 +49,74 @@ namespace redd096.Attributes
             ColorGUIAttribute at = attribute as ColorGUIAttribute;
 
             //color GUI for this property
-            Color color;
-            SetColorGUI(at, out color);
+            Color previousColor;
+            SetColorGUI(at, property, out previousColor);
 
             EditorGUI.PropertyField(position, property, label, true);
 
             //reset GUI color
-            ResetColorGUI(at, color);
+            ResetColorGUI(at, previousColor);
         }
 
-        void SetColorGUI(ColorGUIAttribute at, out Color color)
+        void SetColorGUI(ColorGUIAttribute at, SerializedProperty property, out Color previousColor)
         {
+            //get color from attribute or property
+            Color colorToUse = default;
+            if (string.IsNullOrEmpty(at.colorValue))
+            {
+                colorToUse = AttributesUtility.GetColor(at.color);
+            }
+            else
+            {
+                //property can be EColor or Color
+                object obj = property.GetValue(at.colorValue, typeof(Color), typeof(Color32), typeof(AttributesUtility.EColor));
+                if (obj is AttributesUtility.EColor eColor)
+                {
+                    colorToUse = AttributesUtility.GetColor(eColor);
+                }
+                else if (obj is Color32 color32)
+                {
+                    colorToUse = color32;
+                }
+                else if (obj is Color newColor)
+                {
+                    colorToUse = newColor;
+                }
+                else
+                {
+                    Debug.LogWarning(property.serializedObject.targetObject + " - " + typeof(ColorGUIAttribute).Name + " can't be used on '" + property.name + "'. It can be used only on Color, Color32 and AttributesUtility.EColor variables", property.serializedObject.targetObject);
+                }
+            }
+
             //set GUI color
             if (at.colorType == ColorGUIAttribute.EColorType.GUI)
             {
-                color = GUI.color;
-                GUI.color = AttributesUtility.GetColor(at.color);
+                previousColor = GUI.color;
+                GUI.color = colorToUse;
             }
             //or content color
             else if (at.colorType == ColorGUIAttribute.EColorType.Content)
             {
-                color = GUI.contentColor;
-                GUI.contentColor = AttributesUtility.GetColor(at.color);
+                previousColor = GUI.contentColor;
+                GUI.contentColor = colorToUse;
             }
             //or background color
             else
             {
-                color = GUI.backgroundColor;
-                GUI.backgroundColor = AttributesUtility.GetColor(at.color);
+                previousColor = GUI.backgroundColor;
+                GUI.backgroundColor = colorToUse;
             }
         }
 
-        void ResetColorGUI(ColorGUIAttribute at, Color color)
+        void ResetColorGUI(ColorGUIAttribute at, Color previousColor)
         {
             //reset GUI, content or background color
             if (at.colorType == ColorGUIAttribute.EColorType.GUI)
-                GUI.color = color;
+                GUI.color = previousColor;
             else if (at.colorType == ColorGUIAttribute.EColorType.Content)
-                GUI.contentColor = color;
+                GUI.contentColor = previousColor;
             else
-                GUI.backgroundColor = color;
+                GUI.backgroundColor = previousColor;
         }
     }
 
