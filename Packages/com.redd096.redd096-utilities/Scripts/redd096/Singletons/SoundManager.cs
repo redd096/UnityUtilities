@@ -12,6 +12,23 @@ namespace redd096
         [Tooltip("From 0 to 1, where 0 is no volume and 1 is volume to set")][SerializeField] AnimationCurve fadeInMusic = default;
         [Tooltip("From 1 to 0, where 1 is current volume and 0 is no volume")][SerializeField] AnimationCurve fadeOutMusic = default;
 
+        //sound parent (instantiate if null)
+        private Transform soundsParent;
+        public Transform SoundsParent
+        {
+            get
+            {
+                if (soundsParent == null) { soundsParent = new GameObject("Sounds Parent").transform; }
+                return soundsParent;
+            }
+        }
+
+        AudioSource musicAudioSource;
+        Dictionary<AudioSource, AudioClass> poolAudioSources = new Dictionary<AudioSource, AudioClass>();
+        float volumeMusic = 1;
+        float volumeSFX = 1;
+        float volumeUI = 1;
+
         //we don't need AudioSource prefab and we don't need different prefab for different situations, but we can instantiate a single default audio source.
         //we create the functions for AudioData, where everything in the audio source (2d, 3d, etc..) is setted by AudioData
         //and we create functions where user can pass AudioClip instead of AudioData, but must set also other variables, like in MoreMountains with infinite optional variables
@@ -30,6 +47,8 @@ namespace redd096
 
         }
     }
+
+    #region audio class
 
     /// <summary>
     /// Class used to manage AudioData and SoundManager
@@ -64,4 +83,6 @@ namespace redd096
         }
 #endif
     }
+
+    #endregion
 }

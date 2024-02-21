@@ -38,6 +38,8 @@ namespace redd096
 
         //classes ----------------------------------------------------------------------------------------
 
+        #region classes
+
         [System.Serializable]
         public class Element
         {
@@ -68,10 +70,10 @@ namespace redd096
             [EnableIf("AudioType", EAudioType.Music)] public bool Fade;
             [Tooltip("If play new audio with same clip and volume, continue play or restart anyway?")] public bool ForceReplay;
             public AudioMixerGroup AudioMixer;
-            [Rename("Sound Settings 3D | enabled: ", nameof(_enabled3D))] public SoundSettings3D SoundSettings3D;
+            [Rename("", nameof(_enabled3D))] public SoundSettings3D SoundSettings3D;
 
             //editor
-            private bool _enabled3D => SoundSettings3D.Enable3D;
+            private string _enabled3D => $"[{(SoundSettings3D.Enable3D ? "Enabled" : "Disabled")}] Sound Settings 3D";
 
             //check distance - if not enabled return default values (default on AudioSource when instantiated in scene)
             public float SpatialBlend => SoundSettings3D.Enable3D ? 1 : 0;
@@ -97,5 +99,7 @@ namespace redd096
             public float MinDistance;
             public float MaxDistance;
         }
+
+        #endregion
     }
 }
