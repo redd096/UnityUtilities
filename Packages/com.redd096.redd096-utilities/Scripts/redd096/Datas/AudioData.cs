@@ -65,17 +65,21 @@ namespace redd096
         {
             public EAudioType AudioType;
             public bool Loop;
-            [ShowIf("AudioType", EAudioType.Music)] public bool Fade;
+            [EnableIf("AudioType", EAudioType.Music)] public bool Fade;
+            [Tooltip("If play new audio with same clip and volume, continue play or restart anyway?")] public bool ForceReplay;
             public AudioMixerGroup AudioMixer;
-            public CheckDistance_AudioPreset CheckDistance;
+            [Rename("Sound Settings 3D | enabled: ", nameof(_enabled3D))] public SoundSettings3D SoundSettings3D;
 
-            //check distance
-            public float SpatialBlend => CheckDistance.EnableCheckDistance ? 1 : 0;
-            public float DopplerLevel => CheckDistance.EnableCheckDistance ? CheckDistance.DopplerLevel : 1;
-            public int Spread => CheckDistance.EnableCheckDistance ? CheckDistance.Spread : 0;
-            public AudioRolloffMode RolloffMode => CheckDistance.EnableCheckDistance ? CheckDistance.RollofMode : AudioRolloffMode.Logarithmic;
-            public float MinDistance => CheckDistance.EnableCheckDistance ? CheckDistance.MinDistance : 1;
-            public float MaxDistance => CheckDistance.EnableCheckDistance ? CheckDistance.MaxDistance : 500;
+            //editor
+            private bool _enabled3D => SoundSettings3D.Enable3D;
+
+            //check distance - if not enabled return default values (default on AudioSource when instantiated in scene)
+            public float SpatialBlend => SoundSettings3D.Enable3D ? 1 : 0;
+            public float DopplerLevel => SoundSettings3D.Enable3D ? SoundSettings3D.DopplerLevel : 1;
+            public int Spread => SoundSettings3D.Enable3D ? SoundSettings3D.Spread : 0;
+            public AudioRolloffMode RolloffMode => SoundSettings3D.Enable3D ? SoundSettings3D.RolloffMode : AudioRolloffMode.Logarithmic;
+            public float MinDistance => SoundSettings3D.Enable3D ? SoundSettings3D.MinDistance : 1;
+            public float MaxDistance => SoundSettings3D.Enable3D ? SoundSettings3D.MaxDistance : 500;
         }
 
         public enum EAudioType
@@ -84,12 +88,12 @@ namespace redd096
         }
 
         [System.Serializable]
-        public class CheckDistance_AudioPreset
+        public class SoundSettings3D
         {
-            public bool EnableCheckDistance;
-            public float DopplerLevel;
-            public int Spread;
-            public AudioRolloffMode RollofMode;
+            [Tooltip("SpatialBlend on AudioSource: disabled is 0, enabled is 1")] public bool Enable3D;
+            [Range(0f, 5f)] public float DopplerLevel;
+            [Range(0, 360)] public int Spread;
+            public AudioRolloffMode RolloffMode;
             public float MinDistance;
             public float MaxDistance;
         }

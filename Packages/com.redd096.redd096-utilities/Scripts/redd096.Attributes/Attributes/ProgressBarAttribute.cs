@@ -12,42 +12,35 @@ namespace redd096.Attributes
     public class ProgressBarAttribute : PropertyAttribute
     {
         public readonly string name;
-        public readonly float maxValue;
-        public readonly string maxValueName;
         public readonly AttributesUtility.EColor color;
         public readonly bool canInteract;
 
-        public ProgressBarAttribute(string name, float maxValue, AttributesUtility.EColor color = AttributesUtility.EColor.Red, bool canInteract = true)
+        public readonly EMaxValueType maxValueType;
+        public readonly float maxValueFloat;
+        public readonly string maxValueName;
+
+        public ProgressBarAttribute(float maxValue, string name = "", AttributesUtility.EColor color = AttributesUtility.EColor.Red, bool canInteract = true)
         {
             this.name = name;
-            this.maxValue = maxValue;
+            this.maxValueType = EMaxValueType.Float;
+            this.maxValueFloat = maxValue;
             this.color = color;
             this.canInteract = canInteract;
         }
 
-        public ProgressBarAttribute(string name, string maxValueName, AttributesUtility.EColor color = AttributesUtility.EColor.Red, bool canInteract = true)
+        public ProgressBarAttribute(string maxValueName, string name = "", AttributesUtility.EColor color = AttributesUtility.EColor.Red, bool canInteract = true)
         {
             this.name = name;
+            this.maxValueType = EMaxValueType.Name;
             this.maxValueName = maxValueName;
             this.color = color;
             this.canInteract = canInteract;
         }
 
-        public ProgressBarAttribute(float maxValue, AttributesUtility.EColor color = AttributesUtility.EColor.Red, bool canInteract = true)
-        {
-            this.name = string.Empty;
-            this.maxValue = maxValue;
-            this.color = color;
-            this.canInteract = canInteract;
-        }
-
-        public ProgressBarAttribute(string maxValueName, AttributesUtility.EColor color = AttributesUtility.EColor.Red, bool canInteract = true)
-        {
-            this.name = string.Empty;
-            this.maxValueName = maxValueName;
-            this.color = color;
-            this.canInteract = canInteract;
-        }
+		public enum EMaxValueType
+		{
+			Float, Name
+		}
     }
 
     #region editor
@@ -67,7 +60,7 @@ namespace redd096.Attributes
 		{
 			//get attribute and max value
 			ProgressBarAttribute at = attribute as ProgressBarAttribute;
-			object maxValueObject = property.GetValue(at.maxValueName, typeof(int), typeof(float));
+			object maxValueObject = at.maxValueType == ProgressBarAttribute.EMaxValueType.Name ? property.GetValue(at.maxValueName, typeof(int), typeof(float)) : at.maxValueFloat;
 
 			//be sure property and maxValue are numbers
 			if (IsNumber(property) && IsNumber(maxValueObject))
@@ -77,7 +70,7 @@ namespace redd096.Attributes
 				string valueFormatted = property.propertyType == SerializedPropertyType.Integer ? value.ToString() : string.Format("{0:0.00}", value);
 				maxValue = maxValueObject is int ? (int)maxValueObject : (float)maxValueObject;
 				string maxValueFormatted = maxValueObject is int ? maxValue.ToString() : string.Format("{0:0.00}", maxValue);
-				barLabel = (!string.IsNullOrEmpty(at.name) ? "[" + at.name + "] " : "") + valueFormatted + "/" + maxValueFormatted;
+				barLabel = (string.IsNullOrEmpty(at.name) == false ? "[" + at.name + "] " : "") + valueFormatted + "/" + maxValueFormatted;
 				barColor = AttributesUtility.GetColor(at.color);
 				canInteract = at.canInteract;
 
