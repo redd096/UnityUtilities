@@ -10,6 +10,7 @@ namespace redd096
         [SerializeField] ScrollRect scrollRect = default;
         [SerializeField] Slider verticalSlider = default;
         [SerializeField] Slider horizontalSlider = default;
+        [SerializeField] bool resetOnStart = true;
 
         [Header("Hide when not necessary")]
         [SerializeField] bool hideWhenNotNecessary = true;
@@ -32,6 +33,12 @@ namespace redd096
             OnScrollRectChanged(scrollRect ? scrollRect.normalizedPosition : Vector2.zero);
         }
 
+        private void Start()
+        {
+            if (resetOnStart)
+                if (scrollRect) scrollRect.normalizedPosition = Vector2.one;
+        }
+
         void OnDisable()
         {
             //remove events
@@ -49,12 +56,20 @@ namespace redd096
                 if (content.rect.height <= viewport.rect.height)
                 {
                     if (verticalSlider) verticalSlider.gameObject.SetActive(false);
-                    if (horizontalSlider) horizontalSlider.gameObject.SetActive(false);
                 }
                 //else show
                 else
                 {
                     if (verticalSlider) verticalSlider.gameObject.SetActive(true);
+                }
+
+                //same for horizontal
+                if (content.rect.width <= viewport.rect.width)
+                {
+                    if (horizontalSlider) horizontalSlider.gameObject.SetActive(false);
+                }
+                else
+                {
                     if (horizontalSlider) horizontalSlider.gameObject.SetActive(true);
                 }
             }
