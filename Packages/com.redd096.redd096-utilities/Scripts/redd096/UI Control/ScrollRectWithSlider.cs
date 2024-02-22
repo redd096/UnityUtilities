@@ -36,7 +36,10 @@ namespace redd096
         private void Start()
         {
             if (resetOnStart)
+            {
                 if (scrollRect) scrollRect.normalizedPosition = Vector2.one;
+                OnScrollRectChanged(scrollRect ? scrollRect.normalizedPosition : Vector2.zero);
+            }
         }
 
         void OnDisable()
