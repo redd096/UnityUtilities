@@ -50,7 +50,6 @@ namespace redd096
 
         //todo
         //fade and force replay also for sounds? (not only music) - rename PlaySound to PlayAudio and create one PlaySound same as PlayMusic, where if audioSource != null then check replay and fade
-        //if call Fade and than call to update volumes, it could be wrong. We should to continue check correct volume in fade coroutine
 
         //we have to edit FeedbackRedd096 probably
         //and also OptionsManager have calls on OldSoundManager
@@ -215,13 +214,13 @@ namespace redd096
         /// <param name="initialVolume"></param>
         /// <param name="finalVolume"></param>
         /// <returns></returns>
-        public IEnumerator FadeCoroutineLinear(AudioSource source, float duration, float initialVolume, float finalVolume)
+        public IEnumerator FadeCoroutineLinear(AudioSource source, float duration, float initialVolume, AudioClass finalVolume)
         {
             float delta = 0;
             while (delta < 1)
             {
                 delta += Time.deltaTime / duration;
-                source.volume = Mathf.Lerp(initialVolume, finalVolume, delta);
+                source.volume = Mathf.Lerp(initialVolume, GetCorrectVolume(finalVolume), delta);
                 yield return null;
             }
         }
@@ -234,12 +233,12 @@ namespace redd096
         /// <param name="initialVolume"></param>
         /// <param name="finalVolume"></param>
         /// <returns></returns>
-        public IEnumerator FadeCoroutine(AudioSource source, AnimationCurve curve, float initialVolume, float finalVolume)
+        public IEnumerator FadeCoroutine(AudioSource source, AnimationCurve curve, float initialVolume, AudioClass finalVolume)
         {
             //if there is no curve, set immediatly sound and stop coroutine
             if (curve == null || curve.keys.Length <= 0)
             {
-                source.volume = finalVolume;
+                source.volume = GetCorrectVolume(finalVolume);
                 yield break;
             }
 
@@ -249,10 +248,10 @@ namespace redd096
             while (Time.time - startTime < duration)
             {
                 elapsedTime = Time.time - startTime;
-                source.volume = Mathf.Lerp(initialVolume, finalVolume, curve.Evaluate(elapsedTime));
+                source.volume = Mathf.Lerp(initialVolume, GetCorrectVolume(finalVolume), curve.Evaluate(elapsedTime));
                 yield return null;
             }
-            source.volume = finalVolume;
+            source.volume = GetCorrectVolume(finalVolume);
         }
 
         /// <summary>
@@ -348,7 +347,7 @@ namespace redd096
             if (musicAudioSource != null)
             {
                 if (music.Preset.Fade && musicAudioSource.isPlaying)
-                    yield return FadeCoroutine(musicAudioSource, fadeOutMusic, 0f, musicAudioSource.volume);    //inverse volumes, because to make curve more user friendly we make it go from 1 to 0 instead of 0 to 1
+                    yield return FadeCoroutine(musicAudioSource, fadeOutMusic, 0f, savedAudios[musicAudioSource]);    //inverse volumes, because to make curve more user friendly we make it go from 1 to 0 instead of 0 to 1
 
                 //stop to be sure. For example if call to replay same audio already playing, we want it to restart
                 StopSound(musicAudioSource, true);
@@ -401,7 +400,7 @@ namespace redd096
             //volume
             if (fade)
             {
-                StartCoroutine_SoundManagerInternal(fadeCoroutines, audioSource, FadeCoroutine(audioSource, fadeInMusic, 0f, GetCorrectVolume(audio)));
+                StartCoroutine_SoundManagerInternal(fadeCoroutines, audioSource, FadeCoroutine(audioSource, fadeInMusic, 0f, audio));
             }
             else
             {
