@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Reflection;
-using System;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif

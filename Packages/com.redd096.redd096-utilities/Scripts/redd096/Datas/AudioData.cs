@@ -7,7 +7,7 @@ namespace redd096
     /// <summary>
     /// Scriptable object used to set audios for the game
     /// </summary>
-    [CreateAssetMenu(fileName = "AudioData", menuName = "redd096/Audio Data")]
+    [CreateAssetMenu(fileName = "AudioData", menuName = "redd096/Datas/Audio Data")]
     public class AudioData : ScriptableObject
     {
         public Element[] Elements;
@@ -42,9 +42,9 @@ namespace redd096
             return null;
         }
 
-        //classes ----------------------------------------------------------------------------------------
+        //element ----------------------------------------------------------------------------------------
 
-        #region classes
+        #region element classes
 
         [System.Serializable]
         public class Element
@@ -108,4 +108,58 @@ namespace redd096
 
         #endregion
     }
+
+    #region audio class
+
+    /// <summary>
+    /// Class used to manage AudioData and SoundManager
+    /// </summary>
+    [System.Serializable]
+    public class AudioClass
+    {
+        //inspector
+        [SerializeField] AudioData data;
+        [Dropdown("GetNames")][SerializeField] string elementName;
+
+        //get from data
+        private AudioData.Element _element;
+        private AudioData.Element GetElement(bool showErrors) { if (_element == null || string.IsNullOrEmpty(_element.Name)) _element = data.GetElement(elementName, showErrors); return _element; }
+        public AudioData.Element Element => GetElement(true);
+        public void RefreshElement() => _element = data.GetElement(elementName);    //force refresh also if _element is already != null
+
+        //check if valid this class and element
+        public bool IsValid() => this != null && GetElement(false) != null;
+        public static implicit operator bool(AudioClass a) => a.IsValid();
+
+        //public API
+        public string Name => Element.Name;
+        public float Volume => Element.Volume;
+        public AudioData.PresetAudio Preset => Element.Preset;
+        public AudioClip Clip => Element.RandomClip;
+
+        /// <summary>
+        /// This constructor is used to create the class without set data and element name, in case you need it in code but you don't need to set it in inspector
+        /// </summary>
+        /// <param name="element"></param>
+        public AudioClass(AudioData.Element element)
+        {
+            _element = element;
+        }
+
+#if UNITY_EDITOR
+        string[] GetNames()
+        {
+            if (data == null)
+                return new string[0];
+
+            string[] s = new string[data.Elements.Length];
+            for (int i = 0; i < s.Length; i++)
+                s[i] = data.Elements[i].Name;
+
+            return s;
+        }
+#endif
+    }
+
+    #endregion
 }

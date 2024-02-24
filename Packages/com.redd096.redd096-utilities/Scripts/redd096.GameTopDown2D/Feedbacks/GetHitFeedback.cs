@@ -108,7 +108,7 @@ namespace redd096.GameTopDown2D
             }
 
             //instantiate rotated vfx and sfx
-            feedbackRotatedOnGetDamage.InstantiateFeedback(transform.position, rotation);
+            feedbackRotatedOnGetDamage.InstantiateFeedback(transform.position, rotation, transform);
 
             //=====================================================================================
 

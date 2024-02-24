@@ -10,18 +10,12 @@ namespace redd096
     public class SortOrderController : MonoBehaviour
     {
         //inspector
-        [SerializeField] SortOrderData data;
-        [Dropdown("GetNames")][SerializeField] string elementName;
+        [SerializeField] SortOrderClass sortOrderClass;
 
         [Header("Canvas or Renderer - if both null, try get component in children")]
         [SerializeField] bool updateOnAwake = true;
         [SerializeField] Canvas canvas;
         [SerializeField] Renderer rend;
-
-        //get from data
-        private SortOrderData.Element _element;
-        private SortOrderData.Element GetElement() { if (data == null) Debug.LogError("Missing Data!"); return data ? data.GetElement(elementName) : null; }
-        public SortOrderData.Element Element { get { if (_element == null || string.IsNullOrEmpty(_element.Name)) _element = GetElement(); return _element; } }
 
         private void Awake()
         {
@@ -39,9 +33,9 @@ namespace redd096
                 if (canvas == null) rend = GetComponentInChildren<Renderer>();
             }
 
-            //refresh element
-            _element = GetElement();
-            if (Element == null)
+            //refresh always element, ignore if _element is already setted. This is necessary if call this function with the button in inspector
+            sortOrderClass.RefreshElement();
+            if (sortOrderClass.IsValid() == false)
             {
                 return;
             }
@@ -49,29 +43,15 @@ namespace redd096
             //update sort order
             if (canvas != null)
             {
-                canvas.sortingLayerID = _element.SortingLayer;
-                canvas.sortingOrder = _element.OrderInLayer;
+                canvas.sortingLayerID = sortOrderClass.Element.SortingLayer;
+                canvas.sortingOrder = sortOrderClass.Element.OrderInLayer;
             }
             if (rend != null)
             {
-                rend.sortingLayerID = _element.SortingLayer;
-                rend.sortingOrder = _element.OrderInLayer;
+                rend.sortingLayerID = sortOrderClass.Element.SortingLayer;
+                rend.sortingOrder = sortOrderClass.Element.OrderInLayer;
             }
 
         }
-
-#if UNITY_EDITOR
-        string[] GetNames()
-        {
-            if (data == null)
-                return new string[0];
-
-            string[] s = new string[data.Elements.Length];
-            for (int i = 0; i < s.Length; i++)
-                s[i] = data.Elements[i].Name;
-
-            return s;
-        }
-#endif
     }
 }
