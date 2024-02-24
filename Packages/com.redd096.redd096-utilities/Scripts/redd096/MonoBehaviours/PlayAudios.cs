@@ -29,7 +29,7 @@ namespace redd096
         public void PlayEveryAudio()
         {
             foreach (AudioClass audio in audios)
-                SoundManager.instance.PlaySound(audio, transform.position);
+                SoundManager.instance.Play(audio, transform.position);
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace redd096
             {
                 if (audio.IsValid() && audio.Name.Trim().Equals(audioName))
                 {
-                    SoundManager.instance.PlaySound(audio, transform.position);
+                    SoundManager.instance.Play(audio, transform.position);
                     break;
                 }
             }
@@ -56,7 +56,7 @@ namespace redd096
         public void PlayAudioByIndex(int index)
         {
             if (index < audios.Length)
-                SoundManager.instance.PlaySound(audios[index], transform.position);
+                SoundManager.instance.Play(audios[index], transform.position);
         }
     }
 }

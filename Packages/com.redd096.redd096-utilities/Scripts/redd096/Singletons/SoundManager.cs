@@ -35,7 +35,7 @@ namespace redd096
 
         //audio sources
         AudioSource musicAudioSource;
-        Pooling<AudioSource> poolAudioSources = new Pooling<AudioSource>();
+        Pooling<AudioSource> pooling = new Pooling<AudioSource>();
         AudioSource prefabAudioSource;
 
         //volumes
@@ -49,11 +49,8 @@ namespace redd096
         Dictionary<AudioSource, Coroutine> deactivateAudioSourceCoroutines = new Dictionary<AudioSource, Coroutine>();
 
         //todo
-        //fade and force replay also for sounds? (not only music) - rename PlaySound to PlayAudio and create one PlaySound same as PlayMusic, where if audioSource != null then check replay and fade
-
-        //we have to edit FeedbackRedd096 probably
-        //and also OptionsManager have calls on OldSoundManager
-        //we can edit also ParticlesManager and InstantiateGameObjectManager ??
+        //fade and force replay also for sounds? (not only music)
+        //to do it: in Play, instead of call Play_SoundManagerInteral, create one PlaySound same as PlayMusic to call, where if audioSource != null then check replay and fade
 
         /// <summary>
         /// Play sound with presets from AudioClass
@@ -62,7 +59,7 @@ namespace redd096
         /// <param name="position"></param>
         /// <param name="audioSource">You can specify an audioSource to play sound</param>
         /// <returns></returns>
-        public AudioSource PlaySound(AudioClass audio, Vector3 position = default, AudioSource audioSource = null)
+        public AudioSource Play(AudioClass audio, Vector3 position = default, AudioSource audioSource = null)
         {
             if (audio.IsValid() == false)
                 return null;
@@ -76,7 +73,7 @@ namespace redd096
             //play sfx or ui
             else
             {
-                return PlaySound_SoundManagerInternal(audio, position, audioSource);
+                return Play_SoundManagerInternal(audio, position, audioSource);
             }
         }
 
@@ -87,7 +84,7 @@ namespace redd096
         /// <param name="position"></param>
         /// <param name="audioSource">You can specify an audioSource to play sound</param>
         /// <returns></returns>
-        public AudioSource PlaySound(AudioClip[] audioClips, Vector3 position, float volume = 1f, AudioSource audioSource = null,
+        public AudioSource Play(AudioClip[] audioClips, Vector3 position, float volume = 1f, AudioSource audioSource = null,
             AudioData.EAudioType audioType = AudioData.EAudioType.Sfx, bool loop = false, bool fade = false, bool forceReplay = false, AudioMixerGroup audioMixer = null,
             bool enable3D = false, float dopplerLevel = 1f, int spread = 0, AudioRolloffMode rolloffMode = AudioRolloffMode.Logarithmic, float minDistance = 1f, float maxDistance = 500f)
         {
@@ -117,7 +114,7 @@ namespace redd096
             });
 
             //and call normally PlaySound with audio class
-            return PlaySound(audio, position, audioSource);
+            return Play(audio, position, audioSource);
         }
 
         #region generic
@@ -354,14 +351,14 @@ namespace redd096
             }
 
             //play music with fade in (both play and replay same clip)
-            musicAudioSource = PlaySound_SoundManagerInternal(music, position: default, musicAudioSource, music.Preset.Fade, persistent: true);
+            musicAudioSource = Play_SoundManagerInternal(music, position: default, musicAudioSource, music.Preset.Fade, persistent: true);
         }
 
         #endregion
 
         #region private API
 
-        private AudioSource PlaySound_SoundManagerInternal(AudioClass audio, Vector3 position = default, AudioSource audioSource = null, bool fade = false, bool persistent = false)
+        private AudioSource Play_SoundManagerInternal(AudioClass audio, Vector3 position = default, AudioSource audioSource = null, bool fade = false, bool persistent = false)
         {
             //if audio source is null, get from pooling
             if (audioSource == null)
@@ -372,7 +369,7 @@ namespace redd096
                     prefabAudioSource = new GameObject("AudioSource Prefab", typeof(AudioSource)).GetComponent<AudioSource>();
                     prefabAudioSource.transform.SetParent(transform);   //set child to not destroy when change scene
                 }
-                audioSource = poolAudioSources.Instantiate(prefabAudioSource);
+                audioSource = pooling.Instantiate(prefabAudioSource);
             }
 
             //set parent and position

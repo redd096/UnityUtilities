@@ -92,7 +92,7 @@ namespace redd096
         [Tooltip("When instantiated, set child of the object which instantiate it?")] public bool SetParent;
         public InstantiatedGameObjectStruct[] GameObjectsFeedback;
         public ParticleSystem[] ParticlesFeedback;
-        public OldAudioClass[] AudiosFeedback;
+        public AudioClass[] AudiosFeedback;
 
         List<GameObject> instantiatedGameObjects;
         List<ParticleSystem> instantiatedParticles;
@@ -148,7 +148,7 @@ namespace redd096
             {
                 instantiatedGameObjects.Add(InstantiateGameObjectManager.instance.Play(GameObjectsFeedback, parent.position, parent.rotation));
                 instantiatedParticles.Add(ParticlesManager.instance.Play(ParticlesFeedback, parent.position, parent.rotation));
-                instantiatedAudios.Add(OldSoundManager.instance.Play(AudiosFeedback, parent.position));
+                instantiatedAudios.Add(SoundManager.instance.Play(AudiosFeedback[Random.Range(0, AudiosFeedback.Length)], parent.position));
             }
             //else, instantiate every element from array
             else
@@ -159,8 +159,8 @@ namespace redd096
                 foreach (ParticleSystem particleSystem in ParticlesFeedback)
                     instantiatedParticles.Add(ParticlesManager.instance.Play(particleSystem, parent.position, parent.rotation));
 
-                foreach (OldAudioClass audio in AudiosFeedback)
-                    instantiatedAudios.Add(OldSoundManager.instance.Play(audio, parent.position));
+                foreach (AudioClass audio in AudiosFeedback)
+                    instantiatedAudios.Add(SoundManager.instance.Play(audio, parent.position));
             }
 
             //set parent if necessary
