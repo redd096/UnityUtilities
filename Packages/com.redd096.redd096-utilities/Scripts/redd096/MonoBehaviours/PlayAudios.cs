@@ -9,6 +9,7 @@ namespace redd096
     public class PlayAudios : MonoBehaviour
     {
         [SerializeField] bool playOnAwake;
+        [SerializeField] bool stopMusicOnAwake;
         [SerializeField] AudioClass[] audios;
 
         private void Start()
@@ -16,6 +17,10 @@ namespace redd096
             //play on awake
             if (playOnAwake)
                 PlayEveryAudio();
+
+            //stop music for this scene
+            if (stopMusicOnAwake)
+                SoundManager.instance.StopMusic();
         }
 
         /// <summary>
@@ -36,7 +41,7 @@ namespace redd096
             audioName = audioName.Trim();
             foreach (AudioClass audio in audios)
             {
-                if (audio.IsValid() && audio.Element.Name.Trim().Equals(audioName))
+                if (audio.IsValid() && audio.Name.Trim().Equals(audioName))
                 {
                     SoundManager.instance.PlaySound(audio, transform.position);
                     break;

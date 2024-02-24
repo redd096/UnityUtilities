@@ -2,14 +2,15 @@ using redd096.Attributes;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 namespace redd096
 {
     [AddComponentMenu("redd096/Singletons/Sound Manager")]
     public class SoundManager : Singleton<SoundManager>
     {
-        [Header("Music")]
-        [Tooltip("From 0 to 1, where 0 is no volume and 1 is volume to set")][SerializeField] AnimationCurve fadeInMusic = default;
+        [Header("Music Fade")]
+        [Tooltip("From 0 to 1, where 0 is no volume and 1 is the volume to set")][SerializeField] AnimationCurve fadeInMusic = default;
         [Tooltip("From 1 to 0, where 1 is current volume and 0 is no volume")][SerializeField] AnimationCurve fadeOutMusic = default;
 
         //sound parent (instantiate if null)
@@ -22,30 +23,422 @@ namespace redd096
                 return soundsParent;
             }
         }
+        private Transform soundsParentPersistent;
+        public Transform SoundsParentPersistent
+        {
+            get
+            {
+                if (soundsParentPersistent == null) { soundsParentPersistent = new GameObject("Sounds Parent Persistent").transform; DontDestroyOnLoad(soundsParentPersistent); }
+                return soundsParent;
+            }
+        }
 
+        //audio sources
         AudioSource musicAudioSource;
-        Dictionary<AudioSource, AudioClass> poolAudioSources = new Dictionary<AudioSource, AudioClass>();
+        Pooling<AudioSource> poolAudioSources = new Pooling<AudioSource>();
+        AudioSource prefabAudioSource;
+
+        //volumes
+        Dictionary<AudioSource, AudioClass> savedAudios = new Dictionary<AudioSource, AudioClass>();
         float volumeMusic = 1;
         float volumeSFX = 1;
         float volumeUI = 1;
 
-        //we don't need AudioSource prefab and we don't need different prefab for different situations, but we can instantiate a single default audio source.
-        //we create the functions for AudioData, where everything in the audio source (2d, 3d, etc..) is setted by AudioData
-        //and we create functions where user can pass AudioClip instead of AudioData, but must set also other variables, like in MoreMountains with infinite optional variables
+        //coroutines
+        Dictionary<AudioSource, Coroutine> fadeCoroutines = new Dictionary<AudioSource, Coroutine>();
+        Dictionary<AudioSource, Coroutine> deactivateAudioSourceCoroutines = new Dictionary<AudioSource, Coroutine>();
+
+        //todo
+        //fade and force replay also for sounds? (not only music) - rename PlaySound to PlayAudio and create one PlaySound same as PlayMusic, where if audioSource != null then check replay and fade
+        //if call Fade and than call to update volumes, it could be wrong. We should to continue check correct volume in fade coroutine
 
         //we have to edit FeedbackRedd096 probably
         //and also OptionsManager have calls on OldSoundManager
         //we can edit also ParticlesManager and InstantiateGameObjectManager ??
 
+        /// <summary>
+        /// Play sound with presets from AudioClass
+        /// </summary>
+        /// <param name="audio"></param>
+        /// <param name="position"></param>
+        /// <param name="audioSource">You can specify an audioSource to play sound</param>
+        /// <returns></returns>
+        public AudioSource PlaySound(AudioClass audio, Vector3 position = default, AudioSource audioSource = null)
+        {
+            if (audio.IsValid() == false)
+                return null;
+
+            //play music
+            if (audio.Preset.AudioType == AudioData.EAudioType.Music)
+            {
+                PlayMusic(audio);
+                return null;    //if play music, don't need to return audio source
+            }
+            //play sfx or ui
+            else
+            {
+                return PlaySound_SoundManagerInternal(audio, position, audioSource);
+            }
+        }
+
+        /// <summary>
+        /// Play sound. Instead of use AudioClass, set every parameter
+        /// </summary>
+        /// <param name="audioClips"></param>
+        /// <param name="position"></param>
+        /// <param name="audioSource">You can specify an audioSource to play sound</param>
+        /// <returns></returns>
+        public AudioSource PlaySound(AudioClip[] audioClips, Vector3 position, float volume = 1f, AudioSource audioSource = null,
+            AudioData.EAudioType audioType = AudioData.EAudioType.Sfx, bool loop = false, bool fade = false, bool forceReplay = false, AudioMixerGroup audioMixer = null,
+            bool enable3D = false, float dopplerLevel = 1f, int spread = 0, AudioRolloffMode rolloffMode = AudioRolloffMode.Logarithmic, float minDistance = 1f, float maxDistance = 500f)
+        {
+            //create audio class and element
+            AudioClass audio = new AudioClass(new AudioData.Element()
+            {
+                Name = "Instantiated Audio",
+                Volume = volume,
+                AudioClips = audioClips,
+                Preset = new AudioData.PresetAudio()
+                { 
+                    AudioType = audioType,
+                    Loop = loop,
+                    Fade = fade,
+                    ForceReplay = forceReplay,
+                    AudioMixer = audioMixer,
+                    SoundSettings3D = new AudioData.SoundSettings3D()
+                    {
+                        Enable3D = enable3D,
+                        DopplerLevel = dopplerLevel,
+                        Spread = spread,
+                        RolloffMode = rolloffMode,
+                        MinDistance = minDistance,
+                        MaxDistance = maxDistance
+                    }
+                }
+            });
+
+            //and call normally PlaySound with audio class
+            return PlaySound(audio, position, audioSource);
+        }
+
+        #region generic
+
+        /// <summary>
+        /// Stop audio source
+        /// </summary>
+        /// <param name="audioSource"></param>
+        /// <param name="keepActiveInScene">When use specific audioSource, keep it active, so the pooling can't use it for other audios</param>
+        public void StopSound(AudioSource audioSource, bool keepActiveInScene = false)
+        {
+            if (audioSource)
+            {
+                audioSource.Stop();
+            }
+
+            //stop also coroutines
+            StopCoroutine_SoundManagerInternal(fadeCoroutines, audioSource);
+            StopCoroutine_SoundManagerInternal(deactivateAudioSourceCoroutines, audioSource);
+
+            //and deactive audio source
+            if (keepActiveInScene == false)
+            {
+                if (audioSource)
+                    audioSource.gameObject.SetActive(false);
+            }
+        }
+
+        /// <summary>
+        /// Stop music audio source
+        /// </summary>
+        public void StopMusic()
+        {
+            StopSound(musicAudioSource, true);
+        }
+
+        /// <summary>
+        /// Pauses audio source
+        /// </summary>
+        /// <param name="source"></param>
+        public virtual void PauseSound(AudioSource audioSource)
+        {
+            if (audioSource)
+                audioSource.Pause();
+        }
+
+        /// <summary>
+        /// Resume audio source
+        /// </summary>
+        /// <param name="source"></param>
+        public virtual void ResumeSound(AudioSource audioSource)
+        {
+            if (audioSource)
+                audioSource.Play();
+        }
+
+        /// <summary>
+        /// Update audio sources in scene
+        /// </summary>
         public void UpdateAudioSourcesVolume()
         {
-
+            foreach (AudioSource source in savedAudios.Keys)
+            {
+                if (source)
+                    source.volume = GetCorrectVolume(savedAudios[source]);
+            }
         }
 
-        public void PlaySound(AudioClass audio, Vector3 position)
+        /// <summary>
+        /// Multiply audio.Volume for the saved volume for this audioType. So if for example in your game you set VolumeSFX to 0.5f, you will receive half of audio.Volume
+        /// </summary>
+        /// <param name="audioType"></param>
+        /// <returns></returns>
+        public float GetCorrectVolume(AudioClass audio)
         {
-
+            switch (audio.Preset.AudioType)
+            {
+                case AudioData.EAudioType.Sfx:
+                    return audio.Volume * volumeSFX;
+                case AudioData.EAudioType.UI:
+                    return audio.Volume * volumeUI;
+                case AudioData.EAudioType.Music:
+                    return audio.Volume * volumeMusic;
+                default:
+                    return audio.Volume;
+            }
         }
+
+        /// <summary>
+        /// Fade audio source volume
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="duration"></param>
+        /// <param name="initialVolume"></param>
+        /// <param name="finalVolume"></param>
+        /// <returns></returns>
+        public IEnumerator FadeCoroutineLinear(AudioSource source, float duration, float initialVolume, float finalVolume)
+        {
+            float delta = 0;
+            while (delta < 1)
+            {
+                delta += Time.deltaTime / duration;
+                source.volume = Mathf.Lerp(initialVolume, finalVolume, delta);
+                yield return null;
+            }
+        }
+
+        /// <summary>
+        /// Fade audio source volume
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="curve">curve value must go from 0 to 1, where 0 is initialVolume and 1 is finalVolume</param>
+        /// <param name="initialVolume"></param>
+        /// <param name="finalVolume"></param>
+        /// <returns></returns>
+        public IEnumerator FadeCoroutine(AudioSource source, AnimationCurve curve, float initialVolume, float finalVolume)
+        {
+            //if there is no curve, set immediatly sound and stop coroutine
+            if (curve == null || curve.keys.Length <= 0)
+            {
+                source.volume = finalVolume;
+                yield break;
+            }
+
+            float startTime = Time.time;
+            float duration = curve.keys[curve.keys.Length - 1].time;    //last keyframe time
+            float elapsedTime;
+            while (Time.time - startTime < duration)
+            {
+                elapsedTime = Time.time - startTime;
+                source.volume = Mathf.Lerp(initialVolume, finalVolume, curve.Evaluate(elapsedTime));
+                yield return null;
+            }
+            source.volume = finalVolume;
+        }
+
+        /// <summary>
+        /// Deactivate audio source when it stops to play sound
+        /// </summary>
+        /// <param name="audioSource"></param>
+        /// <returns></returns>
+        public IEnumerator DeactivateAudioSourceCoroutine(AudioSource audioSource)
+        {
+            //wait to end the clip
+            if (audioSource)
+            {
+                yield return new WaitForSeconds(audioSource.clip.length / Mathf.Abs(audioSource.pitch));
+            }
+
+            //if still not ended (for example if player paused the audio source), continue to wait
+            while (audioSource && audioSource.time < audioSource.clip.length)
+            {
+                yield return null;
+            }
+
+            //and deactive
+            if (audioSource)
+                audioSource.gameObject.SetActive(false);
+        }
+
+        #endregion
+
+        #region settings
+
+        /// <summary>
+        /// Set Master volume
+        /// </summary>
+        /// <param name="value"></param>
+        public void SetMasterVolume(float value)
+        {
+            AudioListener.volume = value;
+        }
+
+        /// <summary>
+        /// Set volume for this type of audios
+        /// </summary>
+        /// <param name="audioType"></param>
+        /// <param name="value"></param>
+        public void SetTypeVolume(AudioData.EAudioType audioType, float value)
+        {
+            switch (audioType)
+            {
+                case AudioData.EAudioType.Sfx:
+                    volumeSFX = value;
+                    break;
+                case AudioData.EAudioType.UI:
+                    volumeUI = value;
+                    break;
+                case AudioData.EAudioType.Music:
+                    volumeMusic = value;
+                    break;
+            }
+            UpdateAudioSourcesVolume();
+        }
+
+        #endregion
+
+        #region private Music API
+
+        /// <summary>
+        /// Play music always with same AudioSource
+        /// </summary>
+        /// <param name="music"></param>
+        private void PlayMusic(AudioClass music)
+        {
+            //if try to play music that is already playing, do not restart it
+            if (musicAudioSource != null && musicAudioSource.isPlaying && musicAudioSource.clip == music.Clip)
+            {
+                //this only if it isn't forced to replay
+                if (music.Preset.ForceReplay == false)
+                    return;
+            }
+
+            //if not setted, set default values for fade
+            if (fadeInMusic.keys.Length <= 0)
+                fadeInMusic.keys = new Keyframe[2] { new Keyframe(0, 0), new Keyframe(1, 1) };
+            if (fadeOutMusic.keys.Length <= 0)
+                fadeOutMusic.keys = new Keyframe[2] { new Keyframe(0, 1), new Keyframe(1, 0) };
+
+            //else, play music
+            StartCoroutine_SoundManagerInternal(fadeCoroutines, musicAudioSource, PlayMusicCoroutine(music));
+        }
+
+        private IEnumerator PlayMusicCoroutine(AudioClass music)
+        {
+            //fade out
+            if (musicAudioSource != null)
+            {
+                if (music.Preset.Fade && musicAudioSource.isPlaying)
+                    yield return FadeCoroutine(musicAudioSource, fadeOutMusic, 0f, musicAudioSource.volume);    //inverse volumes, because to make curve more user friendly we make it go from 1 to 0 instead of 0 to 1
+
+                //stop to be sure. For example if call to replay same audio already playing, we want it to restart
+                StopSound(musicAudioSource, true);
+            }
+
+            //play music with fade in (both play and replay same clip)
+            musicAudioSource = PlaySound_SoundManagerInternal(music, position: default, musicAudioSource, music.Preset.Fade, persistent: true);
+        }
+
+        #endregion
+
+        #region private API
+
+        private AudioSource PlaySound_SoundManagerInternal(AudioClass audio, Vector3 position = default, AudioSource audioSource = null, bool fade = false, bool persistent = false)
+        {
+            //if audio source is null, get from pooling
+            if (audioSource == null)
+            {
+                //if pooling prefab is null, create it
+                if (prefabAudioSource == null)
+                {
+                    prefabAudioSource = new GameObject("AudioSource Prefab", typeof(AudioSource)).GetComponent<AudioSource>();
+                    prefabAudioSource.transform.SetParent(transform);   //set child to not destroy when change scene
+                }
+                audioSource = poolAudioSources.Instantiate(prefabAudioSource);
+            }
+
+            //set parent and position
+            audioSource.transform.SetParent(persistent ? SoundsParentPersistent : SoundsParent);
+            audioSource.transform.position = position;
+
+            //values
+            audioSource.clip = audio.Clip;
+
+            //preset
+            audioSource.loop = audio.Preset.Loop;
+            audioSource.outputAudioMixerGroup = audio.Preset.AudioMixer;
+
+            //sound settings 3d
+            audioSource.spatialBlend = audio.Preset.SpatialBlend;
+            audioSource.dopplerLevel = audio.Preset.DopplerLevel;
+            audioSource.spread = audio.Preset.Spread;
+            audioSource.rolloffMode = audio.Preset.RolloffMode;
+            audioSource.minDistance = audio.Preset.MinDistance;
+            audioSource.maxDistance = audio.Preset.MaxDistance;
+
+            //play audio in scene
+            audioSource.Play();
+
+            //volume
+            if (fade)
+            {
+                StartCoroutine_SoundManagerInternal(fadeCoroutines, audioSource, FadeCoroutine(audioSource, fadeInMusic, 0f, GetCorrectVolume(audio)));
+            }
+            else
+            {
+                audioSource.volume = GetCorrectVolume(audio);
+            }
+
+            //add to list (or edit AudioClass if re-use same audioSource)
+            savedAudios[audioSource] = audio;
+
+            //start deactivate coroutine if loop is false
+            if (audio.Preset.Loop == false)
+                StartCoroutine_SoundManagerInternal(deactivateAudioSourceCoroutines, audioSource, (DeactivateAudioSourceCoroutine(audioSource)));
+
+            //if user passed an audio source, return it to continue use it. Else, return found audio source
+            return audioSource;
+        }
+
+        private void StartCoroutine_SoundManagerInternal(Dictionary<AudioSource, Coroutine> coroutines, AudioSource audioSource, IEnumerator coroutine)
+        {
+            //stop coroutine if already running
+            StopCoroutine_SoundManagerInternal(coroutines, audioSource);
+
+            //start new coroutine
+            coroutines.Add(audioSource, StartCoroutine(coroutine));
+        }
+
+        private void StopCoroutine_SoundManagerInternal(Dictionary<AudioSource, Coroutine> coroutines, AudioSource audioSource)
+        {
+            //stop coroutine if already running
+            if (coroutines.ContainsKey(audioSource) && coroutines[audioSource] != null)
+            {
+                StopCoroutine(coroutines[audioSource]);
+                coroutines.Remove(audioSource);
+            }
+        }
+
+        #endregion
     }
 
     #region audio class
@@ -62,12 +455,27 @@ namespace redd096
 
         //get from data
         private AudioData.Element _element;
-        private AudioData.Element GetElement() { if (data == null) Debug.LogError("Missing Data!"); return data ? data.GetElement(elementName) : null; }
-        public AudioData.Element Element { get { if (_element == null || string.IsNullOrEmpty(_element.Name)) _element = GetElement(); return _element; } }
+        private AudioData.Element GetElement(bool showErrors) { if (_element == null || string.IsNullOrEmpty(_element.Name)) _element = data.GetElement(elementName, showErrors); return _element; }
+        public AudioData.Element Element => GetElement(true);
 
-        //check if null: this class, data and element
-        public bool IsValid() => this != null && data != null && Element != null;
+        //check if valid this class and element
+        public bool IsValid() => this != null && GetElement(false) != null;
         public static implicit operator bool(AudioClass a) => a.IsValid();
+
+        //public API
+        public string Name => Element.Name;
+        public float Volume => Element.Volume;
+        public AudioData.PresetAudio Preset => Element.Preset;
+        public AudioClip Clip => Element.RandomClip;
+
+        /// <summary>
+        /// This constructor is used to create and AudioClass without set data and element name, in case you need it in code but you don't need to set it in inspector
+        /// </summary>
+        /// <param name="element"></param>
+        public AudioClass(AudioData.Element element)
+        {
+            _element = element;
+        }
 
 #if UNITY_EDITOR
         string[] GetNames()

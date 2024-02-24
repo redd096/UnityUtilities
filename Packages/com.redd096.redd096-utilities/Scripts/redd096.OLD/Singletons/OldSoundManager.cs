@@ -26,7 +26,7 @@ namespace redd096
 
     #endregion
 
-    [AddComponentMenu("redd096/.OLD/Singletons/Sound Manager")]
+    [AddComponentMenu("redd096/.OLD/Singletons/Old Sound Manager")]
     public class OldSoundManager : Singleton<OldSoundManager>
     {
         #region variables

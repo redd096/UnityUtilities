@@ -22,8 +22,14 @@ namespace redd096
             }
         }
 
-        public Element GetElement(string elementName)
+        public Element GetElement(string elementName, bool showErrors = true)
         {
+            if (this == null)
+            {
+                if (showErrors) Debug.LogError("Missing Data!");
+                return null;
+            }
+
             //find element in array by name
             if (Elements != null)
             {
@@ -32,7 +38,7 @@ namespace redd096
                         return element;
             }
 
-            Debug.LogError("Impossible to find: " + elementName);
+            if (showErrors) Debug.LogError("Impossible to find: " + elementName);
             return null;
         }
 
@@ -68,7 +74,7 @@ namespace redd096
             public EAudioType AudioType;
             public bool Loop;
             [EnableIf("AudioType", EAudioType.Music)] public bool Fade;
-            [Tooltip("If play new audio with same clip and volume, continue play or restart anyway?")] public bool ForceReplay;
+            [EnableIf("AudioType", EAudioType.Music)][Tooltip("If call to play this audio but it's already playing, continue play or restart it?")] public bool ForceReplay;
             public AudioMixerGroup AudioMixer;
             [Rename("", nameof(_enabled3D))] public SoundSettings3D SoundSettings3D;
 
