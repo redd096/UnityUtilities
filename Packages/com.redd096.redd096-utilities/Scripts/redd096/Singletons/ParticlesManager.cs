@@ -4,7 +4,7 @@ using UnityEngine;
 namespace redd096
 {
     [AddComponentMenu("redd096/Singletons/Particles Manager")]
-    public class ParticlesManager : Singleton<ParticlesManager>
+    public class ParticlesManager : LazySingleton<ParticlesManager>
     {
         private Transform particlesParent;
         public Transform ParticlesParent

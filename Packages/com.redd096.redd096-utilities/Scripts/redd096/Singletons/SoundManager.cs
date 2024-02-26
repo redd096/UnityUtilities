@@ -6,7 +6,7 @@ using UnityEngine.Audio;
 namespace redd096
 {
     [AddComponentMenu("redd096/Singletons/Sound Manager")]
-    public class SoundManager : Singleton<SoundManager>
+    public class SoundManager : LazySingleton<SoundManager>
     {
         [Header("Music Fade")]
         [Tooltip("From 0 to 1, where 0 is no volume and 1 is the volume to set")][SerializeField] AnimationCurve fadeInMusic = default;

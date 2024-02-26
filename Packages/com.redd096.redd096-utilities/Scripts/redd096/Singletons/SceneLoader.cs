@@ -5,7 +5,7 @@ using redd096.Attributes;
 namespace redd096
 {
     [AddComponentMenu("redd096/Singletons/Scene Loader")]
-    public class SceneLoader : Singleton<SceneLoader>
+    public class SceneLoader : LazySingleton<SceneLoader>
     {
         public bool ChangeCursorLockMode = true;
         [EnableIf("ChangeCursorLockMode")] public CursorLockMode LockModeOnResume = CursorLockMode.Confined;

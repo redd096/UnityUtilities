@@ -12,7 +12,7 @@ namespace redd096
     }
 
     [AddComponentMenu("redd096/Singletons/Instantiate GameObject Manager")]
-    public class InstantiateGameObjectManager : Singleton<InstantiateGameObjectManager>
+    public class InstantiateGameObjectManager : LazySingleton<InstantiateGameObjectManager>
     {
         private Transform parent;
         public Transform Parent
