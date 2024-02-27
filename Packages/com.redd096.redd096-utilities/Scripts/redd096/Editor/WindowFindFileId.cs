@@ -50,7 +50,9 @@ namespace redd096
         private GameObject GetGameObjectFromFileID(long fileID) // also called local identifier
         {
             GameObject resultGo = null;
-            var gameObjects = Resources.FindObjectsOfTypeAll<GameObject>();
+            var gameObjects = Resources.FindObjectsOfTypeAll<GameObject>();            
+            //List<GameObject> gameObjects = new List<GameObject>(FindObjectsByType<GameObject>(FindObjectsInactive.Include, FindObjectsSortMode.InstanceID));
+            //gameObjects.AddRange(Resources.FindObjectsOfTypeAll<GameObject>());
 
             // Test every gameobjects
             foreach (var go in gameObjects)
