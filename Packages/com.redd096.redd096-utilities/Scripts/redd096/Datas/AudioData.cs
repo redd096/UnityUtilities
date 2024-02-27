@@ -51,7 +51,7 @@ namespace redd096
         {
             public string Name;
             [Range(0, 1)] public float Volume;
-            public PresetAudio Preset;
+            [Rename("Preset ", nameof(_presetDetails))]public PresetAudio Preset;
 
             [Space]
             public AudioClip[] AudioClips;
@@ -66,6 +66,9 @@ namespace redd096
                     return null;
                 }
             }
+
+            //editor
+            private string _presetDetails => $"[{Preset.AudioType}]";
         }
 
         [System.Serializable]
