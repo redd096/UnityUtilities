@@ -8,8 +8,8 @@ namespace redd096
     {
         string GuidString;
 
-        [MenuItem("redd096/Select in scene by Guid")]
-        static void SelectInSceneByGuid()
+        [MenuItem("redd096/Find by Guid")]
+        static void FindByGuid()
         {
             //open window (and set title)
             GetWindow<WindowFindGuid>("Window Find Guid");

@@ -9,8 +9,8 @@ namespace redd096
     {
         string fileIDString;
 
-        [MenuItem("redd096/Select in scene by fileID")]
-        static void SelectInSceneByFileId()
+        [MenuItem("redd096/Find by fileID")]
+        static void FindByFileId()
         {
             //open window (and set title)
             GetWindow<WindowFindFileId>("Window Find File ID");
@@ -50,7 +50,7 @@ namespace redd096
         private GameObject GetGameObjectFromFileID(long fileID) // also called local identifier
         {
             GameObject resultGo = null;
-            var gameObjects = Resources.FindObjectsOfTypeAll<GameObject>();            
+            var gameObjects = Resources.FindObjectsOfTypeAll<GameObject>();
             //List<GameObject> gameObjects = new List<GameObject>(FindObjectsByType<GameObject>(FindObjectsInactive.Include, FindObjectsSortMode.InstanceID));
             //gameObjects.AddRange(Resources.FindObjectsOfTypeAll<GameObject>());
 
