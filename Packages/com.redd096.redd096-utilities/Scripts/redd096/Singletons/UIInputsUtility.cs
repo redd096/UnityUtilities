@@ -16,8 +16,9 @@ namespace redd096
         [SerializeField] bool useDelayOnRelease = false;
         [Tooltip("Delay to not calculate mouse released immediatly")][SerializeField] float delayReleaseInput = 0.2f;
 
+        //used to call OnInputUp after delay
         Coroutine delayReleaseCoroutine;
-        bool isInputUp;
+        bool callInputUp;
 
         void Update()
         {
@@ -25,7 +26,7 @@ namespace redd096
             if (GetInputDown())
             {
                 if (delayReleaseCoroutine != null) StopCoroutine(delayReleaseCoroutine);
-                isInputUp = false;
+                callInputUp = false;
             }
 
             //when press input up, start delay
@@ -39,11 +40,11 @@ namespace redd096
         {
             //calculate input up after delay
             yield return new WaitForSeconds(delayReleaseInput);
-            isInputUp = true;
+            callInputUp = true;
 
-            //reset after one frame
+            //reset after one frame (because this is only to call InputUp in one frame, not to know if input is pressed or not)
             yield return null;
-            isInputUp = false;
+            callInputUp = false;
         }
 
         #region raycast
@@ -160,7 +161,7 @@ namespace redd096
         public virtual bool GetInputUp()
         {
             //return with delay, or just InputUp
-            return useDelayOnRelease ? isInputUp : GetInputUpWithoutDelay();
+            return useDelayOnRelease ? callInputUp : GetInputUpWithoutDelay();
         }
 
         public virtual bool GetInputUpWithoutDelay()
