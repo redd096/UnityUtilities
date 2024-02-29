@@ -119,7 +119,7 @@ namespace redd096.Attributes
 
                     //set button
                     string buttonName = at.showButtonName ? coordinates.x + "," + coordinates.y : "";
-                    GUI.backgroundColor = values[x,y].isUsed ? Color.red : Color.grey;
+                    GUI.backgroundColor = values[x,y].isUsed ? Color.red : previousGUIColor;
 
                     //when click, change value
                     if (GUI.Button(new Rect(startPosition.x + x * (sizeSquare + spaceBetweenSquares), startPosition.y + y * (sizeSquare + spaceBetweenSquares), 
