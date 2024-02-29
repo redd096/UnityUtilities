@@ -11,15 +11,11 @@ namespace redd096
     {
         //inspector
         [SerializeField] SortOrderClass sortOrderClass;
-
-        [Header("Canvas or Renderer - if both null, try get component in children")]
-        [SerializeField] bool updateOnAwake = true;
-        [SerializeField] Canvas canvas;
-        [SerializeField] Renderer rend;
+        [SerializeField] FSortOrderDetails details;
 
         private void Awake()
         {
-            if (updateOnAwake)
+            if (details.updateOnAwake)
                 UpdateSortOrder();
         }
 
@@ -27,10 +23,10 @@ namespace redd096
         void UpdateSortOrder()
         {
             //get ref
-            if (canvas == null && rend == null)
+            if (details.canvas == null && details.rend == null)
             {
-                canvas = GetComponentInChildren<Canvas>();
-                if (canvas == null) rend = GetComponentInChildren<Renderer>();
+                details.canvas = GetComponentInChildren<Canvas>();
+                if (details.canvas == null) details.rend = GetComponentInChildren<Renderer>();
             }
 
             //refresh always element, ignore if _element is already setted. This is necessary if call this function with the button in inspector
@@ -41,17 +37,29 @@ namespace redd096
             }
 
             //update sort order
-            if (canvas != null)
+            if (details.canvas != null)
             {
-                canvas.sortingLayerID = sortOrderClass.Element.SortingLayer;
-                canvas.sortingOrder = sortOrderClass.Element.OrderInLayer;
+                details.canvas.sortingLayerID = sortOrderClass.Element.SortingLayer;
+                details.canvas.sortingOrder = sortOrderClass.Element.OrderInLayer;
             }
-            if (rend != null)
+            if (details.rend != null)
             {
-                rend.sortingLayerID = sortOrderClass.Element.SortingLayer;
-                rend.sortingOrder = sortOrderClass.Element.OrderInLayer;
+                details.rend.sortingLayerID = sortOrderClass.Element.SortingLayer;
+                details.rend.sortingOrder = sortOrderClass.Element.OrderInLayer;
             }
 
+        }
+
+        [System.Serializable]
+        public class FSortOrderDetails
+        {
+            [Header("Canvas or Renderer - if both null, try get component in children")]
+            public bool updateOnAwake;
+            public Canvas canvas;
+            public Renderer rend;
+
+            //default updateOnAwake true
+            public FSortOrderDetails() { updateOnAwake = true; canvas = null; rend = null; }
         }
     }
 }
