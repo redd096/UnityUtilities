@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 #if ENABLE_INPUT_SYSTEM
-using Input = redd096.InputRedd096;
+using Input = redd096.InputNew;
 #endif
 
 //use null as defaultIcon and Vector2.zero as defaultOffset.

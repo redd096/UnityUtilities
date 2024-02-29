@@ -40,7 +40,7 @@ namespace redd096
         {
             //use singleton if no input action asset
             if (inputActionAsset == null)
-                inputActionAsset = InputManagerRedd096.instance.inputActionAsset;
+                inputActionAsset = WrapperOldNewInputSystem.instance.inputActionAsset;
 
             return inputActionAsset.FindAction(inputName).WasPressedThisFrame();
         }
@@ -52,7 +52,7 @@ namespace redd096
         {
             //use singleton if no input action asset
             if (inputActionAsset == null)
-                inputActionAsset = InputManagerRedd096.instance.inputActionAsset;
+                inputActionAsset = WrapperOldNewInputSystem.instance.inputActionAsset;
 
             return inputActionAsset.FindAction(inputName).WasReleasedThisFrame();
         }
@@ -64,7 +64,7 @@ namespace redd096
         {
             //use singleton if no input action asset
             if (inputActionAsset == null)
-                inputActionAsset = InputManagerRedd096.instance.inputActionAsset;
+                inputActionAsset = WrapperOldNewInputSystem.instance.inputActionAsset;
 
             return inputActionAsset.FindAction(inputName).IsPressed();
         }
@@ -76,7 +76,7 @@ namespace redd096
         {
             //use singleton if no input action asset
             if (inputActionAsset == null)
-                inputActionAsset = InputManagerRedd096.instance.inputActionAsset;
+                inputActionAsset = WrapperOldNewInputSystem.instance.inputActionAsset;
 
             return inputActionAsset.FindAction(inputName).ReadValue<T>();
         }
@@ -92,7 +92,7 @@ namespace redd096
         {
             //use singleton if no input action asset
             if (inputActionAsset == null)
-                inputActionAsset = InputManagerRedd096.instance.inputActionAsset;
+                inputActionAsset = WrapperOldNewInputSystem.instance.inputActionAsset;
 
             //if both with active control != null, else obviously is not same input
             if (inputActionAsset.FindAction(inputName1).activeControl != null && inputActionAsset.FindAction(inputName2).activeControl != null)
@@ -108,7 +108,7 @@ namespace redd096
         {
             //use singleton if no input action asset
             if (inputActionAsset == null)
-                inputActionAsset = InputManagerRedd096.instance.inputActionAsset;
+                inputActionAsset = WrapperOldNewInputSystem.instance.inputActionAsset;
 
             return inputActionAsset.FindAction(inputName).activeControl.name == "escape";
         }
@@ -129,7 +129,7 @@ namespace redd096
         {
             //use singleton if no input action asset
             if (inputActionAsset == null)
-                inputActionAsset = InputManagerRedd096.instance.inputActionAsset;
+                inputActionAsset = WrapperOldNewInputSystem.instance.inputActionAsset;
 
             if (inputActionAsset.FindAction(inputName).activeControl != null)
                 return inputActionAsset.FindAction(inputName).activeControl.name;
@@ -145,7 +145,7 @@ namespace redd096
         {
             //use singleton if no input action asset
             if (inputActionAsset == null)
-                inputActionAsset = InputManagerRedd096.instance.inputActionAsset;
+                inputActionAsset = WrapperOldNewInputSystem.instance.inputActionAsset;
 
             if (inputActionAsset.FindAction(inputName) != null)
                 if (inputActionAsset.FindAction(inputName).controls.Count > index)
@@ -162,7 +162,7 @@ namespace redd096
         {
             //use singleton if no input action asset
             if (inputActionAsset == null)
-                inputActionAsset = InputManagerRedd096.instance.inputActionAsset;
+                inputActionAsset = WrapperOldNewInputSystem.instance.inputActionAsset;
 
             if (inputActionAsset.FindAction(inputName) != null)
                 if (inputActionAsset.FindAction(inputName).controls.Count > index)
@@ -179,7 +179,7 @@ namespace redd096
         {
             //use singleton if no input action asset
             if (inputActionAsset == null)
-                inputActionAsset = InputManagerRedd096.instance.inputActionAsset;
+                inputActionAsset = WrapperOldNewInputSystem.instance.inputActionAsset;
 
             InputAction inputAction = inputActionAsset.FindAction(inputName);
 
@@ -202,7 +202,7 @@ namespace redd096
         {
             //use singleton if no input action asset
             if (inputActionAsset == null)
-                inputActionAsset = InputManagerRedd096.instance.inputActionAsset;
+                inputActionAsset = WrapperOldNewInputSystem.instance.inputActionAsset;
 
             return inputActionAsset.FindAction(inputName).ReadValue<float>();
         }
@@ -214,7 +214,7 @@ namespace redd096
         {
             //use singleton if no input action asset
             if (inputActionAsset == null)
-                inputActionAsset = InputManagerRedd096.instance.inputActionAsset;
+                inputActionAsset = WrapperOldNewInputSystem.instance.inputActionAsset;
 
             return inputActionAsset.FindAction(inputName).ReadValue<float>();
         }

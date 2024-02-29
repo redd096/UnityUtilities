@@ -1,10 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Xml.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 #if ENABLE_INPUT_SYSTEM
-using Input = redd096.InputRedd096;
+using Input = redd096.InputNew;
 using TouchPhase = UnityEngine.InputSystem.TouchPhase;
 #endif
 
