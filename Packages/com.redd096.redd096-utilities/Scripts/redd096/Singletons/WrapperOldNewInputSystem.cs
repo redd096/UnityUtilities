@@ -6,8 +6,8 @@ using UnityEngine.InputSystem;
 
 namespace redd096
 {
-    [AddComponentMenu("redd096/Singletons/Input Manager redd096")]
-    public class InputManagerRedd096 : Singleton<InputManagerRedd096>
+    [AddComponentMenu("redd096/Singletons/Wrapper Old New Input System")]
+    public class WrapperOldNewInputSystem : Singleton<WrapperOldNewInputSystem>
     {
 #if ENABLE_INPUT_SYSTEM
         [Header("Input Action Asset")]
@@ -28,7 +28,7 @@ namespace redd096
 #endif
     }
 
-    public static class InputRedd096
+    public static class InputNew
     {
 #if ENABLE_INPUT_SYSTEM
         #region using input actions asset
