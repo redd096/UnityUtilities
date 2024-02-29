@@ -143,7 +143,7 @@ namespace redd096
 
         #region inputs API
 
-        public bool GetInputDown()
+        public virtual bool GetInputDown()
         {
 #if UNITY_ANDROID && !UNITY_EDITOR
             return Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began;
@@ -152,18 +152,18 @@ namespace redd096
 #endif
         }
 
-        public Vector2 GetWorldInputPosition(Camera cam)
+        public virtual Vector2 GetWorldInputPosition(Camera cam)
         {
             return cam.ScreenToWorldPoint(GetScreenInputPosition());
         }
 
-        public bool GetInputUp()
+        public virtual bool GetInputUp()
         {
             //return with delay, or just InputUp
             return useDelayOnRelease ? isInputUp : GetInputUpWithoutDelay();
         }
 
-        bool GetInputUpWithoutDelay()
+        public virtual bool GetInputUpWithoutDelay()
         {
 #if UNITY_ANDROID && !UNITY_EDITOR
             return Input.touchCount > 0 && ( Input.GetTouch(0).phase == TouchPhase.Ended || Input.GetTouch(0).phase == TouchPhase.Canceled );
@@ -172,7 +172,7 @@ namespace redd096
 #endif
         }
 
-        public Vector2 GetScreenInputPosition()
+        public virtual Vector2 GetScreenInputPosition()
         {
 #if UNITY_ANDROID && !UNITY_EDITOR
             return Input.GetTouch(0).position;
