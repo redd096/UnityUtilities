@@ -208,6 +208,18 @@ namespace redd096
         }
 
         /// <summary>
+        /// Returns the value of the virtual axis identified by inputName
+        /// </summary>
+        public static float GetAxisRaw(string inputName, InputActionAsset inputActionAsset = null)
+        {
+            //use singleton if no input action asset
+            if (inputActionAsset == null)
+                inputActionAsset = InputManagerRedd096.instance.inputActionAsset;
+
+            return inputActionAsset.FindAction(inputName).ReadValue<float>();
+        }
+
+        /// <summary>
         /// Return TouchState struct (with position, phase and much more)
         /// </summary>
         public static UnityEngine.InputSystem.LowLevel.TouchState GetTouch(int index)
