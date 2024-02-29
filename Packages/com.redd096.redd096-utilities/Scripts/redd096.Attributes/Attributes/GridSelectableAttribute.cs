@@ -13,6 +13,7 @@ namespace redd096.Attributes
     public class GridSelectableAttribute : PropertyAttribute
     {
         public readonly string vector2IntArrayProperty;
+        public bool showButtonName;
         public int sizeX { get; private set; }
         public int sizeY { get; private set; }
 
@@ -117,7 +118,7 @@ namespace redd096.Attributes
                     Color previousGUIColor = GUI.backgroundColor;
 
                     //set button
-                    string buttonName = coordinates.x + "," + coordinates.y;
+                    string buttonName = at.showButtonName ? coordinates.x + "," + coordinates.y : "";
                     GUI.backgroundColor = values[x,y].isUsed ? Color.red : Color.grey;
 
                     //when click, change value
