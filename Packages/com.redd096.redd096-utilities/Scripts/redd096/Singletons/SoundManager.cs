@@ -1,3 +1,4 @@
+using redd096.Attributes;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,6 +12,12 @@ namespace redd096
         [Header("Music Fade")]
         [Tooltip("From 0 to 1, where 0 is no volume and 1 is the volume to set")][SerializeField] AnimationCurve fadeInMusic = default;
         [Tooltip("From 1 to 0, where 1 is current volume and 0 is no volume")][SerializeField] AnimationCurve fadeOutMusic = default;
+        [Button]
+        void SetDefaultFades()
+        {
+            fadeInMusic = new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, 1));
+            fadeOutMusic = new AnimationCurve(new Keyframe(0, 1), new Keyframe(1, 0));
+        }
 
         //sound parent (instantiate if null)
         private Transform soundsParent;
@@ -328,10 +335,10 @@ namespace redd096
             }
 
             //if not setted, set default values for fade
-            if (fadeInMusic.keys.Length <= 0)
-                fadeInMusic.keys = new Keyframe[2] { new Keyframe(0, 0), new Keyframe(1, 1) };
-            if (fadeOutMusic.keys.Length <= 0)
-                fadeOutMusic.keys = new Keyframe[2] { new Keyframe(0, 1), new Keyframe(1, 0) };
+            if (fadeInMusic == null || fadeInMusic.keys == null || fadeInMusic.keys.Length <= 0)
+                fadeInMusic = new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, 1));
+            if (fadeOutMusic == null || fadeOutMusic.keys == null || fadeOutMusic.keys.Length <= 0)
+                fadeOutMusic = new AnimationCurve(new Keyframe(0, 1), new Keyframe(1, 0));
 
             //else, play music
             StartCoroutine_SoundManagerInternal(fadeCoroutines, musicAudioSource, PlayMusicCoroutine(music));
