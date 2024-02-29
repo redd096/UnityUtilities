@@ -15,12 +15,14 @@ namespace redd096
 
         void OnEnable()
         {
-            inputActionAsset.Enable();
+            if (inputActionAsset)
+                inputActionAsset.Enable();
         }
 
         void OnDisable()
         {
-            inputActionAsset.Disable();
+            if (inputActionAsset)
+                inputActionAsset.Disable();
         }
 #else
         [HelpBox("This works only with new unity input system", HelpBoxAttribute.EMessageType.Error)]
