@@ -8,17 +8,18 @@ using UnityEditor;
 namespace redd096.Attributes
 {
     /// <summary>
-    /// Draw a grid. Return Vector2Int for every selected square. If this attribute is on an Integer or Vector2Int, can use it as size
+    /// Draw a grid. Return Vector2Int for every selected button. If this attribute is on an Integer or Vector2Int, can use it as size
     /// </summary>
     public class GridSelectableAttribute : PropertyAttribute
     {
         public readonly string vector2IntArrayProperty;
-        public bool showButtonName;
+        [Tooltip("Show coordinates (x, y) on the button?")] public bool showButtonName;
+        [Tooltip("use center as zero, left down button will be negative (in grid 3x3, left down is -1,-1). If false, use left down button as zero")] public bool useCenterAsZero;
         public int sizeX { get; private set; }
         public int sizeY { get; private set; }
 
         /// <summary>
-        /// Draw a grid. Return Vector2Int for every selected square. If this attribute is on an Integer or Vector2Int, can use it as size
+        /// Draw a grid. Return Vector2Int for every selected button. If this attribute is on an Integer or Vector2Int, can use it as size
         /// </summary>
         /// <param name="sizeX"></param>
         /// <param name="sizeY"></param>
@@ -46,8 +47,9 @@ namespace redd096.Attributes
         GridSelectableAttribute at;
         int propertyHeight = 18;
         int littleSpace = 2;
-        int sizeSquare = 40;
-        float spaceBetweenSquares = 2;
+        int sizeButton = 40;
+        float spaceBetweenButtons = 2;
+        Color colorSelectedButton = Color.red;
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
@@ -57,7 +59,7 @@ namespace redd096.Attributes
 
             //property height + little space + every row * (size square + space between)
             int y = (attribute as GridSelectableAttribute).sizeY;
-            return littleSpace + propertySize + littleSpace + y * (sizeSquare + spaceBetweenSquares);
+            return propertySize + littleSpace + y * (sizeButton + spaceBetweenButtons);
 
             //return base.GetPropertyHeight(property, label);
         }
@@ -68,36 +70,32 @@ namespace redd096.Attributes
             at = attribute as GridSelectableAttribute;
             Vector2Int[] arrayValues = property.GetValue(at.vector2IntArrayProperty) as Vector2Int[];
 
-            bool someValueIsChanged = false;    //check if update property
-            Vector2 startPosition = new Vector2(position.x, position.y + littleSpace);
-
-            //set size
+            //get grid size (number of rows and columns)
             if (property.propertyType == SerializedPropertyType.Integer)
             {
-                EditorGUI.PropertyField(new Rect(position.x, position.y, position.width, propertyHeight), property, new GUIContent(property.name));
                 property.intValue = Mathf.Max(1, property.intValue);
-                property.serializedObject.ApplyModifiedProperties();
-
                 at.SetSize(property.intValue, property.intValue);
-
-                startPosition.y += propertyHeight + littleSpace;
             }
             else if (property.propertyType == SerializedPropertyType.Vector2Int)
             {
-                EditorGUI.PropertyField(new Rect(position.x, position.y, position.width, propertyHeight), property, new GUIContent(property.name));
                 property.vector2IntValue = new Vector2Int(Mathf.Max(1, property.vector2IntValue.x), Mathf.Max(1, property.vector2IntValue.y));
-                property.serializedObject.ApplyModifiedProperties();
-
                 at.SetSize(property.vector2IntValue.x, property.vector2IntValue.y);
-
-                startPosition.y += propertyHeight + littleSpace;
             }
 
+            //show property to set grid size
+            EditorGUI.PropertyField(new Rect(position.x, position.y, position.width, propertyHeight), property, new GUIContent(property.name));
+
+
+
+            //==============================================================
+            //show grid
+            bool someValueIsChanged = false;    //check if update values
+            Vector2 startPosition = new Vector2(position.x, position.y + propertyHeight + littleSpace);
+
+            //get start coordinates (left down button is zero, or center button is zero and left down is negative?)
             ValueStruct[,] values = new ValueStruct[at.sizeX, at.sizeY];
-            bool xIsEven = at.sizeX % 2 == 0;       //if even skip coordinate 0
-            bool yIsEven = at.sizeY % 2 == 0;       //if even skip coordinate 0
-            int coordinatesX = -at.sizeX / 2;       //example odd with size 5 => -2, -1, 0, 1, 2
-            int coordinatesY = -at.sizeY / 2;       //example even with size 4 => -2, -1, 1, 2
+            GetStartCoordinates(out bool xIsEven, out bool yIsEven, out int coordinatesX, out int coordinatesY);
+            int defaultY = coordinatesY;
 
             for (int x = 0; x < at.sizeX; x++)
             {
@@ -111,19 +109,18 @@ namespace redd096.Attributes
                     if (yIsEven && coordinatesY == 0)
                         coordinatesY++;
 
+                    //add to list and check if was already in array
                     Vector2Int coordinates = new Vector2Int(coordinatesX, coordinatesY);
                     values[x,y] = new ValueStruct { coordinates = coordinates, isUsed = ContainsValue(arrayValues, coordinates) };
 
-                    //change button gui color
-                    Color previousGUIColor = GUI.backgroundColor;
-
-                    //set button
+                    //set button name and color
                     string buttonName = at.showButtonName ? coordinates.x + "," + coordinates.y : "";
-                    GUI.backgroundColor = values[x,y].isUsed ? Color.red : previousGUIColor;
+                    Color previousGUIColor = GUI.backgroundColor;
+                    GUI.backgroundColor = values[x,y].isUsed ? colorSelectedButton : previousGUIColor;
 
                     //when click, change value
-                    if (GUI.Button(new Rect(startPosition.x + x * (sizeSquare + spaceBetweenSquares), startPosition.y + y * (sizeSquare + spaceBetweenSquares), 
-                        sizeSquare, sizeSquare), buttonName))
+                    if (GUI.Button(new Rect(startPosition.x + x * (sizeButton + spaceBetweenButtons), startPosition.y + y * (sizeButton + spaceBetweenButtons), 
+                        sizeButton, sizeButton), buttonName))
                     {
                         someValueIsChanged = true;
                         values[x,y].isUsed = !values[x,y].isUsed;
@@ -139,7 +136,8 @@ namespace redd096.Attributes
                     coordinatesY++;
                 }
 
-                coordinatesY = -at.sizeY / 2;
+                //when reach last column, change row and restart columns
+                coordinatesY = defaultY;
                 coordinatesX++;
             }
 
@@ -162,6 +160,26 @@ namespace redd096.Attributes
                 arrayProperty.GetArrayElementAtIndex(i).vector2IntValue = v[i];
 
             arrayProperty.serializedObject.ApplyModifiedProperties();
+        }
+
+        void GetStartCoordinates(out bool xIsEven, out bool yIsEven, out int coordinatesX, out int coordinatesY)
+        {
+            //use center as zero, left down button will be negative (in grid 3x3, left down is -1,-1)
+            if (at.useCenterAsZero)
+            {
+                xIsEven = at.sizeX % 2 == 0;    //if even skip coordinate 0
+                yIsEven = at.sizeY % 2 == 0;    //if even skip coordinate 0
+                coordinatesX = -at.sizeX / 2;   //example odd with size 5 => -2, -1, 0, 1, 2
+                coordinatesY = -at.sizeY / 2;   //example even with size 4 => -2, -1, 1, 2
+            }
+            //else, use left down button as zero
+            else
+            {
+                xIsEven = false;
+                yIsEven = false;
+                coordinatesX = 0;
+                coordinatesY = 0;
+            }
         }
 
         bool ContainsValue(Vector2Int[] array, Vector2Int value)
