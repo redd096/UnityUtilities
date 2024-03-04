@@ -39,7 +39,7 @@ namespace redd096.Attributes
 #if UNITY_EDITOR
 
     [CanEditMultipleObjects]
-    [CustomEditor(typeof(MonoBehaviour), true)]
+    [CustomEditor(typeof(UnityEngine.Object), true)]
     public class ButtonEditor : Editor
     {
         public override void OnInspectorGUI()
