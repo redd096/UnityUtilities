@@ -8,8 +8,8 @@ using UnityEditor;
 
 namespace redd096
 {
-    [AddComponentMenu("redd096/UI Control/Custom Components/Custom Button")]
-    public class CustomButton : Button
+    [AddComponentMenu("redd096/UI Control/Custom Components/Custom Selectable")]
+    public class CustomSelectable : Selectable
     {
         [SerializeField] FCustomTargetGraphics[] m_customTargetGraphics;
 
@@ -155,12 +155,12 @@ namespace redd096
 #if UNITY_EDITOR
 
     /// <summary>
-    ///   Custom Editor for the CustomButton Component.
-    ///   Extend this class to write a custom editor for a component derived from CustomButton.
+    ///   Custom Editor for the CustomSelectable Component.
+    ///   Extend this class to write a custom editor for a component derived from CustomSelectable.
     /// </summary>
-    [CustomEditor(typeof(CustomButton), true)]
+    [CustomEditor(typeof(CustomSelectable), true)]
     [CanEditMultipleObjects]
-    public class CustomButtonEditor : ButtonEditor
+    public class CustomSelectableEditor : SelectableEditor
     {
         SerializedProperty m_customTargetGraphicsProperty;
 
@@ -184,8 +184,8 @@ namespace redd096
     /// <summary>
     /// Custom Editor for the Custom Target Graphics
     /// </summary>
-    [CustomPropertyDrawer(typeof(CustomButton.FCustomTargetGraphics), true)]
-    public class CustomButtonTargetGraphicsEditor : PropertyDrawer
+    [CustomPropertyDrawer(typeof(CustomSelectable.FCustomTargetGraphics), true)]
+    public class CustomSelectableTargetGraphicsEditor : PropertyDrawer
     {
         SerializedProperty TargetGraphic;
         SerializedProperty Transition;
