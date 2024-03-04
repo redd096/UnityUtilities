@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System;
+using System.Collections.Generic;
 #if UNITY_EDITOR
 using System.Collections;
 using System.Reflection;
@@ -18,9 +19,11 @@ namespace redd096.Attributes
     public class ButtonAttribute : Attribute
     {
         public enum EEnableType { Always, Editor, PlayMode }
+        public enum EButtonPosition { Bottom, Top }
 
         public readonly string buttonName;
         public readonly EEnableType enableType = EEnableType.Always;
+        public EButtonPosition buttonPosition = EButtonPosition.Bottom;
 
         public ButtonAttribute(EEnableType enableType = EEnableType.Always)
         {
@@ -42,10 +45,34 @@ namespace redd096.Attributes
     [CustomEditor(typeof(UnityEngine.Object), true)]
     public class ButtonEditor : Editor
     {
+        Dictionary<MethodInfo, ButtonAttribute> buttons;
+
         public override void OnInspectorGUI()
         {
+            //get buttons list
+            if (buttons == null) buttons = new Dictionary<MethodInfo, ButtonAttribute>();
+            buttons.Clear();
+            GetButtonsList();
+
+            //show buttons on top
+            foreach (var method in buttons.Keys)
+            {
+                if (buttons[method].buttonPosition == ButtonAttribute.EButtonPosition.Top)
+                    DrawButton(buttons[method], method);
+            }
+
             base.OnInspectorGUI();
 
+            //show buttons on bottom
+            foreach (var method in buttons.Keys)
+            {
+                if (buttons[method].buttonPosition == ButtonAttribute.EButtonPosition.Bottom)
+                    DrawButton(buttons[method], method);
+            }
+        }
+
+        void GetButtonsList()
+        {
             //get every method inside monobehaviour
             ButtonAttribute buttonAttribute;
             foreach (MethodInfo method in target.GetMethods())
@@ -53,56 +80,59 @@ namespace redd096.Attributes
                 //make sure it is decorated by our custom attribute
                 buttonAttribute = method.GetCustomAttribute<ButtonAttribute>(true);
                 if (buttonAttribute != null)
+                    buttons[method] = buttonAttribute;
+            }
+        }
+
+        void DrawButton(ButtonAttribute buttonAttribute, MethodInfo method)
+        {
+            //can have only zero or optional parameters
+            if (method.HasZeroParameterOrOnlyOptional())
+            {
+                //set if button is enabled or disabled
+                EditorGUI.BeginDisabledGroup(
+                    buttonAttribute.enableType == ButtonAttribute.EEnableType.Editor && Application.isPlaying                   //if Editor button, disable when in play mode
+                    || buttonAttribute.enableType == ButtonAttribute.EEnableType.PlayMode && Application.isPlaying == false);   //if PlayMode button, disable when in editor
+
+                //if the user clicks the button, invoke the method (show button name or method name)
+                if (GUILayout.Button(string.IsNullOrEmpty(buttonAttribute.buttonName) ? method.Name : buttonAttribute.buttonName))
                 {
-                    //can have only zero or optional parameters
-                    if (method.HasZeroParameterOrOnlyOptional())
+                    //in editor mode, create undo
+                    if (Application.isPlaying == false)
                     {
-                        //set if button is enabled or disabled
-                        EditorGUI.BeginDisabledGroup(
-                            buttonAttribute.enableType == ButtonAttribute.EEnableType.Editor && Application.isPlaying                   //if Editor button, disable when in play mode
-                            || buttonAttribute.enableType == ButtonAttribute.EEnableType.PlayMode && Application.isPlaying == false);   //if PlayMode button, disable when in editor
-
-                        //if the user clicks the button, invoke the method (show button name or method name)
-                        if (GUILayout.Button(string.IsNullOrEmpty(buttonAttribute.buttonName) ? method.Name : buttonAttribute.buttonName))
-                        {
-                            //in editor mode, create undo
-                            if (Application.isPlaying == false)
-                            {
-                                Undo.RegisterFullObjectHierarchyUndo(target, string.IsNullOrEmpty(buttonAttribute.buttonName) ? method.Name : buttonAttribute.buttonName);
-                            }
-
-                            IEnumerator methodResult = method.Invoke(target, method.GetDefaultParameters()) as IEnumerator;             //pass default values, if there are optional parameters
-
-                            //in editor mode set target object and scene dirty to serialize changes to disk
-                            if (Application.isPlaying == false)
-                            {
-                                //replaced with Undo
-                                //EditorUtility.SetDirty(target);
-                                //
-                                //PrefabStage stage = PrefabStageUtility.GetCurrentPrefabStage();
-                                //if (stage != null)
-                                //    EditorSceneManager.MarkSceneDirty(stage.scene);                             //prefab mode
-                                //else
-                                //    EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());     //normal scene
-
-                                ////repaint scene and inspector
-                                //SceneView.RepaintAll();
-                                //Repaint();
-                            }
-                            //in play mode can call also coroutines
-                            else if (methodResult != null && target is MonoBehaviour behaviour)
-                            {
-                                behaviour.StartCoroutine(methodResult);
-                            }
-                        }
-
-                        EditorGUI.EndDisabledGroup();
+                        Undo.RegisterFullObjectHierarchyUndo(target, string.IsNullOrEmpty(buttonAttribute.buttonName) ? method.Name : buttonAttribute.buttonName);
                     }
-                    else
+
+                    IEnumerator methodResult = method.Invoke(target, method.GetDefaultParameters()) as IEnumerator;             //pass default values, if there are optional parameters
+
+                    //in editor mode set target object and scene dirty to serialize changes to disk
+                    if (Application.isPlaying == false)
                     {
-                        Debug.LogWarning(target.name + " can't invoke '" + method.Name + "'. It can invoke only methods with 0 or optional parameters", target);
+                        //replaced with Undo
+                        //EditorUtility.SetDirty(target);
+                        //
+                        //PrefabStage stage = PrefabStageUtility.GetCurrentPrefabStage();
+                        //if (stage != null)
+                        //    EditorSceneManager.MarkSceneDirty(stage.scene);                             //prefab mode
+                        //else
+                        //    EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());     //normal scene
+
+                        ////repaint scene and inspector
+                        //SceneView.RepaintAll();
+                        //Repaint();
+                    }
+                    //in play mode can call also coroutines
+                    else if (methodResult != null && target is MonoBehaviour behaviour)
+                    {
+                        behaviour.StartCoroutine(methodResult);
                     }
                 }
+
+                EditorGUI.EndDisabledGroup();
+            }
+            else
+            {
+                Debug.LogWarning(target.name + " can't invoke '" + method.Name + "'. It can invoke only methods with 0 or optional parameters", target);
             }
         }
     }
