@@ -6,14 +6,11 @@ public class PredictionSlider : MonoBehaviour
 {
     [Header("Slider - if null use GetComponent")]
     [SerializeField] Slider slider;
+    [SerializeField] RectTransform predictionRect = default;
     [SerializeField] bool autoRegisterToEvents = true;
 
     [Header("Predict")]
-    [SerializeField] RectTransform predictionRect = default;
-    [Tooltip("For how much time prediction will remain still")][SerializeField] float durationPrediction = 0.5f;
-    [Tooltip("Duration animation from start value to end value")][SerializeField] float durationAnimation = 0.5f;
-    [SerializeField] Color colorOnIncrease = Color.green;
-    [SerializeField] Color colorOnDecrease = Color.red;
+    [SerializeField] PredictOptions predictOptions;
 
     float lastValue;
     Coroutine predictionCoroutine;
@@ -27,10 +24,14 @@ public class PredictionSlider : MonoBehaviour
         predictionImage = predictionRect.GetComponent<Image>();
 
         //set prediction above fill in hierarchy (to render it behind)
-        if (slider.fillRect)
+        if (predictOptions.autoUpdatePredictionSiblingPosition && slider.fillRect)
         {
             predictionRect.SetParent(slider.fillRect.parent);
-            predictionRect.SetSiblingIndex(slider.fillRect.GetSiblingIndex()); //set this to fill index, and fill will be moved forward
+            int siblingIndex = slider.fillRect.GetSiblingIndex();
+            if (predictionRect.GetSiblingIndex() > siblingIndex)
+                predictionRect.SetSiblingIndex(siblingIndex);       //set this to fill index, and fill will be moved forward
+            else
+                predictionRect.SetSiblingIndex(siblingIndex - 1);   //just stay behind fill
         }
 
         //set default value
@@ -65,7 +66,7 @@ public class PredictionSlider : MonoBehaviour
     {
         //check if increase or decrease and set prediction color
         bool increase = valueToReach >= predictionCurrentValue;
-        predictionImage.color = increase ? colorOnIncrease : colorOnDecrease;
+        predictionImage.color = increase ? predictOptions.colorOnIncrease : predictOptions.colorOnDecrease;
 
         //if increase move prediction first (so reset slider value), else move slider normally
         if (increase)
@@ -75,14 +76,14 @@ public class PredictionSlider : MonoBehaviour
         }
 
         //wait duration
-        yield return new WaitForSeconds(durationPrediction);
+        yield return new WaitForSeconds(predictOptions.durationPrediction);
 
         //then start animation
         float delta = 0;
         float startValue = increase ? lastValue : predictionCurrentValue;
         while (delta < 1)
         {
-            delta += Time.deltaTime / durationAnimation;
+            delta += Time.deltaTime / predictOptions.durationAnimation;
 
             if (increase)
                 slider.SetValueWithoutNotify(Mathf.Lerp(startValue, valueToReach, delta));
@@ -127,5 +128,15 @@ public class PredictionSlider : MonoBehaviour
             predictionRect.anchorMin = anchorMin;
             predictionRect.anchorMax = anchorMax;
         }
+    }
+
+    [System.Serializable]
+    public class PredictOptions
+    {
+        public bool autoUpdatePredictionSiblingPosition = true;
+        [Tooltip("For how much time prediction will remain still")] public float durationPrediction = 0.5f;
+        [Tooltip("Duration animation from start value to end value")] public float durationAnimation = 0.5f;
+        public Color colorOnIncrease = Color.green;
+        public Color colorOnDecrease = Color.red;
     }
 }
