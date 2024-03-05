@@ -45,14 +45,10 @@ namespace redd096.Attributes
     [CustomEditor(typeof(UnityEngine.Object), true)]
     public class ButtonEditor : Editor
     {
-        Dictionary<MethodInfo, ButtonAttribute> buttons;
-
         public override void OnInspectorGUI()
         {
             //get buttons list
-            if (buttons == null) buttons = new Dictionary<MethodInfo, ButtonAttribute>();
-            buttons.Clear();
-            GetButtonsList();
+            Dictionary<MethodInfo, ButtonAttribute> buttons = GetButtonsList();
 
             //show buttons on top
             foreach (var method in buttons.Keys)
@@ -71,17 +67,18 @@ namespace redd096.Attributes
             }
         }
 
-        void GetButtonsList()
+        Dictionary<MethodInfo, ButtonAttribute> GetButtonsList()
         {
             //get every method inside monobehaviour
-            ButtonAttribute buttonAttribute;
+            Dictionary<MethodInfo, ButtonAttribute> buttons = new Dictionary<MethodInfo, ButtonAttribute>();
             foreach (MethodInfo method in target.GetMethods())
             {
                 //make sure it is decorated by our custom attribute
-                buttonAttribute = method.GetCustomAttribute<ButtonAttribute>(true);
+                ButtonAttribute buttonAttribute = method.GetCustomAttribute<ButtonAttribute>(true);
                 if (buttonAttribute != null)
                     buttons[method] = buttonAttribute;
             }
+            return buttons;
         }
 
         void DrawButton(ButtonAttribute buttonAttribute, MethodInfo method)
