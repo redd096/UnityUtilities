@@ -11,36 +11,45 @@ namespace redd096.Attributes
     /// </summary>
     public class ProgressBarAttribute : PropertyAttribute
     {
-        public readonly string name;
-        public readonly AttributesUtility.EColor color;
-        public readonly bool canInteract;
-
-        public readonly EMaxValueType maxValueType;
-        public readonly float maxValueFloat;
+        public readonly string barName;
+        public readonly float maxValue;
         public readonly string maxValueName;
+        public readonly AttributesUtility.EColor color;
+        public readonly string colorValue;
 
-        public ProgressBarAttribute(float maxValue, string name = "", AttributesUtility.EColor color = AttributesUtility.EColor.Red, bool canInteract = true)
-        {
-            this.name = name;
-            this.maxValueType = EMaxValueType.Float;
-            this.maxValueFloat = maxValue;
-            this.color = color;
-            this.canInteract = canInteract;
-        }
+        public bool canInteract;
 
-        public ProgressBarAttribute(string maxValueName, string name = "", AttributesUtility.EColor color = AttributesUtility.EColor.Red, bool canInteract = true)
-        {
-            this.name = name;
-            this.maxValueType = EMaxValueType.Name;
-            this.maxValueName = maxValueName;
-            this.color = color;
-            this.canInteract = canInteract;
-        }
-
-		public enum EMaxValueType
+		public ProgressBarAttribute(string barName, float maxValue, AttributesUtility.EColor color = AttributesUtility.EColor.Red)
 		{
-			Float, Name
-		}
+			this.barName = barName;
+            this.maxValue = maxValue;
+            this.maxValueName = string.Empty;
+            this.color = color;
+            this.colorValue = string.Empty;
+        }
+
+        public ProgressBarAttribute(string barName, float maxValue, string colorValue)
+        {
+            this.barName = barName;
+            this.maxValue = maxValue;
+            this.maxValueName = string.Empty;
+            this.colorValue = colorValue;
+        }
+
+        public ProgressBarAttribute(string barName, string maxValueName, AttributesUtility.EColor color = AttributesUtility.EColor.Red)
+        {
+            this.barName = barName;
+			this.maxValueName = maxValueName;
+            this.color = color;
+            this.colorValue = string.Empty;
+        }
+
+        public ProgressBarAttribute(string barName, string maxValueName, string colorValue)
+        {
+            this.barName = barName;
+            this.maxValueName = maxValueName;
+            this.colorValue = colorValue;
+        }
     }
 
     #region editor
@@ -50,28 +59,29 @@ namespace redd096.Attributes
     [CustomPropertyDrawer(typeof(ProgressBarAttribute))]
 	public class ProgressBarDrawer : PropertyDrawer
 	{
-		float value;
-		float maxValue;
+        ProgressBarAttribute at;
+        Color barColor;
+        float maxValue;
+        float value;
 		string barLabel;
-		Color barColor;
 		bool canInteract;
 
 		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 		{
 			//get attribute and max value
-			ProgressBarAttribute at = attribute as ProgressBarAttribute;
-			object maxValueObject = at.maxValueType == ProgressBarAttribute.EMaxValueType.Name ? property.GetValue(at.maxValueName, typeof(int), typeof(float)) : at.maxValueFloat;
+			at = attribute as ProgressBarAttribute;
+            SetBarColor(property);
+            SetMaxValue(property, out bool maxValueIsInt);
 
-			//be sure property and maxValue are numbers
-			if (IsNumber(property) && IsNumber(maxValueObject))
+			//be sure property is number
+			if (property.propertyType == SerializedPropertyType.Integer || property.propertyType == SerializedPropertyType.Float)
 			{
 				//set values
 				value = property.propertyType == SerializedPropertyType.Integer ? property.intValue : property.floatValue;
 				string valueFormatted = property.propertyType == SerializedPropertyType.Integer ? value.ToString() : string.Format("{0:0.00}", value);
-				maxValue = maxValueObject is int ? (int)maxValueObject : (float)maxValueObject;
-				string maxValueFormatted = maxValueObject is int ? maxValue.ToString() : string.Format("{0:0.00}", maxValue);
-				barLabel = (string.IsNullOrEmpty(at.name) == false ? "[" + at.name + "] " : "") + valueFormatted + "/" + maxValueFormatted;
-				barColor = AttributesUtility.GetColor(at.color);
+				string maxValueFormatted = maxValueIsInt ? maxValue.ToString() : string.Format("{0:0.00}", maxValue);
+                string resultValue = valueFormatted + "/" + maxValueFormatted;
+                barLabel = string.IsNullOrEmpty(at.barName) ? $"[{property.displayName}] {resultValue}" : $"[{at.barName}] {resultValue}";
 				canInteract = at.canInteract;
 
 				//draw bar
@@ -83,15 +93,64 @@ namespace redd096.Attributes
 			}
 		}
 
-		bool IsNumber(SerializedProperty property)
-		{
-			//be sure is int or float
-			return property != null && (property.propertyType == SerializedPropertyType.Integer || property.propertyType == SerializedPropertyType.Float);
-		}
-
-		bool IsNumber(object maxValueObject)
+        void SetBarColor(SerializedProperty property)
         {
-			return maxValueObject != null && (maxValueObject is int || maxValueObject is float);
+            //get color from attribute or property
+            barColor = default;
+            if (string.IsNullOrEmpty(at.colorValue))
+            {
+                barColor = AttributesUtility.GetColor(at.color);
+            }
+            else
+            {
+                //property can be EColor or Color
+                object obj = property.GetValue(at.colorValue, typeof(Color), typeof(Color32), typeof(AttributesUtility.EColor));
+                if (obj is AttributesUtility.EColor eColor)
+                {
+                    barColor = AttributesUtility.GetColor(eColor);
+                }
+                else if (obj is Color32 color32)
+                {
+                    barColor = color32;
+                }
+                else if (obj is Color newColor)
+                {
+                    barColor = newColor;
+                }
+                else
+                {
+                    Debug.LogWarning(property.serializedObject.targetObject + " - " + typeof(ProgressBarAttribute).Name + " color error on property: '" + property.name + "'. It can be used only with Color, Color32 and AttributesUtility.EColor variables", property.serializedObject.targetObject);
+                }
+            }
+        }
+
+        void SetMaxValue(SerializedProperty property, out bool isInt)
+        {
+            //get max value from attribute or property
+            maxValue = 0f;
+            isInt = false;
+            if (string.IsNullOrEmpty(at.maxValueName))
+            {
+                maxValue = at.maxValue;
+            }
+            else
+            {
+                //property can be float or int
+                object obj = property.GetValue(at.maxValueName, typeof(float), typeof(int));
+                if (obj is float floatValue)
+                {
+                    maxValue = floatValue;
+                }
+                else if (obj is int intValue)
+                {
+                    maxValue = intValue;
+                    isInt = true;
+                }
+                else
+                {
+                    Debug.LogWarning(property.serializedObject.targetObject + " - " + typeof(ProgressBarAttribute).Name + " maxValue error on property: '" + property.name + "'. It can be used only with float and int variables", property.serializedObject.targetObject);
+                }
+            }
         }
 
 		void DrawBar(SerializedProperty property, Rect position)

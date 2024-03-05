@@ -84,7 +84,7 @@ namespace redd096.Attributes
                 }
                 else
                 {
-                    Debug.LogWarning(property.serializedObject.targetObject + " - " + typeof(ColorGUIAttribute).Name + " can't be used on '" + property.name + "'. It can be used only on Color, Color32 and AttributesUtility.EColor variables", property.serializedObject.targetObject);
+                    Debug.LogWarning(property.serializedObject.targetObject + " - " + typeof(ColorGUIAttribute).Name + " color error on property: '" + property.name + "'. It can be used only with Color, Color32 and AttributesUtility.EColor variables", property.serializedObject.targetObject);
                 }
             }
 
