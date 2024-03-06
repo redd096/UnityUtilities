@@ -41,7 +41,7 @@ namespace redd096.Attributes
 
 #if UNITY_EDITOR
 
-    [CanEditMultipleObjects]
+    //[CanEditMultipleObjects]
     [CustomEditor(typeof(UnityEngine.Object), true)]
     public class ButtonEditor : Editor
     {
@@ -115,7 +115,10 @@ namespace redd096.Attributes
                             EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());     //normal scene
 
                         //save prefab overrides if this is a prefab
-                        PrefabUtility.RecordPrefabInstancePropertyModifications(target);
+                        foreach (var component in Selection.activeGameObject.GetComponentsInChildren<Component>())
+                        {
+                            PrefabUtility.RecordPrefabInstancePropertyModifications(component);
+                        }
 
                         //repaint scene and inspector
                         SceneView.RepaintAll();
