@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Collections;
 using System.Reflection;
 using redd096.Attributes.AttributesEditorUtility;
-//using UnityEditor.SceneManagement;                //used for PrefabStage and PrefabStageUtility
+using UnityEditor.SceneManagement;                //used for PrefabStage and PrefabStageUtility
 //using UnityEditor.Experimental.SceneManagement;   //old versions of unity
 using UnityEditor;
 #endif
@@ -97,7 +97,7 @@ namespace redd096.Attributes
                     //in editor mode, create undo
                     if (Application.isPlaying == false)
                     {
-                        Undo.RegisterFullObjectHierarchyUndo(target, string.IsNullOrEmpty(buttonAttribute.buttonName) ? method.Name : buttonAttribute.buttonName);
+                        Undo.RegisterCompleteObjectUndo(target, string.IsNullOrEmpty(buttonAttribute.buttonName) ? method.Name : buttonAttribute.buttonName);
                     }
 
                     IEnumerator methodResult = method.Invoke(target, method.GetDefaultParameters()) as IEnumerator;             //pass default values, if there are optional parameters
@@ -105,18 +105,17 @@ namespace redd096.Attributes
                     //in editor mode set target object and scene dirty to serialize changes to disk
                     if (Application.isPlaying == false)
                     {
-                        //replaced with Undo
-                        //EditorUtility.SetDirty(target);
-                        //
-                        //PrefabStage stage = PrefabStageUtility.GetCurrentPrefabStage();
-                        //if (stage != null)
-                        //    EditorSceneManager.MarkSceneDirty(stage.scene);                             //prefab mode
-                        //else
-                        //    EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());     //normal scene
+                        EditorUtility.SetDirty(target);
+                        
+                        PrefabStage stage = PrefabStageUtility.GetCurrentPrefabStage();
+                        if (stage != null)
+                            EditorSceneManager.MarkSceneDirty(stage.scene);                             //prefab mode
+                        else
+                            EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());     //normal scene
 
-                        ////repaint scene and inspector
-                        //SceneView.RepaintAll();
-                        //Repaint();
+                        //repaint scene and inspector
+                        SceneView.RepaintAll();
+                        Repaint();
                     }
                     //in play mode can call also coroutines
                     else if (methodResult != null && target is MonoBehaviour behaviour)
