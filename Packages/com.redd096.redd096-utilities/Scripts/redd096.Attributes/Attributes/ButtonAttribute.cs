@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Collections;
 using System.Reflection;
 using redd096.Attributes.AttributesEditorUtility;
-using UnityEditor.SceneManagement;                //used for PrefabStage and PrefabStageUtility
+using UnityEditor.SceneManagement;                //used for PrefabStage, PrefabStageUtility and EditorSceneManager
 //using UnityEditor.Experimental.SceneManagement;   //old versions of unity
 using UnityEditor;
 #endif
@@ -105,13 +105,17 @@ namespace redd096.Attributes
                     //in editor mode set target object and scene dirty to serialize changes to disk
                     if (Application.isPlaying == false)
                     {
+                        //I'm not sure SetDirty and MarkSceneDirty are still necessary now that there is the undo
                         EditorUtility.SetDirty(target);
-                        
+
                         PrefabStage stage = PrefabStageUtility.GetCurrentPrefabStage();
                         if (stage != null)
                             EditorSceneManager.MarkSceneDirty(stage.scene);                             //prefab mode
                         else
                             EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());     //normal scene
+
+                        //save prefab overrides if this is a prefab
+                        PrefabUtility.RecordPrefabInstancePropertyModifications(target);
 
                         //repaint scene and inspector
                         SceneView.RepaintAll();
