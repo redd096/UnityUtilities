@@ -7,7 +7,7 @@ using UnityEditor;
 namespace redd096.Attributes
 {
     /// <summary>
-    /// Show help box above property
+    /// Show help box above property. It's the same as InfoBoxAttribute
     /// </summary>
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = true, Inherited = true)]
     public class HelpBoxAttribute : PropertyAttribute
@@ -16,19 +16,16 @@ namespace redd096.Attributes
 
         public readonly EMessageType messageType;
         public readonly string message;
-        public readonly bool wide;
 
         /// <summary>
         /// Show help box above property
         /// </summary>
         /// <param name="message"></param>
         /// <param name="messageType"></param>
-        /// <param name="wide">If true, the box will cover the whole width of the window; otherwise it will cover the controls part only</param>
-        public HelpBoxAttribute(string message, EMessageType messageType = EMessageType.Info, bool wide = true)
+        public HelpBoxAttribute(string message, EMessageType messageType = EMessageType.Info)
         {
             this.message = message;
             this.messageType = messageType;
-            this.wide = wide;
         }
     }
 
@@ -36,20 +33,19 @@ namespace redd096.Attributes
 
 #if UNITY_EDITOR
 
-    [CustomPropertyDrawer(typeof(HelpBoxAttribute))]
+    [CustomPropertyDrawer(typeof(HelpBoxAttribute), true)]
     public class HelpBoxDrawer : DecoratorDrawer
     {
-        HelpBoxAttribute at;
-
         public override float GetHeight()
         {
+            HelpBoxAttribute at = attribute as HelpBoxAttribute;
             return base.GetHeight() + EditorStyles.helpBox.CalcSize(new GUIContent(at != null ? at.message : "")).y;
         }
 
         public override void OnGUI(Rect position)
         {
             //base.OnGUI(position);
-            at = attribute as HelpBoxAttribute;
+            HelpBoxAttribute at = attribute as HelpBoxAttribute;
 
             EditorGUI.HelpBox(position, at.message, GetMessageType(at.messageType));
         }

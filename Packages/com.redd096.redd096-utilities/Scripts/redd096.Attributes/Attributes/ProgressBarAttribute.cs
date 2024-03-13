@@ -70,7 +70,7 @@ namespace redd096.Attributes
 		{
 			//get attribute and max value
 			at = attribute as ProgressBarAttribute;
-            SetBarColor(property);
+            barColor = EditorAttributesUtility.GetColor(property, at.colorValue, at.color);
             SetMaxValue(property, out bool maxValueIsInt);
 
 			//be sure property is number
@@ -93,63 +93,23 @@ namespace redd096.Attributes
 			}
 		}
 
-        void SetBarColor(SerializedProperty property)
-        {
-            //get color from attribute or property
-            barColor = default;
-            if (string.IsNullOrEmpty(at.colorValue))
-            {
-                barColor = AttributesUtility.GetColor(at.color);
-            }
-            else
-            {
-                //property can be EColor or Color
-                object obj = property.GetValue(at.colorValue, typeof(Color), typeof(Color32), typeof(AttributesUtility.EColor));
-                if (obj is AttributesUtility.EColor eColor)
-                {
-                    barColor = AttributesUtility.GetColor(eColor);
-                }
-                else if (obj is Color32 color32)
-                {
-                    barColor = color32;
-                }
-                else if (obj is Color newColor)
-                {
-                    barColor = newColor;
-                }
-                else
-                {
-                    Debug.LogWarning(property.serializedObject.targetObject + " - " + typeof(ProgressBarAttribute).Name + " color error on property: '" + property.name + "'. It can be used only with Color, Color32 and AttributesUtility.EColor variables", property.serializedObject.targetObject);
-                }
-            }
-        }
-
         void SetMaxValue(SerializedProperty property, out bool isInt)
         {
             //get max value from attribute or property
-            maxValue = 0f;
+            object obj = EditorAttributesUtility.GetObjectValue(property, at.maxValueName, at.maxValue, typeof(float), typeof(int));
             isInt = false;
-            if (string.IsNullOrEmpty(at.maxValueName))
+            if (obj is float floatValue)
             {
-                maxValue = at.maxValue;
+                maxValue = floatValue;
+            }
+            else if (obj is int intValue)
+            {
+                maxValue = intValue;
+                isInt = true;
             }
             else
             {
-                //property can be float or int
-                object obj = property.GetValue(at.maxValueName, typeof(float), typeof(int));
-                if (obj is float floatValue)
-                {
-                    maxValue = floatValue;
-                }
-                else if (obj is int intValue)
-                {
-                    maxValue = intValue;
-                    isInt = true;
-                }
-                else
-                {
-                    Debug.LogWarning(property.serializedObject.targetObject + " - " + typeof(ProgressBarAttribute).Name + " maxValue error on property: '" + property.name + "'. It can be used only with float and int variables", property.serializedObject.targetObject);
-                }
+                Debug.LogWarning(property.serializedObject.targetObject + " - " + typeof(ProgressBarAttribute).Name + " maxValue error on property: '" + property.name + "'. It can be used only with float and int variables", property.serializedObject.targetObject);
             }
         }
 

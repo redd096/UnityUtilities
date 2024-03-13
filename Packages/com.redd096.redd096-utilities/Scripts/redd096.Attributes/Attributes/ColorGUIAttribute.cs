@@ -61,32 +61,7 @@ namespace redd096.Attributes
         void SetColorGUI(ColorGUIAttribute at, SerializedProperty property, out Color previousColor)
         {
             //get color from attribute or property
-            Color colorToUse = default;
-            if (string.IsNullOrEmpty(at.colorValue))
-            {
-                colorToUse = AttributesUtility.GetColor(at.color);
-            }
-            else
-            {
-                //property can be EColor or Color
-                object obj = property.GetValue(at.colorValue, typeof(Color), typeof(Color32), typeof(AttributesUtility.EColor));
-                if (obj is AttributesUtility.EColor eColor)
-                {
-                    colorToUse = AttributesUtility.GetColor(eColor);
-                }
-                else if (obj is Color32 color32)
-                {
-                    colorToUse = color32;
-                }
-                else if (obj is Color newColor)
-                {
-                    colorToUse = newColor;
-                }
-                else
-                {
-                    Debug.LogWarning(property.serializedObject.targetObject + " - " + typeof(ColorGUIAttribute).Name + " color error on property: '" + property.name + "'. It can be used only with Color, Color32 and AttributesUtility.EColor variables", property.serializedObject.targetObject);
-                }
-            }
+            Color colorToUse = EditorAttributesUtility.GetColor(property, at.colorValue, at.color);
 
             //set GUI color
             if (at.colorType == ColorGUIAttribute.EColorType.GUI)
