@@ -1,8 +1,5 @@
 ﻿using System.Reflection;
 using System.Linq;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 namespace redd096.Attributes.AttributesEditorUtility
 {
@@ -16,7 +13,7 @@ namespace redd096.Attributes.AttributesEditorUtility
         /// </summary>
         /// <param name="property"></param>
         /// <returns></returns>
-        public static FieldInfo GetField(this SerializedProperty property)
+        public static FieldInfo GetField(this UnityEditor.SerializedProperty property)
 		{
 			//find field using property.name
 			return property.GetTargetObjectWithProperty().GetField(property.name);
@@ -29,7 +26,7 @@ namespace redd096.Attributes.AttributesEditorUtility
         /// <param name="valueName"></param>
         /// <param name="methodReturnTypes">Call methods only with this return type. If null call every method</param>
         /// <returns></returns>
-        public static object GetValue(this SerializedProperty property, string valueName, params System.Type[] methodReturnTypes)
+        public static object GetValue(this UnityEditor.SerializedProperty property, string valueName, params System.Type[] methodReturnTypes)
 		{
 			return property.GetTargetObjectWithProperty().GetValue(valueName, methodReturnTypes);
 		}
