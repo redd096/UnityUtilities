@@ -153,9 +153,9 @@ Shader "Sprites/DefaultWithGlow"
             {
                 fixed4 c = SampleSpriteTexture (IN.texcoord) * IN.color;
                 c.rgb *= c.a;
-                
+
                 //GLOW apply to sprite color
-                c = lerp(c, c + _GlowColor * _GlowColor.a, _IsGlowEnabled);
+                c = lerp(c, c * _GlowColor * _GlowColor.a, _IsGlowEnabled);
 
                 return c;
             }
