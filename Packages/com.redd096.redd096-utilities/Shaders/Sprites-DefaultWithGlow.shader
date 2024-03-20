@@ -65,13 +65,13 @@ Shader "Sprites/DefaultWithGlow"
                 #define _Flip           UNITY_ACCESS_INSTANCED_PROP(PerDrawSprite, unity_SpriteFlipArray)
                 
                 //GLOW instancing         
-				UNITY_INSTANCING_BUFFER_START(PerDrawSpriteGlow)
-				    UNITY_DEFINE_INSTANCED_PROP(float,  unity_SpriteGlowEnabled)
-				    UNITY_DEFINE_INSTANCED_PROP(fixed4, unity_SpriteGlowColor)
-                UNITY_INSTANCING_BUFFER_END(PerDrawSpriteGlow)
-
-                #define _IsGlowEnabled  UNITY_ACCESS_INSTANCED_PROP(PerDrawSpriteGlow, unity_SpriteGlowEnabled)
-                #define _GlowColor           UNITY_ACCESS_INSTANCED_PROP(PerDrawSpriteGlow, unity_SpriteGlowColor)
+				//UNITY_INSTANCING_BUFFER_START(PerDrawSpriteGlow)
+				//    UNITY_DEFINE_INSTANCED_PROP(float,  unity_SpriteGlowEnabled)
+				//    UNITY_DEFINE_INSTANCED_PROP(fixed4, unity_SpriteGlowColor)
+                //UNITY_INSTANCING_BUFFER_END(PerDrawSpriteGlow)
+                //
+                //#define _IsGlowEnabled  UNITY_ACCESS_INSTANCED_PROP(PerDrawSpriteGlow, unity_SpriteGlowEnabled)
+                //#define _GlowColor           UNITY_ACCESS_INSTANCED_PROP(PerDrawSpriteGlow, unity_SpriteGlowColor)
 
             #endif // instancing
 
@@ -83,13 +83,13 @@ Shader "Sprites/DefaultWithGlow"
                 float _EnableExternalAlpha;
             CBUFFER_END
             
-            //GLOW buffer
-            CBUFFER_START(UnityPerDrawSpriteGlow)
-            #ifndef UNITY_INSTANCING_ENABLED
+            //GLOW buffer (I don't know what instancing and buffer are, but with them not commented the glow stop works when Enable GPU Instancing is enabled)
+            //CBUFFER_START(UnityPerDrawSpriteGlow)
+            //#ifndef UNITY_INSTANCING_ENABLED
             float _IsGlowEnabled;
             fixed4 _GlowColor;
-            #endif
-            CBUFFER_END
+            //#endif
+            //CBUFFER_END
 
             // Material Color.
             fixed4 _Color;
