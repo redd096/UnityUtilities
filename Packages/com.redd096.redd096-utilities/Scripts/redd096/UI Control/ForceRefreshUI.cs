@@ -22,17 +22,20 @@ namespace redd096
             //wait end of frame
             yield return new WaitForEndOfFrame();
 
-            //refresh every child layout group
-            var componentsInChildren = root.GetComponentsInChildren<LayoutGroup>(true);
-            foreach (var layoutGroup in componentsInChildren)
+            if (root)
             {
-                LayoutRebuilder.ForceRebuildLayoutImmediate(layoutGroup.GetComponent<RectTransform>());
-            }
+                //refresh every child layout group
+                var componentsInChildren = root.GetComponentsInChildren<LayoutGroup>(true);
+                foreach (var layoutGroup in componentsInChildren)
+                {
+                    LayoutRebuilder.ForceRebuildLayoutImmediate(layoutGroup.GetComponent<RectTransform>());
+                }
 
-            //be sure root is refreshed as last one
-            var rootRect = root.GetComponent<RectTransform>();
-            if (rootRect)
-                LayoutRebuilder.ForceRebuildLayoutImmediate(rootRect);
+                //be sure root is refreshed as last one
+                var rootRect = root.GetComponent<RectTransform>();
+                if (rootRect)
+                    LayoutRebuilder.ForceRebuildLayoutImmediate(rootRect);
+            }
         }
     }
 }
