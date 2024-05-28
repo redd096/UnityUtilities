@@ -2,16 +2,6 @@
 
 namespace redd096
 {
-    enum Axis
-    {
-        X, Y, Z
-    }
-
-    enum CheckOperator
-    {
-        greater, greaterEqual, lower, lowerEqual, equal, notEqual
-    }
-
     [CreateAssetMenu(menuName = "redd096/Procedural Map Manager Check/Axis Check")]
     public class AxisCheck : ProceduralMapManagerCheck
     {
@@ -55,6 +45,16 @@ namespace redd096
                 default:
                     return false;
             }
+        }
+
+        enum Axis
+        {
+            X, Y, Z
+        }
+
+        enum CheckOperator
+        {
+            greater, greaterEqual, lower, lowerEqual, equal, notEqual
         }
     }
 }
