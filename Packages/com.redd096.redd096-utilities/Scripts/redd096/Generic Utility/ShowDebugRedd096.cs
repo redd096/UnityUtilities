@@ -6,6 +6,9 @@ using UnityEditor;
 
 namespace redd096
 {
+    /// <summary>
+    /// Show a toggle and Color horizontally in inspector
+    /// </summary>
     [System.Serializable]
     public class ShowDebugRedd096
     {
