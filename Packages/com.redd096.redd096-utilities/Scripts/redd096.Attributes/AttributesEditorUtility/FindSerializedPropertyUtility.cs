@@ -20,11 +20,29 @@ namespace redd096.Attributes.AttributesEditorUtility
         /// <returns></returns>
         public static object GetTargetObjectWithProperty(this SerializedProperty property)
         {
+            return GetTargetObjectFromProperty_Internal(property, false);
+        }
+
+        /// <summary>
+        /// Gets the object the property represents.
+        /// </summary>
+        /// <param name="property"></param>
+        /// <returns></returns>
+        public static object GetTargetObjectOfProperty(SerializedProperty property)
+        {
+            return GetTargetObjectFromProperty_Internal(property, true);
+        }
+
+        private static object GetTargetObjectFromProperty_Internal(SerializedProperty property, bool getObjectPropertyRepresents)
+        {
+            if (property == null)
+                return null;
+
             string path = property.propertyPath.Replace(".Array.data[", "[");
             object obj = property.serializedObject.targetObject;
             string[] elements = path.Split('.');
 
-            for (int i = 0; i < elements.Length - 1; i++)
+            for (int i = 0; i < elements.Length - (getObjectPropertyRepresents ? 0 : 1); i++)
             {
                 string element = elements[i];
                 if (element.Contains("["))
