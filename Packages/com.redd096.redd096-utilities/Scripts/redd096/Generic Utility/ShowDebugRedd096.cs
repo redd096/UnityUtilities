@@ -51,8 +51,8 @@ namespace redd096
             SerializedProperty showDebug = property.FindPropertyRelative("ShowDebug");
 
             // Draw fields - pass GUIContent.none to each so they are drawn without labels
-            EditorGUILayout.LabelField(label, GUILayout.ExpandWidth(false));
-            EditorGUILayout.PropertyField(showDebug, GUIContent.none, GUILayout.Width(30));
+            //EditorGUILayout.LabelField(label, GUILayout.ExpandWidth(false));
+            EditorGUILayout.PropertyField(showDebug, label);
             if (showDebug.boolValue)
                 EditorGUILayout.PropertyField(property.FindPropertyRelative("ColorDebug"), GUIContent.none, GUILayout.Width(100));
 
