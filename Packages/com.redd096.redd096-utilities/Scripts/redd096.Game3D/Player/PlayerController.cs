@@ -1,0 +1,71 @@
+using UnityEngine;
+#if ENABLE_INPUT_SYSTEM
+using UnityEngine.InputSystem;
+#endif
+
+namespace redd096.Game3D
+{
+    [AddComponentMenu("redd096/.Game3D/Player/Player Controller")]
+    public class PlayerController : MonoBehaviour
+    {
+        //pawn
+        private PlayerPawn _currentPawn;
+        public PlayerPawn CurrentPawn => _currentPawn;
+
+#if ENABLE_INPUT_SYSTEM
+        //player input variables
+        public int playerIndex => _playerInput.playerIndex;
+
+        PlayerInput _playerInput;
+        public PlayerInput PlayerInput { get { if (_playerInput == null) _playerInput = GetComponent<PlayerInput>(); return _playerInput; } }
+
+        /// <summary>
+        /// Shortcut to call FindAction on PlayerInput
+        /// </summary>
+        /// <param name="action"></param>
+        /// <returns></returns>
+        public InputAction FindAction(string action)
+        {
+            return _playerInput.actions.FindAction(action);
+        }
+#endif
+
+        protected virtual void Awake()
+        {
+            //be sure is unparent - set DontDestroyOnLoad
+            transform.SetParent(null);
+            DontDestroyOnLoad(gameObject);
+        }
+
+        /// <summary>
+        /// Possess pawn - if already possessing a pawn, it will be unpossessed
+        /// </summary>
+        /// <param name="pawn"></param>
+        public virtual void Possess(PlayerPawn pawn)
+        {
+            //on controller, if already possessing a pawn, unpossess it and save new one
+            Unpossess();
+            _currentPawn = pawn;
+
+            //on pawn, if already possessed, remove it and save this as new controller
+            if (_currentPawn)
+            {
+                if (_currentPawn.CurrentController) _currentPawn.CurrentController.Unpossess();
+                _currentPawn.CurrentController = this;
+            }
+        }
+
+        /// <summary>
+        /// Unpossess current pawn
+        /// </summary>
+        public virtual void Unpossess()
+        {
+            //on controller, remove current pawn - on pawn, remove current controller
+            if (_currentPawn)
+            {
+                _currentPawn.CurrentController = null;
+                _currentPawn = null;
+            }
+        }
+    }
+}
