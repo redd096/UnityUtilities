@@ -1,8 +1,11 @@
 ﻿using UnityEngine;
 
-namespace redd096
+namespace redd096.UIControl
 {
-    [CreateAssetMenu(fileName = "Vector3", menuName = "redd096/UI Control/Vector3")]
+    /// <summary>
+    /// Used with CustomEventTrigger
+    /// </summary>
+    [CreateAssetMenu(fileName = "Vector3", menuName = "redd096/UI Control/CustomEventTrigger/Vector3")]
     public class Vector3UIControl : ScriptableObject
     {
         [SerializeField] Vector3 vector3 = Vector3.zero;

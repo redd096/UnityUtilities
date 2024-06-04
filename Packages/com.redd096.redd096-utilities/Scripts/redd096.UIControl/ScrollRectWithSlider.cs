@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace redd096
+namespace redd096.UIControl
 {
-    [AddComponentMenu("redd096/UI Control/Scroll Rect With Slider")]
+    [AddComponentMenu("redd096/.UIControl/Scroll Rect With Slider")]
     public class ScrollRectWithSlider : MonoBehaviour
     {
         [Header("UI Elements")]

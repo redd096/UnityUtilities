@@ -1,5 +1,4 @@
-﻿using redd096.Attributes;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace redd096.StateMachine.BasicStateMachineRedd096
 {
@@ -8,8 +7,10 @@ namespace redd096.StateMachine.BasicStateMachineRedd096
         [Header("Basic State")]
         public string StateName = "";
 
-        public StateMachineRedd096 StateMachine { get; set; }
-        public bool IsActive { get; set; }
+        private StateMachineRedd096 _stateMachine;
+        public StateMachineRedd096 StateMachine { get => _stateMachine; set => _stateMachine = value; }
+        private bool _isActive;
+        public bool IsActive { get => _isActive; set => _isActive = value; }
 
         bool isInitialized;
 
@@ -20,13 +21,13 @@ namespace redd096.StateMachine.BasicStateMachineRedd096
         /// <returns></returns>
         public T GetStateMachine<T>() where T : StateMachineRedd096
         {
-            return StateMachine as T;
+            return _stateMachine as T;
         }
 
         #region protected
 
         //as transform use statemachine if possible
-        protected Transform transformState => StateMachine ? StateMachine.transform : null;
+        protected Transform transformState => _stateMachine ? _stateMachine.transform : null;
 
         /// <summary>
         /// Get component in stateMachine or parent. If not found, show warning
@@ -37,11 +38,11 @@ namespace redd096.StateMachine.BasicStateMachineRedd096
         protected T GetStateMachineComponent<T>(bool showWarningIfNotFound = true)
         {
             //get in parent
-            T component = StateMachine ? StateMachine.GetComponentInParent<T>() : default;
+            T component = _stateMachine ? _stateMachine.GetComponentInParent<T>() : default;
 
             //show warning if not found
             if (showWarningIfNotFound && component == null)
-                Debug.LogWarning($"Miss {typeof(T).Name} on {StateMachine}");
+                Debug.LogWarning($"Miss {typeof(T).Name} on {_stateMachine}");
 
             return component;
         }
@@ -52,7 +53,7 @@ namespace redd096.StateMachine.BasicStateMachineRedd096
         /// <typeparam name="T"></typeparam>
         /// <param name="v"></param>
         /// <returns></returns>
-        protected T GetValue<T>(VarOrBlackboard<T> v) => v != null ? v.GetValue(StateMachine) : default;
+        protected T GetValue<T>(VarOrBlackboard<T> v) => v != null ? v.GetValue(_stateMachine) : default;
 
         #endregion
 
@@ -70,7 +71,7 @@ namespace redd096.StateMachine.BasicStateMachineRedd096
             isInitialized = true;
 
             //set state machine and init
-            this.StateMachine = stateMachine;
+            _stateMachine = stateMachine;
             OnInit();
         }
 
@@ -79,7 +80,7 @@ namespace redd096.StateMachine.BasicStateMachineRedd096
         /// </summary>
         public void Enter()
         {
-            IsActive = true;
+            _isActive = true;
             OnEnter();
         }
 
@@ -88,7 +89,7 @@ namespace redd096.StateMachine.BasicStateMachineRedd096
         /// </summary>
         public void Exit()
         {
-            IsActive = false;
+            _isActive = false;
             OnExit();
         }
 

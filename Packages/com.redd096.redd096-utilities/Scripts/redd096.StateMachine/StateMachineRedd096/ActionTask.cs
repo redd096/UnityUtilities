@@ -2,7 +2,7 @@
 
 namespace redd096.StateMachine.StateMachineRedd096
 {
-    [AddComponentMenu("redd096/StateMachine/StateMachineRedd096/Action Task")]
+    [AddComponentMenu("redd096/.StateMachine/StateMachineRedd096/Action Task")]
     public class ActionTask : BaseTask
     {
         /// <summary>

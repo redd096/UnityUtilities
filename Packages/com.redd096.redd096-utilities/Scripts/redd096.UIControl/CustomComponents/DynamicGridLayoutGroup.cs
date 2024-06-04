@@ -7,9 +7,9 @@ using static UnityEngine.UI.GridLayoutGroup;
 using UnityEditor;
 #endif
 
-namespace redd096
+namespace redd096.UIControl
 {
-    [AddComponentMenu("redd096/UI Control/Custom Components/Dynamic Grid Layout Group")]
+    [AddComponentMenu("redd096/.UIControl/Custom Components/Dynamic Grid Layout Group")]
     public class DynamicGridLayoutGroup : LayoutGroup
     {
         #region GridLayoutGroup variables

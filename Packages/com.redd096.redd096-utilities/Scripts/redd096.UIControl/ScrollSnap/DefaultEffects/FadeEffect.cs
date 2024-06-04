@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace redd096
+namespace redd096.UIControl
 {
     [CreateAssetMenu(fileName = "FadeEffect", menuName = "redd096/UI Control/ScrollSnapEffect/FadeEffect")]
     public class FadeEffect : BaseScrollSnapEffect

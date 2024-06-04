@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace redd096
+namespace redd096.UIControl
 {
     [CreateAssetMenu(fileName = "ScaleEffect", menuName = "redd096/UI Control/ScrollSnapEffect/Scale Effect")]
     public class ScaleEffect : BaseScrollSnapEffect

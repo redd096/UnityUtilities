@@ -3,13 +3,13 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-namespace redd096
+namespace redd096.UIControl
 {
     /// <summary>
     /// use events to know when start animation and when finish to update list
     /// TODO Create a CustomScrollRect, where we can override BeginDrag and EndDrag for example to call update only on EndDrag (release touch)
     /// </summary>
-    [AddComponentMenu("redd096/UI Control/Refresh On Scroll")]
+    [AddComponentMenu("redd096/.UIControl/Refresh On Scroll")]
     public class RefreshOnScroll : MonoBehaviour
     {
         public ScrollRect scrollview;

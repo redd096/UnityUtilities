@@ -2,9 +2,9 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace redd096
+namespace redd096.UIControl
 {
-    [AddComponentMenu("redd096/UI Control/Scroll Item Click Handler")]
+    [AddComponentMenu("redd096/.UIControl/ScrollSnap/Scroll Item Click Handler")]
     public class ScrollItemClickHandler : MonoBehaviour, IPointerClickHandler
     {
         private event Action _clickListener;

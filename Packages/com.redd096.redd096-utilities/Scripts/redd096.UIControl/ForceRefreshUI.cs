@@ -2,9 +2,9 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace redd096
+namespace redd096.UIControl
 {
-    [AddComponentMenu("redd096/UI Control/Force Refresh UI")]
+    [AddComponentMenu("redd096/.UIControl/Force Refresh UI")]
     public class ForceRefreshUI : MonoBehaviour
     {
         private void OnEnable()

@@ -9,14 +9,14 @@ using UnityEngine.UI;
 
 //these have various changes, like invertScrollValue or effects fixes for TextMeshPro
 
-namespace redd096
+namespace redd096.UIControl
 {
     /// <summary>
     /// Attach to ScrollRect. When create vertical or horizontal layout, change padding to have first element in center of scroll viewport.
     /// If select is wrong, try enable invertScrollValue
     /// </summary>
     [RequireComponent(typeof(ScrollRect))]
-    [AddComponentMenu("redd096/UI Control/Scroll Snap")]
+    [AddComponentMenu("redd096/.UIControl/ScrollSnap/Scroll Snap")]
     public class ScrollSnap : MonoBehaviour
     {
         #region INSPECTOR PROPERTIES

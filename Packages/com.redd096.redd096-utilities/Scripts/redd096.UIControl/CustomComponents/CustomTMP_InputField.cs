@@ -6,9 +6,9 @@ using TMPro.EditorUtilities;
 using UnityEditor;
 #endif
 
-namespace redd096
+namespace redd096.UIControl
 {
-    [AddComponentMenu("redd096/UI Control/Custom Components/Custom TextMeshPro - Input Field")]
+    [AddComponentMenu("redd096/.UIControl/Custom Components/Custom TextMeshPro - Input Field")]
     public class CustomTMP_InputField : TMP_InputField
     {
         [SerializeField] FCustomTargetGraphics[] m_customTargetGraphics;

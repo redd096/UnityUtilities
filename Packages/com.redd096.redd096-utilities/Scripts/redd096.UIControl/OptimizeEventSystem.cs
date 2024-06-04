@@ -5,9 +5,12 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
 #endif
 
-namespace redd096
+namespace redd096.UIControl
 {
-    [AddComponentMenu("redd096/UI Control/Optimize Event System")]
+    /// <summary>
+    /// Autoselect UI to use keyboard and gamepad
+    /// </summary>
+    [AddComponentMenu("redd096/.UIControl/Optimize Event System")]
     public class OptimizeEventSystem : MonoBehaviour
     {
         #region variables

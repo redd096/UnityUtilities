@@ -1,5 +1,4 @@
-﻿using redd096.Attributes;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace redd096.StateMachine.StateMachineRedd096
 {
@@ -8,8 +7,10 @@ namespace redd096.StateMachine.StateMachineRedd096
         [Header("Task")]
         public string TaskName = "";
 
-        public StateMachineRedd096 StateMachine { get; set; }
-        public bool IsTaskActive { get; set; }
+        private StateMachineRedd096 _stateMachine;
+        public StateMachineRedd096 StateMachine { get => _stateMachine; set => _stateMachine = value; }
+        private bool _isTaskActive;
+        public bool IsTaskActive { get => _isTaskActive; set => _isTaskActive = value; }
 
         bool isInitialized;
 
@@ -20,13 +21,13 @@ namespace redd096.StateMachine.StateMachineRedd096
         /// <returns></returns>
         public T GetStateMachine<T>() where T : StateMachineRedd096
         {
-            return StateMachine as T;
+            return _stateMachine as T;
         }
 
         #region protected
 
-        //as transform use statemachine if possible, else use this task
-        protected Transform transformTask => StateMachine ? StateMachine.transform : transform;
+        //as transform use stateMachine if possible, else use this task
+        protected Transform transformTask => _stateMachine ? _stateMachine.transform : transform;
 
         /// <summary>
         /// Get component in parent. If not found, show warning
@@ -41,7 +42,7 @@ namespace redd096.StateMachine.StateMachineRedd096
 
             //show warning if not found
             if (showWarningIfNotFound && component == null)
-                Debug.LogWarning($"Miss {typeof(T).Name} on {StateMachine}");
+                Debug.LogWarning($"Miss {typeof(T).Name} on {_stateMachine}");
 
             return component;
         }
@@ -52,7 +53,7 @@ namespace redd096.StateMachine.StateMachineRedd096
         /// <typeparam name="T"></typeparam>
         /// <param name="v"></param>
         /// <returns></returns>
-        protected T GetValue<T>(VarOrBlackboard<T> v) => v != null ? v.GetValue(StateMachine) : default;
+        protected T GetValue<T>(VarOrBlackboard<T> v) => v != null ? v.GetValue(_stateMachine) : default;
 
         #endregion
 
@@ -70,7 +71,7 @@ namespace redd096.StateMachine.StateMachineRedd096
             isInitialized = true;
 
             //set state machine and init
-            this.StateMachine = stateMachine;
+            _stateMachine = stateMachine;
             OnInitTask();
         }
 
@@ -79,7 +80,7 @@ namespace redd096.StateMachine.StateMachineRedd096
         /// </summary>
         public void EnterTask()
         {
-            IsTaskActive = true;
+            _isTaskActive = true;
             OnEnterTask();
         }
 
@@ -88,7 +89,7 @@ namespace redd096.StateMachine.StateMachineRedd096
         /// </summary>
         public void ExitTask()
         {
-            IsTaskActive = false;
+            _isTaskActive = false;
             OnExitTask();
         }
 

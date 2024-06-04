@@ -1,14 +1,12 @@
 using UnityEngine;
-using UnityEngine.UI;
 #if UNITY_EDITOR
 using UnityEditor;
-using UnityEditor.UI;
 #endif
 
-namespace redd096
+namespace redd096.UIControl
 {
-    [AddComponentMenu("redd096/UI Control/Custom Components/Content Size Fitter/Content Size Fitter With Limits")]
-    public class ContentSizeFitterWithLimits : ContentSizeFitter
+    [AddComponentMenu("redd096/.UIControl/Custom Components/Content Size Fitter/Dynamic Content Size Fitter With Limits")]
+    public class DynamicContentSizeFitterWithLimits : DynamicContentSizeFitter
     {
         [Header("Content max limits")]
         [SerializeField] bool m_limitWidth = true;
@@ -36,45 +34,8 @@ namespace redd096
         /// </summary>
         public float maxHeight { get { return m_maxHeight; } set { m_maxHeight = value; SetDirty(); } }
 
-        //this object's rect transform (ContentSizeFitter copy-paste)
-        [System.NonSerialized] private RectTransform m_Rect;
-        private RectTransform rectTransform
+        protected override float DynamicSize(float size, int axis, Vector2 defaultSize)
         {
-            get
-            {
-                if (m_Rect == null)
-                    m_Rect = GetComponent<RectTransform>();
-                return m_Rect;
-            }
-        }
-
-        public override void SetLayoutHorizontal()
-        {
-            //base.SetLayoutHorizontal();
-            HandleSelfFittingAlongAxis(0);
-        }
-
-        public override void SetLayoutVertical()
-        {
-            //base.SetLayoutVertical();
-            HandleSelfFittingAlongAxis(1);
-        }
-
-        private void HandleSelfFittingAlongAxis(int axis)
-        {
-            FitMode fitting = (axis == 0 ? horizontalFit : verticalFit);
-            if (fitting == FitMode.Unconstrained)
-            {
-                return;
-            }
-
-            // Set size to min or preferred size
-            float size;
-            if (fitting == FitMode.MinSize)
-                size = LayoutUtility.GetMinSize(m_Rect, axis);
-            else
-                size = LayoutUtility.GetPreferredSize(m_Rect, axis);
-
             //limit size
             if (axis == 0)
             {
@@ -87,16 +48,17 @@ namespace redd096
                     size = m_maxHeight;
             }
 
-            rectTransform.SetSizeWithCurrentAnchors((RectTransform.Axis)axis, size);
+            //do normally dynamic size checks
+            return base.DynamicSize(size, axis, defaultSize);
         }
     }
 
     #region custom editor
 #if UNITY_EDITOR
 
-    [CustomEditor(typeof(ContentSizeFitterWithLimits), true)]
+    [CustomEditor(typeof(DynamicContentSizeFitterWithLimits), true)]
     [CanEditMultipleObjects]
-    public class ContentSizeFitterWithLimitsEditor : ContentSizeFitterEditor
+    public class DynamicContentSizeFitterWithLimitsEditor : DynamicContentSizeFitterEditor
     {
         SerializedProperty m_limitWidth;
         SerializedProperty m_maxWidth;

@@ -5,9 +5,9 @@ using UnityEditor;
 using UnityEditor.UI;
 #endif
 
-namespace redd096
+namespace redd096.UIControl
 {
-    [AddComponentMenu("redd096/UI Control/Custom Components/Content Size Fitter/Dynamic Content Size Fitter")]
+    [AddComponentMenu("redd096/.UIControl/Custom Components/Content Size Fitter/Dynamic Content Size Fitter")]
     public class DynamicContentSizeFitter : ContentSizeFitter
     {
         #region vars

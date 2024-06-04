@@ -2,9 +2,9 @@
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-namespace redd096
+namespace redd096.UIControl
 {
-    [AddComponentMenu("redd096/UI Control/Custom Components/Custom Event Trigger")]
+    [AddComponentMenu("redd096/.UIControl/Custom Components/Custom Event Trigger")]
     public class CustomEventTrigger : EventTrigger
     {
         /// <summary>
