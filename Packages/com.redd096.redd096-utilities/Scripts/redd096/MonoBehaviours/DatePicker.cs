@@ -24,7 +24,8 @@ namespace redd096
         [SerializeField] GameObject calendar = default;
         [SerializeField] bool closeOnAwake = true;
         [Tooltip("On awake set DateTime.Now as default result, to have result to read without open calendar")][SerializeField] bool setDefaultOnAwake = true;
-        [Tooltip("If set default on awake, start from first day selectable")][SerializeField] bool findFirstDaySelectable = true;
+        [EnableIf("setDefaultOnAwake")][Tooltip("If set default on awake, start from first day selectable")][SerializeField] bool findFirstDaySelectableOnAwake = true;
+        [Tooltip("When call OpenCalendar, start from first day selectable")][SerializeField] bool findFirstDaySelectableOnOpen = true;
 
         [Header("Month Header")]
         [SerializeField] TextMeshProUGUI monthText = default;
@@ -61,6 +62,7 @@ namespace redd096
 
         DateTime monthToGenerate = DateTime.Today;
         DateTime selectedDay = DateTime.Today;
+        DateTime[] customNotClickableDays = null;
 
         private void Awake()
         {
@@ -70,17 +72,9 @@ namespace redd096
                 Result = DateTime.Now;
 
                 //or find first day selectable
-                if (findFirstDaySelectable)
+                if (findFirstDaySelectableOnAwake)
                 {
-                    DateTime day = DateTime.Now;
-                    while (true)
-                    {
-                        if (timePicker) timePicker.SetSelectedDate(day);    //update time picker to check also if there are hours this day
-                        if (IsEnabledThisDay(day.Date))                     //check is enabled (using variables setted for not clicable days)
-                            break;
-                        day = day.AddDays(1);                               //else check next day
-                    }
-                    Result = day;
+                    SelectFirstSelectableDay();
                 }
 
                 OnClick(Result);
@@ -104,6 +98,7 @@ namespace redd096
             selectedDay = Result.Date;
             monthToGenerate = Result.Date;
             GenerateCalendar();
+            if (findFirstDaySelectableOnOpen) SelectFirstSelectableDay();
 
             //and open calendar
             ActiveCalendar(true);
@@ -155,7 +150,7 @@ namespace redd096
 
         public bool IsEnabledThisDay(DateTime day)
         {
-            return CanBeEnabledToday(day.Date) && IsDayEnabled(day.Date);
+            return CanBeEnabledToday(day.Date) && IsDayEnabled(day.Date) && IsNotInCustomNotClickableDays(day.Date);
         }
 
         /// <summary>
@@ -166,6 +161,31 @@ namespace redd096
         {
             Result = newDate;
             ResultString = Result.ToString(ResultStringFormat);
+        }
+
+        /// <summary>
+        /// Set days not selectable
+        /// </summary>
+        /// <param name="notClickableDays"></param>
+        public void SetCustomNotClickableDays(DateTime[] notClickableDays)
+        {
+            customNotClickableDays = notClickableDays;
+        }
+
+        /// <summary>
+        /// Cycle days from today, until found a day not disabled
+        /// </summary>
+        public void SelectFirstSelectableDay()
+        {
+            DateTime day = DateTime.Now;
+            for (int i = 0; i < 100; i++)                           //set a limit of 100 days, if not found select Today
+            {
+                if (timePicker) timePicker.SetSelectedDate(day);    //update time picker to check also if there are hours this day
+                if (IsEnabledThisDay(day.Date))                     //check is enabled (using variables setted for not clicable days)
+                    break;
+                day = day.AddDays(1);                               //else check next day
+            }
+            Result = day;
         }
 
         #endregion
@@ -243,7 +263,7 @@ namespace redd096
                 b.transform.SetSiblingIndex(daysOfWeek != null ? daysOfWeek.Length + i : i);
 
                 //check if button is enabled
-                b.interactable = CanBeEnabledToday(dt) && IsDayEnabled(dt);
+                b.interactable = CanBeEnabledToday(dt) && IsDayEnabled(dt) && IsNotInCustomNotClickableDays(dt);
 
                 //select current day
                 if (dt.Date == selectedDay.Date)
@@ -292,6 +312,21 @@ namespace redd096
                 if (dt.DayOfWeek == dayOfWeek)
                 {
                     return false;
+                }
+            }
+
+            return true;
+        }
+
+        bool IsNotInCustomNotClickableDays(DateTime dt)
+        {
+            //check every not clickable day
+            if (customNotClickableDays != null)
+            {
+                foreach (DateTime day in customNotClickableDays)
+                {
+                    if (dt.Day == day.Day)
+                        return false;
                 }
             }
 
