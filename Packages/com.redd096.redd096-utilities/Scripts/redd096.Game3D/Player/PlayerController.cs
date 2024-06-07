@@ -30,7 +30,7 @@ namespace redd096.Game3D
         /// <returns></returns>
         public InputAction FindAction(string action)
         {
-            return _playerInput.actions.FindAction(action);
+            return PlayerInput.actions.FindAction(action);
         }
 #endif
 
