@@ -1,11 +1,16 @@
 {
   "name": "com.redd096.redd096-utilities",
-  "version": "1.5.5",
+  "version": "1.5.6",
   "displayName": "redd096 Utilities",
   "description": "Unity generic utilities by redd096",
   "unity": "2021.3",
   "unityRelease": "13f1",
   "samples": [
+    {
+      "displayName": "BasicPlayer_Example",
+      "description": "Example of Player with some components to move and rotate",
+      "path": "Samples~/BasicPlayer_Example"
+    },
     {
       "displayName": "FlowField_Example",
       "description": "Example of FlowField path finding, both 2D and 3D",

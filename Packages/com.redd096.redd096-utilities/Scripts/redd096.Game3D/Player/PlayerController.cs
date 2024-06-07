@@ -5,6 +5,10 @@ using UnityEngine.InputSystem;
 
 namespace redd096.Game3D
 {
+    /// <summary>
+    /// Generally you want to calculate inputs inside PlayerController, always instantiated for every player also online, 
+    /// then there is the Pawn with its StateMachine that knows when to read the inputs from pawn's player controller
+    /// </summary>
     [AddComponentMenu("redd096/.Game3D/Player/Player Controller")]
     public class PlayerController : MonoBehaviour
     {
@@ -43,15 +47,18 @@ namespace redd096.Game3D
         /// <param name="pawn"></param>
         public virtual void Possess(PlayerPawn pawn)
         {
-            //on controller, if already possessing a pawn, unpossess it and save new one
+            //if this controller has already a pawn, unpossess it
             Unpossess();
-            _currentPawn = pawn;
 
-            //on pawn, if already possessed, remove it and save this as new controller
-            if (_currentPawn)
+            if (pawn)
             {
-                if (_currentPawn.CurrentController) _currentPawn.CurrentController.Unpossess();
+                //if the new pawn ahs already a controller, call unpossess on it
+                pawn.Unpossess();
+
+                //then set pawn and controller 
+                _currentPawn = pawn;
                 _currentPawn.CurrentController = this;
+                _currentPawn.OnPossess(this);
             }
         }
 
@@ -60,10 +67,11 @@ namespace redd096.Game3D
         /// </summary>
         public virtual void Unpossess()
         {
-            //on controller, remove current pawn - on pawn, remove current controller
             if (_currentPawn)
             {
+                //remove pawn and controller
                 _currentPawn.CurrentController = null;
+                _currentPawn.OnUnpossess(this);
                 _currentPawn = null;
             }
         }

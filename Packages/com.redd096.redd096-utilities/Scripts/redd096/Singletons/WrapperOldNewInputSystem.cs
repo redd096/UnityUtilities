@@ -6,6 +6,10 @@ using UnityEngine.InputSystem;
 
 namespace redd096
 {
+    /// <summary>
+    /// You can just use InputNew.GetAxis instead of Input, or you can write on the top: using Input = redd096.InputNew 
+    /// This singleton is just an helper to have easy access to the input action asset
+    /// </summary>
     [AddComponentMenu("redd096/Singletons/Wrapper Old New Input System")]
     public class WrapperOldNewInputSystem : Singleton<WrapperOldNewInputSystem>
     {

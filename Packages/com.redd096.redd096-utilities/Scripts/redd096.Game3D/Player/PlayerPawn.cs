@@ -2,6 +2,9 @@ using UnityEngine;
 
 namespace redd096.Game3D
 {
+    /// <summary>
+    /// This is used just to have a reference to the PlayerController
+    /// </summary>
     [AddComponentMenu("redd096/.Game3D/Player/Player Pawn")]
     public class PlayerPawn : MonoBehaviour
     {
@@ -10,7 +13,7 @@ namespace redd096.Game3D
         public PlayerController CurrentController { get => _currentController; set => _currentController = value; }
 
         /// <summary>
-        /// Make this pawn possessed by a controller
+        /// Call Possess on controller, to possess this pawn
         /// </summary>
         /// <param name="playerController"></param>
         public void Possess(PlayerController playerController)
@@ -20,15 +23,44 @@ namespace redd096.Game3D
         }
 
         /// <summary>
-        /// Make this pawn unpossessed by controller
+        /// Call Unpossess on current controller, to unpossess this pawn
         /// </summary>
         public void Unpossess()
         {
             if (_currentController)
             {
-                _currentController.Unpossess();
-                _currentController = null;   //set null to be sure, if for some reason CurrentController doesn't have this setted as pawn
+                //if for some reason CurrentController doesn't have this setted as pawn, force unpossess on this pawn
+                if (_currentController.CurrentPawn != this)
+                {
+                    PlayerController previousController = _currentController;
+                    _currentController = null;
+                    OnUnpossess(previousController);
+                    previousController.Unpossess(); //call anyway unpossess on PlayerController
+                }
+                //else call unpossess normally
+                else
+                {
+                    _currentController.Unpossess();
+                }
             }
+        }
+
+        /// <summary>
+        /// Called when a controller Possess this Pawn
+        /// </summary>
+        /// <param name="newController"></param>
+        public virtual void OnPossess(PlayerController newController)
+        {
+
+        }
+
+        /// <summary>
+        /// Called when a controller Unpossess this Pawn
+        /// </summary>
+        /// <param name="previousController"></param>
+        public virtual void OnUnpossess(PlayerController previousController)
+        {
+
         }
     }
 }
