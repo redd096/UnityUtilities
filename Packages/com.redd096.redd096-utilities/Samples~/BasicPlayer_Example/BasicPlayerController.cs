@@ -28,12 +28,12 @@ public class BasicPlayerController : PlayerController
         //calculate inputs. The pawn will use inputs when necessary
         Move = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
         Rotate = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
-        InteractPressedThisFrame = Input.GetButtonDown("Fire 1");
+        InteractPressedThisFrame = Input.GetButtonDown("Fire1");
 
         //we calculate every input here, so when we have to change inputs for some porting, or for example for PhotonFusion, we have to change only this script
         //myInputs.Move = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
         //myInputs.Rotate = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
-        //if (Input.GetButtonDown("Fire 1"))
+        //if (Input.GetButtonDown("Fire1"))
         //    myInputs.buttons.Set(MyButtons.InteractPressedThisFrame, true);
     }
 
