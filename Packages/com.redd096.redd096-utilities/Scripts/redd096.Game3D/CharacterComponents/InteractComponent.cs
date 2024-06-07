@@ -30,6 +30,7 @@ namespace redd096.Game3D
         //private
         IInteractable interactableInUse;
 
+#if UNITY_EDITOR
         protected virtual void OnDrawGizmos()
         {
             if (gizmosRaycast)
@@ -41,6 +42,7 @@ namespace redd096.Game3D
                 Gizmos.color = Color.white;
             }
         }
+#endif
 
         protected virtual void Awake()
         {
