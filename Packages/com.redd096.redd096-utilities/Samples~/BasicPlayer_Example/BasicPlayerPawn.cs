@@ -1,47 +1,51 @@
 using redd096.Game3D;
 using UnityEngine;
 
-/// <summary>
-/// This is just for example. Normally there is a StateMachine and the statemachine will access to the pawn's controller to get inputs
-/// </summary>
-public class BasicPlayerPawn : PlayerPawn
+namespace redd096.Examples.BasicPlayer
 {
-    [SerializeField] bool lockMouseOnAwake = true;
-    [SerializeField] float delayBeforeEnableComponents = 0.1f;
-    [SerializeField] MovementComponent movementComponent;
-    [SerializeField] RotationComponent rotationComponent;
-    [SerializeField] InteractComponent interactComponent;
-
-    BasicPlayerController controller;
-    float delayTime;
-
-    private void Awake()
+    /// <summary>
+    /// This is just for example. Normally there is a StateMachine and the statemachine will access to the pawn's controller to get inputs
+    /// </summary>
+    [AddComponentMenu("redd096/Examples/BasicPlayer/Basic PlayerPawn")]
+    public class BasicPlayerPawn : PlayerPawn
     {
-        delayTime = Time.time + delayBeforeEnableComponents;
+        [SerializeField] bool lockMouseOnAwake = true;
+        [SerializeField] float delayBeforeEnableComponents = 0.1f;
+        [SerializeField] MovementComponent movementComponent;
+        [SerializeField] RotationComponent rotationComponent;
+        [SerializeField] InteractComponent interactComponent;
 
-        //lock mouse if necessary
-        if (lockMouseOnAwake)
+        BasicPlayerController controller;
+        float delayTime;
+
+        private void Awake()
         {
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
+            delayTime = Time.time + delayBeforeEnableComponents;
+
+            //lock mouse if necessary
+            if (lockMouseOnAwake)
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+            }
         }
-    }
 
-    public override void OnPossess(PlayerController newController)
-    {
-        base.OnPossess(newController);
-        controller = (BasicPlayerController)newController;
-    }
+        public override void OnPossess(PlayerController newController)
+        {
+            base.OnPossess(newController);
+            controller = (BasicPlayerController)newController;
+        }
 
-    private void Update()
-    {
-        //a little delay to not start scene with camera rotated
-        if (Time.time < delayTime)
-            return;
+        private void Update()
+        {
+            //a little delay to not start scene with camera rotated
+            if (Time.time < delayTime)
+                return;
 
-        //update components
-        if (movementComponent) movementComponent.MoveByInput3D(controller.Move);
-        if (rotationComponent) rotationComponent.RotateByInput3D(controller.Rotate);
-        if (interactComponent) interactComponent.InteractByInput(controller.InteractPressedThisFrame);
+            //update components
+            if (movementComponent) movementComponent.MoveByInput3D(controller.Move);
+            if (rotationComponent) rotationComponent.RotateByInput3D(controller.Rotate);
+            if (interactComponent) interactComponent.InteractByInput(controller.InteractPressedThisFrame);
+        }
     }
 }
