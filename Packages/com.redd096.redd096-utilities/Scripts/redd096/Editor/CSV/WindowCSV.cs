@@ -14,7 +14,7 @@ namespace redd096
         /// <summary>
         /// Open Window from Editor
         /// </summary>
-        [MenuItem("redd096/CSV Importer/Open Window CSV")]
+        [MenuItem("Tools/redd096/CSV Importer/Open Window CSV")]
         static void OpenWindowCSV()
         {
             //open window (and set title)

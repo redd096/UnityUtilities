@@ -9,7 +9,7 @@ namespace redd096
     {
         string fileIDString;
 
-        [MenuItem("redd096/Find Files/Find by fileID")]
+        [MenuItem("Tools/redd096/Find Files/Find by fileID")]
         static void FindByFileId()
         {
             //open window (and set title)

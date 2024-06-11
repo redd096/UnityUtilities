@@ -8,7 +8,7 @@ namespace redd096
     {
         string GuidString;
 
-        [MenuItem("redd096/Find Files/Find by Guid")]
+        [MenuItem("Tools/redd096/Find Files/Find by Guid")]
         static void FindByGuid()
         {
             //open window (and set title)
