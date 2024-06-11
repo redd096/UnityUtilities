@@ -23,7 +23,7 @@ namespace redd096
 		public static string GetDataPath()
 		{
 			//find script folder and create scriptable object there
-			string[] guids = AssetDatabase.FindAssets(typeof(WindowParseCSVData).ToString());
+			string[] guids = AssetDatabase.FindAssets(typeof(WindowParseCSVData).Name);
 			foreach (string guid in guids)
 			{
 				string pathToScript = AssetDatabase.GUIDToAssetPath(guid);                                                                          //get path to the script
