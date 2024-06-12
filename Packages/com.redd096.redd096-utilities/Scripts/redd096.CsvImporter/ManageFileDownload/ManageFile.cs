@@ -1,8 +1,5 @@
 using System.IO;
 using UnityEngine;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 namespace redd096.CsvImporter
 {
@@ -77,7 +74,7 @@ namespace redd096.CsvImporter
         private static void RefreshProject()
         {
 #if UNITY_EDITOR
-            AssetDatabase.Refresh();
+            UnityEditor.AssetDatabase.Refresh();
 #endif
         }
     }

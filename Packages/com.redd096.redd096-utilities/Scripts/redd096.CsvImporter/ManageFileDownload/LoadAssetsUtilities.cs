@@ -5,7 +5,7 @@ using System.IO;
 
 namespace redd096.CsvImporter
 {
-    public static class LoadDataUtilities
+    public static class LoadAssetsUtilities
     {
         /// <summary>
         /// Get a Scriptable Object. If the file doesn't exists, create and return it

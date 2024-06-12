@@ -1,8 +1,5 @@
 using UnityEngine;
 using UnityEngine.Networking;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 namespace redd096.CsvImporter
 {
@@ -29,11 +26,11 @@ namespace redd096.CsvImporter
 #if UNITY_EDITOR
             while (asyncOperation.isDone == false)
             {
-                EditorUtility.DisplayProgressBar("Download file", $"File download... {(int)(asyncOperation.progress * 100)}/100", asyncOperation.progress);
+                UnityEditor.EditorUtility.DisplayProgressBar("Download file", $"File download... {(int)(asyncOperation.progress * 100)}/100", asyncOperation.progress);
                 await System.Threading.Tasks.Task.Delay((int)(Time.deltaTime * 1000));
             }
-                
-            EditorUtility.ClearProgressBar();
+
+            UnityEditor.EditorUtility.ClearProgressBar();
 #endif
         }
 
