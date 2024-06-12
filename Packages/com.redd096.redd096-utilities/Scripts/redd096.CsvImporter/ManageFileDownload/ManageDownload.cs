@@ -17,13 +17,15 @@ namespace redd096.CsvImporter
 
             asyncOperation.completed += (x) => onComplete?.Invoke(x, webRequest);
 
-            //show download progress bar
+            //show download progress bar (only in editor)
+#if UNITY_EDITOR
             ShowProgressBar(asyncOperation);
+#endif
         }
 
+#if UNITY_EDITOR
         private static async void ShowProgressBar(UnityWebRequestAsyncOperation asyncOperation)
         {
-#if UNITY_EDITOR
             while (asyncOperation.isDone == false)
             {
                 UnityEditor.EditorUtility.DisplayProgressBar("Download file", $"File download... {(int)(asyncOperation.progress * 100)}/100", asyncOperation.progress);
@@ -31,8 +33,8 @@ namespace redd096.CsvImporter
             }
 
             UnityEditor.EditorUtility.ClearProgressBar();
-#endif
         }
+#endif
 
         /// <summary>
         /// If downloading, Abort it
