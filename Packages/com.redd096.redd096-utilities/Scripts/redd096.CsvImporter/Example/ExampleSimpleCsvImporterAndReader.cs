@@ -27,7 +27,8 @@ namespace redd096.CsvImporter.Example
             var result = CsvImporter.ReadCsvAtPath(filePath, FParseOptions.allTrue);
 
             //and create scriptable objects
-            CreateScriptableObjects(result);
+            if (string.IsNullOrEmpty(result.DefaultFileContent) == false)
+                CreateScriptableObjects(result);
         }
 
         [MenuItem("Tools/redd096/CSV Importer/Examples/Example Download CSV and use to Create SO")]
@@ -76,7 +77,7 @@ namespace redd096.CsvImporter.Example
                 EditorUtility.SetDirty(data);
 
                 //show progress bar and delay if created too much files
-                EditorUtility.DisplayProgressBar("Creating Scriptable Objects...", $"Creating Scriptable Objects... {row}/{result.Rows.Count}", (float)row / result.Rows.Count);
+                EditorUtility.DisplayProgressBar("Creating Scriptable Objects", $"Creating... {row}/{result.Rows.Count}", (float)row / result.Rows.Count);
                 if (row % 20 == 0)
                     await Task.Delay((int)(Time.deltaTime * 1000));
             }
