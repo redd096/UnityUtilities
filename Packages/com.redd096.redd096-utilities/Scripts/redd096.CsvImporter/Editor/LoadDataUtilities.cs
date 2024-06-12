@@ -1,39 +1,42 @@
 #if UNITY_EDITOR
-using System.IO;
 using UnityEditor;
 using UnityEngine;
+using System.IO;
 
 namespace redd096.CsvImporter
 {
     public static class LoadDataUtilities
     {
         /// <summary>
-        /// Load or Create Scriptable Object
+        /// Get a Scriptable Object. If the file doesn't exists, create and return it
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="assetName"></param>
+        /// <param name="assetPathRelativeToProject">The path to the file, but the path must starts with Assets</param>
         /// <returns></returns>
-        public static T LoadData<T>(string assetName) where T : ScriptableObject
+        public static T GetAsset<T>(string assetPathRelativeToProject) where T : ScriptableObject
         {
-            //get path to the script, and add assetName.asset
-            string assetPath = Path.Combine(GetScriptPath<T>(), assetName + ".asset");
-
             //try get scriptable object (data)
-            T data = AssetDatabase.LoadAssetAtPath<T>(assetPath);
+            T data = AssetDatabase.LoadAssetAtPath<T>(assetPathRelativeToProject);
 
             //if there is no data, create it
             if (data == null)
             {
+                //create also folders
+                string pathToProject = Application.dataPath.Replace("Assets", string.Empty);    //remove Assets because it should already be in assetPath
+                string path = Path.Combine(pathToProject, assetPathRelativeToProject);
+                if (Directory.Exists(path) == false)
+                    Directory.CreateDirectory(path);
+
                 data = ScriptableObject.CreateInstance<T>();
-                AssetDatabase.CreateAsset(data, assetPath);
+                AssetDatabase.CreateAsset(data, assetPathRelativeToProject);
             }
 
-            //load data
+            //return data
             return data;
         }
 
         /// <summary>
-        /// Get Path to this script in project
+        /// Get Path to this script in project. NB the path is relative to the project, doesn't contain the path to the Assets folder
         /// </summary>
         /// <returns></returns>
         public static string GetScriptPath<T>()

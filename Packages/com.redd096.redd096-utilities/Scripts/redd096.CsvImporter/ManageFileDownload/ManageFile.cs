@@ -1,5 +1,8 @@
 using System.IO;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace redd096.CsvImporter
 {
@@ -17,6 +20,7 @@ namespace redd096.CsvImporter
             }
 
             File.WriteAllText(Path.Combine(directoryPath, fileName), fileValue);
+            RefreshProject();
         }
 
         /// <summary>
@@ -48,6 +52,7 @@ namespace redd096.CsvImporter
 
             //delete file
             File.Delete(filePath);
+            RefreshProject();
             Debug.Log("File deleted successfully: " + filePath);
         }
 
@@ -65,7 +70,15 @@ namespace redd096.CsvImporter
 
             //delete directory
             Directory.Delete(directoryPath, true);
+            RefreshProject();
             Debug.Log("Directory deleted successfully: " + directoryPath);
+        }
+
+        private static void RefreshProject()
+        {
+#if UNITY_EDITOR
+            AssetDatabase.Refresh();
+#endif
         }
     }
 }

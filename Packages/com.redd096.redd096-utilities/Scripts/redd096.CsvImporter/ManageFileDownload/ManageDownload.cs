@@ -12,23 +12,21 @@ namespace redd096.CsvImporter
         /// Start Download from link
         /// </summary>
         /// <returns></returns>
-        public static UnityWebRequest DownloadFile(string link, System.Action<AsyncOperation, UnityWebRequest> onComplete)
+        public static void DownloadFile(string link, System.Action<AsyncOperation, UnityWebRequest> onComplete)
         {
             //UnityWebRequest replace old WWW
             UnityWebRequest webRequest = UnityWebRequest.Get(link);
             UnityWebRequestAsyncOperation asyncOperation = webRequest.SendWebRequest();
 
-            //wait download
-            ShowProgressBar(asyncOperation);
             asyncOperation.completed += (x) => onComplete?.Invoke(x, webRequest);
 
-            return webRequest;
+            //show download progress bar
+            ShowProgressBar(asyncOperation);
         }
 
         private static async void ShowProgressBar(UnityWebRequestAsyncOperation asyncOperation)
         {
 #if UNITY_EDITOR
-            //show progress bar (only in editor)
             while (asyncOperation.isDone == false)
             {
                 EditorUtility.DisplayProgressBar("Download file", $"File download... {(int)(asyncOperation.progress * 100)}/100", asyncOperation.progress);

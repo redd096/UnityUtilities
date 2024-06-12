@@ -1,0 +1,80 @@
+#if UNITY_EDITOR
+using System.IO;
+using System.Linq;
+using UnityEditor;
+using UnityEngine;
+
+namespace redd096.CsvImporter.Example
+{
+    public class ExampleSimpleCsvImporterAndReader
+    {
+        [MenuItem("Tools/redd096/CSV Importer/Examples/Example Import Csv")]
+        static void ExampleImportCsv()
+        {
+            //download csv in Assets/Example/CSV as DownloadedFile.csv
+            CsvImporter.DownloadCsv(
+                url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vSkP8ujm2voXc1L34U4LTbhWybChPVCfSUk3_Z-74Lpvr8h-ZFoQ8DwVIvGXA2IQmPf9Tychxt6RGbi/pub?output=csv",
+                directoryPath: Path.Combine(Application.dataPath, "Example/CSV"),
+                fileName: "DownloadedFile.csv");
+        }
+
+        [MenuItem("Tools/redd096/CSV Importer/Examples/Example Create SO with downloaded CSV")]
+        static void ExampleCreateScriptableObjects()
+        {
+            //parse csv file in Assets/Example/CSV/DownloadedFile.csv 
+            string filePath = Path.Combine(Application.dataPath, "Example/CSV/DownloadedFile.csv");
+            var result = CsvImporter.ReadCsvAtPath(filePath, FParseOptions.allTrue);
+
+            //and create scriptable objects
+            CreateScriptableObjects(result);
+        }
+
+        [MenuItem("Tools/redd096/CSV Importer/Examples/Example Download CSV and use to Create SO")]
+        static void ExampleImportAndCreateAllInOne()
+        {
+            //download csv and use it to create scriptable objects
+            string url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSkP8ujm2voXc1L34U4LTbhWybChPVCfSUk3_Z-74Lpvr8h-ZFoQ8DwVIvGXA2IQmPf9Tychxt6RGbi/pub?output=csv";
+            CsvImporter.ReadCsvFromUrl(url, FParseOptions.allTrue, CreateScriptableObjects);
+        }
+
+        /// <summary>
+        /// Example of create scriptable objects from parsed file
+        /// </summary>
+        /// <param name="result"></param>
+        private static void CreateScriptableObjects(FParseResult result)
+        {
+            //directory path relative to project
+            string directoryScriptableObjects = "Assets/Example/ScriptableObjects";
+
+            //create a scriptable object for every row
+            for (int row = 0; row < 8; row++)// for (int row = 0; row < result.Rows.Count; row++)
+            {
+                //ignore first row, is used only to give a name to every column
+                if (row == 0)
+                    continue;
+
+                //use first column also to set asset name
+                string fileName = result.GetCellContent("Pokemon", row);
+                string filePath = Path.Combine(directoryScriptableObjects, fileName + ".asset");
+
+                //load if already created, or create a new scriptable object with fileName
+                var data = LoadDataUtilities.GetAsset<ExampleScriptableObject>(filePath);
+
+                //set values
+                data.Name = result.GetCellContent("Pokemon", row);                                                          //string
+                data.Life = int.TryParse(result.GetCellContent("Vita", row), out int n) ? n : 0;                            //int
+                System.Enum.TryParse(result.GetCellContent("Tipo", row), ignoreCase: true, out data.Type);                  //enum
+                data.ExampleArrayString = result.GetCellArrayContent("Esempio array stringhe per utilities Unity", row);    //array string
+
+                //array string to array int
+                string[] arrayString = result.GetCellArrayContent("Esempio array int per utilities Unity", row);
+                int[] arrayInt = arrayString.Select(s => int.TryParse(s, out int n) ? n : 0).ToArray();
+                data.ExampleArrayInt = arrayInt;
+
+                //set dirty to save
+                EditorUtility.SetDirty(data);
+            }
+        }
+    }
+}
+#endif

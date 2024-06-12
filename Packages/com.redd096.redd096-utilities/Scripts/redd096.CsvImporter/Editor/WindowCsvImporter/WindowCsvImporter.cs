@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
+using System.IO;
 
 namespace redd096.CsvImporter
 {
@@ -24,7 +25,9 @@ namespace redd096.CsvImporter
 
         private void OnEnable()
         {
-            data = LoadDataUtilities.LoadData<WindowCsvImporterData>("WindowCsvImporter Data");
+            //get path to the script, and add assetName.asset
+            string assetPath = Path.Combine(LoadDataUtilities.GetScriptPath<WindowCsvImporterData>(), "WindowCsvImporter Data.asset");
+            data = LoadDataUtilities.GetAsset<WindowCsvImporterData>(assetPath);
         }
 
         private void OnGUI()
