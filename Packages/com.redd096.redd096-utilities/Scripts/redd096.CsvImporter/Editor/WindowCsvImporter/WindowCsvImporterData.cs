@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 using System.Collections.Generic;
 using System.IO;
+using UnityEditor;
 using UnityEngine;
 
 namespace redd096.CsvImporter
@@ -19,7 +20,10 @@ namespace redd096.CsvImporter
             {
                 //be sure to have at least one element
                 if (Elements == null || Elements.Count == 0)
+                {
                     Elements = new List<ImportCsvElement>() { new ImportCsvElement() };
+                    EditorUtility.SetDirty(this);
+                }
 
                 Index = Mathf.Clamp(Index, 0, Elements.Count - 1);
                 return Elements[Index];

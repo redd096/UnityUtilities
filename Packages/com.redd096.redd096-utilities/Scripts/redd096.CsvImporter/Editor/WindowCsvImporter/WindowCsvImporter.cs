@@ -32,6 +32,8 @@ namespace redd096.CsvImporter
             scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
             EditorGUILayout.Space(15);
 
+            EditorGUI.BeginChangeCheck();
+
             SelectItemFromList();
             SetLinkCSV();
             EditorGUILayout.Space(20);
@@ -40,6 +42,12 @@ namespace redd096.CsvImporter
             ButtonDownloadCSV();
             EditorGUILayout.Space(30);
             ButtonsDelete();
+
+            //if there are changes, save it
+            if (EditorGUI.EndChangeCheck())
+            {
+                EditorUtility.SetDirty(data);
+            }
 
             EditorGUILayout.Space(15);
             EditorGUILayout.EndScrollView();

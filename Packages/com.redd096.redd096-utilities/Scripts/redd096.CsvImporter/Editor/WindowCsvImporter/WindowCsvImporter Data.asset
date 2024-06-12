@@ -13,4 +13,10 @@ MonoBehaviour:
   m_Name: WindowCsvImporter Data
   m_EditorClassIdentifier: 
   Index: 0
-  Elements: []
+  Elements:
+  - Name: Element
+    LinkCSV: https://docs.google.com/spreadsheets/d/e/2PACX-1vSkP8ujm2voXc1L34U4LTbhWybChPVCfSUk3_Z-74Lpvr8h-ZFoQ8DwVIvGXA2IQmPf9Tychxt6RGbi/pub?output=csv
+    OptionsPath: 0
+    BaseDownloadPath: 
+    FolderName: Commons/CSV
+    FileName: File.csv
