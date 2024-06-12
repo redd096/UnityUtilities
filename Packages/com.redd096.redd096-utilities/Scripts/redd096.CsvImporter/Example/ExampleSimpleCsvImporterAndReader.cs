@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
@@ -41,7 +42,7 @@ namespace redd096.CsvImporter.Example
         /// Example of create scriptable objects from parsed file
         /// </summary>
         /// <param name="result"></param>
-        private static void CreateScriptableObjects(FParseResult result)
+        private static async void CreateScriptableObjects(FParseResult result)
         {
             //directory path relative to project
             string directoryScriptableObjects = "Assets/Example/ScriptableObjects";
@@ -73,7 +74,14 @@ namespace redd096.CsvImporter.Example
 
                 //set dirty to save
                 EditorUtility.SetDirty(data);
+
+                //show progress bar and delay if created too much files
+                EditorUtility.DisplayProgressBar("Creating Scriptable Objects...", $"Creating Scriptable Objects... {row}/{result.Rows.Count}", (float)row / result.Rows.Count);
+                if (row % 20 == 0)
+                    await Task.Delay((int)(Time.deltaTime * 1000));
             }
+
+            EditorUtility.ClearProgressBar();
         }
     }
 }
