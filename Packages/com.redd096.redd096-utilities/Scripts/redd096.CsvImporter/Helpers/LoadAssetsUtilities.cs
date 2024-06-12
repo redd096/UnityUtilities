@@ -23,7 +23,8 @@ namespace redd096.CsvImporter
             {
                 //create also folders
                 string pathToProject = Application.dataPath.Replace("Assets", string.Empty);    //remove Assets because it should already be in assetPath
-                string path = Path.Combine(pathToProject, assetPathRelativeToProject);
+                string projectDirectories = Path.GetDirectoryName(assetPathRelativeToProject);  //remove file from path and keep only directories
+                string path = Path.Combine(pathToProject, projectDirectories);
                 if (Directory.Exists(path) == false)
                     Directory.CreateDirectory(path);
 
