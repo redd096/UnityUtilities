@@ -62,7 +62,6 @@ namespace redd096.CsvImporter
         public string LinkCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSkP8ujm2voXc1L34U4LTbhWybChPVCfSUk3_Z-74Lpvr8h-ZFoQ8DwVIvGXA2IQmPf9Tychxt6RGbi/pub?output=csv";
 
         [Header("CSV")]
-        public EOptionsPath OptionsPath = EOptionsPath.None;
         [TextArea(2, 5)]
         public string BaseDownloadPath = "";
         public string FolderName = "Commons/CSV";
@@ -71,7 +70,5 @@ namespace redd096.CsvImporter
         public string DirectoryPath => Path.Combine(BaseDownloadPath, FolderName);
         public string FilePath => Path.Combine(BaseDownloadPath, FolderName, FileName);
     }
-
-    public enum EOptionsPath { None, DataPath, PersistentDataPath }
 }
 #endif

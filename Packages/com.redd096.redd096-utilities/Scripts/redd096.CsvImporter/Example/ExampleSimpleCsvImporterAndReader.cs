@@ -9,7 +9,7 @@ namespace redd096.CsvImporter.Example
 {
     public class ExampleSimpleCsvImporterAndReader
     {
-        [MenuItem("Tools/redd096/CSV Importer/Examples/Example Import Csv")]
+        [MenuItem("Tools/redd096/CSV Importer/Examples/Example Download Csv")]
         static void ExampleImportCsv()
         {
             //download csv in Assets/Example/CSV as DownloadedFile.csv
@@ -19,7 +19,7 @@ namespace redd096.CsvImporter.Example
                 fileName: "DownloadedFile.csv");
         }
 
-        [MenuItem("Tools/redd096/CSV Importer/Examples/Example Create SO with downloaded CSV")]
+        [MenuItem("Tools/redd096/CSV Importer/Examples/Example Create SO with downloaded Csv")]
         static void ExampleCreateScriptableObjects()
         {
             //parse csv file in Assets/Example/CSV/DownloadedFile.csv 
@@ -31,7 +31,7 @@ namespace redd096.CsvImporter.Example
                 CreateScriptableObjects(result);
         }
 
-        [MenuItem("Tools/redd096/CSV Importer/Examples/Example Download CSV and use to Create SO")]
+        [MenuItem("Tools/redd096/CSV Importer/Examples/Example Download and Create All in One")]
         static void ExampleImportAndCreateAllInOne()
         {
             //download csv and use it to create scriptable objects

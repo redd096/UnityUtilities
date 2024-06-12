@@ -16,11 +16,11 @@ namespace redd096.CsvImporter
         /// <summary>
         /// Open Window from Editor
         /// </summary>
-        [MenuItem("Tools/redd096/CSV Importer/Import CSV")]
+        [MenuItem("Tools/redd096/CSV Importer/Download CSV")]
         static void OpenWindowCSV()
         {
             //open window (and set title)
-            GetWindow<WindowCsvImporter>("CSV Importer");
+            GetWindow<WindowCsvImporter>("CSV Download");
         }
 
         private void OnEnable()
@@ -125,21 +125,25 @@ namespace redd096.CsvImporter
         {
             EditorGUILayout.LabelField("Path Download", EditorStyles.boldLabel);
 
-            //set enum
-            var prevOptionsPath = data.CurrentElement.OptionsPath;
-            data.CurrentElement.OptionsPath = (EOptionsPath)EditorGUILayout.EnumPopup(data.CurrentElement.OptionsPath, GUILayout.Width(200));
+            //buttons to set base path
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.Space();
 
-            //set base path from enum
-            if (prevOptionsPath != data.CurrentElement.OptionsPath)
+            if (GUILayout.Button("Data Path", GUILayout.Width(200)))
             {
-                data.CurrentElement.BaseDownloadPath = (data.CurrentElement.OptionsPath) switch
-                {
-                    EOptionsPath.None => "",
-                    EOptionsPath.DataPath => Application.dataPath,
-                    EOptionsPath.PersistentDataPath => Application.persistentDataPath,
-                    _ => "",
-                };
+                data.CurrentElement.BaseDownloadPath = Application.dataPath;
             }
+
+            EditorGUILayout.Space(20);
+
+            if (GUILayout.Button("Persistent Data Path", GUILayout.Width(200)))
+            {
+                data.CurrentElement.BaseDownloadPath = Application.persistentDataPath;
+            }
+
+            EditorGUILayout.Space();
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.Space(10);
 
             //set base path, folder and file name
             data.CurrentElement.BaseDownloadPath = EditorGUILayout.TextField("Base Path:", data.CurrentElement.BaseDownloadPath, EditorStyles.textArea);

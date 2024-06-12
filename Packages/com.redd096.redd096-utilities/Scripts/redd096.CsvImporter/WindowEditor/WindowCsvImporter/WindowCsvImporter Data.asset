@@ -16,7 +16,6 @@ MonoBehaviour:
   Elements:
   - Name: Element
     LinkCSV: https://docs.google.com/spreadsheets/d/e/2PACX-1vSkP8ujm2voXc1L34U4LTbhWybChPVCfSUk3_Z-74Lpvr8h-ZFoQ8DwVIvGXA2IQmPf9Tychxt6RGbi/pub?output=csv
-    OptionsPath: 1
     BaseDownloadPath: C:/Users/devil/Documents/ForkGit/Home/UnityUtilities/Assets
     FolderName: Example/CSV
     FileName: DownloadedFile.csv
