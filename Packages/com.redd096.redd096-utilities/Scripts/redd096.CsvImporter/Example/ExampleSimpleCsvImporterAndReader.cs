@@ -84,6 +84,37 @@ namespace redd096.CsvImporter.Example
 
             EditorUtility.ClearProgressBar();
         }
+
+        /// <summary>
+        /// Example of create scriptable objects from parsed file, by using Helper function
+        /// </summary>
+        /// <param name="result"></param>
+        private static async void ExampleToCreateWithHelper(FParseResult result)
+        {
+            //directory path relative to project
+            string directoryScriptableObjects = "Assets/Example/ScriptableObjects";
+
+            await CreateAssetsUtilities.CreateAssets<ExampleScriptableObject>(result, true, directoryScriptableObjects, SetFileName, SetAsset);
+        }
+
+        private static string SetFileName(FParseResult result, int row)
+        {
+            return result.GetCellContent("Pokemon", row);
+        }
+
+        private static void SetAsset(ExampleScriptableObject data, FParseResult result, int row)
+        {
+            //set values
+            data.Name = result.GetCellContent("Pokemon", row);                                                          //string
+            data.Life = int.TryParse(result.GetCellContent("Vita", row), out int n) ? n : 0;                            //int
+            System.Enum.TryParse(result.GetCellContent("Tipo", row), ignoreCase: true, out data.Type);                  //enum
+            data.ExampleArrayString = result.GetCellArrayContent("Esempio array stringhe per utilities Unity", row);    //array string
+
+            //array string to array int
+            string[] arrayString = result.GetCellArrayContent("Esempio array int per utilities Unity", row);
+            int[] arrayInt = arrayString.Select(s => int.TryParse(s, out int n) ? n : 0).ToArray();
+            data.ExampleArrayInt = arrayInt;
+        }
     }
 }
 #endif
