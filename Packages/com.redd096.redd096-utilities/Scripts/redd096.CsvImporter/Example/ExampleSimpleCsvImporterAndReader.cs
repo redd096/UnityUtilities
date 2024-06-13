@@ -60,7 +60,7 @@ namespace redd096.CsvImporter.Example
                 string filePath = Path.Combine(directoryScriptableObjects, fileName + ".asset");
 
                 //load if already created, or create a new scriptable object with fileName
-                var data = LoadAssetsUtilities.GetAsset<ExampleScriptableObject>(filePath);
+                var data = LoadAssetsUtilities.GetOrCreateAsset<ExampleScriptableObject>(filePath);
 
                 //set values
                 data.Name = result.GetCellContent("Pokemon", row);                                                          //string
@@ -94,15 +94,15 @@ namespace redd096.CsvImporter.Example
             //directory path relative to project
             string directoryScriptableObjects = "Assets/Example/ScriptableObjects";
 
-            await CreateAssetsUtilities.CreateAssets<ExampleScriptableObject>(result, true, directoryScriptableObjects, SetFileName, SetAsset);
+            await EditorHelper.LoadOrCreateOneAssetForEveryRow<ExampleScriptableObject>(result, true, directoryScriptableObjects, SetFileNameAndExtension, SetAssetVariables);
         }
 
-        private static string SetFileName(FParseResult result, int row)
+        private static string SetFileNameAndExtension(FParseResult result, int row)
         {
-            return result.GetCellContent("Pokemon", row);
+            return result.GetCellContent("Pokemon", row) + ".asset";
         }
 
-        private static void SetAsset(ExampleScriptableObject data, FParseResult result, int row)
+        private static void SetAssetVariables(ExampleScriptableObject data, FParseResult result, int row, string filePath)
         {
             //set values
             data.Name = result.GetCellContent("Pokemon", row);                                                          //string

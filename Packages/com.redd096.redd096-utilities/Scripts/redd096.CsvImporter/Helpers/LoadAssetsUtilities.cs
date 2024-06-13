@@ -13,16 +13,16 @@ namespace redd096.CsvImporter
         /// <typeparam name="T"></typeparam>
         /// <param name="assetPathRelativeToProject">The path to the file, but the path must starts with Assets</param>
         /// <returns></returns>
-        public static T GetAsset<T>(string assetPathRelativeToProject) where T : ScriptableObject
+        public static T GetOrCreateAsset<T>(string assetPathRelativeToProject) where T : ScriptableObject
         {
-            //try get scriptable object (data)
+            //try get asset
             T data = AssetDatabase.LoadAssetAtPath<T>(assetPathRelativeToProject);
 
-            //if there is no data, create it
+            //if there is no asset, create it
             if (data == null)
             {
                 //create also folders
-                string pathToProject = Application.dataPath.Replace("Assets", string.Empty);    //remove Assets because it should already be in assetPath
+                string pathToProject = Application.dataPath.Replace("Assets", string.Empty);    //remove "Assets" because it should already be in assetPath
                 string projectDirectories = Path.GetDirectoryName(assetPathRelativeToProject);  //remove file from path and keep only directories
                 string path = Path.Combine(pathToProject, projectDirectories);
                 if (Directory.Exists(path) == false)
@@ -34,6 +34,46 @@ namespace redd096.CsvImporter
 
             //return data
             return data;
+        }
+
+        /// <summary>
+        /// Get a Scriptable Object. If the file doesn't exists, create and return it
+        /// </summary>
+        /// <param name="assetPathRelativeToProject">The path to the file, but the path must starts with Assets</param>
+        /// <param name="type">ScriptableObject's Type</param>
+        /// <returns></returns>
+        public static ScriptableObject GetOrCreateAsset(string assetPathRelativeToProject, System.Type type)
+        {
+            //try get asset
+            ScriptableObject data = AssetDatabase.LoadAssetAtPath(assetPathRelativeToProject, type) as ScriptableObject;
+
+            //if there is no asset, create it
+            if (data == null)
+            {
+                //create also folders
+                string pathToProject = Application.dataPath.Replace("Assets", string.Empty);    //remove "Assets" because it should already be in assetPath
+                string projectDirectories = Path.GetDirectoryName(assetPathRelativeToProject);  //remove file from path and keep only directories
+                string path = Path.Combine(pathToProject, projectDirectories);
+                if (Directory.Exists(path) == false)
+                    Directory.CreateDirectory(path);
+
+                data = ScriptableObject.CreateInstance(type);
+                AssetDatabase.CreateAsset(data, assetPathRelativeToProject);
+            }
+
+            //return data
+            return data;
+        }
+
+        /// <summary>
+        /// Get a Unity Object from the project
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="assetPathRelativeToProject">The path to the file, but the path must starts with Assets</param>
+        /// <returns></returns>
+        public static T GetAsset<T>(string assetPathRelativeToProject) where T : Object
+        {
+            return AssetDatabase.LoadAssetAtPath<T>(assetPathRelativeToProject);
         }
 
         /// <summary>

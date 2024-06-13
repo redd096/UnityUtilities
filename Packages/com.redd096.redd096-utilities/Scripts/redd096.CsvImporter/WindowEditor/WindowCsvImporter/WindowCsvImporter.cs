@@ -27,7 +27,7 @@ namespace redd096.CsvImporter
         {
             //get path to the script, and add assetName.asset
             string assetPath = Path.Combine(LoadAssetsUtilities.GetScriptPath<WindowCsvImporterData>(), "WindowCsvImporter Data.asset");
-            data = LoadAssetsUtilities.GetAsset<WindowCsvImporterData>(assetPath);
+            data = LoadAssetsUtilities.GetOrCreateAsset<WindowCsvImporterData>(assetPath);
         }
 
         private void OnGUI()
