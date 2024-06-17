@@ -123,7 +123,7 @@ namespace redd096.Game3D
 
         protected virtual IInteractable RigidbodyBecomeInteractable(Rigidbody hitRigidbody)
         {
-            if (hitRigidbody == null)
+            if (hitRigidbody == null || hitRigidbody.isKinematic)
                 return null;
 
             //add Draggable Interactable to rigidbody
