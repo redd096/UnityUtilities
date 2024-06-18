@@ -16,7 +16,7 @@ namespace redd096.Game3D
         [SerializeField] float maxDistance = 3;
         [SerializeField] LayerMask interactLayer = -1;
         [Tooltip("Use raycast or sphere cast")][SerializeField] bool useRaycast = false;
-        [DisableIf("useRaycast")][SerializeField] float radiusRaycast = 0.2f;
+        [DisableIf("useRaycast")][SerializeField] float radiusRaycast = 0.02f;
         [SerializeField] QueryTriggerInteraction raycastHitTriggers = QueryTriggerInteraction.UseGlobal;
         [SerializeField] ShowDebugRedd096 gizmosRaycast = Color.cyan;
 
