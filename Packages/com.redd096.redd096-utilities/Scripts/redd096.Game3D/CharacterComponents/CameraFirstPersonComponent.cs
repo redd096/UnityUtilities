@@ -10,7 +10,7 @@ namespace redd096.Game3D
     public class CameraFirstPersonComponent : MonoBehaviour
     {
         [Header("Necessary Components (by default use main camera and get from this gameObject)")]
-        [SerializeField] Camera cam;
+        [SerializeField] Transform cam;
         [SerializeField] Transform characterToFollow;
         [SerializeField] bool calculateOffsetInAwake = true;
         [DisableIf("calculateOffsetInAwake")][SerializeField] Vector3 cameraOffset = new Vector3(0, 0.4f, 0.4f);
@@ -18,7 +18,7 @@ namespace redd096.Game3D
 
         protected virtual void Awake()
         {
-            if (cam == null) cam = Camera.main;
+            if (cam == null) cam = Camera.main.transform;
             if (characterToFollow == null) characterToFollow = transform;
 
             //be sure to have components
@@ -32,18 +32,18 @@ namespace redd096.Game3D
             //calculate offset if necessary
             if (calculateOffsetInAwake)
             {
-                cameraOffset = cam.transform.position - characterToFollow.transform.position;
+                cameraOffset = cam.position - characterToFollow.transform.position;
             }
         }
 
         protected virtual void LateUpdate()
         {
             //move cam
-            Vector3 cameraOffsetRotated = Quaternion.AngleAxis(cam.transform.eulerAngles.y, Vector3.up) * cameraOffset;
-            cam.transform.position = characterToFollow.position + cameraOffsetRotated;
+            Vector3 cameraOffsetRotated = Quaternion.AngleAxis(cam.eulerAngles.y, Vector3.up) * cameraOffset;
+            cam.position = characterToFollow.position + cameraOffsetRotated;
 
             //rotate cam
-            cam.transform.localRotation = rotationComponent.XQuat * rotationComponent.YQuat;
+            cam.localRotation = rotationComponent.XQuat * rotationComponent.YQuat;
         }
     }
 }
