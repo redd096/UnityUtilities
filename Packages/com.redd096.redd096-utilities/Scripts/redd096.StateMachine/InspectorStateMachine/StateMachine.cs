@@ -2,10 +2,10 @@
 using UnityEngine;
 using redd096.Attributes;
 
-namespace redd096.StateMachine.StateMachineRedd096
+namespace redd096.InspectorStateMachine
 {
-    [AddComponentMenu("redd096/.StateMachine/StateMachineRedd096/State Machine redd096")]
-    public class StateMachineRedd096 : MonoBehaviour
+    [AddComponentMenu("redd096/.InspectorStateMachine/State Machine")]
+    public class StateMachine : MonoBehaviour
     {
         public State[] States = default;
 

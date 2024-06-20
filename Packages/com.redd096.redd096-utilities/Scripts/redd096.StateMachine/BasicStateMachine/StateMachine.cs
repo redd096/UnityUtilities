@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace redd096.StateMachine.BasicStateMachineRedd096
+namespace redd096.BasicStateMachine
 {
-    public abstract class StateMachineRedd096 : MonoBehaviour
+    public abstract class StateMachine : MonoBehaviour
     {
         [Header("DEBUG")]
         [ReadOnly][SerializeField] List<string> blackboardDebug = new List<string>();

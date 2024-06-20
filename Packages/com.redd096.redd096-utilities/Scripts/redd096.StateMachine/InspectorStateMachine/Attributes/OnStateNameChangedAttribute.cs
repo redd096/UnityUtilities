@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-namespace redd096.StateMachine.StateMachineRedd096
+namespace redd096.InspectorStateMachine
 {
     #region editor
 
@@ -24,7 +24,7 @@ namespace redd096.StateMachine.StateMachineRedd096
             //if changed something
             if (previousValue != newValue)
             {
-                StateMachineRedd096 stateMachine = property.serializedObject.targetObject as StateMachineRedd096;
+                StateMachine stateMachine = property.serializedObject.targetObject as StateMachine;
 
                 //update every destination state in every transition
                 foreach (State state in stateMachine.States)

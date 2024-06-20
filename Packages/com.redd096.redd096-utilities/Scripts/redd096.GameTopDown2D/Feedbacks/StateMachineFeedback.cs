@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using redd096.StateMachine.StateMachineRedd096;
+using redd096.InspectorStateMachine;
 
 namespace redd096.GameTopDown2D
 {
@@ -8,7 +8,7 @@ namespace redd096.GameTopDown2D
     {
         [Header("Necessary Components - default get in child and parent")]
         [SerializeField] Animator anim = default;
-        [SerializeField] StateMachineRedd096 stateMachine = default;
+        [SerializeField] StateMachine stateMachine = default;
 
         [Header("When enter in these states, call trigger in animator")]
         [SerializeField] AnimTriggerStateStruct[] animTriggers = default;
@@ -23,7 +23,7 @@ namespace redd096.GameTopDown2D
             if (stateMachine == null)
             {
                 Redd096Main main = GetComponentInParent<Redd096Main>();
-                if (main) stateMachine = main.GetComponentInChildren<StateMachineRedd096>();
+                if (main) stateMachine = main.GetComponentInChildren<StateMachine>();
             }
 
             base.OnEnable();

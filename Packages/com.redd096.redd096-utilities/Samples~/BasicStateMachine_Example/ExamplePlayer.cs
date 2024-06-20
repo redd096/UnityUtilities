@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
-using redd096.StateMachine.BasicStateMachineRedd096;
+using redd096.BasicStateMachine;
 
 namespace redd096.Examples.BasicStateMachine
 {
     [AddComponentMenu("redd096/Examples/BasicStateMachine/Example Player")]
-    public class ExamplePlayer : StateMachineRedd096
+    public class ExamplePlayer : StateMachine
     {
         [Header("State Serialized")]
         [SerializeField] ExamplePlayerState playerState = new ExamplePlayerState();

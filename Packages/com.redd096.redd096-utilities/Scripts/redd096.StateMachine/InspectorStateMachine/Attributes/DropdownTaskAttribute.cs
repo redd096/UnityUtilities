@@ -3,7 +3,7 @@
 using UnityEditor;
 #endif
 
-namespace redd096.StateMachine.StateMachineRedd096
+namespace redd096.InspectorStateMachine
 {
     #region editor property drawer
 

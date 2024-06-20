@@ -3,7 +3,7 @@ using redd096.Attributes;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
-using redd096.StateMachine.StateMachineRedd096;
+using redd096.InspectorStateMachine;
 
 namespace redd096.GameTopDown2D
 {

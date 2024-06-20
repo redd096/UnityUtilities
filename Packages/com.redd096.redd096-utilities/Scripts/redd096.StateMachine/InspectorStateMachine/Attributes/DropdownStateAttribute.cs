@@ -3,7 +3,7 @@
 using UnityEditor;
 #endif
 
-namespace redd096.StateMachine.StateMachineRedd096
+namespace redd096.InspectorStateMachine
 {
     #region editor property drawer
 
@@ -44,7 +44,7 @@ namespace redd096.StateMachine.StateMachineRedd096
         {
             //get owner of the property
             Component owner = property.serializedObject.targetObject as Component;
-            StateMachineRedd096 stateMachine = owner as StateMachineRedd096;
+            StateMachine stateMachine = owner as StateMachine;
             if (stateMachine)
             {
                 //get states in statemachine

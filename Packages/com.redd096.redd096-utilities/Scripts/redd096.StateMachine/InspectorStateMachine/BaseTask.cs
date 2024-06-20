@@ -1,14 +1,14 @@
 ﻿using UnityEngine;
 
-namespace redd096.StateMachine.StateMachineRedd096
+namespace redd096.InspectorStateMachine
 {
     public abstract class BaseTask : MonoBehaviour
     {
         [Header("Task")]
         public string TaskName = "";
 
-        private StateMachineRedd096 _stateMachine;
-        public StateMachineRedd096 StateMachine { get => _stateMachine; set => _stateMachine = value; }
+        private StateMachine _stateMachine;
+        public StateMachine StateMachine { get => _stateMachine; set => _stateMachine = value; }
         private bool _isTaskActive;
         public bool IsTaskActive { get => _isTaskActive; set => _isTaskActive = value; }
 
@@ -19,7 +19,7 @@ namespace redd096.StateMachine.StateMachineRedd096
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public T GetStateMachine<T>() where T : StateMachineRedd096
+        public T GetStateMachine<T>() where T : StateMachine
         {
             return _stateMachine as T;
         }
@@ -63,7 +63,7 @@ namespace redd096.StateMachine.StateMachineRedd096
         /// Called by StateMachine, to set owner and to be sure to call OnInitTask() only one time
         /// </summary>
         /// <param name="stateMachine"></param>
-        public void InitializeTask(StateMachineRedd096 stateMachine)
+        public void InitializeTask(StateMachine stateMachine)
         {
             if (isInitialized)
                 return;

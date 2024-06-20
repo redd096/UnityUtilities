@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 
-namespace redd096.StateMachine.StateMachineRedd096
+namespace redd096.InspectorStateMachine
 {
-    [AddComponentMenu("redd096/.StateMachine/StateMachineRedd096/Condition Task")]
+    [AddComponentMenu("redd096/.InspectorStateMachine/Condition Task")]
     public class ConditionTask : BaseTask
     {
         /// <summary>

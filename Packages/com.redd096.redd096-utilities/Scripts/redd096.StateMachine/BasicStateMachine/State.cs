@@ -1,14 +1,14 @@
 ﻿using UnityEngine;
 
-namespace redd096.StateMachine.BasicStateMachineRedd096
+namespace redd096.BasicStateMachine
 {
     public abstract class State
     {
         [Header("Basic State")]
         public string StateName = "";
 
-        private StateMachineRedd096 _stateMachine;
-        public StateMachineRedd096 StateMachine { get => _stateMachine; set => _stateMachine = value; }
+        private StateMachine _stateMachine;
+        public StateMachine StateMachine { get => _stateMachine; set => _stateMachine = value; }
         private bool _isActive;
         public bool IsActive { get => _isActive; set => _isActive = value; }
 
@@ -19,7 +19,7 @@ namespace redd096.StateMachine.BasicStateMachineRedd096
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public T GetStateMachine<T>() where T : StateMachineRedd096
+        public T GetStateMachine<T>() where T : StateMachine
         {
             return _stateMachine as T;
         }
@@ -63,7 +63,7 @@ namespace redd096.StateMachine.BasicStateMachineRedd096
         /// Called by StateMachine, to set owner and to be sure to call OnInit() only one time
         /// </summary>
         /// <param name="stateMachine"></param>
-        public void Initialize(StateMachineRedd096 stateMachine)
+        public void Initialize(StateMachine stateMachine)
         {
             if (isInitialized)
                 return;
