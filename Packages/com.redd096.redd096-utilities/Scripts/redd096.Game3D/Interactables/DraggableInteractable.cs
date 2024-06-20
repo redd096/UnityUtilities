@@ -63,7 +63,7 @@ namespace redd096.Game3D
             }
         }
 
-        public virtual bool OnInteract(InteractComponent interactor, Collider hitCollider, params object[] args)
+        public virtual bool OnInteract(InteractComponent interactor, RaycastHit hit, params object[] args)
         {
             this.interactor = interactor;
             camTransform = args[0] as Transform;

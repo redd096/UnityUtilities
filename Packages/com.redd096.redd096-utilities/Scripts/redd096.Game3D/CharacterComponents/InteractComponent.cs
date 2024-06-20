@@ -53,8 +53,10 @@ namespace redd096.Game3D
                 Debug.LogError("Miss Camera on " + name);
         }
 
+        #region public API
+
         /// <summary>
-        /// If input is pressed, check if interact or dismiss an interactable
+        /// If input is pressed, check if interact or dismiss an interactable. Dismiss is called only if DismissType is InteractAgain
         /// </summary>
         /// <param name="inputPressed"></param>
         public virtual void InteractByInput(bool inputPressed)
@@ -75,7 +77,7 @@ namespace redd096.Game3D
 
                     if (interactable != null)
                     {
-                        Interact_Internal(interactable, hit.collider);
+                        Interact_Internal(interactable, hit);
                         return;
                     }
                 }
@@ -85,12 +87,13 @@ namespace redd096.Game3D
             //else try dismiss
             else
             {
-                Dismiss_Internal();
+                if (interactableInUse.DismissType == EDismissType.InteractAgain)
+                    Dismiss_Internal();
             }
         }
 
         /// <summary>
-        /// Try to interact with this interactable or dismiss with current interactable
+        /// Try to interact with this interactable or dismiss with current interactable. Dismiss is called only if DismissType is InteractAgain
         /// </summary>
         /// <param name="interactable"></param>
         public virtual void InteractWithThisInteractable(IInteractable interactable)
@@ -100,7 +103,7 @@ namespace redd096.Game3D
             {
                 if (interactable != null)
                 {
-                    Interact_Internal(interactable, null);
+                    Interact_Internal(interactable, default);
                     return;
                 }
 
@@ -109,9 +112,39 @@ namespace redd096.Game3D
             //else try dismiss
             else
             {
+                if (interactableInUse.DismissType == EDismissType.InteractAgain)
+                    Dismiss_Internal();
+            }
+        }
+
+        /// <summary>
+        /// If input is released, check if call OnDismiss on current interactable. Dismiss is called only if DismissType is ReleaseInput
+        /// </summary>
+        /// <param name="inputReleased"></param>
+        public virtual void ReleaseInteractInput(bool inputReleased)
+        {
+            if (inputReleased == false)
+                return;
+
+            //try dismiss
+            if (interactableInUse != null && interactableInUse.DismissType == EDismissType.ReleaseInteractInput)
+            {
                 Dismiss_Internal();
             }
         }
+
+        /// <summary>
+        /// Dismiss with current interactable. This ignore DismissType
+        /// </summary>
+        public virtual void DismissWithCurrentInteractable()
+        {
+            //try dismiss
+            Dismiss_Internal();
+        }
+
+        #endregion
+
+        #region private API
 
         protected virtual bool Raycast(out RaycastHit hit)
         {
@@ -130,11 +163,11 @@ namespace redd096.Game3D
             return hitRigidbody.gameObject.AddComponent(System.Type.GetType(draggableComponentType)) as IInteractable;
         }
 
-        protected virtual void Interact_Internal(IInteractable interactable, Collider col)
+        protected virtual void Interact_Internal(IInteractable interactable, RaycastHit hit)
         {
             if (interactable != null)
             {
-                bool result = interactable.OnInteract(this, col, cam.transform);
+                bool result = interactable.OnInteract(this, hit, cam.transform);
                 onInteract?.Invoke(interactable, result);
                 if (result) interactableInUse = interactable;
             }
@@ -149,5 +182,7 @@ namespace redd096.Game3D
                 if (result) interactableInUse = null;
             }
         }
+
+        #endregion
     }
 }

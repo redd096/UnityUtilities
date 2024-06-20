@@ -13,18 +13,18 @@ namespace redd096.Game3D
         [SerializeField] bool onInteractReturnTrue = false;
         [SerializeField] bool onDismissReturnFalse = false;
 
-        [SerializeField] UnityEvent<InteractComponent, Collider, object[]> onInteract;
+        [SerializeField] UnityEvent<InteractComponent, RaycastHit, object[]> onInteract;
         [SerializeField] UnityEvent<InteractComponent, object[]> onDismiss;
 
         float nextInteractTime;
 
-        public virtual bool OnInteract(InteractComponent interactor, Collider hitCollider, params object[] args)
+        public virtual bool OnInteract(InteractComponent interactor, RaycastHit hit, params object[] args)
         {
             //if interact after delay, call event
             if (Time.time > nextInteractTime)
             {
                 nextInteractTime = Time.time + delayBetweenInteracts;
-                onInteract?.Invoke(interactor, hitCollider, args);
+                onInteract?.Invoke(interactor, hit, args);
                 return onInteractReturnTrue;
             }
 
