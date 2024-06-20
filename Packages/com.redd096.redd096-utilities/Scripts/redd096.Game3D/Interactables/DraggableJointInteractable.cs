@@ -12,9 +12,9 @@ namespace redd096.Game3D
     {
         [Header("Necessary Components (by default get from this gameObject)")]
         [SerializeField] Rigidbody rb;
+        [Tooltip("If using something like doors, set to false. If dragging a pen that follows player, set to true")][SerializeField] bool canDragAround = false;
         [Tooltip("When stop drag: press to toggle drag or keep pressed?")][SerializeField] EDismissType dismissType = EDismissType.ReleaseInteractInput;
         [Tooltip("If user moves too much away from the dragged object, destroy the joint")][SerializeField] float breakJointRange = 2;
-        [Tooltip("If using something like doors, set to false. If dragging a pen that follows player, set to true")][SerializeField] bool canDragAround = false;
         [SerializeField] EDraggableConstraints draggableConstraints = EDraggableConstraints.None;
         [EnableIf("draggableConstraints", EDraggableConstraints.EditRigidbodyConstraintsOnDrag)][EnumFlags][SerializeField] RigidbodyConstraints constraintsOnDrag;
         [Tooltip("If true, when drag set Interpolate and ContinuousDynamic. Reset when stop drag")][SerializeField] bool setInterpolationAndCollisionDetectionMode = true;
