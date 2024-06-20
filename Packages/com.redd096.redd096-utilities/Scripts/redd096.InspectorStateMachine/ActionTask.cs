@@ -2,6 +2,9 @@
 
 namespace redd096.InspectorStateMachine
 {
+    /// <summary>
+    /// Inherit from this class to create an Action, where you can set what statemachine must do when in this state
+    /// </summary>
     [AddComponentMenu("redd096/.InspectorStateMachine/Action Task")]
     public class ActionTask : BaseTask
     {

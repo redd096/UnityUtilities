@@ -4,6 +4,10 @@ using redd096.Attributes;
 
 namespace redd096.InspectorStateMachine
 {
+    /// <summary>
+    /// Create a state machine from this class. 
+    /// If you think at this as the Animator: every box is a State, every StateMachineBehaviour is an Action to add to the State, every arrow is a Transition from the State to another State
+    /// </summary>
     [AddComponentMenu("redd096/.InspectorStateMachine/State Machine")]
     public class StateMachine : MonoBehaviour
     {
@@ -323,26 +327,4 @@ namespace redd096.InspectorStateMachine
 
         #endregion
     }
-
-    #region classes and enums
-
-    public enum ETransitionCheck { AllTrueRequired, AnyTrueSuffice }
-
-    [System.Serializable]
-    public class Transition
-    {
-        [DropdownState] public string DestinationState;
-        public ETransitionCheck TransitionCheck;
-        [DropdownTask(typeof(ConditionTask))] public List<ConditionTask> Conditions;
-    }
-
-    [System.Serializable]
-    public class State
-    {
-        [OnStateNameChanged] public string StateName;
-        [DropdownTask(typeof(ActionTask))] public ActionTask[] Actions;
-        public Transition[] Transitions;
-    }
-
-    #endregion
 }
