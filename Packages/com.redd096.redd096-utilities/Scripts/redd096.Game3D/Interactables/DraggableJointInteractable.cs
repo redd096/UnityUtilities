@@ -18,6 +18,7 @@ namespace redd096.Game3D
         [SerializeField] EDraggableConstraints draggableConstraints = EDraggableConstraints.None;
         [EnableIf("draggableConstraints", EDraggableConstraints.EditRigidbodyConstraintsOnDrag)][EnumFlags][SerializeField] RigidbodyConstraints constraintsOnDrag;
         [Tooltip("If true, when drag set Interpolate and ContinuousDynamic. Reset when stop drag")][SerializeField] bool setInterpolationAndCollisionDetectionMode = true;
+        [Tooltip("If when release the object, it's moving too much, clamp its velocity")][SerializeField] float clampVelocityOnRelease = 10;
 
         //call OnDismiss when release interact button, press again interact or other
         public EDismissType DismissType => dismissType;
@@ -74,7 +75,7 @@ namespace redd096.Game3D
                 //if too much distance, destroy joint
                 if (Vector3.Distance(handRb.transform.position, handle.transform.position) > breakJointRange)
                 {
-                    DestroyJoint(false);
+                    DestroyJoint();
                     onTooMuchDistance?.Invoke();
                     interactor.DismissWithCurrentInteractable();
                     break;
@@ -137,7 +138,7 @@ namespace redd096.Game3D
             if (setInterpolationAndCollisionDetectionMode) rb.collisionDetectionMode = previousCollisionDetectionMode;
 
             //destroy joint
-            DestroyJoint(false);
+            DestroyJoint();
 
             onDismiss?.Invoke();
 
@@ -147,7 +148,7 @@ namespace redd096.Game3D
         protected virtual void CreateJoint(Vector3 hitPoint)
         {
             //remove if has already joint
-            DestroyJoint(false);
+            DestroyJoint();
 
             //create handle, child of the object to drag
             handle = new GameObject("Handle").transform;
@@ -205,20 +206,10 @@ namespace redd096.Game3D
             }
         }
 
-        protected virtual void DestroyJoint(bool throwed)
+        protected virtual void DestroyJoint()
         {
             if (handRb == null)
                 return;
-
-            //calculate throw speed
-            Vector3 delta = Vector3.zero;
-            //if (rb.Inertia)
-            delta = handRb.position - handle.position;
-
-            if (throwed)
-                throwed = delta.magnitude > 0.2f;
-
-            delta = Vector3.ClampMagnitude(delta, 0.5f);
 
             //destroy hand and handle
             Destroy(handle.gameObject);
@@ -226,12 +217,8 @@ namespace redd096.Game3D
             handle = null;
             handRb = null;
 
-            //throw rigidbody
-            if (throwed)
-            {
-                Vector3 force = delta * 20;
-                rb.AddForce(force, ForceMode.Impulse);
-            }
+            //clamp velocity to not throw items too distant
+            rb.velocity = Vector3.ClampMagnitude(rb.velocity, clampVelocityOnRelease);
         }
 
         /// <summary>
