@@ -9,6 +9,8 @@ namespace redd096.CsvImporter.Example
 {
     public class ExampleSimpleCsvImporterAndReader
     {
+        #region menu items
+
         [MenuItem("Tools/redd096/CSV Importer/Examples/Example Download Csv")]
         static void ExampleImportCsv()
         {
@@ -38,6 +40,10 @@ namespace redd096.CsvImporter.Example
             string url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSkP8ujm2voXc1L34U4LTbhWybChPVCfSUk3_Z-74Lpvr8h-ZFoQ8DwVIvGXA2IQmPf9Tychxt6RGbi/pub?output=csv";
             CsvImporter.ReadCsvFromUrl(url, FParseOptions.allTrue, CreateScriptableObjects);
         }
+
+        #endregion
+
+        #region example scriptable object
 
         /// <summary>
         /// Example of create scriptable objects from parsed file
@@ -85,6 +91,10 @@ namespace redd096.CsvImporter.Example
             EditorUtility.ClearProgressBar();
         }
 
+        #endregion
+
+        #region example scriptable object with helper
+
         /// <summary>
         /// Example of create scriptable objects from parsed file, by using Helper function
         /// </summary>
@@ -115,6 +125,45 @@ namespace redd096.CsvImporter.Example
             int[] arrayInt = arrayString.Select(s => int.TryParse(s, out int n) ? n : 0).ToArray();
             data.ExampleArrayInt = arrayInt;
         }
+
+        #endregion
+
+        #region example update (not create) prefabs with helper
+
+        /// <summary>
+        /// Example of update prefabs from parsed file, by using Helper function. NB it uses EditorHelper.LoadOneAssetForEveryRow instead of LoadOrCreate
+        /// </summary>
+        /// <param name="result"></param>
+        private static async void CreateDeliverables(FParseResult result)
+        {
+            //directory path relative to project
+            string directoryPrefabs = "Assets/Example/Prefabs";
+
+            //cycle every row in .csv file and find prefabs by name
+            await EditorHelper.LoadOneAssetForEveryRow<ExamplePrefab>(result, true, directoryPrefabs, SetFileNameAndExtension, SetAssetVariables);
+
+            //prefab name to look for
+            string SetFileNameAndExtension(FParseResult result, int row)
+            {
+                return result.GetCellContent("Name", row) + "_Prefab.prefab";
+            }
+
+            //set prefab variables by .csv file
+            void SetAssetVariables(ExamplePrefab data, FParseResult result, int row, string filePath)
+            {
+                if (data == null)
+                {
+                    Debug.LogWarning("Missing file: " + filePath);
+                    return;
+                }
+
+                data.Name = result.GetCellContent("Pokemon", row);                                                          //string
+                data.Life = int.TryParse(result.GetCellContent("Vita", row), out int n) ? n : 0;                            //int
+                System.Enum.TryParse(result.GetCellContent("Tipo", row), ignoreCase: true, out data.Type);                  //enum
+            }
+        }
+
+        #endregion
     }
 }
 #endif
