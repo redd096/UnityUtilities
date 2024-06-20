@@ -16,6 +16,11 @@ namespace redd096.InspectorStateMachine
         public virtual void OnUpdateTask() { }
 
         /// <summary>
+        /// Called every FixedUpdate when inside this task
+        /// </summary>
+        public virtual void OnFixedUpdateTask() { }
+
+        /// <summary>
         /// Call onCompleteTask delegate
         /// </summary>
         protected void CompleteTask()

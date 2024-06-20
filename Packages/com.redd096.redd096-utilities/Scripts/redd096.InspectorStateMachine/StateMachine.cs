@@ -31,10 +31,19 @@ namespace redd096.InspectorStateMachine
             if (CurrentState != null)
             {
                 //do every action
-                DoActions();
+                DoActions(false);
 
                 //check every transition
                 CheckTransitions();
+            }
+        }
+
+        protected virtual void FixedUpdate()
+        {
+            if (CurrentState != null)
+            {
+                //do every action fixed update
+                DoActions(true);
             }
         }
 
@@ -176,7 +185,7 @@ namespace redd096.InspectorStateMachine
 
         #region private API
 
-        void DoActions()
+        void DoActions(bool isFixedUpdate)
         {
             if (CurrentState.Actions == null)
                 return;
@@ -185,7 +194,12 @@ namespace redd096.InspectorStateMachine
             for (int i = 0; i < CurrentState.Actions.Length; i++)
             {
                 if (CurrentState.Actions[i] != null)
-                    CurrentState.Actions[i].OnUpdateTask();
+                {
+                    if (isFixedUpdate)
+                        CurrentState.Actions[i].OnFixedUpdateTask();
+                    else
+                        CurrentState.Actions[i].OnUpdateTask();
+                }
             }
         }
 
