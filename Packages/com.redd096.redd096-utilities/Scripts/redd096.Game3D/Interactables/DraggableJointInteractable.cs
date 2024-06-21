@@ -29,6 +29,8 @@ namespace redd096.Game3D
         public System.Action onTooMuchDistance;
 
         public Rigidbody Rb => rb;
+        public Transform Handle => handle;
+        public Rigidbody HandRb => handRb;
 
         InteractComponent interactor;
         Transform camTransform;
@@ -50,16 +52,18 @@ namespace redd096.Game3D
                 Debug.LogError("Miss Rigidbody on " + name);
         }
 
+#if UNITY_EDITOR
         protected virtual void OnDrawGizmos()
         {
-            Gizmos.color = Color.yellow - new Color(0, 0, 0, 0.7f);
-            if (handle)
-                Gizmos.DrawSphere(handle.position, 0.1f);
-            Gizmos.color = Color.red - new Color(0, 0, 0, 0.7f);
-            if (handRb)
-                Gizmos.DrawSphere(handRb.position, 0.1f);
-            Gizmos.color = Color.white;
+            //Gizmos.color = Color.yellow - new Color(0, 0, 0, 0.7f);
+            //if (handle)
+            //    Gizmos.DrawSphere(handle.position, 0.1f);
+            //Gizmos.color = Color.red - new Color(0, 0, 0, 0.7f);
+            //if (handRb)
+            //    Gizmos.DrawSphere(handRb.position, 0.1f);
+            //Gizmos.color = Color.white;
         }
+#endif
 
         protected virtual void OnEnable()
         {
