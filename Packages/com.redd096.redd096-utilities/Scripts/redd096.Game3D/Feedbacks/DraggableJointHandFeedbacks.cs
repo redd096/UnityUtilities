@@ -5,8 +5,8 @@ namespace redd096.Game3D
     /// <summary>
     /// Show hand and handle in game
     /// </summary>
-    [AddComponentMenu("redd096/.Game3D/Feedbacks/Draggable Joint Feedbacks")]
-    public class DraggableJointFeedbacks : MonoBehaviour
+    [AddComponentMenu("redd096/.Game3D/Feedbacks/DraggableJoint Hand Feedbacks")]
+    public class DraggableJointHandFeedbacks : MonoBehaviour
     {
         [Header("Necessary Components (by default get from this gameObject)")]
         [SerializeField] DraggableJointInteractable draggable;
