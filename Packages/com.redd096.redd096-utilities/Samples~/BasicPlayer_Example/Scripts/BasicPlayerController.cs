@@ -7,7 +7,8 @@ using Input = redd096.InputNew;
 namespace redd096.Examples.BasicPlayer
 {
     /// <summary>
-    /// Player controller is used to Possess a PlayerPawn in scene. I use this structure to help me in multiplayer games
+    /// Player controller is used to Possess a PlayerPawn in scene. I use this structure to help me in multiplayer games. 
+    /// Normally instead of the input wrapper, I attach unity Player Input class with InputAction, so it manages also multiple controllers for local multiplayer
     /// </summary>
     [AddComponentMenu("redd096/Examples/BasicPlayer/Basic PlayerController")]
     public class BasicPlayerController : PlayerController
