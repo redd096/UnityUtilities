@@ -101,7 +101,7 @@ namespace redd096
                 Volume = volume,
                 AudioClips = audioClips,
                 Preset = new AudioData.PresetAudio()
-                { 
+                {
                     AudioType = audioType,
                     Loop = loop,
                     Fade = fade,
@@ -192,7 +192,7 @@ namespace redd096
         /// <summary>
         /// Multiply audio.Volume for the saved volume for this audioType. So if for example in your game you set VolumeSFX to 0.5f, you will receive half of audio.Volume
         /// </summary>
-        /// <param name="audioType"></param>
+        /// <param name="audio"></param>
         /// <returns></returns>
         public float GetCorrectVolume(AudioClass audio)
         {
@@ -206,6 +206,27 @@ namespace redd096
                     return audio.Volume * volumeMusic;
                 default:
                     return audio.Volume;
+            }
+        }
+
+        /// <summary>
+        /// Multiply desiredVolume for the saved volume for this audioType. So if for example in your game you set VolumeSFX to 0.5f, you will receive half of desiredVolume
+        /// </summary>
+        /// <param name="audioType"></param>
+        /// <param name="desiredVolume"></param>
+        /// <returns></returns>
+        public float GetCorrectVolume(AudioData.EAudioType audioType, float desiredVolume)
+        {
+            switch (audioType)
+            {
+                case AudioData.EAudioType.Sfx:
+                    return desiredVolume * volumeSFX;
+                case AudioData.EAudioType.UI:
+                    return desiredVolume * volumeUI;
+                case AudioData.EAudioType.Music:
+                    return desiredVolume * volumeMusic;
+                default:
+                    return desiredVolume;
             }
         }
 
@@ -265,13 +286,13 @@ namespace redd096
         public IEnumerator DeactivateAudioSourceCoroutine(AudioSource audioSource)
         {
             //wait to end the clip
-            if (audioSource)
+            if (audioSource && audioSource.clip)
             {
                 yield return new WaitForSeconds(audioSource.clip.length / Mathf.Abs(audioSource.pitch));
             }
 
             //if still not ended (for example if player paused the audio source), continue to wait
-            while (audioSource && audioSource.time < audioSource.clip.length)
+            while (audioSource && audioSource.clip && audioSource.time < audioSource.clip.length)
             {
                 yield return null;
             }
@@ -397,9 +418,6 @@ namespace redd096
             audioSource.minDistance = audio.Preset.MinDistance;
             audioSource.maxDistance = audio.Preset.MaxDistance;
 
-            //play audio in scene
-            audioSource.Play();
-
             //volume
             if (fade)
             {
@@ -412,6 +430,9 @@ namespace redd096
 
             //add to list (or edit AudioClass if re-use same audioSource)
             savedAudios[audioSource] = audio;
+
+            //play audio in scene
+            audioSource.Play();
 
             //start deactivate coroutine if loop is false
             if (audio.Preset.Loop == false)
@@ -433,9 +454,9 @@ namespace redd096
         private void StopCoroutine_SoundManagerInternal(Dictionary<AudioSource, Coroutine> coroutines, AudioSource audioSource)
         {
             //stop coroutine if already running
-            if (coroutines.ContainsKey(audioSource) && coroutines[audioSource] != null)
+            if (coroutines.ContainsKey(audioSource))
             {
-                StopCoroutine(coroutines[audioSource]);
+                if (coroutines[audioSource] != null) StopCoroutine(coroutines[audioSource]);
                 coroutines.Remove(audioSource);
             }
         }

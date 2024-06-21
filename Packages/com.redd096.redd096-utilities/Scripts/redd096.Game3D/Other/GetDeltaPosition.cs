@@ -17,6 +17,8 @@ namespace redd096.Game3D
         [ShowIf("type", EType.Rotation)][SerializeField] Vector3 startLocalRotation;
         [ShowIf("type", EType.Rotation)][SerializeField] Vector3 endLocalRotation;
 
+        [Button] void StampDelta() => Debug.Log(GetDelta());
+
         public Rigidbody Rb => rb;
         public EType Type => type;
 
@@ -31,7 +33,6 @@ namespace redd096.Game3D
         /// Get delta position or rotation for rigidbody
         /// </summary>
         /// <returns></returns>
-        [Button]
         public float GetDelta()
         {
             if (type == EType.Position)
