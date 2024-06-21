@@ -56,7 +56,7 @@ namespace redd096
 
         //todo
         //fade and force replay also for sounds? (not only music)
-        //to do it: in Play, instead of call Play_SoundManagerInteral, create one PlaySound same as PlayMusic to call, where if audioSource != null then check replay and fade
+        //to do it: in Play, instead of call Play_SoundManagerInternal, create one PlaySound same as PlayMusic to call, where if audioSource != null then check replay and fade
 
         /// <summary>
         /// Play sound with presets from AudioClass
