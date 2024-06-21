@@ -202,7 +202,6 @@ namespace redd096.Game3D
 
                 //and play sound
                 float velocityToUse = previousVelocity > previousAngularVelocity ? previousVelocity : previousAngularVelocity;
-                Debug.Log(velocityToUse);
                 if (velocityToUse > velocityHeavy)
                 {
                     if (openIsPositive)
