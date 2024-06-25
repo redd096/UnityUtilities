@@ -295,6 +295,10 @@ namespace redd096
             while (audioSource && audioSource.clip && audioSource.time < audioSource.clip.length)
             {
                 yield return null;
+
+                //when complete to play the audio, it moves to time 0. So if after one frame is still at 0, then it's not moving, it's already completed
+                if (audioSource && audioSource.time == 0)
+                    break;
             }
 
             //and deactive
@@ -397,10 +401,12 @@ namespace redd096
                     prefabAudioSource.transform.SetParent(transform);   //set child to not destroy when change scene
                 }
                 audioSource = pooling.Instantiate(prefabAudioSource);
+
+                //set parent when audio source is null (if user gives an audioSource as parameter, we don't touch its parent)
+                audioSource.transform.SetParent(persistent ? SoundsParentPersistent : SoundsParent);    //persistent for music, else normal SoundsParent
             }
 
-            //set parent and position
-            audioSource.transform.SetParent(persistent ? SoundsParentPersistent : SoundsParent);
+            //set position
             audioSource.transform.position = position;
 
             //values

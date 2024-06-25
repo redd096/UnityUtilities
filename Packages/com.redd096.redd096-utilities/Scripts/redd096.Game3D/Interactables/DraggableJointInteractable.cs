@@ -55,10 +55,10 @@ namespace redd096.Game3D
 #if UNITY_EDITOR
         protected virtual void OnDrawGizmos()
         {
-            //Gizmos.color = Color.yellow - new Color(0, 0, 0, 0.7f);
+            //Gizmos.color = Color.red - new Color(0, 0, 0, 0.7f);
             //if (handle)
             //    Gizmos.DrawSphere(handle.position, 0.1f);
-            //Gizmos.color = Color.red - new Color(0, 0, 0, 0.7f);
+            //Gizmos.color = Color.yellow - new Color(0, 0, 0, 0.7f);
             //if (handRb)
             //    Gizmos.DrawSphere(handRb.position, 0.1f);
             //Gizmos.color = Color.white;

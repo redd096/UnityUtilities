@@ -50,8 +50,8 @@ namespace redd096.Game3D
             if (loopAudio != null && loopAudio.Length > 0)
             {
                 loopAudioSource = new GameObject("Loop Audio", typeof(AudioSource)).GetComponent<AudioSource>();
-                SoundManager.instance.Play(loopAudio, draggable.Rb.position, 0f, loopAudioSource, loop: true, enable3D: true, maxDistance: 10);
                 loopAudioSource.transform.SetParent(draggable.Rb.transform);
+                SoundManager.instance.Play(loopAudio, draggable.Rb.position, 0f, loopAudioSource, loop: true, enable3D: true, maxDistance: 10);
                 loopAudioSource.transform.localPosition = Vector3.zero;
             }
 
