@@ -12,7 +12,7 @@ namespace redd096.Game3D
         [Header("Necessary Components (by default use main camera and get from this gameObject)")]
         [SerializeField] Camera cam;
         [Tooltip("If raycast hit a rigidbody not Interactable, add draggable component to it")][SerializeField] bool canDragEveryRigidbody;
-        [EnableIf("canDragEveryRigidbody")][SerializeField] string draggableComponentType = "DraggableInteractable";
+        [EnableIf("canDragEveryRigidbody")][SerializeField] string draggableComponentType = "redd096.Game3D.DraggableInteractable";
         [SerializeField] float maxDistance = 3;
         [SerializeField] LayerMask interactLayer = -1;
         [Tooltip("Use raycast or sphere cast")][SerializeField] bool useRaycast = false;

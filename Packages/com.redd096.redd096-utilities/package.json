@@ -1,6 +1,6 @@
 {
   "name": "com.redd096.redd096-utilities",
-  "version": "1.5.7",
+  "version": "1.6.0",
   "displayName": "redd096 Utilities",
   "description": "Unity generic utilities by redd096",
   "unity": "2021.3",
@@ -12,14 +12,9 @@
       "path": "Samples~/BasicPlayer_Example"
     },
     {
-      "displayName": "FlowField_Example",
-      "description": "Example of FlowField path finding, both 2D and 3D",
-      "path": "Samples~/FlowField_Example"
-    },
-    {
-      "displayName": "Save_Example",
-      "description": "Example of saving in every platform using SaveManager",
-      "path": "Samples~/Save_Example"
+      "displayName": "BasicStateMachine_Example",
+      "description": "Example of class with BasicStateMachine and State",
+      "path": "Samples~/BasicStateMachine_Example"
     },
     {
       "displayName": "DateTimePicker_Example",
@@ -27,19 +22,29 @@
       "path": "Samples~/DateTimePicker_Example"
     },
     {
-      "displayName": "BasicStateMachine_Example",
-      "description": "Example of class with BasicStateMachine and State",
-      "path": "Samples~/BasicStateMachine_Example"
-    },
-    {
       "displayName": "DynamicResAndFpsCounter_Example",
       "description": "Example of use of DynamicResolution and FPSCounter",
       "path": "Samples~/DynamicResAndFpsCounter_Example"
     },
     {
+      "displayName": "FlowField_Example",
+      "description": "Example of FlowField path finding, both 2D and 3D",
+      "path": "Samples~/FlowField_Example"
+    },
+    {
+      "displayName": "InspectorStateMachine_And_Game3D_Example",
+      "description": "Example of Inspector StateMachine with Actions and Conditions + 3d player with components to drag interactables",
+      "path": "Samples~/InspectorStateMachine_And_Game3D_Example"
+    },
+    {
       "displayName": "OptimizeEventSystem_Example",
       "description": "Example of Optimize Event System",
       "path": "Samples~/OptimizeEventSystem_Example"
+    },
+    {
+      "displayName": "Save_Example",
+      "description": "Example of saving in every platform using SaveManager",
+      "path": "Samples~/Save_Example"
     }
   ]
 }

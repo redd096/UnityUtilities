@@ -26,7 +26,9 @@ namespace redd096.InspectorStateMachine
 
         #region protected
 
-        //as transform use stateMachine if possible, else use this task
+        /// <summary>
+        /// as transform use stateMachine if possible, else use this task
+        /// </summary>
         protected Transform transformTask => _stateMachine ? _stateMachine.transform : transform;
 
         /// <summary>
@@ -45,6 +47,28 @@ namespace redd096.InspectorStateMachine
                 Debug.LogWarning($"Miss {typeof(T).Name} on {_stateMachine}");
 
             return component;
+        }
+
+        /// <summary>
+        /// Get component in parent. If not found, show warning
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="foundComponent"></param>
+        /// <param name="showWarningIfNotFound"></param>
+        /// <returns></returns>
+        protected bool TryGetStateMachineComponent<T>(out T foundComponent, bool showWarningIfNotFound = true)
+        {
+            //get in parent
+            foundComponent = GetComponentInParent<T>();
+
+            //show warning if not found
+            if (showWarningIfNotFound && foundComponent == null)
+            {
+                Debug.LogWarning($"Miss {typeof(T).Name} on {_stateMachine}");
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>

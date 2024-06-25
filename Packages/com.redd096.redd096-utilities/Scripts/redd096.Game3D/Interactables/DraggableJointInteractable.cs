@@ -8,7 +8,7 @@ namespace redd096.Game3D
     /// Script to interact and start drag objects in scene, by using a Joint
     /// </summary>
     [AddComponentMenu("redd096/.Game3D/Interactables/Draggable Joint Interactable")]
-    public class DraggableJointInteractable : MonoBehaviour
+    public class DraggableJointInteractable : MonoBehaviour, IInteractable
     {
         [Header("Necessary Components (by default get from this gameObject)")]
         [SerializeField] Rigidbody rb;

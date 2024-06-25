@@ -12,6 +12,7 @@ namespace redd096.Game3D
         [SerializeField] GetDeltaPosition draggableDelta;
         [Space]
         [Tooltip("When start drag object, if the objects was close")][SerializeField] AudioClip[] onOpenAudio;
+        [Space]
         [Tooltip("When moving heavy the object to completely open position (delta near the 1)")][SerializeField] AudioClip[] onOpenHeavyPositive;
         [Tooltip("When moving heavy the object to completely open but in opposite position (delta near the -1)")][SerializeField] AudioClip[] onOpenHeavyNegative;
         [Tooltip("When moving softly the object to completely close position (delta near the 0)")][SerializeField] AudioClip[] onCloseLightAudio;
