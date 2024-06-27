@@ -101,7 +101,9 @@ public class BuildCustomSettingsProvider : SettingsProvider
 
         for (int i = 0; i < serializedProperties.Length; i++)
         {
-            EditorGUILayout.PropertyField(serializedProperties[i], new GUIContent(serializedProperties[i].displayName));
+            //null-check because for some reason arrays return 2 properties: one is the array and the second is null
+            if (serializedProperties[i] != null)
+                EditorGUILayout.PropertyField(serializedProperties[i], new GUIContent(serializedProperties[i].displayName));
         }
 
         if (EditorGUI.EndChangeCheck())
