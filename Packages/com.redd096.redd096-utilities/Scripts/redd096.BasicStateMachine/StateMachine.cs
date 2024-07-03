@@ -7,8 +7,10 @@ namespace redd096.BasicStateMachine
     public abstract class StateMachine : MonoBehaviour
     {
         [Header("DEBUG")]
-        [ReadOnly] private State currentState = default;
         [ReadOnly][SerializeField] List<string> blackboardDebug = new List<string>();
+        [ReadOnly][SerializeField] string currentStateDebug;
+
+        private State currentState = default;
 
         //blackboard to save vars to use in differents states
         private Dictionary<string, object> blackboard = new Dictionary<string, object>();
@@ -50,6 +52,7 @@ namespace redd096.BasicStateMachine
 
             //set new state
             currentState = stateToSet;
+            if (Application.isEditor) currentStateDebug = currentState != null ? currentState.ToString() : null;
 
             //enter in new state
             if (currentState != null)
