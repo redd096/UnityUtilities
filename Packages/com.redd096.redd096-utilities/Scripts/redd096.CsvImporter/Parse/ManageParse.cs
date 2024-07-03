@@ -251,6 +251,14 @@ namespace redd096.CsvImporter
                 reversedList.Add(new List<string>(sDoubleArray.Length));
                 for (int y = 0; y < sDoubleArray.Length; y++)
                 {
+                    //fix if in the example [row][column] to [column][row] we have some column longer than others
+                    if (x >= sDoubleArray[y].Length)
+                    {
+                        Debug.LogWarning("Some arrays have different sizes");
+                        reversedList[x].Add(string.Empty);
+                        continue;
+                    }
+
                     //reverse
                     reversedList[x].Add(sDoubleArray[y][x]);
                 }
