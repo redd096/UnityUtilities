@@ -7,9 +7,8 @@ namespace redd096.BasicStateMachine
     public abstract class StateMachine : MonoBehaviour
     {
         [Header("DEBUG")]
+        [ReadOnly] private State currentState = default;
         [ReadOnly][SerializeField] List<string> blackboardDebug = new List<string>();
-
-        private State currentState = default;
 
         //blackboard to save vars to use in differents states
         private Dictionary<string, object> blackboard = new Dictionary<string, object>();
