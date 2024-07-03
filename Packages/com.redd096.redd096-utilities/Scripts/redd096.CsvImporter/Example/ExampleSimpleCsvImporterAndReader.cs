@@ -64,8 +64,8 @@ namespace redd096.CsvImporter.Example
                     continue;
 
                 //use first column also to set asset name
-                string fileName = result.GetCellContent("Pokemon", row);
-                string filePath = Path.Combine(directoryScriptableObjects, fileName + ".asset");
+                string fileName = result.GetCellContent("Pokemon", row) + ".asset";
+                string filePath = Path.Combine(directoryScriptableObjects, fileName);
 
                 //load if already created, or create a new scriptable object with fileName
                 var data = LoadAssetsUtilities.GetOrCreateAsset<ExampleScriptableObject>(filePath);
