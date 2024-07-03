@@ -45,6 +45,7 @@ namespace redd096.CsvImporter
             //set result
             FParseResult result = new FParseResult
             {
+                IsSuccess = true,
                 DefaultFileContent = fileContent,
                 ParsedColumnsAndRows = columnsAndRows,
                 ParsedSplittedInArray = splittedInArray,

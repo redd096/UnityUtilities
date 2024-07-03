@@ -29,7 +29,7 @@ namespace redd096.CsvImporter.Example
             var result = CsvImporter.ReadCsvAtPath(filePath, FParseOptions.allTrue);
 
             //and create scriptable objects
-            if (string.IsNullOrEmpty(result.DefaultFileContent) == false)
+            if (result.IsSuccess)
                 CreateScriptableObjects(result);
         }
 

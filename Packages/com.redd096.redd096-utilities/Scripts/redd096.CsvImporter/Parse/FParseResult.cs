@@ -11,6 +11,11 @@ namespace redd096.CsvImporter
         #region results
 
         /// <summary>
+        /// Return true if there is a csv to parse
+        /// </summary>
+        public bool IsSuccess;
+
+        /// <summary>
         /// Default file content, not parsed
         /// </summary>
         public string DefaultFileContent;
