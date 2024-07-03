@@ -4,9 +4,6 @@ namespace redd096.BasicStateMachine
 {
     public abstract class State
     {
-        [Header("Basic State")]
-        public string StateName = "";
-
         private StateMachine _stateMachine;
         public StateMachine StateMachine { get => _stateMachine; set => _stateMachine = value; }
         private bool _isActive;
@@ -14,23 +11,25 @@ namespace redd096.BasicStateMachine
 
         bool isInitialized;
 
+        #region protected
+
+        /// <summary>
+        /// Use statemachine's transform if possible
+        /// </summary>
+        protected Transform transformState => _stateMachine ? _stateMachine.transform : null;
+
         /// <summary>
         /// Return StateMachine casted to inherited class
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public T GetStateMachine<T>() where T : StateMachine
+        protected T GetStateMachine<T>() where T : StateMachine
         {
             return _stateMachine as T;
         }
 
-        #region protected
-
-        //as transform use statemachine if possible
-        protected Transform transformState => _stateMachine ? _stateMachine.transform : null;
-
         /// <summary>
-        /// Get component in stateMachine or parent. If not found, show warning
+        /// Get component in stateMachine or its parent. If not found, show warning
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="showWarningIfNotFound"></param>
@@ -42,9 +41,22 @@ namespace redd096.BasicStateMachine
 
             //show warning if not found
             if (showWarningIfNotFound && component == null)
-                Debug.LogWarning($"Miss {typeof(T).Name} on {_stateMachine}");
+                Debug.LogWarning($"Miss {typeof(T).Name} on {_stateMachine}", _stateMachine);
 
             return component;
+        }
+
+        /// <summary>
+        /// Try get component in stateMachine or its parent
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="foundComponent"></param>
+        /// <returns></returns>
+        protected bool TryGetStateMachineComponent<T>(out T foundComponent)
+        {
+            //get in parent
+            foundComponent = _stateMachine ? _stateMachine.GetComponentInParent<T>() : default;
+            return foundComponent != null;
         }
 
         /// <summary>

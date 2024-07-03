@@ -14,14 +14,14 @@ namespace redd096.InspectorStateMachine
         public State[] States = default;
 
         [Header("DEBUG")]
-        [ReadOnly] public State CurrentState = default;
+        [ReadOnly] private State currentState = default;
         [ReadOnly][SerializeField] List<string> blackboardDebug = new List<string>();
 
         //blackboard to save vars to use in differents tasks
-        Dictionary<string, object> blackboard = new Dictionary<string, object>();
+        private Dictionary<string, object> blackboard = new Dictionary<string, object>();
 
         //events
-        public System.Action<string> onSetState { get; set; }
+        public System.Action<State> onSetState { get; set; }
         public System.Action<string> onSetBlackboardValue { get; set; }
 
         protected virtual void Start()
@@ -32,7 +32,7 @@ namespace redd096.InspectorStateMachine
 
         protected virtual void Update()
         {
-            if (CurrentState != null)
+            if (currentState != null)
             {
                 //do every action
                 DoActions(false);
@@ -44,7 +44,7 @@ namespace redd096.InspectorStateMachine
 
         protected virtual void FixedUpdate()
         {
-            if (CurrentState != null)
+            if (currentState != null)
             {
                 //do every action fixed update
                 DoActions(true);
@@ -60,22 +60,22 @@ namespace redd096.InspectorStateMachine
         public virtual void SetState(int nextState)
         {
             //exit from previous state
-            if (CurrentState != null)
+            if (currentState != null)
             {
                 ExitState();
             }
 
             //set new state
-            CurrentState = nextState >= 0 && States != null && States.Length > nextState ? States[nextState] : null;
+            currentState = nextState >= 0 && States != null && States.Length > nextState ? States[nextState] : null;
 
             //enter in new state
-            if (CurrentState != null)
+            if (currentState != null)
             {
                 EnterState();
             }
 
             //call event
-            onSetState?.Invoke(CurrentState != null ? CurrentState.StateName : string.Empty);
+            onSetState?.Invoke(currentState);
         }
 
         /// <summary>
@@ -102,12 +102,13 @@ namespace redd096.InspectorStateMachine
         }
 
         /// <summary>
-        /// Get current state name. If state is null, return empty string
+        /// Return CurrentState casted to inherited class
         /// </summary>
+        /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public string GetCurrentState()
+        public T GetCurrentState<T>() where T : State
         {
-            return CurrentState != null ? CurrentState.StateName : string.Empty;
+            return currentState as T;
         }
 
         #endregion
@@ -191,37 +192,37 @@ namespace redd096.InspectorStateMachine
 
         void DoActions(bool isFixedUpdate)
         {
-            if (CurrentState.Actions == null)
+            if (currentState.Actions == null)
                 return;
 
             //do every action
-            for (int i = 0; i < CurrentState.Actions.Length; i++)
+            for (int i = 0; i < currentState.Actions.Length; i++)
             {
-                if (CurrentState.Actions[i] != null)
+                if (currentState.Actions[i] != null)
                 {
                     if (isFixedUpdate)
-                        CurrentState.Actions[i].OnFixedUpdateTask();
+                        currentState.Actions[i].OnFixedUpdateTask();
                     else
-                        CurrentState.Actions[i].OnUpdateTask();
+                        currentState.Actions[i].OnUpdateTask();
                 }
             }
         }
 
         void CheckTransitions()
         {
-            if (CurrentState.Transitions == null)
+            if (currentState.Transitions == null)
                 return;
 
             //check every transition
-            for (int i = 0; i < CurrentState.Transitions.Length; i++)
+            for (int i = 0; i < currentState.Transitions.Length; i++)
             {
-                if (CurrentState.Transitions[i] != null)
+                if (currentState.Transitions[i] != null)
                 {
                     //if conditions return true, set new state
-                    if ((CurrentState.Transitions[i].TransitionCheck == ETransitionCheck.AllTrueRequired && CheckConditionsEVERY(CurrentState.Transitions[i]))
-                        || (CurrentState.Transitions[i].TransitionCheck == ETransitionCheck.AnyTrueSuffice && CheckConditionsANY(CurrentState.Transitions[i])))
+                    if ((currentState.Transitions[i].TransitionCheck == ETransitionCheck.AllTrueRequired && CheckConditionsEVERY(currentState.Transitions[i]))
+                        || (currentState.Transitions[i].TransitionCheck == ETransitionCheck.AnyTrueSuffice && CheckConditionsANY(currentState.Transitions[i])))
                     {
-                        SetState(CurrentState.Transitions[i].DestinationState);
+                        SetState(currentState.Transitions[i].DestinationState);
 
                         //break, because now is in another state
                         break;
@@ -271,17 +272,17 @@ namespace redd096.InspectorStateMachine
         void ExitState()
         {
             //exit from actions
-            if (CurrentState.Actions != null)
+            if (currentState.Actions != null)
             {
-                foreach (ActionTask action in CurrentState.Actions)
+                foreach (ActionTask action in currentState.Actions)
                     if (action)
                         action.ExitTask();
             }
 
             //exit from previous conditions
-            if (CurrentState.Transitions != null)
+            if (currentState.Transitions != null)
             {
-                foreach (Transition transition in CurrentState.Transitions)
+                foreach (Transition transition in currentState.Transitions)
                     if (transition != null && transition.Conditions != null)
                         foreach (ConditionTask condition in transition.Conditions)
                             if (condition)
@@ -292,9 +293,9 @@ namespace redd096.InspectorStateMachine
         void EnterState()
         {
             //enter in new actions
-            if (CurrentState.Actions != null)
+            if (currentState.Actions != null)
             {
-                foreach (ActionTask action in CurrentState.Actions)
+                foreach (ActionTask action in currentState.Actions)
                 {
                     if (action)
                     {
@@ -305,9 +306,9 @@ namespace redd096.InspectorStateMachine
             }
 
             //enter in new conditions
-            if (CurrentState.Transitions != null)
+            if (currentState.Transitions != null)
             {
-                foreach (Transition transition in CurrentState.Transitions)
+                foreach (Transition transition in currentState.Transitions)
                 {
                     if (transition != null && transition.Conditions != null)
                     {

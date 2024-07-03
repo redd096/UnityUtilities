@@ -14,25 +14,25 @@ namespace redd096.InspectorStateMachine
 
         bool isInitialized;
 
+        #region protected
+
+        /// <summary>
+        /// Use statemachine's transform if possible, else use this task's transform
+        /// </summary>
+        protected Transform transformTask => _stateMachine ? _stateMachine.transform : transform;
+
         /// <summary>
         /// Return StateMachine casted to inherited class
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public T GetStateMachine<T>() where T : StateMachine
+        protected T GetStateMachine<T>() where T : StateMachine
         {
             return _stateMachine as T;
         }
 
-        #region protected
-
         /// <summary>
-        /// as transform use stateMachine if possible, else use this task
-        /// </summary>
-        protected Transform transformTask => _stateMachine ? _stateMachine.transform : transform;
-
-        /// <summary>
-        /// Get component in parent. If not found, show warning
+        /// Get component in stateMachine or its parent. If not found, show warning
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="showWarningIfNotFound"></param>
@@ -40,35 +40,26 @@ namespace redd096.InspectorStateMachine
         protected T GetStateMachineComponent<T>(bool showWarningIfNotFound = true)
         {
             //get in parent
-            T component = GetComponentInParent<T>();
+            T component = _stateMachine ? _stateMachine.GetComponentInParent<T>() : default;
 
             //show warning if not found
             if (showWarningIfNotFound && component == null)
-                Debug.LogWarning($"Miss {typeof(T).Name} on {_stateMachine}");
+                Debug.LogWarning($"Miss {typeof(T).Name} on {_stateMachine}", _stateMachine);
 
             return component;
         }
 
         /// <summary>
-        /// Get component in parent. If not found, show warning
+        /// Try get component in stateMachine or its parent
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="foundComponent"></param>
-        /// <param name="showWarningIfNotFound"></param>
         /// <returns></returns>
-        protected bool TryGetStateMachineComponent<T>(out T foundComponent, bool showWarningIfNotFound = true)
+        protected bool TryGetStateMachineComponent<T>(out T foundComponent)
         {
             //get in parent
-            foundComponent = GetComponentInParent<T>();
-
-            //show warning if not found
-            if (showWarningIfNotFound && foundComponent == null)
-            {
-                Debug.LogWarning($"Miss {typeof(T).Name} on {_stateMachine}");
-                return false;
-            }
-
-            return true;
+            foundComponent = _stateMachine ? _stateMachine.GetComponentInParent<T>() : default;
+            return foundComponent != null;
         }
 
         /// <summary>

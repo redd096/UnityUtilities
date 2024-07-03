@@ -51,8 +51,13 @@ namespace redd096.GameTopDown2D
             }
         }
 
-        void OnSetState(string stateName)
+        void OnSetState(State state)
         {
+            if (state == null)
+                return;
+
+            string stateName = state.StateName;
+
             foreach (AnimTriggerStateStruct animTrigger in animTriggers)
             {
                 //if enter in this state

@@ -9,30 +9,30 @@ namespace redd096.BasicStateMachine
         [Header("DEBUG")]
         [ReadOnly][SerializeField] List<string> blackboardDebug = new List<string>();
 
-        public State CurrentState = default;
+        private State currentState = default;
 
         //blackboard to save vars to use in differents states
-        Dictionary<string, object> blackboard = new Dictionary<string, object>();
+        private Dictionary<string, object> blackboard = new Dictionary<string, object>();
 
         //events
-        public System.Action<string> onSetState { get; set; }
+        public System.Action<State> onSetState { get; set; }
         public System.Action<string> onSetBlackboardValue { get; set; }
 
         protected virtual void Update()
         {
-            if (CurrentState != null)
+            if (currentState != null)
             {
                 //update state
-                CurrentState.Update();
+                currentState.Update();
             }
         }
 
         protected virtual void FixedUpdate()
         {
-            if (CurrentState != null)
+            if (currentState != null)
             {
                 //fixed update state
-                CurrentState.FixedUpdate();
+                currentState.FixedUpdate();
             }
         }
 
@@ -44,32 +44,23 @@ namespace redd096.BasicStateMachine
         public virtual void SetState(State stateToSet)
         {
             //exit from previous state
-            if (CurrentState != null)
+            if (currentState != null)
             {
-                CurrentState.Exit();
+                currentState.Exit();
             }
 
             //set new state
-            CurrentState = stateToSet;
+            currentState = stateToSet;
 
             //enter in new state
-            if (CurrentState != null)
+            if (currentState != null)
             {
-                CurrentState.Initialize(this);
-                CurrentState.Enter();
+                currentState.Initialize(this);
+                currentState.Enter();
             }
 
             //call event
-            onSetState?.Invoke(CurrentState != null ? CurrentState.StateName : string.Empty);
-        }
-
-        /// <summary>
-        /// Get current state name. If state is null, return empty string
-        /// </summary>
-        /// <returns></returns>
-        public string GetCurrentStateName()
-        {
-            return CurrentState != null ? CurrentState.StateName : string.Empty;
+            onSetState?.Invoke(currentState);
         }
 
         /// <summary>
@@ -79,7 +70,7 @@ namespace redd096.BasicStateMachine
         /// <returns></returns>
         public T GetCurrentState<T>() where T : State
         {
-            return CurrentState as T;
+            return currentState as T;
         }
 
         #endregion
