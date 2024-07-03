@@ -29,8 +29,7 @@ namespace redd096.CsvImporter.Example
             var result = CsvImporter.ReadCsvAtPath(filePath, FParseOptions.allTrue);
 
             //and create scriptable objects
-            if (result.IsSuccess)
-                CreateScriptableObjects(result);
+            CreateScriptableObjects(result);
         }
 
         [MenuItem("Tools/redd096/CSV Importer/Examples/Example Download and Create All in One")]
@@ -51,6 +50,9 @@ namespace redd096.CsvImporter.Example
         /// <param name="result"></param>
         private static async void CreateScriptableObjects(FParseResult result)
         {
+            if (result.IsSuccess == false)
+                return;
+
             //directory path relative to project
             string directoryScriptableObjects = "Assets/Example/ScriptableObjects";
 
