@@ -10,6 +10,9 @@ namespace redd096.CsvImporter
     {
         //normal parse
         [Tooltip("Remove spaces to every text in the .csv file")] public bool trimAll;
+        [Tooltip("Csv files use double quotes to makes understand when a cell contains a comma. After parse, remove these double quotes? \n" +
+            "- e.g. \"Mike have 3,14 apples\",Paola have 2 apples. These are two cells, separated by comma. The first one has double quotes to avoid split 3,14")]
+        public bool removeDoubleQuotes;
 
         //split array options (If there are more values in a cell, split in array)
         [Tooltip("If in a cell there are more values, for example a list of tags, you can split them in array")] public bool splitSingleCellInArray;
@@ -21,6 +24,7 @@ namespace redd096.CsvImporter
         public static FParseOptions defaultValues = new FParseOptions()
         {
             trimAll = true,
+            removeDoubleQuotes = true,
             splitSingleCellInArray = false,
             stringForSplitCellInArray = ";",
             trimArrayElements = true,
@@ -31,6 +35,7 @@ namespace redd096.CsvImporter
         public static FParseOptions allTrue = new FParseOptions()
         {
             trimAll = true,
+            removeDoubleQuotes = true,
             splitSingleCellInArray = true,
             stringForSplitCellInArray = ";",
             trimArrayElements = true,

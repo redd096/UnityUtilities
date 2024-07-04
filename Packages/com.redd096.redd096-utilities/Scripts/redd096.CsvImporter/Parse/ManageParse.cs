@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 namespace redd096.CsvImporter
@@ -11,6 +12,12 @@ namespace redd096.CsvImporter
         /// </summary>
         static StringComparer notCaseSensitiveComparer = StringComparer.InvariantCultureIgnoreCase;
 
+        //in SplitString() we can use Regex. This is specifically used by SplitStringArray(), and this is a little explanation on how it works:
+        //we make an example with this regular expression (the same as the one used by SplitStringArray, but using ' instead of ")
+        //",(?=(?:[^']*'[^']*')*[^']*$)"
+        //this example splits string using comma - the first character before (?=(?: -  NOT inside quotes
+        //e.g. Mike's Kitchen,Jane's Room
+
         /// <summary>
         /// Parse file content and get result
         /// </summary>
@@ -19,13 +26,13 @@ namespace redd096.CsvImporter
         /// <returns></returns>
         public static FParseResult Parse(string fileContent, FParseOptions options)
         {
-            if (string.IsNullOrEmpty(fileContent)) 
+            if (string.IsNullOrEmpty(fileContent))
                 return default;
 
             //split in rows (every '\n'), and in columns (every ',')
-            string[] rows = SplitString(fileContent, Environment.NewLine);      //Environment.NewLine normally is \n
-            string[][] rowsAndColumns = SplitStringArray(rows, ",");
-            string[][] columnsAndRows = ReverseDoubleArray(rowsAndColumns);     //reverse to use column as X and row as Y
+            string[] rows = SplitString(fileContent, Environment.NewLine);                              //Environment.NewLine normally is \n
+            string[][] rowsAndColumns = SplitStringArray(rows, ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");    //same as string.Split(",") but ignore if inside double quote, for example we don't want to split "3,14" because is a float
+            string[][] columnsAndRows = ReverseDoubleArray(rowsAndColumns);                             //reverse to use column as X and row as Y
 
             //apply normal parse
             columnsAndRows = ApplyNormalParseOptions(columnsAndRows, options);
@@ -65,9 +72,10 @@ namespace redd096.CsvImporter
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        private static string[] SplitString(string s, string separator)
+        private static string[] SplitString(string s, string separator, bool useRegex = false)
         {
-            return s.Split(separator);
+            //use regex for separators like ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)" to split by comma only if NOT inside double quotes
+            return useRegex ? Regex.Split(s, separator) : s.Split(separator);
         }
 
         /// <summary>
@@ -83,7 +91,7 @@ namespace redd096.CsvImporter
             //split every string in array
             for (int i = 0; i < sArray.Length; i++)
             {
-                sDoubleArray[i] = SplitString(sArray[i], separator);
+                sDoubleArray[i] = SplitString(sArray[i], separator, useRegex: true);
             }
 
             return sDoubleArray;
@@ -124,16 +132,20 @@ namespace redd096.CsvImporter
         /// <returns></returns>
         private static string[][] ApplyNormalParseOptions(string[][] sDoubleArray, FParseOptions options)
         {
+            //trim every string
             if (options.trimAll)
             {
                 for (int x = 0; x < sDoubleArray.Length; x++)
-                {
                     for (int y = 0; y < sDoubleArray[x].Length; y++)
-                    {
-                        //trim every string
                         sDoubleArray[x][y] = sDoubleArray[x][y].Trim();
-                    }
-                }
+            }
+
+            //remove double quotes
+            if (options.removeDoubleQuotes)
+            {
+                for (int x = 0; x < sDoubleArray.Length; x++)
+                    for (int y = 0; y < sDoubleArray[x].Length; y++)
+                        sDoubleArray[x][y] = sDoubleArray[x][y].Replace("\"", string.Empty);
             }
 
             return sDoubleArray;
@@ -145,7 +157,7 @@ namespace redd096.CsvImporter
         /// <param name="sSplitted"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        private static Dictionary<Vector2Int, string[]> ApplySplittedArrayParseOptions(Dictionary<Vector2Int, string[]> sSplitted,  FParseOptions options)
+        private static Dictionary<Vector2Int, string[]> ApplySplittedArrayParseOptions(Dictionary<Vector2Int, string[]> sSplitted, FParseOptions options)
         {
             Dictionary<Vector2Int, string[]> copy = new Dictionary<Vector2Int, string[]>(sSplitted);
             foreach (var key in copy.Keys)

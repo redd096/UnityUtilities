@@ -90,6 +90,7 @@ namespace redd096.CsvImporter
                 EditorGUILayout.Space(5);
                 EditorGUILayout.LabelField("Parse", EditorStyles.boldLabel);
                 parseOptions.trimAll = EditorGUILayout.Toggle(new GUIContent("Trim All", "Remove spaces to every text in the .csv file but first row"), parseOptions.trimAll);
+                parseOptions.removeDoubleQuotes = EditorGUILayout.Toggle(new GUIContent("Remove double quotes", "Csv files use double quotes to makes understand when a cell contains a comma. After parse, remove these double quotes? \n- e.g. \"Mike have 3,14 apples\",Paola have 2 apples. These are two cells, separated by comma. The first one has double quotes to avoid split 3,14"), parseOptions.removeDoubleQuotes);
 
                 //split single cell in array
                 EditorGUILayout.Space(5);
@@ -127,7 +128,7 @@ namespace redd096.CsvImporter
             if (parseResult.DefaultFileContent != null)
             {
                 parsed = parseResult.DefaultFileContent;
-            }    
+            }
 
             scrollDefaultCsv = EditorGUILayout.BeginScrollView(scrollDefaultCsv);
             Vector2 textSize = EditorStyles.whiteLabel.CalcSize(new GUIContent(parsed));
