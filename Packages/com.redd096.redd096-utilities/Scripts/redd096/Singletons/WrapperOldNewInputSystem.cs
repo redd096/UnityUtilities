@@ -202,7 +202,7 @@ namespace redd096
         #region replace old input system
 
         /// <summary>
-        /// Returns the value of the virtual axis identified by inputName
+        /// Returns the value of the virtual axis identified by inputName. This is the same as GetAxisRaw. If you want to smooth it, call GetSmoothRawAxis() instead
         /// </summary>
         public static float GetAxis(string inputName, InputActionAsset inputActionAsset = null)
         {
@@ -214,7 +214,7 @@ namespace redd096
         }
 
         /// <summary>
-        /// Returns the value of the virtual axis identified by inputName
+        /// Returns the value of the virtual axis identified by inputName with no smoothing filtering applied
         /// </summary>
         public static float GetAxisRaw(string inputName, InputActionAsset inputActionAsset = null)
         {
@@ -231,6 +231,35 @@ namespace redd096
         public static UnityEngine.InputSystem.LowLevel.TouchState GetTouch(int index)
         {
             return Touchscreen.current.touches[index].ReadValue();
+        }
+
+        /// <summary>
+        /// Returns the value of the virtual axis identified by inputName. This is the correct version of GetAxis from old input system
+        /// </summary>
+        /// <param name="inputName"></param>
+        /// <param name="currentDelta">This is a value clamped between -1 and 1. It's used to know where we arrived with the smooth increase of the value</param>
+        /// <param name="sensitivity">When press input, this is the value to increase it until reach -1 or 1</param>
+        /// <param name="gravity">When released, this is the value to decrease the input until back to zero</param>
+        /// <param name="inputActionAsset"></param>
+        public static void GetSmoothRawAxis(string inputName, ref float currentDelta, float sensitivity = 3, float gravity = 3, InputActionAsset inputActionAsset = null)
+        {
+            //use singleton if no input action asset
+            if (inputActionAsset == null)
+                inputActionAsset = WrapperOldNewInputSystem.instance.inputActionAsset;
+
+            float value = inputActionAsset.FindAction(inputName).ReadValue<float>();
+
+            //smooth it
+            var time = Time.time;
+            if (value != 0)
+            {
+                //sensitivity 
+                currentDelta = Mathf.Clamp(currentDelta + value * sensitivity * time, -1f, 1f);
+            }
+            else
+            {
+                currentDelta = Mathf.Clamp01(Mathf.Abs(currentDelta) - gravity * time) * Mathf.Sign(currentDelta);
+            }
         }
 
         #region get key
