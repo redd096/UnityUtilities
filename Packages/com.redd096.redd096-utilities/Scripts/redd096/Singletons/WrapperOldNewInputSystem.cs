@@ -234,14 +234,15 @@ namespace redd096
         }
 
         /// <summary>
-        /// Returns the value of the virtual axis identified by inputName. This is the correct version of GetAxis from old input system
+        /// Returns the smoothed value of the virtual axis identified by inputName. This is the correct version of GetAxis from old input system
         /// </summary>
         /// <param name="inputName"></param>
-        /// <param name="currentDelta">This is a value clamped between -1 and 1. It's used to know where we arrived with the smooth increase of the value</param>
-        /// <param name="sensitivity">When press input, this is the value to increase it until reach -1 or 1</param>
-        /// <param name="gravity">When released, this is the value to decrease the input until back to zero</param>
+        /// <param name="current">The value smoothed until now. Probably obtained by calling this same function in a previous frame/param>
+        /// <param name="sensitivity">When press input, this is the value to increase current until reach input value</param>
+        /// <param name="gravity">When release input, this is the value to decrease current until reach zero</param>
         /// <param name="inputActionAsset"></param>
-        public static void GetSmoothRawAxis(string inputName, ref float currentDelta, float sensitivity = 3, float gravity = 3, InputActionAsset inputActionAsset = null)
+        /// <returns></returns>
+        public static float GetSmoothRawAxis(string inputName, ref float current, float sensitivity = 3, float gravity = 3, InputActionAsset inputActionAsset = null)
         {
             //use singleton if no input action asset
             if (inputActionAsset == null)
@@ -249,17 +250,18 @@ namespace redd096
 
             float value = inputActionAsset.FindAction(inputName).ReadValue<float>();
 
-            //smooth it
-            var time = Time.time;
+            //increase
             if (value != 0)
             {
-                //sensitivity 
-                currentDelta = Mathf.Clamp(currentDelta + value * sensitivity * time, -1f, 1f);
+                current = Mathf.MoveTowards(current, value, sensitivity * Time.deltaTime);
             }
+            //move to zero
             else
             {
-                currentDelta = Mathf.Clamp01(Mathf.Abs(currentDelta) - gravity * time) * Mathf.Sign(currentDelta);
+                current = Mathf.MoveTowards(current, value, gravity * Time.deltaTime);
             }
+
+            return current;
         }
 
         #region get key
