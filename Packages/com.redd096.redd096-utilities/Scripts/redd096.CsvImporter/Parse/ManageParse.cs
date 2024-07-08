@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
@@ -146,6 +147,39 @@ namespace redd096.CsvImporter
                 for (int x = 0; x < sDoubleArray.Length; x++)
                     for (int y = 0; y < sDoubleArray[x].Length; y++)
                         sDoubleArray[x][y] = sDoubleArray[x][y].Replace("\"", string.Empty);
+            }
+
+            //remove empty columns
+            if (options.removeEmptyColumns)
+            {
+                sDoubleArray = sDoubleArray.Where(column => column.All(row => string.IsNullOrEmpty(row)) == false).ToArray();   //keep only columns Where (column has All rows null or empty) == false
+            }
+
+            //remove empty rows
+            if (options.removeEmptyRows)
+            {
+                List<List<string>> columnsAndRowsList = new List<List<string>>();                               //create a list of lists
+                for (int x = 0; x < sDoubleArray.Length; x++)
+                    columnsAndRowsList.Add(new List<string>(sDoubleArray[x]));
+
+                int y = 0;
+                int yLength = columnsAndRowsList[0].Count;
+                while (y < yLength)
+                {
+                    if (columnsAndRowsList.All(column => column.Count <= y || string.IsNullOrEmpty(column[y]))) //if (All columns have this row null or empty)
+                    {
+                        for (int x = 0; x < columnsAndRowsList.Count; x++)                                      //Remove this row from every column
+                            columnsAndRowsList[x].RemoveAt(y);
+
+                        yLength--;
+                    }
+                    else
+                    {
+                        y++;
+                    }
+                }
+
+                sDoubleArray = columnsAndRowsList.Select(column => column.ToArray()).ToArray();
             }
 
             return sDoubleArray;

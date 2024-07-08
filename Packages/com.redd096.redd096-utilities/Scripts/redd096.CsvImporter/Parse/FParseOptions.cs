@@ -13,6 +13,8 @@ namespace redd096.CsvImporter
         [Tooltip("Csv files use double quotes to makes understand when a cell contains a comma. After parse, remove these double quotes? \n" +
             "- e.g. \"Mike have 3,14 apples\",Paola have 2 apples. These are two cells, separated by comma. The first one has double quotes to avoid split 3,14")]
         public bool removeDoubleQuotes;
+        [Tooltip("If a column has every cell empty, remove from the list")] public bool removeEmptyColumns;
+        [Tooltip("If a row has every cell empty, remove from the list")] public bool removeEmptyRows;
 
         //split array options (If there are more values in a cell, split in array)
         [Tooltip("If in a cell there are more values, for example a list of tags, you can split them in array")] public bool splitSingleCellInArray;
@@ -25,6 +27,8 @@ namespace redd096.CsvImporter
         {
             trimAll = true,
             removeDoubleQuotes = true,
+            removeEmptyColumns = true,
+            removeEmptyRows = true,
             splitSingleCellInArray = false,
             stringForSplitCellInArray = ";",
             trimArrayElements = true,
@@ -36,6 +40,8 @@ namespace redd096.CsvImporter
         {
             trimAll = true,
             removeDoubleQuotes = true,
+            removeEmptyColumns = true,
+            removeEmptyRows = true,
             splitSingleCellInArray = true,
             stringForSplitCellInArray = ";",
             trimArrayElements = true,

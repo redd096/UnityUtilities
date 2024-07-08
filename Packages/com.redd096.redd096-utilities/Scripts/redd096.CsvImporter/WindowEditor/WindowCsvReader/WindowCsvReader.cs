@@ -91,6 +91,8 @@ namespace redd096.CsvImporter
                 EditorGUILayout.LabelField("Parse", EditorStyles.boldLabel);
                 parseOptions.trimAll = EditorGUILayout.Toggle(new GUIContent("Trim All", "Remove spaces to every text in the .csv file but first row"), parseOptions.trimAll);
                 parseOptions.removeDoubleQuotes = EditorGUILayout.Toggle(new GUIContent("Remove double quotes", "Csv files use double quotes to makes understand when a cell contains a comma. After parse, remove these double quotes? \n- e.g. \"Mike have 3,14 apples\",Paola have 2 apples. These are two cells, separated by comma. The first one has double quotes to avoid split 3,14"), parseOptions.removeDoubleQuotes);
+                parseOptions.removeEmptyColumns = EditorGUILayout.Toggle(new GUIContent("Remove empty columns", "If a column has every cell empty, remove from the list"), parseOptions.removeEmptyColumns);
+                parseOptions.removeEmptyRows = EditorGUILayout.Toggle(new GUIContent("Remove empty rows", "If a row has every cell empty, remove from the list"), parseOptions.removeEmptyRows);
 
                 //split single cell in array
                 EditorGUILayout.Space(5);
