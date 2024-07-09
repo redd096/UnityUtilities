@@ -300,7 +300,9 @@ namespace redd096.CsvImporter
                     //fix if in the example [row][column] to [column][row] we have some column longer than others
                     if (x >= sDoubleArray[y].Length)
                     {
-                        Debug.LogWarning("Some arrays have different sizes");
+                        string s = "";
+                        for (int i = 0; i < sDoubleArray[y].Length; i++) s += sDoubleArray[y][i];
+                        Debug.LogWarning($"Some arrays have different sizes. Counting from 0, row: {y} missing column {x}. It has only {sDoubleArray[y].Length} columns. {s}");
                         reversedList[x].Add(string.Empty);
                         continue;
                     }
