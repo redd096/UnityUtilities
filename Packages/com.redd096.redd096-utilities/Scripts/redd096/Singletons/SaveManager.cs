@@ -63,9 +63,9 @@ namespace redd096
         //string to identify files with more variables
         private const string FWMV_STRING = "redd096FWMV";   //redd096 File With More Variables
 
-        protected override void InitializeSingleton()
+        protected override void InitializeInstance()
         {
-            base.InitializeSingleton();
+            base.InitializeInstance();
 
             //set save load system based on platform
 #if UNITY_STEAM

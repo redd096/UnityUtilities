@@ -67,9 +67,9 @@ namespace redd096
         //events
         public System.Action onFadeInComplete { get; set; }
 
-        protected override void InitializeSingleton()
+        protected override void InitializeInstance()
         {
-            base.InitializeSingleton();
+            base.InitializeInstance();
 
             //get references
             if (canvas == null) canvas = GetComponentInChildren<Canvas>(true);

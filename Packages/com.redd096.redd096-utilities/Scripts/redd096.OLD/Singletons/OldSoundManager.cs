@@ -78,9 +78,9 @@ namespace redd096
 
         #endregion
 
-        protected override void InitializeSingleton()
+        protected override void InitializeInstance()
         {
-            base.InitializeSingleton();
+            base.InitializeInstance();
 
             //if this is the instance, if miss some prefab, create it
             if (musicPrefab == null)

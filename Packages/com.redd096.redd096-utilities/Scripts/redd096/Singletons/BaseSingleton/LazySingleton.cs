@@ -43,7 +43,7 @@ namespace redd096
             CheckInstance();
 
             if (_instance == this)
-                InitializeSingleton();
+                InitializeInstance();
         }
 
         void CheckInstance()
@@ -64,7 +64,7 @@ namespace redd096
         /// <summary>
         /// Called one time in Awake, only if this is the correct instance
         /// </summary>
-        protected virtual void InitializeSingleton()
+        protected virtual void InitializeInstance()
         {
 
         }
