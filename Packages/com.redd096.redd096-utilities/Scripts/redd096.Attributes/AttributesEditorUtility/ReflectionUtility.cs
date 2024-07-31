@@ -16,7 +16,7 @@ namespace redd096.Attributes.AttributesEditorUtility
         public static FieldInfo GetField(this UnityEditor.SerializedProperty property)
 		{
 			//find field using property.name
-			return property.GetTargetObjectWithProperty().GetField(property.name);
+			return property.GetTargetObjectWithProperty()?.GetField(property.name);
         }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace redd096.Attributes.AttributesEditorUtility
         /// <returns></returns>
         public static object GetValue(this UnityEditor.SerializedProperty property, string valueName, params System.Type[] methodReturnTypes)
 		{
-			return property.GetTargetObjectWithProperty().GetValue(valueName, methodReturnTypes);
+			return property.GetTargetObjectWithProperty()?.GetValue(valueName, methodReturnTypes);
 		}
 
 #endif

@@ -38,7 +38,7 @@ namespace redd096.Attributes
             while (property.Next(true))
             {
                 //make sure it is decorated by our custom attribute
-                FieldInfo field = serializedObject.targetObject.GetField(property.name); // serializedObject.targetObject.GetType().GetField(property.name);
+                FieldInfo field = property.GetField(); //serializedObject.targetObject.GetType().GetField(property.name);
                 if (field == null)
                     continue;
 
