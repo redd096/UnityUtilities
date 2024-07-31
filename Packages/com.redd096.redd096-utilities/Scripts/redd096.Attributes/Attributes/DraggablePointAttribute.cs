@@ -46,24 +46,28 @@ namespace redd096.Attributes
                 if (draggablePoint != null)
                 {
                     //draw PositionHandle
-                    if (property.propertyType == SerializedPropertyType.Vector3)
+                    if (property.propertyType == SerializedPropertyType.Vector3 || property.propertyType == SerializedPropertyType.Vector2)
                     {
-                        Handles.Label(property.vector3Value + Vector3.down * 0.08f, property.name);
-                        property.vector3Value = Handles.PositionHandle(property.vector3Value, Quaternion.identity);
-                        serializedObject.ApplyModifiedProperties();
-                    }
-                    else if (property.propertyType == SerializedPropertyType.Vector2)
-                    {
-                        Handles.Label(property.vector2Value + Vector2.down * 0.08f, property.name);
-                        property.vector2Value = Handles.PositionHandle(property.vector2Value, Quaternion.identity);
-                        serializedObject.ApplyModifiedProperties();
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"{serializedObject.targetObject} - {draggablePoint.GetType().Name} can't be used on '{property.name}'. It can be used only on Vector3 or Vector2 variables", serializedObject.targetObject);
+                        DrawHandle(property, property.propertyType == SerializedPropertyType.Vector3);
                     }
                 }
             }
+        }
+
+        void DrawHandle(SerializedProperty property, bool isVector3)
+        {
+            //get value (world or local)
+            Vector3 pos = isVector3 ? property.vector3Value : property.vector2Value;
+
+            //draw handle
+            Handles.Label(pos + Vector3.down * 0.08f, property.name);
+            pos = Handles.PositionHandle(pos, Quaternion.identity);
+
+            //update property value
+            if (isVector3) property.vector3Value = pos;
+            else property.vector2Value = pos;
+
+            serializedObject.ApplyModifiedProperties();
         }
     }
 
