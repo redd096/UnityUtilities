@@ -5,6 +5,7 @@ namespace redd096.ComponentsSystem
     /// <summary>
     /// Just tell to PlayerController to possess Pawn on awake
     /// </summary>
+    [AddComponentMenu("redd096/.ComponentsSystem/Player/Auto Possess")]
     public class AutoPossess : MonoBehaviour
     {
         private void Awake()

@@ -9,6 +9,7 @@ namespace redd096.ComponentsSystem
     /// Inherit from this component to create a variable for every input. Attach the component to your PlayerController. 
     /// Then your player will use probably a statemachine to know when read these inputs
     /// </summary>
+    [AddComponentMenu("redd096/.ComponentsSystem/Player/Input Manager")]
     public class InputManager : MonoBehaviour
     {
         //inputs

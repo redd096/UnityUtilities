@@ -4,7 +4,7 @@ using UnityEngine;
 namespace redd096.ComponentsSystem
 {
     /// <summary>
-    /// Create a state machine from this class. 
+    /// Create a state machine and set every State in inspector.
     /// If you think at this as the Animator: every box is a State, every StateMachineBehaviour is an Action to add to the State, every arrow is a Transition from the State to another State
     /// </summary>
     [System.Serializable]
