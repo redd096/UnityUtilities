@@ -14,6 +14,7 @@ namespace redd096.ComponentsSystem
             Owner = owner;
         }
 
+        virtual void OnDrawGizmosSelected() { }
         virtual void Awake() { }
         virtual void Update() { }
         virtual void FixedUpdate() { }
