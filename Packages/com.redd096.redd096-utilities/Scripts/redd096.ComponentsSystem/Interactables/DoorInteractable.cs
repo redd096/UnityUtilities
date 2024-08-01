@@ -14,13 +14,15 @@ namespace redd096.ComponentsSystem
         [SerializeField] float closeAfterSeconds = 3f;
         [SerializeField] Vector2 openPosition;
 
-        bool isOpen;
+        bool isDoingAnimation;
 
         public void Interact(ICharacter interactor)
         {
             //do nothing if already open
-            if (isOpen)
+            if (isDoingAnimation)
                 return;
+
+            isDoingAnimation = true;
 
             StartCoroutine(MovementAnimation());
         }
@@ -41,8 +43,6 @@ namespace redd096.ComponentsSystem
                 yield return null;
             }
 
-            isOpen = true;
-
             //wait
             yield return new WaitForSeconds(closeAfterSeconds);
 
@@ -55,7 +55,7 @@ namespace redd096.ComponentsSystem
                 yield return null;
             }
 
-            isOpen = false;
+            isDoingAnimation = false;
         }
     }
 }
