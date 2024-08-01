@@ -26,6 +26,14 @@ namespace redd096.Examples.ComponentsSystem
             GetComponent<ICharacter>().AwakeFunction();
         }
 
+        public void Start()
+        {
+            foreach (var component in Components)
+            {
+                component.Start();
+            }
+        }
+
         public void Update()
         {
             foreach (var component in Components)

@@ -16,6 +16,7 @@ namespace redd096.ComponentsSystem
 
         virtual void OnDrawGizmosSelected() { }
         virtual void Awake() { }
+        virtual void Start() { }
         virtual void Update() { }
         virtual void FixedUpdate() { }
     }

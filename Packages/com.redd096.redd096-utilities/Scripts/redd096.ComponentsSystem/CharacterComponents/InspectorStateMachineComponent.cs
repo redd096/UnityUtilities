@@ -24,7 +24,7 @@ namespace redd096.ComponentsSystem
         public System.Action<InspectorState> onSetState { get; set; }
         public System.Action<string> onSetBlackboardValue { get; set; }
 
-        public virtual void Awake()
+        public virtual void Start()
         {
             //start with first state
             SetState(0);

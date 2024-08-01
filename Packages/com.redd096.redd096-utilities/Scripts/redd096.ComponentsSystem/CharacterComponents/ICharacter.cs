@@ -49,6 +49,7 @@ namespace redd096.ComponentsSystem
         }
 
         void Awake();
+        void Start();
         void Update();
         void FixedUpdate();
 
@@ -61,6 +62,14 @@ namespace redd096.ComponentsSystem
             foreach (var component in Components)
             {
                 component.Awake();
+            }
+        }
+
+        virtual void StartFunction()
+        {
+            foreach (var component in Components)
+            {
+                component.Start();
             }
         }
 
