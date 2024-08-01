@@ -3,13 +3,13 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 #endif
 
-namespace redd096.Game3D
+namespace redd096.GameTopDown2D
 {
     /// <summary>
     /// Generally you want to calculate inputs inside PlayerController (or InputManager attached to this same GameObject), always instantiated for every player also online, 
     /// then there is the Pawn with its StateMachine that knows when to read the inputs from pawn's player controller
     /// </summary>
-    [AddComponentMenu("redd096/.Game3D/Player/Player Controller")]
+    [AddComponentMenu("redd096/.GameTopDown2D/Player/Player Controller")]
     public class PlayerController : MonoBehaviour
     {
         //pawn
