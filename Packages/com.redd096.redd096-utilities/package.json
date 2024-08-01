@@ -1,6 +1,6 @@
 {
   "name": "com.redd096.redd096-utilities",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "displayName": "redd096 Utilities",
   "description": "Unity generic utilities by redd096",
   "unity": "2021.3",
@@ -15,6 +15,11 @@
       "displayName": "BasicStateMachine_Example",
       "description": "Example of class with BasicStateMachine and State",
       "path": "Samples~/BasicStateMachine_Example"
+    },
+    {
+      "displayName": "ComponentsSystem_Example",
+      "description": "Example 2D of a player created with a MovementComponent and an InspectorStateMachineComponent",
+      "path": "Samples~/ComponentsSystem_Example"
     },
     {
       "displayName": "DateTimePicker_Example",
