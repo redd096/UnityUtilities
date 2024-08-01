@@ -25,13 +25,13 @@ namespace redd096.ComponentsSystem
         public PlayerInput PlayerInput { get { if (_playerInput == null) _playerInput = GetComponent<PlayerInput>(); return _playerInput; } }
 
         /// <summary>
-        /// Shortcut to call FindAction and ReadValue on PlayerInput
+        /// Shortcut to call FindAction on PlayerInput
         /// </summary>
         /// <param name="action"></param>
         /// <returns></returns>
-        public T ReadValue<T>(string action) where T : struct
+        public InputAction FindAction(string action)
         {
-            return PlayerInput.actions.FindAction(action).ReadValue<T>();
+            return PlayerInput.actions.FindAction(action);
         }
 #endif
 
@@ -41,7 +41,7 @@ namespace redd096.ComponentsSystem
         {
 #if ENABLE_INPUT_SYSTEM
             //read inputs
-            Movement = ReadValue<Vector2>("Move");
+            Movement = FindAction("Move").ReadValue<Vector2>();
 #endif
         }
     }
