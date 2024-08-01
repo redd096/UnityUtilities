@@ -20,7 +20,7 @@ namespace redd096.Attributes
 
 #if UNITY_EDITOR
 
-    [CustomEditor(typeof(MonoBehaviour), true)]
+    [CustomEditor(typeof(UnityEngine.Object), true)]
     public class DraggablePointEditor : Editor
     {
         readonly GUIStyle style = new GUIStyle();
