@@ -14,7 +14,7 @@ namespace redd096.InspectorStateMachine
         public State[] States = default;
 
         [Header("DEBUG")]
-        [ReadOnly] private State currentState = default;
+        [ReadOnly][SerializeField] private State currentState = default;
         [ReadOnly][SerializeField] List<string> blackboardDebug = new List<string>();
 
         //blackboard to save vars to use in differents tasks
