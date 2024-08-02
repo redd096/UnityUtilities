@@ -27,6 +27,7 @@ namespace redd096.ComponentsSystem
         public virtual void Start()
         {
             //start with first state
+            //set in Start because in Awake normally we are still doing things like PlayerController.Possess(PlayerPawn)
             SetState(0);
         }
 
@@ -99,6 +100,22 @@ namespace redd096.ComponentsSystem
 
             //else set null as state
             SetState(-1);
+        }
+
+        /// <summary>
+        /// Set state at Null
+        /// </summary>
+        public void SetNullState()
+        {
+            SetState(-1);
+        }
+
+        /// <summary>
+        /// Set to first state
+        /// </summary>
+        public void ResetToFirstState()
+        {
+            SetState(0);
         }
 
         /// <summary>
