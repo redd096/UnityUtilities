@@ -5,7 +5,7 @@ using redd096.ComponentsSystem;
 namespace redd096.Examples.ComponentsSystem
 {
     /// <summary>
-    /// On interact, open door
+    /// On interact, open door. After few seconds, close it
     /// </summary>
     [AddComponentMenu("redd096/Examples/ComponentsSystem/Interactables/Example Door Interactable")]
     public class ExampleDoorInteractable : MonoBehaviour, IInteractable

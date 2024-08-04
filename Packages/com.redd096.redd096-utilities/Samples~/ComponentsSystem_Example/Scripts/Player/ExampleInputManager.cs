@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 namespace redd096.Examples.ComponentsSystem
 {
     /// <summary>
-    /// Inherit from this component to create a variable for every input. Attach the component to your PlayerController. 
+    /// Create a variable for every input and attach the component to your PlayerController. 
     /// Then your player will use probably a statemachine to know when read these inputs
     /// </summary>
     [AddComponentMenu("redd096/Examples/ComponentsSystem/Player/Example Input Manager")]
