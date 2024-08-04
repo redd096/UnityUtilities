@@ -10,7 +10,7 @@ namespace redd096.ComponentsSystem
     public class InteractComponent2D : ICharacterComponent
     {
         [Tooltip("Look for interactables every X seconds")][SerializeField] float updateTime = 0.2f;
-        [Tooltip("Area to check for interactables")][SerializeField] float radiusInteract = 1.5f;
+        [Tooltip("Area to check for interactables")][SerializeField] float radiusInteract = 1f;
         [Tooltip("Hit only interacts with this layer")][SerializeField] LayerMask interactLayer = -1;
         [SerializeField] ShowDebugRedd096 showRadiusInteract = Color.cyan;
 

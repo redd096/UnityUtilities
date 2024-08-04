@@ -8,7 +8,7 @@ using redd096.Attributes;
 namespace redd096.Examples.ComponentsSystem
 {
     [CanEditMultipleObjects]
-    [CustomEditor(typeof(GenerateSpriteColliders))]
+    [CustomEditor(typeof(ExampleGenerateSpriteColliders))]
     public class GenerateSpriteCollidersEditor : ButtonEditor
     {
         private void OnSceneGUI()

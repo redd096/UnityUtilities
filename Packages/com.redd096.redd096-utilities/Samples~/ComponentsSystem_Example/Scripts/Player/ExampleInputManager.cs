@@ -3,17 +3,18 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 #endif
 
-namespace redd096.ComponentsSystem
+namespace redd096.Examples.ComponentsSystem
 {
     /// <summary>
     /// Inherit from this component to create a variable for every input. Attach the component to your PlayerController. 
     /// Then your player will use probably a statemachine to know when read these inputs
     /// </summary>
-    [AddComponentMenu("redd096/.ComponentsSystem/Player/Input Manager")]
-    public class InputManager : MonoBehaviour
+    [AddComponentMenu("redd096/Examples/ComponentsSystem/Player/Example Input Manager")]
+    public class ExampleInputManager : MonoBehaviour
     {
         //inputs
         public Vector2 Movement;
+        public bool InteractWasPressedThisFrame;
 
         #region playerInput
 
@@ -42,6 +43,10 @@ namespace redd096.ComponentsSystem
 #if ENABLE_INPUT_SYSTEM
             //read inputs
             Movement = FindAction("Move").ReadValue<Vector2>();
+            InteractWasPressedThisFrame = FindAction("Interact").WasPressedThisFrame();
+#else
+            Movement = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+            InteractWasPressedThisFrame = Input.GetButtonDown("Fire1");
 #endif
         }
     }

@@ -1,16 +1,17 @@
 using UnityEngine;
+using redd096.ComponentsSystem;
 
-namespace redd096.ComponentsSystem
+namespace redd096.Examples.ComponentsSystem
 {
     /// <summary>
     /// This Action is used by InspectorStateMachineComponent to move a PlayerPawn by input
     /// </summary>
-    [AddComponentMenu("redd096/.ComponentsSystem/FSM Tasks/MovementByInput Action")]
-    public class MovementByInputAction : ActionTask
+    [AddComponentMenu("redd096/Examples/ComponentsSystem/Player/Example MovementByInput Action")]
+    public class ExampleMovementByInputAction : ActionTask
     {
         PlayerPawn player;
         MovementComponent2D movementComponent;
-        InputManager inputManager;
+        ExampleInputManager inputManager;
 
         protected override void OnInitTask()
         {
@@ -28,7 +29,7 @@ namespace redd096.ComponentsSystem
             base.OnEnterTask();
 
             //get InputManager
-            inputManager = player.CurrentController ? player.CurrentController.GetComponent<InputManager>() : null;
+            inputManager = player.CurrentController ? player.CurrentController.GetComponent<ExampleInputManager>() : null;
             if (inputManager == null) Debug.LogError($"Missing inputManager on {name}", gameObject);
         }
 

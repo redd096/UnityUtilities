@@ -16,6 +16,9 @@ MonoBehaviour:
   - Name: Player
     SortingLayer: 0
     OrderInLayer: 0
+  - Name: Door
+    SortingLayer: 0
+    OrderInLayer: 0
   - Name: Background
     SortingLayer: 0
     OrderInLayer: -1

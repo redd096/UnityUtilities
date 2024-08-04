@@ -8,8 +8,8 @@ namespace redd096.Examples.ComponentsSystem
     /// <summary>
     /// This is used to generate automatically colliders for the trains or the bridges
     /// </summary>
-    [AddComponentMenu("redd096/Examples/ComponentsSystem/GenerateSpriteColliders")]
-    public class GenerateSpriteColliders : MonoBehaviour
+    [AddComponentMenu("redd096/Examples/ComponentsSystem/Example GenerateSpriteColliders")]
+    public class ExampleGenerateSpriteColliders : MonoBehaviour
     {
         [SerializeField] Transform spriteToGetSize;
         [SerializeField] bool showDoors;

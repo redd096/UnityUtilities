@@ -1,13 +1,14 @@
 using System.Collections;
 using UnityEngine;
+using redd096.ComponentsSystem;
 
-namespace redd096.ComponentsSystem
+namespace redd096.Examples.ComponentsSystem
 {
     /// <summary>
     /// On interact, open door
     /// </summary>
-    [AddComponentMenu("redd096/.ComponentsSystem/Interactables/Door Interactable")]
-    public class DoorInteractable : MonoBehaviour, IInteractable
+    [AddComponentMenu("redd096/Examples/ComponentsSystem/Interactables/Example Door Interactable")]
+    public class ExampleDoorInteractable : MonoBehaviour, IInteractable
     {
         [SerializeField] Transform objectToMove;
         [SerializeField] float movementSpeed = 2;
