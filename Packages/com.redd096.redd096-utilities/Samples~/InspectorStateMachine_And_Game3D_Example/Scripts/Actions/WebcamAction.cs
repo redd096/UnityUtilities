@@ -1,5 +1,5 @@
-using redd096.Game3D;
-using redd096.InspectorStateMachine;
+using redd096.v1.Game3D;
+using redd096.v1.InspectorStateMachine;
 using UnityEngine;
 using UnityEngine.UI;
 

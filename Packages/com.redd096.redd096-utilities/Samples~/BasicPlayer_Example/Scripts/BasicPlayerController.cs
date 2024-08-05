@@ -1,4 +1,4 @@
-using redd096.Game3D;
+using redd096.v1.Game3D;
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM
 using Input = redd096.InputNew;

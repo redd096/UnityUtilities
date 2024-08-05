@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using redd096.BasicStateMachine;
+using redd096.v1.BasicStateMachine;
 
 namespace redd096.Examples.BasicStateMachine
 {

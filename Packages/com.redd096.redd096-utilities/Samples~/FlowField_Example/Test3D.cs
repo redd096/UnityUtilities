@@ -1,8 +1,8 @@
-using redd096.PathFinding.FlowField3D;
+using redd096.v1.PathFinding.FlowField3D;
 using System.Collections.Generic;
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM
-using Input = redd096.InputRedd096;
+using Input = redd096.InputNew;
 #endif
 
 namespace redd096.Examples.FlowField

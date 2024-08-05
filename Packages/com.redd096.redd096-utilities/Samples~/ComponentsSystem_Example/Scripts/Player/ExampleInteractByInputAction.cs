@@ -1,4 +1,4 @@
-using redd096.ComponentsSystem;
+using redd096.v2.ComponentsSystem;
 using UnityEngine;
 
 namespace redd096.Examples.ComponentsSystem

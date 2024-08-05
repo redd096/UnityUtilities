@@ -1,6 +1,6 @@
 using System.Collections;
 using UnityEngine;
-using redd096.ComponentsSystem;
+using redd096.v2.ComponentsSystem;
 
 namespace redd096.Examples.ComponentsSystem
 {
