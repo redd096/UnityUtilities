@@ -60,6 +60,17 @@ namespace redd096.v2.ComponentsSystem
         void Update();
         void FixedUpdate();
 
+        virtual void OnDrawGizmosSelected()
+        {
+            if (Components == null)
+                Components = SetComponents();
+
+            foreach (var component in Components)
+            {
+                component.OnDrawGizmosSelected();
+            }
+        }
+
         virtual void AwakeFunction()
         {
             if (Components == null)
