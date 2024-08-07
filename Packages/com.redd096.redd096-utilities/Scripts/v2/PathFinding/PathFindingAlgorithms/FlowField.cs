@@ -11,7 +11,7 @@ namespace redd096.v2.PathFinding
         /// <param name="targetRequests"></param>
         /// <param name="grid"></param>
         /// <param name="canMoveDiagonal"></param>
-        private void FindPath(FTargetRequest[] targetRequests, Node[,] grid, bool canMoveDiagonal, IAgent agent = null)
+        public static void FindPath(FTargetRequest[] targetRequests, Node[,] grid, bool canMoveDiagonal, IAgent agent = null)
         {
             UpdateNodesStatus(grid);
             ResetFlowFieldGrid(grid);
@@ -25,7 +25,7 @@ namespace redd096.v2.PathFinding
         /// Recalculate status of every node (obstacles, walkable, etc...)
         /// </summary>
         /// <param name="grid"></param>
-        private void UpdateNodesStatus(Node[,] grid)
+        public static void UpdateNodesStatus(Node[,] grid)
         {
             foreach (Node node in grid)
             {
@@ -37,7 +37,7 @@ namespace redd096.v2.PathFinding
         /// Reset every node in the grid (not neighbours or penalty, just reset best cost and direction used for FlowField Pathfinding)
         /// </summary>
         /// <param name="grid"></param>
-        private void ResetFlowFieldGrid(Node[,] grid)
+        public static void ResetFlowFieldGrid(Node[,] grid)
         {
             foreach (Node node in grid)
             {
@@ -50,36 +50,44 @@ namespace redd096.v2.PathFinding
         /// <summary>
         /// Set best cost for every node
         /// </summary>
-        private void SetBestCosts(FTargetRequest[] targetRequests, Node[,] grid, IAgent agent)
+        public static void SetBestCosts(FTargetRequest[] targetRequests, Node[,] grid = null, IAgent agent = null)
         {
             foreach (FTargetRequest targetRequest in targetRequests)
             {
-                //set target node at 0 or lower
-                targetRequest.TargetNode.BestCost = (short)-targetRequest.Weight;
+                SetBestCost(targetRequest.TargetNode, targetRequest.Weight, grid, agent);
+            }
+        }
 
-                //start from target node
-                Queue<Node> cellsToCheck = new Queue<Node>();
-                cellsToCheck.Enqueue(targetRequest.TargetNode);
+        /// <summary>
+        /// Set best cost for every node
+        /// </summary>
+        public static void SetBestCost(Node targetNode, short weight = 0, Node[,] grid = null, IAgent agent = null)
+        {
+            //set target node at 0 or lower
+            targetNode.BestCost = (short)-weight;
 
-                while (cellsToCheck.Count > 0)
+            //start from target node
+            Queue<Node> cellsToCheck = new Queue<Node>();
+            cellsToCheck.Enqueue(targetNode);
+
+            while (cellsToCheck.Count > 0)
+            {
+                //get every neighbour in cardinal directions
+                Node currentNode = cellsToCheck.Dequeue();
+                foreach (Node currentNeighbour in currentNode.NeighboursCardinalDirections)
                 {
-                    //get every neighbour in cardinal directions
-                    Node currentNode = cellsToCheck.Dequeue();
-                    foreach (Node currentNeighbour in currentNode.NeighboursCardinalDirections)
+                    //if not walkable, ignore
+                    if (currentNeighbour.IsWalkable == false) { continue; }
+
+                    //if using agent and can't move on this node, skip to next Neighbour
+                    if (agent != null && agent.CanMoveOnThisNode(currentNeighbour, grid) == false)
+                        continue;
+
+                    //else, calculate best cost
+                    if (currentNeighbour.MovementPenalty + currentNode.BestCost < currentNeighbour.BestCost)
                     {
-                        //if not walkable, ignore
-                        if (currentNeighbour.IsWalkable == false) { continue; }
-
-                        //if using agent and can't move on this node, skip to next Neighbour
-                        if (agent != null && agent.CanMoveOnThisNode(currentNeighbour, grid) == false)
-                            continue;
-
-                        //else, calculate best cost
-                        if (currentNeighbour.MovementPenalty + currentNode.BestCost < currentNeighbour.BestCost)
-                        {
-                            currentNeighbour.BestCost = (short)(currentNeighbour.MovementPenalty + currentNode.BestCost);
-                            cellsToCheck.Enqueue(currentNeighbour);
-                        }
+                        currentNeighbour.BestCost = (short)(currentNeighbour.MovementPenalty + currentNode.BestCost);
+                        cellsToCheck.Enqueue(currentNeighbour);
                     }
                 }
             }
@@ -90,7 +98,7 @@ namespace redd096.v2.PathFinding
         /// </summary>
         /// <param name="grid"></param>
         /// <param name="canMoveDiagonal"></param>
-        private void SetBestDirections(Node[,] grid, bool canMoveDiagonal)
+        public static void SetBestDirections(Node[,] grid, bool canMoveDiagonal)
         {
             //foreach node
             foreach (Node currentNode in grid)
@@ -111,7 +119,13 @@ namespace redd096.v2.PathFinding
             }
         }
 
-        private List<Vector3> SimplifyPath(Node startNode, Node[,] grid)
+        /// <summary>
+        /// Return path as a list of positions
+        /// </summary>
+        /// <param name="startNode"></param>
+        /// <param name="grid"></param>
+        /// <returns></returns>
+        public static List<Vector3> SimplifyPath(Node startNode, Node[,] grid)
         {
             if (startNode == null)
                 return null;
