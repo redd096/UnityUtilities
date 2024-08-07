@@ -9,38 +9,35 @@ namespace redd096.Examples.ComponentsSystem
     [AddComponentMenu("redd096/Examples/ComponentsSystem/Player/Example Player")]
     public class ExamplePlayer : PlayerPawn, ICharacter
     {
-        //declare every component, and add in OnValidate
+        //declare every component, and add in SetComponents
         [SerializeField] InspectorStateMachineComponent stateMachineComponent;
         [SerializeField] MovementComponent2D movementComponent;
         [SerializeField] InteractComponent2D interactComponent;
 
-        public ICharacterComponent[] Components { get; private set; }
+        public ICharacterComponent[] Components { get; set; }
+
+        public ICharacterComponent[] SetComponents()
+        {
+            return new ICharacterComponent[] { stateMachineComponent, movementComponent, interactComponent };
+        }
 
         public void Awake()
         {
-            Components = new ICharacterComponent[] { stateMachineComponent, movementComponent, interactComponent };
             GetComponent<ICharacter>().AwakeFunction();
         }
 
 #if UNITY_EDITOR
 
-        void OnDrawGizmosSelected()
-        {
-            Awake();
-            foreach (var component in Components)
-            {
-                component.OnDrawGizmosSelected();
-            }
-        }
+    void OnDrawGizmosSelected()
+    {
+        GetComponent<ICharacter>().OnDrawGizmosSelected();
+    }
 
 #endif
 
         public void Start()
         {
-            foreach (var component in Components)
-            {
-                component.Start();
-            }
+            GetComponent<ICharacter>().StartFunction();
         }
 
         public void Update()
