@@ -7,7 +7,7 @@ namespace redd096.v2.ComponentsSystem
         /// <summary>
         /// Every component on this character
         /// </summary>
-        ICharacterComponent[] Components { get; }
+        ICharacterComponent[] Components { get; set; }
 
         /// <summary>
         /// Get this character transform
@@ -21,6 +21,9 @@ namespace redd096.v2.ComponentsSystem
         /// <returns></returns>
         virtual T GetCharacterComponent<T>() where T : ICharacterComponent
         {
+            if (Components == null)
+                Components = SetComponents();
+
             foreach (var component in Components)
             {
                 if (component is T)
@@ -36,6 +39,9 @@ namespace redd096.v2.ComponentsSystem
         /// <returns></returns>
         virtual bool TryGetCharacterComponent<T>(out T foundComponent) where T : ICharacterComponent
         {
+            if (Components == null)
+                Components = SetComponents();
+
             foreach (var component in Components)
             {
                 if (component is T)
@@ -48,6 +54,7 @@ namespace redd096.v2.ComponentsSystem
             return false;
         }
 
+        ICharacterComponent[] SetComponents();
         void Awake();
         void Start();
         void Update();
@@ -55,6 +62,9 @@ namespace redd096.v2.ComponentsSystem
 
         virtual void AwakeFunction()
         {
+            if (Components == null)
+                Components = SetComponents();
+
             foreach (var component in Components)
             {
                 component.Init(this);
@@ -67,6 +77,9 @@ namespace redd096.v2.ComponentsSystem
 
         virtual void StartFunction()
         {
+            if (Components == null)
+                Components = SetComponents();
+
             foreach (var component in Components)
             {
                 component.Start();
@@ -75,6 +88,9 @@ namespace redd096.v2.ComponentsSystem
 
         virtual void UpdateFunction()
         {
+            if (Components == null)
+                Components = SetComponents();
+
             foreach (var component in Components)
             {
                 component.Update();
@@ -83,6 +99,9 @@ namespace redd096.v2.ComponentsSystem
 
         virtual void FixedUpdateFunction()
         {
+            if (Components == null)
+                Components = SetComponents();
+
             foreach (var component in Components)
             {
                 component.FixedUpdate();
