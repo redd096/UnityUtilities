@@ -54,11 +54,15 @@ namespace redd096.v2.ComponentsSystem
             return false;
         }
 
+        /// <summary>
+        /// This function is called on Awake, Gizmos, or GetCharacterComponent. Only if Components is null
+        /// </summary>
+        /// <returns></returns>
         ICharacterComponent[] SetComponents();
-        void Awake();
-        void Start();
-        void Update();
-        void FixedUpdate();
+        virtual void Awake() { }
+        virtual void Start() { }
+        virtual void Update() { }
+        virtual void FixedUpdate() { }
 
         virtual void OnDrawGizmosSelected()
         {
