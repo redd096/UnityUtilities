@@ -20,32 +20,33 @@ namespace redd096
             var referenceCache = new Dictionary<string, List<string>>();
 
             string[] guids = AssetDatabase.FindAssets("");
-            foreach (string guid in guids)
+            for (int i = 0; i < guids.Length; i++)
             {
-                string assetPath = AssetDatabase.GUIDToAssetPath(guid);
+                string assetPath = AssetDatabase.GUIDToAssetPath(guids[i]);
                 string[] dependencies = AssetDatabase.GetDependencies(assetPath, false);
 
-                for (int i = 0; i < dependencies.Length; i++)
+                foreach (var dependency in dependencies)
                 {
-                    if (referenceCache.ContainsKey(dependencies[i]))
+                    if (referenceCache.ContainsKey(dependency))
                     {
-                        if (!referenceCache[dependencies[i]].Contains(assetPath))
+                        if (!referenceCache[dependency].Contains(assetPath))
                         {
-                            referenceCache[dependencies[i]].Add(assetPath);
+                            referenceCache[dependency].Add(assetPath);
                         }
                     }
                     else
                     {
-                        referenceCache[dependencies[i]] = new List<string>() { assetPath };
+                        referenceCache[dependency] = new List<string>() { assetPath };
                     }
-
-                    //show progress bar and delay of one frame
-                    EditorUtility.DisplayProgressBar($"Saving every dependency for asset at path: {assetPath}", $"Saving... {i}/{dependencies.Length}", (float)i / dependencies.Length);
-                    if (i % 20 == 0)
-                        await Task.Delay((int)(Time.deltaTime * 1000));
                 }
+
+                //show progress bar and delay of one frame
+                EditorUtility.DisplayProgressBar($"Creating cache for every object in the project", $"Cache... {i}/{guids.Length}", (float)i / guids.Length);
+                if (i % 500 == 0)
+                    await Task.Delay((int)(Time.deltaTime * 1000));
             }
 
+            EditorUtility.ClearProgressBar();
             Debug.Log($"Build index takes {sw.ElapsedMilliseconds} milliseconds");
 
             //find every reference for the selected object
@@ -65,6 +66,8 @@ namespace redd096
                     if (i % 20 == 0)
                         await Task.Delay((int)(Time.deltaTime * 1000));
                 }
+
+                EditorUtility.ClearProgressBar();
             }
             else
             {
