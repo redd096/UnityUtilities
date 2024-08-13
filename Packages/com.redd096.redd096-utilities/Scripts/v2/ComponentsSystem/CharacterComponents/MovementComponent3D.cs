@@ -7,17 +7,17 @@ namespace redd096.v2.ComponentsSystem
     /// This component uses FixedUpdate to set rigidbody.velocity by InputSpeed + PushForce
     /// </summary>
     [System.Serializable]
-    public class MovementComponent : ICharacterComponent
+    public class MovementComponent3D : ICharacterComponent
     {
         [Header("Necessary Components (by default get from this gameObject)")]
-        [SerializeField] Rigidbody rb = default;
-        [Tooltip("Speed when call Move functions")][SerializeField] float inputSpeed = 5;
-        [Tooltip("Max Speed, calculating velocity by input + push (-1 = no limit)")][SerializeField] float maxSpeed = 50;
+        [SerializeField] protected Rigidbody rb = default;
+        [Tooltip("Speed when call Move functions")][SerializeField] protected float inputSpeed = 5;
+        [Tooltip("Max Speed, calculating velocity by input + push (-1 = no limit)")][SerializeField] protected float maxSpeed = 50;
 
         [Header("When pushed")]
-        [Tooltip("Drag based on velocity * drag or normalized velocity * drag?")][SerializeField] bool dragBasedOnVelocity = true;
-        [Tooltip("Use rigidbody drag or custom drag?")][SerializeField] bool useCustomDrag = false;
-        [EnableIf("useCustomDrag")][SerializeField] float customDrag = 5;
+        [Tooltip("Drag based on velocity * drag or normalized velocity * drag?")][SerializeField] protected bool dragBasedOnVelocity = true;
+        [Tooltip("Use rigidbody drag or custom drag?")][SerializeField] protected bool useCustomDrag = false;
+        [EnableIf("useCustomDrag")][SerializeField] protected float customDrag = 5;
 
         public ICharacter Owner { get; set; }
 
@@ -50,9 +50,9 @@ namespace redd096.v2.ComponentsSystem
         public System.Action<bool> onChangeMovementDirection;
 
         //private
-        Vector3 desiredVelocity;                //when moves, set it as input direction * speed (used to move this object, will be reset in every frame)
-        Vector3 calculatedVelocity;             //desiredVelocity + DesiredPushForce
-        Vector3 newPushForce;                   //new push force when Drag
+        protected Vector3 desiredVelocity;                //when moves, set it as input direction * speed (used to move this object, will be reset in every frame)
+        protected Vector3 calculatedVelocity;             //desiredVelocity + DesiredPushForce
+        protected Vector3 newPushForce;                   //new push force when Drag
 
         public virtual void Awake()
         {
@@ -83,10 +83,16 @@ namespace redd096.v2.ComponentsSystem
         {
             //input + push
             calculatedVelocity = desiredVelocity + CurrentPushForce;
+            ApplyGravity();
 
             //clamp at max speed
             if (maxSpeed >= 0)
                 calculatedVelocity = Vector3.ClampMagnitude(calculatedVelocity, maxSpeed);
+        }
+
+        protected virtual void ApplyGravity()
+        {
+            calculatedVelocity += Physics.gravity;
         }
 
         protected virtual void CheckIsMovingRight()
@@ -212,7 +218,7 @@ namespace redd096.v2.ComponentsSystem
         /// <param name="pushDirection"></param>
         /// <param name="pushForce"></param>
         /// <param name="resetPreviousPush"></param>
-        public virtual void PushInDirection(Vector3 pushDirection, float pushForce, bool resetPreviousPush = false)
+        public void PushInDirection(Vector3 pushDirection, float pushForce, bool resetPreviousPush = false)
         {
             //reset previous push or add new one to it
             if (resetPreviousPush)

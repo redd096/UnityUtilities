@@ -10,9 +10,9 @@ namespace redd096.v2.ComponentsSystem
     {
         public ICharacter Owner { get; set; }
 
-        private string currentStateDebug;
+        protected string currentStateDebug;
 
-        private State currentState = default;
+        protected State currentState = default;
 
         //blackboard to save vars to use in differents states
         public Dictionary<string, object> blackboard { get; set; } = new Dictionary<string, object>();
@@ -55,7 +55,7 @@ namespace redd096.v2.ComponentsSystem
 
             //set new state
             currentState = stateToSet;
-            if (Application.isEditor) currentStateDebug = currentState != null ? currentState.ToString() : null;
+            if (Application.isEditor) currentStateDebug = currentState != null ? currentState.ToString() : "";
 
             //enter in new state
             if (currentState != null)

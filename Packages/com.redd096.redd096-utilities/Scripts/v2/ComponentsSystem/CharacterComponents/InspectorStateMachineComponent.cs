@@ -15,7 +15,7 @@ namespace redd096.v2.ComponentsSystem
 
         public ICharacter Owner { get; set; }
 
-        private InspectorState currentState = default;
+        protected InspectorState currentState = default;
 
         //blackboard to save vars to use in differents tasks (key: variable name, value: variable value)
         public Dictionary<string, object> blackboard { get; set; } = new Dictionary<string, object>();
