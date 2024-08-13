@@ -22,6 +22,11 @@ namespace redd096.v2.ComponentsSystem
         public virtual void OnFixedUpdateTask() { }
 
         /// <summary>
+        /// Called every LateUpdate when inside this task
+        /// </summary>
+        public virtual void OnLateUpdateTask() { }
+
+        /// <summary>
         /// Call onCompleteTask delegate
         /// </summary>
         protected void CompleteTask()

@@ -20,7 +20,7 @@ namespace redd096.v2.ComponentsSystem.Example
             return new ICharacterComponent[] { stateMachineComponent, movementComponent, interactComponent };
         }
 
-        public void Awake()
+        void Awake()
         {
             GetComponent<ICharacter>().AwakeFunction();
         }
@@ -34,12 +34,12 @@ namespace redd096.v2.ComponentsSystem.Example
 
 #endif
 
-        public void Start()
+        void Start()
         {
             GetComponent<ICharacter>().StartFunction();
         }
 
-        public void Update()
+        void Update()
         {
             foreach (var component in Components)
             {
@@ -47,11 +47,19 @@ namespace redd096.v2.ComponentsSystem.Example
             }
         }
 
-        public void FixedUpdate()
+        void FixedUpdate()
         {
             foreach (var component in Components)
             {
                 component.FixedUpdate();
+            }
+        }
+
+        void LateUpdate()
+        {
+            foreach (var component in Components)
+            {
+                component.LateUpdate();
             }
         }
     }

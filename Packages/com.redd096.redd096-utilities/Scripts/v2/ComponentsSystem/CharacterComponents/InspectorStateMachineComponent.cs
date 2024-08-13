@@ -25,6 +25,8 @@ namespace redd096.v2.ComponentsSystem
         public System.Action<InspectorState> onSetState { get; set; }
         public System.Action<string> onSetBlackboardValue { get; set; }
 
+        enum EUpdateTask { Update, FixedUpdate, LateUpdate }
+
         public virtual void Start()
         {
             //start with first state
@@ -38,7 +40,7 @@ namespace redd096.v2.ComponentsSystem
             if (currentState != null)
             {
                 //do every action
-                DoActions(false);
+                DoActions(EUpdateTask.Update);
 
                 //check every transition
                 CheckTransitions();
@@ -50,7 +52,16 @@ namespace redd096.v2.ComponentsSystem
             if (currentState != null)
             {
                 //do every action fixed update
-                DoActions(true);
+                DoActions(EUpdateTask.FixedUpdate);
+            }
+        }
+
+        public virtual void LateUpdate()
+        {
+            if (currentState != null)
+            {
+                //do every action fixed update
+                DoActions(EUpdateTask.LateUpdate);
             }
         }
 
@@ -209,7 +220,7 @@ namespace redd096.v2.ComponentsSystem
 
         #region private API
 
-        void DoActions(bool isFixedUpdate)
+        void DoActions(EUpdateTask updateTask)
         {
             if (currentState.Actions == null)
                 return;
@@ -219,10 +230,12 @@ namespace redd096.v2.ComponentsSystem
             {
                 if (currentState.Actions[i] != null)
                 {
-                    if (isFixedUpdate)
-                        currentState.Actions[i].OnFixedUpdateTask();
-                    else
+                    if (updateTask == EUpdateTask.Update)
                         currentState.Actions[i].OnUpdateTask();
+                    else if (updateTask == EUpdateTask.FixedUpdate)
+                        currentState.Actions[i].OnFixedUpdateTask();
+                    else if (updateTask == EUpdateTask.LateUpdate)
+                        currentState.Actions[i].OnLateUpdateTask();
                 }
             }
         }
