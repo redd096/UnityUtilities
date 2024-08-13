@@ -28,8 +28,8 @@ namespace redd096.v2.ComponentsSystem.Example
             base.OnEnterTask();
 
             //get InputManager
-            inputManager = player.CurrentController ? player.CurrentController.GetComponent<ExampleInputManager>() : null;
-            if (inputManager == null) Debug.LogError($"Missing inputManager on {name}", gameObject);
+            if (player.CurrentController == null || player.CurrentController.TryGetComponent(out inputManager) == false)
+                Debug.LogError($"Missing inputManager on {name}", gameObject);
         }
 
         public override void OnUpdateTask()
