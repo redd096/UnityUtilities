@@ -4,13 +4,13 @@ using UnityEngine;
 namespace redd096.v2.ComponentsSystem
 {
     /// <summary>
-    /// This component uses FixedUpdate to set rigidbody.velocity by InputSpeed + PushForce. Everything works with Vector2
+    /// This component uses FixedUpdate to set rigidbody.velocity by InputSpeed + PushForce
     /// </summary>
     [System.Serializable]
-    public class MovementComponent2D : ICharacterComponent
+    public class MovementComponent : ICharacterComponent
     {
         [Header("Necessary Components (by default get from this gameObject)")]
-        [SerializeField] Rigidbody2D rb = default;
+        [SerializeField] Rigidbody rb = default;
         [Tooltip("Speed when call Move functions")][SerializeField] float inputSpeed = 5;
         [Tooltip("Max Speed, calculating velocity by input + push (-1 = no limit)")][SerializeField] float maxSpeed = 50;
 
@@ -21,11 +21,11 @@ namespace redd096.v2.ComponentsSystem
 
         public ICharacter Owner { get; set; }
 
-        public bool IsMovingRight { get; set; }                 //check if moving right
-        public Vector2 MoveDirectionInput { get; set; }         //when moves, set it with only input direction (used to know last movement direction)
-        public Vector2 LastDesiredVelocity { get; set; }        //when moves, set it as input direction * speed
-        public Vector2 CurrentPushForce { get; set; }           //used to push this object (push by recoil, knockback, dash, etc...), will be decreased by drag in every frame
-        public Vector2 CurrentVelocity => rb ? rb.velocity : Vector2.zero;
+        public bool IsMovingRight { get; set; }                 //check if moving right (this is used in 2d games where you can look only left or right)
+        public Vector3 MoveDirectionInput { get; set; }         //when moves, set it with only input direction (used to know last movement direction)
+        public Vector3 LastDesiredVelocity { get; set; }        //when moves, set it as input direction * speed
+        public Vector3 CurrentPushForce { get; set; }           //used to push this object (push by recoil, knockback, dash, etc...), will be decreased by drag in every frame
+        public Vector3 CurrentVelocity => rb ? rb.velocity : Vector3.zero;
         public float CurrentSpeed => rb ? rb.velocity.magnitude : 0;
         public float InputSpeed { get => inputSpeed; set => inputSpeed = value; }
         public float MaxSpeed { get => maxSpeed; set => maxSpeed = value; }
@@ -38,11 +38,11 @@ namespace redd096.v2.ComponentsSystem
             set { if (useCustomDrag) customDrag = value; else if (rb) rb.drag = value; }
         }
         /// <summary>
-        /// Return IsMovingRight as a direction. Can also set it passing a Vector2 with X greater or lower than 0
+        /// Return IsMovingRight as a direction. Can also set it passing a Vector3 with X greater or lower than 0
         /// </summary>
-        public Vector2 IsMovingRightDirection
+        public Vector3 IsMovingRightDirection
         {
-            get => IsMovingRight ? Vector2.right : Vector2.left;
+            get => IsMovingRight ? Vector3.right : Vector3.left;
             set { if (Mathf.Approximately(value.x, 0) == false) IsMovingRight = value.x > 0; }
         }
 
@@ -50,9 +50,9 @@ namespace redd096.v2.ComponentsSystem
         public System.Action<bool> onChangeMovementDirection;
 
         //private
-        Vector2 desiredVelocity;                //when moves, set it as input direction * speed (used to move this object, will be reset in every frame)
-        Vector2 calculatedVelocity;             //desiredVelocity + DesiredPushForce
-        Vector2 newPushForce;                   //new push force when Drag
+        Vector3 desiredVelocity;                //when moves, set it as input direction * speed (used to move this object, will be reset in every frame)
+        Vector3 calculatedVelocity;             //desiredVelocity + DesiredPushForce
+        Vector3 newPushForce;                   //new push force when Drag
 
         public virtual void Awake()
         {
@@ -70,7 +70,7 @@ namespace redd096.v2.ComponentsSystem
 
             //reset movement input (cause if nobody call an update, this object must to be still in next frame), but save in LastDesiredVelocity (to read in inspector or if some script need it)
             LastDesiredVelocity = desiredVelocity;
-            desiredVelocity = Vector2.zero;
+            desiredVelocity = Vector3.zero;
 
             //remove push force (direction * drag * delta)
             RemovePushForce();
@@ -86,7 +86,7 @@ namespace redd096.v2.ComponentsSystem
 
             //clamp at max speed
             if (maxSpeed >= 0)
-                calculatedVelocity = Vector2.ClampMagnitude(calculatedVelocity, maxSpeed);
+                calculatedVelocity = Vector3.ClampMagnitude(calculatedVelocity, maxSpeed);
         }
 
         protected virtual void CheckIsMovingRight()
@@ -128,8 +128,8 @@ namespace redd096.v2.ComponentsSystem
                 newPushForce.x = 0;
             if (CurrentPushForce.y >= 0 && newPushForce.y < 0 || CurrentPushForce.y <= 0 && newPushForce.y > 0)
                 newPushForce.y = 0;
-            //if (CurrentPushForce.z >= 0 && newPushForce.z < 0 || CurrentPushForce.z <= 0 && newPushForce.z > 0)
-            //    newPushForce.z = 0;
+            if (CurrentPushForce.z >= 0 && newPushForce.z < 0 || CurrentPushForce.z <= 0 && newPushForce.z > 0)
+                newPushForce.z = 0;
         }
 
         #endregion
@@ -140,7 +140,7 @@ namespace redd096.v2.ComponentsSystem
         /// Set movement in direction
         /// </summary>
         /// <param name="direction"></param>
-        public void MoveInDirection(Vector2 direction)
+        public void MoveInDirection(Vector3 direction)
         {
             //save last input direction + set movement
             MoveDirectionInput = direction.normalized;
@@ -151,10 +151,22 @@ namespace redd096.v2.ComponentsSystem
         /// Set movement direction to position
         /// </summary>
         /// <param name="positionToReach"></param>
-        public void MoveTo(Vector2 positionToReach)
+        public void MoveTo(Vector3 positionToReach)
         {
             //save last input direction + set movement
-            MoveDirectionInput = (positionToReach - (Vector2)Owner.transform.position).normalized;
+            MoveDirectionInput = (positionToReach - Owner.transform.position).normalized;
+            desiredVelocity = MoveDirectionInput * inputSpeed;
+        }
+
+        /// <summary>
+        /// Use X as right and Y as forward
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="castToLocal">If false, use global direction Vector3(x, 0, y). If true, rotate input to use X as transform.right and Y as transform.forward</param>
+        public void MoveByInput3D(Vector2 input, bool castToLocal = true)
+        {
+            MoveDirectionInput = castToLocal ? Owner.transform.TransformDirection(input.x, 0, input.y) : new Vector3(input.x, 0, input.y);
+            MoveDirectionInput = MoveDirectionInput.normalized;
             desiredVelocity = MoveDirectionInput * inputSpeed;
         }
 
@@ -163,7 +175,7 @@ namespace redd096.v2.ComponentsSystem
         /// </summary>
         /// <param name="direction"></param>
         /// <param name="customSpeed"></param>
-        public void MoveInDirection(Vector2 direction, float customSpeed)
+        public void MoveInDirection(Vector3 direction, float customSpeed)
         {
             //save last input direction + set movement
             MoveDirectionInput = direction.normalized;
@@ -175,10 +187,22 @@ namespace redd096.v2.ComponentsSystem
         /// </summary>
         /// <param name="positionToReach"></param>
         /// <param name="customSpeed"></param>
-        public void MoveTo(Vector2 positionToReach, float customSpeed)
+        public void MoveTo(Vector3 positionToReach, float customSpeed)
         {
             //save last input direction + set movement
-            MoveDirectionInput = (positionToReach - (Vector2)Owner.transform.position).normalized;
+            MoveDirectionInput = (positionToReach - Owner.transform.position).normalized;
+            desiredVelocity = MoveDirectionInput * customSpeed;
+        }
+
+        /// <summary>
+        /// Use X as right and Y as forward
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="castToLocal">If false, use global direction Vector3(x, 0, y). If true, rotate input to use X as transform.right and Y as transform.forward</param>
+        public void MoveByInput3D(Vector2 input, float customSpeed, bool castToLocal = true)
+        {
+            MoveDirectionInput = castToLocal ? Owner.transform.TransformDirection(input.x, 0, input.y) : new Vector3(input.x, 0, input.y);
+            MoveDirectionInput = MoveDirectionInput.normalized;
             desiredVelocity = MoveDirectionInput * customSpeed;
         }
 
@@ -188,7 +212,7 @@ namespace redd096.v2.ComponentsSystem
         /// <param name="pushDirection"></param>
         /// <param name="pushForce"></param>
         /// <param name="resetPreviousPush"></param>
-        public virtual void PushInDirection(Vector2 pushDirection, float pushForce, bool resetPreviousPush = false)
+        public virtual void PushInDirection(Vector3 pushDirection, float pushForce, bool resetPreviousPush = false)
         {
             //reset previous push or add new one to it
             if (resetPreviousPush)
@@ -202,10 +226,10 @@ namespace redd096.v2.ComponentsSystem
         /// NB that this use current push and speed, doesn't know if this frame will receive some push or other, so it's not 100% correct
         /// </summary>
         /// <returns></returns>
-        public Vector2 CalculateNextPosition()
+        public Vector3 CalculateNextPosition()
         {
             CalculateVelocity();
-            return (Vector2)Owner.transform.position + calculatedVelocity * Time.fixedDeltaTime;
+            return Owner.transform.position + calculatedVelocity * Time.fixedDeltaTime;
         }
 
         #endregion
