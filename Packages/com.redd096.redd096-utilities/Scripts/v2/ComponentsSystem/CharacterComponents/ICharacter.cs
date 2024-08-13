@@ -15,6 +15,27 @@ namespace redd096.v2.ComponentsSystem
         Transform transform { get; }
 
         /// <summary>
+        /// If Components is null, it's called this function to get every Component and call Init on them. 
+        /// This function is called on Awake, Gizmos, or GetCharacterComponent
+        /// </summary>
+        /// <returns></returns>
+        ICharacterComponent[] SetComponents();
+
+        /// <summary>
+        /// If components is null, call SetComponents and initialize every component
+        /// </summary>
+        private void InitializeComponentsIfNull()
+        {
+            if (Components == null)
+                Components = SetComponents();
+
+            foreach (var component in Components)
+            {
+                component.Init(this);
+            }
+        }
+
+        /// <summary>
         /// Get component from Components list
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -52,23 +73,7 @@ namespace redd096.v2.ComponentsSystem
             return false;
         }
 
-        /// <summary>
-        /// If Components is null, it's called this function to get every Component and call Init on them. 
-        /// This function is called on Awake, Gizmos, or GetCharacterComponent
-        /// </summary>
-        /// <returns></returns>
-        ICharacterComponent[] SetComponents();
-
-        private void InitializeComponentsIfNull()
-        {
-            if (Components == null)
-                Components = SetComponents();
-
-            foreach (var component in Components)
-            {
-                component.Init(this);
-            }
-        }
+        #region example functions
 
         virtual void OnDrawGizmosSelected()
         {
@@ -119,6 +124,18 @@ namespace redd096.v2.ComponentsSystem
                 component.FixedUpdate();
             }
         }
+
+        virtual void LateUpdateFunction()
+        {
+            InitializeComponentsIfNull();
+
+            foreach (var component in Components)
+            {
+                component.LateUpdate();
+            }
+        }
+
+        #endregion
     }
 
     public interface ICharacter<T> : ICharacter

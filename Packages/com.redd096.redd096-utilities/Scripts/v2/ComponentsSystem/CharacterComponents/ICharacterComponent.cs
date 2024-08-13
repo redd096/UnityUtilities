@@ -19,5 +19,6 @@ namespace redd096.v2.ComponentsSystem
         virtual void Start() { }
         virtual void Update() { }
         virtual void FixedUpdate() { }
+        virtual void LateUpdate() { }
     }
 }
