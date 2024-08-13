@@ -13,6 +13,7 @@ namespace redd096.v2.ComponentsSystem
         [SerializeField] protected Rigidbody rb = default;
         [Tooltip("Speed when call Move functions")][SerializeField] protected float inputSpeed = 5;
         [Tooltip("Max Speed, calculating velocity by input + push (-1 = no limit)")][SerializeField] protected float maxSpeed = 50;
+        [Tooltip("Prevent sliding on this angle slope")][SerializeField] protected float maxSlopeAngle = 45;
 
         [Header("When pushed")]
         [Tooltip("Drag based on velocity * drag or normalized velocity * drag?")][SerializeField] protected bool dragBasedOnVelocity = true;
@@ -83,6 +84,8 @@ namespace redd096.v2.ComponentsSystem
         {
             //input + push
             calculatedVelocity = desiredVelocity + CurrentPushForce;
+
+            //add gravity to calculated velocity
             ApplyGravity();
 
             //clamp at max speed
@@ -92,7 +95,9 @@ namespace redd096.v2.ComponentsSystem
 
         protected virtual void ApplyGravity()
         {
-            calculatedVelocity += Physics.gravity;
+            //if falling, keep Y (rigidbody gravity)
+            if (rb && rb.velocity.y < 0)
+                calculatedVelocity.y += rb.velocity.y;
         }
 
         protected virtual void CheckIsMovingRight()
@@ -118,8 +123,35 @@ namespace redd096.v2.ComponentsSystem
 
         protected virtual void DoMovement()
         {
+            //set velocity
             if (rb)
+            {
                 rb.velocity = calculatedVelocity;
+
+                //prevent sliding on a slope
+                PreventSliding();
+            }
+        }
+
+        protected virtual void PreventSliding()
+        {
+
+            //prevent sliding when on a slope
+            if (Physics.Raycast(rb.position, Vector3.down, out RaycastHit hit, 3f))
+            {
+                Vector3 surfaceNormal = hit.normal;
+                float slopeAngle = Vector3.Angle(surfaceNormal, Vector3.up);
+
+                if (slopeAngle < maxSlopeAngle + 0.01f)
+                {
+                    Vector3 gravity = Physics.gravity;
+                    Vector3 slopeParallelGravity = Vector3.ProjectOnPlane(gravity, surfaceNormal);
+                    if (desiredVelocity == Vector3.zero || rb.velocity.magnitude > 0.00001f)
+                    {
+                        rb.AddForce(-slopeParallelGravity, ForceMode.Acceleration);
+                    }
+                }
+            }
         }
 
         protected virtual void RemovePushForce()
