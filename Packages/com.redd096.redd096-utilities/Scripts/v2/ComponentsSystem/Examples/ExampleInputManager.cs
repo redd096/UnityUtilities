@@ -20,7 +20,7 @@ namespace redd096.v2.ComponentsSystem.Example
 
 #if ENABLE_INPUT_SYSTEM
         //player input variables
-        public int playerIndex => _playerInput.playerIndex;
+        public int playerIndex => PlayerInput.playerIndex;
 
         PlayerInput _playerInput;
         public PlayerInput PlayerInput { get { if (_playerInput == null) _playerInput = GetComponent<PlayerInput>(); return _playerInput; } }
