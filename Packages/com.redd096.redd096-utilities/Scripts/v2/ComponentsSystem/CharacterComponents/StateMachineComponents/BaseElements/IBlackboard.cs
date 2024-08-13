@@ -31,17 +31,24 @@ namespace redd096.v2.ComponentsSystem
         /// <returns></returns>
         T GetBlackboardElement<T>(string key);
 
+        #region blackboard public API
+
+        ///// <summary>
+        ///// Add or Set element inside blackboard
+        ///// </summary>
+        ///// <param name="key"></param>
+        ///// <param name="value"></param>
         //public void SetBlackboardElement(string key, object value)
         //{
         //    //add element if not inside blackboard
-        //    if (Blackboard.ContainsKey(key) == false)
+        //    if (blackboard.ContainsKey(key) == false)
         //    {
-        //        Blackboard.Add(key, value);
+        //        blackboard.Add(key, value);
         //    }
         //    //else set it
         //    else
         //    {
-        //        Blackboard[key] = value;
+        //        blackboard[key] = value;
         //    }
 
         //    //in editor, update debug blackboard
@@ -58,11 +65,15 @@ namespace redd096.v2.ComponentsSystem
         //    onSetBlackboardValue?.Invoke(key);
         //}
 
+        ///// <summary>
+        ///// Remove element from blackboard
+        ///// </summary>
+        ///// <param name="key"></param>
         //public void RemoveBlackboardElement(string key)
         //{
         //    //remove element from blackboard
-        //    if (Blackboard.ContainsKey(key))
-        //        Blackboard.Remove(key);
+        //    if (blackboard.ContainsKey(key))
+        //        blackboard.Remove(key);
 
         //    //in editor, update debug blackboard
         //    if (Application.isEditor)
@@ -75,16 +86,24 @@ namespace redd096.v2.ComponentsSystem
         //    }
         //}
 
+        ///// <summary>
+        ///// Get element from blackboard
+        ///// </summary>
+        ///// <typeparam name="T"></typeparam>
+        ///// <param name="key"></param>
+        ///// <returns></returns>
         //public T GetBlackboardElement<T>(string key)
         //{
         //    //return element from blackboard
-        //    if (Blackboard.ContainsKey(key))
+        //    if (blackboard.ContainsKey(key))
         //    {
-        //        return (T)Blackboard[key];
+        //        return (T)blackboard[key];
         //    }
 
         //    //if there is no key, return null
         //    return default;
         //}
+
+        #endregion
     }
 }

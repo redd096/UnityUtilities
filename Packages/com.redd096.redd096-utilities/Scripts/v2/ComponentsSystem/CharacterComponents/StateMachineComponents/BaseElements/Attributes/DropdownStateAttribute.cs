@@ -5,7 +5,7 @@ using UnityEditor;
 
 namespace redd096.v2.ComponentsSystem
 {
-    #region editor property drawer
+    #region editor
 
 #if UNITY_EDITOR
 
