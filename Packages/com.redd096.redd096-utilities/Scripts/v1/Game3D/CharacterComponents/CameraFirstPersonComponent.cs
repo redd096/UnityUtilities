@@ -18,6 +18,7 @@ namespace redd096.v1.Game3D
 
         protected virtual void Awake()
         {
+            //get default values
             if (cam == null) cam = Camera.main.transform;
             if (characterToFollow == null) characterToFollow = transform;
 
