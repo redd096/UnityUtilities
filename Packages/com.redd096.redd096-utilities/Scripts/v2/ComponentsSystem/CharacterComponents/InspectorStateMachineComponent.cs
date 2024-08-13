@@ -10,9 +10,10 @@ namespace redd096.v2.ComponentsSystem
     [System.Serializable]
     public class InspectorStateMachineComponent : ICharacterComponent, IBlackboard
     {
-        public ICharacter Owner { get; set; }
-
+        [SerializeField] bool setFirstStateOnStart = true;
         public InspectorState[] States = default;
+
+        public ICharacter Owner { get; set; }
 
         private InspectorState currentState = default;
 
@@ -28,7 +29,8 @@ namespace redd096.v2.ComponentsSystem
         {
             //start with first state
             //set in Start because in Awake normally we are still doing things like PlayerController.Possess(PlayerPawn)
-            SetState(0);
+            if (setFirstStateOnStart)
+                SetState(0);
         }
 
         public virtual void Update()
