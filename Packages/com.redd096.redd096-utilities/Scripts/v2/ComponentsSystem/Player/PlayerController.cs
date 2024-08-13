@@ -6,8 +6,7 @@ namespace redd096.v2.ComponentsSystem
     /// Generally you want to calculate inputs inside InputManager attached to this same GameObject, because this is always instantiate for every player, even online. 
     /// Then your Pawn in scene will read the inputs. Or in a multiplayer online, your pawn on the server will read inputs and syncronize position, rotation, etc... with client
     /// </summary>
-    [AddComponentMenu("redd096/v2/ComponentsSystem/Player/Player Controller")]
-    public class PlayerController : MonoBehaviour
+    public abstract class PlayerController : MonoBehaviour
     {
         //pawn
         private PlayerPawn _currentPawn;

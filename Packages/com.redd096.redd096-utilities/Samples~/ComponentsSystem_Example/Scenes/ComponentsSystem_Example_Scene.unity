@@ -450,7 +450,7 @@ GameObject:
   - component: {fileID: 278025189}
   - component: {fileID: 278025188}
   - component: {fileID: 278025186}
-  - component: {fileID: 278025187}
+  - component: {fileID: 278025190}
   m_Layer: 0
   m_Name: PlayerController
   m_TagString: Untagged
@@ -504,18 +504,6 @@ MonoBehaviour:
   m_DefaultActionMap: Gameplay
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
---- !u!114 &278025187
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 278025183}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 99d0a34b840ca164b8af834603f0bf6c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &278025188
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -539,7 +527,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 278025183}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d7407f2a377efd84e9358934cd61b4b4, type: 3}
+  m_Script: {fileID: 11500000, guid: 6debbe039bf10844abe5a66bfed10699, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &278025190
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 278025183}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99d0a34b840ca164b8af834603f0bf6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &317357287

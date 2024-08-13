@@ -21,8 +21,7 @@ namespace redd096.v2.ComponentsSystem
         /// <returns></returns>
         virtual T GetCharacterComponent<T>() where T : ICharacterComponent
         {
-            if (Components == null)
-                Components = SetComponents();
+            InitializeComponentsIfNull();
 
             foreach (var component in Components)
             {
@@ -39,8 +38,7 @@ namespace redd096.v2.ComponentsSystem
         /// <returns></returns>
         virtual bool TryGetCharacterComponent<T>(out T foundComponent) where T : ICharacterComponent
         {
-            if (Components == null)
-                Components = SetComponents();
+            InitializeComponentsIfNull();
 
             foreach (var component in Components)
             {
@@ -55,19 +53,26 @@ namespace redd096.v2.ComponentsSystem
         }
 
         /// <summary>
-        /// This function is called on Awake, Gizmos, or GetCharacterComponent. Only if Components is null
+        /// If Components is null, it's called this function to get every Component and call Init on them. 
+        /// This function is called on Awake, Gizmos, or GetCharacterComponent
         /// </summary>
         /// <returns></returns>
         ICharacterComponent[] SetComponents();
-        virtual void Awake() { }
-        virtual void Start() { }
-        virtual void Update() { }
-        virtual void FixedUpdate() { }
 
-        virtual void OnDrawGizmosSelected()
+        private void InitializeComponentsIfNull()
         {
             if (Components == null)
                 Components = SetComponents();
+
+            foreach (var component in Components)
+            {
+                component.Init(this);
+            }
+        }
+
+        virtual void OnDrawGizmosSelected()
+        {
+            InitializeComponentsIfNull();
 
             foreach (var component in Components)
             {
@@ -77,13 +82,8 @@ namespace redd096.v2.ComponentsSystem
 
         virtual void AwakeFunction()
         {
-            if (Components == null)
-                Components = SetComponents();
+            InitializeComponentsIfNull();
 
-            foreach (var component in Components)
-            {
-                component.Init(this);
-            }
             foreach (var component in Components)
             {
                 component.Awake();
@@ -92,8 +92,7 @@ namespace redd096.v2.ComponentsSystem
 
         virtual void StartFunction()
         {
-            if (Components == null)
-                Components = SetComponents();
+            InitializeComponentsIfNull();
 
             foreach (var component in Components)
             {
@@ -103,8 +102,7 @@ namespace redd096.v2.ComponentsSystem
 
         virtual void UpdateFunction()
         {
-            if (Components == null)
-                Components = SetComponents();
+            InitializeComponentsIfNull();
 
             foreach (var component in Components)
             {
@@ -114,8 +112,7 @@ namespace redd096.v2.ComponentsSystem
 
         virtual void FixedUpdateFunction()
         {
-            if (Components == null)
-                Components = SetComponents();
+            InitializeComponentsIfNull();
 
             foreach (var component in Components)
             {

@@ -5,8 +5,7 @@ namespace redd096.v2.ComponentsSystem
     /// <summary>
     /// This is used just to have a reference to the PlayerController
     /// </summary>
-    [AddComponentMenu("redd096/v2/ComponentsSystem/Player/Player Pawn")]
-    public class PlayerPawn : MonoBehaviour
+    public abstract class PlayerPawn : MonoBehaviour
     {
         //controller
         private PlayerController _currentController;
