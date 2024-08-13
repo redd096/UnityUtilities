@@ -5,7 +5,7 @@ namespace redd096.v2.ComponentsSystem.Example
     /// <summary>
     /// An example of PlayerPawn and ICharacter to use in game
     /// </summary>
-    [AddComponentMenu("redd096/v2/ComponentsSystem/Player/Example Player")]
+    [AddComponentMenu("redd096/v2/ComponentsSystem/Examples/Example Player")]
     public class ExamplePlayer : PlayerPawn, ICharacter
     {
         //declare every component, and add in SetComponents
