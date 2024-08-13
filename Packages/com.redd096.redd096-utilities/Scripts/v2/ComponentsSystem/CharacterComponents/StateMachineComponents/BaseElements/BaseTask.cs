@@ -65,6 +65,37 @@ namespace redd096.v2.ComponentsSystem
         }
 
         /// <summary>
+        /// Get character component in stateMachine's owner. If not found, show warning
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="showWarningIfNotFound"></param>
+        /// <returns></returns>
+        protected T GetCharacterComponent<T>(bool showWarningIfNotFound = true) where T : ICharacterComponent
+        {
+            //get in parent
+            T component = _stateMachine != null ? _stateMachine.Owner.GetCharacterComponent<T>() : default;
+
+            //show warning if not found
+            if (showWarningIfNotFound && component == null)
+                Debug.LogWarning($"Miss {typeof(T).Name} on {_stateMachine}", _stateMachine.Owner.transform);
+
+            return component;
+        }
+
+        /// <summary>
+        /// Try get character component in stateMachine's owner
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="foundComponent"></param>
+        /// <returns></returns>
+        protected bool TryGetCharacterComponent<T>(out T foundComponent) where T : ICharacterComponent
+        {
+            //get in parent
+            foundComponent = _stateMachine != null ? _stateMachine.Owner.GetCharacterComponent<T>() : default;
+            return foundComponent != null;
+        }
+
+        /// <summary>
         /// Get blackboard or normal value
         /// </summary>
         /// <typeparam name="T"></typeparam>
