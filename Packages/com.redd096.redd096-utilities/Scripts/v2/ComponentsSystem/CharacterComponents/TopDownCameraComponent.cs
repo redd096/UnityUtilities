@@ -12,6 +12,7 @@ namespace redd096.v2.ComponentsSystem
         [Header("Necessary Components (by default use main camera and owner transform)")]
         [SerializeField] Transform cam;
         [SerializeField] Transform objectToFollow;
+        [SerializeField] bool createCameraParentOnAwake = true;
         [SerializeField] bool calculateOffsetInAwake = true;
         [DisableIf("calculateOffsetInAwake")][SerializeField] Vector3 cameraOffset = new Vector3(0, 0.4f, 0.4f);
 
@@ -34,6 +35,10 @@ namespace redd096.v2.ComponentsSystem
             if (objectToFollow == null)
                 Debug.LogError("Miss characterToFollow on " + GetType().Name);
 
+            //create camera parent
+            if (createCameraParentOnAwake)
+                CreateCameraParent();
+
             //calculate offset if necessary
             if (calculateOffsetInAwake)
             {
@@ -45,6 +50,18 @@ namespace redd096.v2.ComponentsSystem
         }
 
         /// <summary>
+        /// Create an empty object and set it as camera parent. 
+        /// This is necessary because if you have more components that move the camera (e.g. camera shake), every component can move a parent instead of the camera, to not have conflicts
+        /// </summary>
+        public void CreateCameraParent(string cameraParentName = "Camera Parent (camera component)")
+        {
+            Transform cameraParent = new GameObject(cameraParentName).transform;
+            cameraParent.SetParent(cam.parent);             //set same parent (if camera was child of something)
+            cameraParent.localPosition = Vector3.zero;      //set start local position
+            cam.SetParent(cameraParent);                    //set camera parent
+        }
+
+        /// <summary>
         /// Calculate offset between camera and objectToFollow
         /// </summary>
         public void RecalculateOffset()
@@ -53,7 +70,7 @@ namespace redd096.v2.ComponentsSystem
         }
 
         /// <summary>
-        /// Calculate camera start rotation. So when user call UpdateCameraRotation, add player rotation to start rotation
+        /// Calculate camera start rotation. So when user call UpdateCameraRotation, add objectToFollow rotation to start rotation
         /// </summary>
         public void RecalculateStartRotation()
         {
@@ -69,7 +86,8 @@ namespace redd096.v2.ComponentsSystem
         }
 
         /// <summary>
-        /// Tell camera to moves and rotates by following object
+        /// Tell camera to moves and rotates by following object. 
+        /// (NB we add the objectToFollow rotation, so the start rotation must be calculated with objectToFollow at rotation 0)
         /// </summary>
         public void UpdateCameraPositionAndRotation()
         {
