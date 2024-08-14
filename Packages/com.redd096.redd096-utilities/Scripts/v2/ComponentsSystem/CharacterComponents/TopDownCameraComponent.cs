@@ -59,6 +59,9 @@ namespace redd096.v2.ComponentsSystem
             cameraParent.SetParent(cam.parent);             //set same parent (if camera was child of something)
             cameraParent.localPosition = Vector3.zero;      //set start local position
             cam.SetParent(cameraParent);                    //set camera parent
+
+            //move camera parent instead of camera
+            cam = cameraParent;
         }
 
         /// <summary>

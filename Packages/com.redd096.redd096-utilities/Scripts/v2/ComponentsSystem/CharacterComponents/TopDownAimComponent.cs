@@ -5,6 +5,7 @@ namespace redd096.v2.ComponentsSystem
     /// <summary>
     /// Use mouse position or analog inclination to set aim direction. Use this for example to rotate player or shoot bullets
     /// </summary>
+    [System.Serializable]
     public class TopDownAimComponent : ICharacterComponent
     {
         [Header("When set at zero (e.g. release analog), keep last rotation")]
