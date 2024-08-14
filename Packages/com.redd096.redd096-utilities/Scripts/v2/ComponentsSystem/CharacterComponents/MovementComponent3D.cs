@@ -4,7 +4,8 @@ using UnityEngine;
 namespace redd096.v2.ComponentsSystem
 {
     /// <summary>
-    /// This component uses FixedUpdate to set rigidbody.velocity by InputSpeed + PushForce
+    /// This component uses FixedUpdate to set rigidbody.velocity by InputSpeed + PushForce. 
+    /// It has also a check on Y axis, to keep rigidbody gravity and prevent sliding on a slope
     /// </summary>
     [System.Serializable]
     public class MovementComponent3D : ICharacterComponent
@@ -135,7 +136,6 @@ namespace redd096.v2.ComponentsSystem
 
         protected virtual void PreventSliding()
         {
-
             //prevent sliding when on a slope
             if (Physics.Raycast(rb.position, Vector3.down, out RaycastHit hit, 3f))
             {
@@ -146,10 +146,7 @@ namespace redd096.v2.ComponentsSystem
                 {
                     Vector3 gravity = Physics.gravity;
                     Vector3 slopeParallelGravity = Vector3.ProjectOnPlane(gravity, surfaceNormal);
-                    if (desiredVelocity == Vector3.zero || rb.velocity.magnitude > 0.00001f)
-                    {
-                        rb.AddForce(-slopeParallelGravity, ForceMode.Acceleration);
-                    }
+                    rb.AddForce(-slopeParallelGravity, ForceMode.Acceleration);
                 }
             }
         }
