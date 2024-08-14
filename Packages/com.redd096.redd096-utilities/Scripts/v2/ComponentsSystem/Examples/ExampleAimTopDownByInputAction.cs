@@ -57,8 +57,7 @@ namespace redd096.v2.ComponentsSystem.Example
             {
                 if (cam)
                 {
-                    //for 3d use a raycast from camera to mouse position and use hit point as position for AimAtByInput3D
-                    //or just calculate direction from player to mouse and use AimInDirectionByInput3D
+                    //for 3d use CalculateAimPositionWithMouse
                     aimComponent.AimAt(cam.ScreenToWorldPoint(inputManager.MousePosition));
                 }
             }
@@ -68,15 +67,41 @@ namespace redd096.v2.ComponentsSystem.Example
                 //check if moving analog or reset input when released
                 if (inputManager.Aim != Vector2.zero || resetWhenReleaseAnalogInput)
                 {
+                    //for 3d just call AimInDirectionByInput3D
                     aimComponent.AimInDirection(inputManager.Aim);
                     lastAnalogSavedValue = inputManager.Aim;    //save input
                 }
                 //else show last saved input
                 else
                 {
+                    //for 3d just call AimInDirectionByInput3D
                     aimComponent.AimInDirection(lastAnalogSavedValue);
                 }
             }
         }
+
+        //void CalculateAimPositionWithMouse()
+        //{
+        //    //use raycast to find where is the mouse (if hit nothing, use direction)
+        //    if (useRaycastForMouse)
+        //    {
+        //        Ray ray = cam.ScreenPointToRay(inputManager.MousePosition);
+        //        if (Physics.Raycast(ray, out RaycastHit hit))
+        //        {
+        //            aimComponent.AimAt(hit.point);
+        //            return;
+        //        }
+        //    }
+
+        //    //calculate direction from player to mouse position
+        //    aimComponent.AimInDirectionByInput3D(CalculateDirectionWithScreenPoints());
+        //}
+
+        //Vector2 CalculateDirectionWithScreenPoints()
+        //{
+        //    //from owner screen position to mouse position
+        //    Vector3 ownerPos = cam.WorldToScreenPoint(transformTask.position);
+        //    return (inputManager.MousePosition - (Vector2)ownerPos).normalized;
+        //}
     }
 }
