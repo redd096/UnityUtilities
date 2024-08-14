@@ -103,18 +103,18 @@ namespace redd096.v2.ComponentsSystem
         protected virtual void CheckIsMovingRight()
         {
             //set previous direction (necessary in case this object stay still)
-            bool newMovingRight = IsMovingRight;
+            bool newRight = IsMovingRight;
 
-            //check if change direction
+            //update new direction
             if (IsMovingRight && calculatedVelocity.x < 0)
-                newMovingRight = false;
+                newRight = false;
             else if (IsMovingRight == false && calculatedVelocity.x > 0)
-                newMovingRight = true;
+                newRight = true;
 
             //check change direction
-            if (IsMovingRight != newMovingRight)
+            if (IsMovingRight != newRight)
             {
-                IsMovingRight = newMovingRight;
+                IsMovingRight = newRight;
 
                 //call event
                 onChangeMovementDirection?.Invoke(IsMovingRight);
