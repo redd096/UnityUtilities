@@ -197,7 +197,7 @@ namespace redd096.v2.ComponentsSystem
         }
 
         /// <summary>
-        /// Use X as right and Y as forward
+        /// Set movement in direction, but use X as right and Y as forward
         /// </summary>
         /// <param name="input"></param>
         /// <param name="castToLocal">If false, use global direction Vector3(x, 0, y). If true, rotate input to use X as transform.right and Y as transform.forward</param>

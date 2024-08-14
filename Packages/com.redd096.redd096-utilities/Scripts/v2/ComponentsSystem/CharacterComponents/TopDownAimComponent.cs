@@ -73,6 +73,24 @@ namespace redd096.v2.ComponentsSystem
             CheckIsAimingRight();
         }
 
+        /// <summary>
+        /// Set aim in direction, but use X as right and Y as forward
+        /// </summary>
+        /// <param name="aimDirection"></param>
+        public void AimInDirectionByInput3D(Vector2 aimDirection)
+        {
+            AimInDirection(new Vector3(aimDirection.x, 0, aimDirection.y));
+        }
+
+        /// <summary>
+        /// Set aim at position, but use X as right and Y as forward
+        /// </summary>
+        /// <param name="aimPosition"></param>
+        public void AimAtByInput3D(Vector2 aimPosition)
+        {
+            AimAt(new Vector3(aimPosition.x, 0, aimPosition.y));
+        }
+
         #endregion
 
         protected virtual void CheckIsAimingRight()
