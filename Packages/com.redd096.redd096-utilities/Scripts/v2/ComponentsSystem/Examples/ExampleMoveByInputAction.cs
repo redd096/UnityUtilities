@@ -39,7 +39,8 @@ namespace redd096.v2.ComponentsSystem.Example
             //move
             if (movementComponent != null && inputManager)
             {
-                movementComponent.MoveInDirection(inputManager.Movement);
+                //for 3d just call MoveByInput3D
+                movementComponent.MoveInDirection(inputManager.Move);
             }
         }
     }

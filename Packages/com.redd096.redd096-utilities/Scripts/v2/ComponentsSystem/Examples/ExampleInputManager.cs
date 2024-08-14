@@ -13,8 +13,10 @@ namespace redd096.v2.ComponentsSystem.Example
     public class ExampleInputManager : MonoBehaviour
     {
         //inputs
-        public Vector2 Movement;
+        public Vector2 Move;
         //public bool InteractWasPressedThisFrame;
+        public Vector2 MousePosition;
+        public Vector2 Aim;
 
         #region playerInput
 
@@ -42,11 +44,14 @@ namespace redd096.v2.ComponentsSystem.Example
         {
 #if ENABLE_INPUT_SYSTEM
             //read inputs
-            Movement = FindAction("Move").ReadValue<Vector2>();
+            Move = FindAction("Move").ReadValue<Vector2>();
             //InteractWasPressedThisFrame = FindAction("Interact").WasPressedThisFrame();
+            //MousePosition = FindAction("MousePosition").ReadValue<Vector2>();
+            //Aim = FindAction("Aim").ReadValue<Vector2>();
 #else
-            Movement = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+            Move = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
             //InteractWasPressedThisFrame = Input.GetButtonDown("Fire1");
+            //MousePosition = Input.mousePosition;
 #endif
         }
     }
