@@ -24,7 +24,7 @@ namespace redd096.v2.ComponentsSystem.Example
 
         void OnDrawGizmosSelected()
         {
-            GetComponent<IObject>().OnDrawGizmosSelected();
+            GetComponent<IObject>().OnDrawGizmosSelectedFunction();
         }
 
 #endif

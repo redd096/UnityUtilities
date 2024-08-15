@@ -30,7 +30,7 @@ namespace redd096.Examples.ComponentsSystem
 
     void OnDrawGizmosSelected()
     {
-        GetComponent<IObject>().OnDrawGizmosSelected();
+        GetComponent<IObject>().OnDrawGizmosSelectedFunction();
     }
 
 #endif

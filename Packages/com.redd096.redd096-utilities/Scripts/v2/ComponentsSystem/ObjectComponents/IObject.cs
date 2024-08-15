@@ -84,7 +84,7 @@ namespace redd096.v2.ComponentsSystem
 
         #region example functions
 
-        virtual void OnDrawGizmosSelected()
+        virtual void OnDrawGizmosSelectedFunction()
         {
             InitializeComponentsIfNull();
 
