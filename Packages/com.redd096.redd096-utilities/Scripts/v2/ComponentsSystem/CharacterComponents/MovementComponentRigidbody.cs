@@ -12,9 +12,9 @@ namespace redd096.v2.ComponentsSystem
     {
         [Header("Necessary Components (by default get from this gameObject)")]
         [SerializeField] protected FRigidbodyWrapper rb;
+        [Space]
         [Tooltip("Speed when call Move functions")][SerializeField] protected float inputSpeed = 5;
         [Tooltip("Max Speed, calculating velocity by input + push (-1 = no limit)")][SerializeField] protected float maxSpeed = 50;
-        [Space]
         [Tooltip("Add a check on Y axis to keep rigidbody gravity and prevent sliding on a slope (tested only on 3d games)")][SerializeField] protected bool keepGravityAndPreventSlide = true;
         [EnableIf("keepGravityAndPreventSlide")][Tooltip("Prevent sliding on this angle slope")][SerializeField] protected float maxSlopeAngle = 45;
 
