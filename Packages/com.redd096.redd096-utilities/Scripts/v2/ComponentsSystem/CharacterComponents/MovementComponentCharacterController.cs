@@ -238,6 +238,20 @@ namespace redd096.v2.ComponentsSystem
         }
 
         /// <summary>
+        /// Push in direction
+        /// </summary>
+        /// <param name="force"></param>
+        /// <param name="resetPreviousPush"></param>
+        public void PushInDirection(Vector3 force, bool resetPreviousPush = false)
+        {
+            //reset previous push or add new one to it
+            if (resetPreviousPush)
+                CurrentPushForce = force;
+            else
+                CurrentPushForce += force;
+        }
+
+        /// <summary>
         /// Calculate which position we will have next frame. 
         /// NB that this use current push and speed, doesn't know if this frame will receive some push or other, so it's not 100% correct
         /// </summary>
