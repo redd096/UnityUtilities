@@ -11,11 +11,10 @@ namespace redd096.v2.ComponentsSystem
     public class MovementComponentRigidbody : ICharacterComponent
     {
         [Header("Necessary Components (by default get from this gameObject)")]
-        [SerializeField] protected FRigidbodyWrapper rb;
-        [Space]
         [Tooltip("Speed when call Move functions")][SerializeField] protected float inputSpeed = 5;
         [Tooltip("Max Speed, calculating velocity by input + push (-1 = no limit)")][SerializeField] protected float maxSpeed = 50;
-        [Tooltip("Add a check on Y axis to keep rigidbody gravity and prevent sliding on a slope (tested only on 3d games)")][SerializeField] protected bool keepGravityAndPreventSlide = true;
+        [SerializeField] protected FRigidbodyWrapper rb;
+        [Tooltip("Tested only in 3d. With rigidbody 2d you want to add a check on Y axis to keep rigidbody gravity and prevent sliding on a slope?")][SerializeField] protected bool useAlsoIn2dGravityAndPreventSlide = false;
         [EnableIf("keepGravityAndPreventSlide")][Tooltip("Prevent sliding on this angle slope")][SerializeField] protected float maxSlopeAngle = 45;
 
         [Header("When pushed")]
@@ -89,7 +88,7 @@ namespace redd096.v2.ComponentsSystem
             calculatedVelocity = desiredVelocity + CurrentPushForce;
 
             //add gravity to calculated velocity
-            if (keepGravityAndPreventSlide)
+            if (rb.use3d || useAlsoIn2dGravityAndPreventSlide)
                 ApplyGravity();
 
             //clamp at max speed
@@ -133,7 +132,7 @@ namespace redd096.v2.ComponentsSystem
                 rb.velocity = calculatedVelocity;
 
                 //prevent sliding on a slope
-                if (keepGravityAndPreventSlide)
+                if (rb.use3d || useAlsoIn2dGravityAndPreventSlide)
                     PreventSliding();
             }
         }
