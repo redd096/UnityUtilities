@@ -114,36 +114,6 @@ namespace redd096.v2.ComponentsSystem
             }
         }
 
-        virtual void UpdateFunction()
-        {
-            InitializeComponentsIfNull();
-
-            foreach (var component in Components)
-            {
-                component.Update();
-            }
-        }
-
-        virtual void FixedUpdateFunction()
-        {
-            InitializeComponentsIfNull();
-
-            foreach (var component in Components)
-            {
-                component.FixedUpdate();
-            }
-        }
-
-        virtual void LateUpdateFunction()
-        {
-            InitializeComponentsIfNull();
-
-            foreach (var component in Components)
-            {
-                component.LateUpdate();
-            }
-        }
-
         #endregion
     }
 }

@@ -20,11 +20,6 @@ namespace redd096.v2.ComponentsSystem.Example
             return new IObjectComponent[] { stateMachineComponent, movementComponent, interactComponent };
         }
 
-        void Awake()
-        {
-            GetComponent<IObject>().AwakeFunction();
-        }
-
 #if UNITY_EDITOR
 
         void OnDrawGizmosSelected()
@@ -33,6 +28,11 @@ namespace redd096.v2.ComponentsSystem.Example
         }
 
 #endif
+
+        void Awake()
+        {
+            GetComponent<IObject>().AwakeFunction();
+        }
 
         void Start()
         {

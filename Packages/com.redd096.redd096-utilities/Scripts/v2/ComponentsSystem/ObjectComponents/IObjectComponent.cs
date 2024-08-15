@@ -16,9 +16,12 @@ namespace redd096.v2.ComponentsSystem
 
         virtual void OnDrawGizmosSelected() { }
         virtual void Awake() { }
+        virtual void OnEnable() { }
         virtual void Start() { }
         virtual void Update() { }
         virtual void FixedUpdate() { }
         virtual void LateUpdate() { }
+        virtual void OnDisable() { }
+        virtual void OnDestroy() { }
     }
 }
