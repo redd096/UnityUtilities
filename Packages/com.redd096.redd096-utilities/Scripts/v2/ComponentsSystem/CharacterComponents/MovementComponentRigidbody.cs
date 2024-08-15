@@ -15,7 +15,7 @@ namespace redd096.v2.ComponentsSystem
         [Tooltip("Max Speed, calculating velocity by input + push (-1 = no limit)")][SerializeField] protected float maxSpeed = 50;
         [SerializeField] protected FRigidbodyWrapper rb;
         [Tooltip("Tested only in 3d. With rigidbody 2d you want to add a check on Y axis to keep rigidbody gravity and prevent sliding on a slope?")][SerializeField] protected bool useAlsoIn2dGravityAndPreventSlide = false;
-        [EnableIf("keepGravityAndPreventSlide")][Tooltip("Prevent sliding on this angle slope")][SerializeField] protected float maxSlopeAngle = 45;
+        [Tooltip("Prevent sliding on this angle slope")][SerializeField] protected float maxSlopeAngle = 45;
 
         [Header("When pushed")]
         [Tooltip("Drag based on velocity * drag or normalized velocity * drag?")][SerializeField] protected bool dragBasedOnVelocity = true;
