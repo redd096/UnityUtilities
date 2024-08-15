@@ -39,7 +39,7 @@ namespace redd096.v2.ComponentsSystem
         /// <typeparam name="T"></typeparam>
         /// <param name="showWarningIfNotFound"></param>
         /// <returns></returns>
-        protected T GetStateMachineComponent<T>(bool showWarningIfNotFound = true)
+        protected T GetStateMachineUnityComponent<T>(bool showWarningIfNotFound = true)
         {
             //get in parent
             T component = _stateMachine != null ? _stateMachine.Owner.transform.GetComponentInParent<T>() : default;
@@ -57,7 +57,7 @@ namespace redd096.v2.ComponentsSystem
         /// <typeparam name="T"></typeparam>
         /// <param name="foundComponent"></param>
         /// <returns></returns>
-        protected bool TryGetStateMachineComponent<T>(out T foundComponent)
+        protected bool TryGetStateMachineUnityComponent<T>(out T foundComponent)
         {
             //get in parent
             foundComponent = _stateMachine != null ? _stateMachine.Owner.transform.GetComponentInParent<T>() : default;

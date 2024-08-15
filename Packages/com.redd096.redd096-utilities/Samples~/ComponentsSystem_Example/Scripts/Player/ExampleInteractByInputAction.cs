@@ -18,7 +18,7 @@ namespace redd096.Examples.ComponentsSystem
             base.OnInitTask();
 
             //get references
-            if (player == null && TryGetStateMachineComponent(out player) == false)
+            if (player == null && TryGetStateMachineUnityComponent(out player) == false)
                 Debug.LogError($"Missing PlayerPawn on {TaskName}", gameObject);
             if (interactComponent == null && TryGetOwnerComponent(out interactComponent) == false)
                 Debug.LogError($"Missing interactComponent on {TaskName}", gameObject);
