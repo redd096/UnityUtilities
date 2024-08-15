@@ -27,7 +27,7 @@ namespace redd096.v2.ComponentsSystem
         /// <summary>
         /// If components is null, call SetComponents and initialize every component
         /// </summary>
-        private void InitializeComponentsIfNull()
+        virtual void InitializeComponentsIfNull()
         {
             if (Components == null)
                 Components = SetComponents();
