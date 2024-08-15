@@ -26,9 +26,9 @@ namespace redd096.v2.ComponentsSystem.Example
         public System.Action onStartAttack;
         public System.Action onStopAttack;
 
-        public System.Action onEveryBullet;         //called for every bullet shooted (paramter is selected barrel)
-        public System.Action onShoot;               //called for every shoot (also if shoot more bullets)
-        public System.Action onLastShoot;           //called when shoot last time (when number of bullets is more than one)
+        public System.Action onEveryBullet;         //called for every bullet shooted
+        public System.Action onShoot;               //called for every shoot (one time also if shoot more bullets)
+        public System.Action onLastShoot;           //called when shoot last time (if one attack starts a sequence of shoots)
 
         #region public API
 
