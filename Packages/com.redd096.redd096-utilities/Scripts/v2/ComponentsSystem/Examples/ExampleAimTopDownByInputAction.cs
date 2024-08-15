@@ -28,7 +28,7 @@ namespace redd096.v2.ComponentsSystem.Example
             //get references
             if (player == null && TryGetStateMachineComponent(out player) == false)
                 Debug.LogError($"Missing PlayerPawn on {name}", gameObject);
-            if (aimComponent == null && TryGetCharacterComponent(out aimComponent) == false)
+            if (aimComponent == null && TryGetOwnerComponent(out aimComponent) == false)
                 Debug.LogError($"Missing aimComponent on {name}", gameObject);
             if (cam == null) cam = Camera.main;
             if (cam == null) Debug.LogError($"Missing camera on {name}", gameObject);

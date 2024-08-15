@@ -7,7 +7,7 @@ namespace redd096.v2.ComponentsSystem
     /// Use this component to move a topdown camera
     /// </summary>
     [System.Serializable]
-    public class TopDownCameraComponent : ICharacterComponent
+    public class TopDownCameraComponent : IObjectComponent
     {
         [Header("Necessary Components (by default use main camera and owner transform)")]
         [SerializeField] Transform cam;
@@ -16,7 +16,7 @@ namespace redd096.v2.ComponentsSystem
         [SerializeField] bool calculateOffsetInAwake = true;
         [DisableIf("calculateOffsetInAwake")][SerializeField] Vector3 cameraOffset = new Vector3(0, 0.4f, 0.4f);
 
-        public ICharacter Owner { get; set; }
+        public IObject Owner { get; set; }
         public Transform Cam { get => cam; set => cam = value; }
         public Transform ObjectToFollow { get => objectToFollow; set => objectToFollow = value; }
         public Vector3 CameraOffset { get => cameraOffset; set => cameraOffset = value; }

@@ -34,7 +34,7 @@ namespace redd096.v2.ComponentsSystem
         }
 
         /// <summary>
-        /// Get component in stateMachine or its parent. If not found, show warning
+        /// Get unity component in stateMachine or its parent. If not found, show warning
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="showWarningIfNotFound"></param>
@@ -52,7 +52,7 @@ namespace redd096.v2.ComponentsSystem
         }
 
         /// <summary>
-        /// Try get component in stateMachine or its parent
+        /// Try get unity component in stateMachine or its parent
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="foundComponent"></param>
@@ -65,15 +65,15 @@ namespace redd096.v2.ComponentsSystem
         }
 
         /// <summary>
-        /// Get character component in stateMachine's owner. If not found, show warning
+        /// Get component in stateMachine's owner. If not found, show warning
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="showWarningIfNotFound"></param>
         /// <returns></returns>
-        protected T GetCharacterComponent<T>(bool showWarningIfNotFound = true) where T : ICharacterComponent
+        protected T GetOwnerComponent<T>(bool showWarningIfNotFound = true)
         {
-            //get in parent
-            T component = _stateMachine != null ? _stateMachine.Owner.GetCharacterComponent<T>() : default;
+            //get in owner
+            T component = _stateMachine != null ? _stateMachine.Owner.GetObjectComponent<T>() : default;
 
             //show warning if not found
             if (showWarningIfNotFound && component == null)
@@ -83,15 +83,15 @@ namespace redd096.v2.ComponentsSystem
         }
 
         /// <summary>
-        /// Try get character component in stateMachine's owner
+        /// Try get component in stateMachine's owner
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="foundComponent"></param>
         /// <returns></returns>
-        protected bool TryGetCharacterComponent<T>(out T foundComponent) where T : ICharacterComponent
+        protected bool TryGetOwnerComponent<T>(out T foundComponent)
         {
-            //get in parent
-            foundComponent = _stateMachine != null ? _stateMachine.Owner.GetCharacterComponent<T>() : default;
+            //get in owner
+            foundComponent = _stateMachine != null ? _stateMachine.Owner.GetObjectComponent<T>() : default;
             return foundComponent != null;
         }
 

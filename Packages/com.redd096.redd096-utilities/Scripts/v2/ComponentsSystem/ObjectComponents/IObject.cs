@@ -2,15 +2,18 @@ using UnityEngine;
 
 namespace redd096.v2.ComponentsSystem
 {
-    public interface ICharacter
+    /// <summary>
+    /// This is the object with its components. Use this interface if you want to use the ComponentsSystem
+    /// </summary>
+    public interface IObject
     {
         /// <summary>
-        /// Every component on this character
+        /// Every component on this object
         /// </summary>
-        ICharacterComponent[] Components { get; set; }
+        IObjectComponent[] Components { get; set; }
 
         /// <summary>
-        /// Get this character transform
+        /// Get this object transform
         /// </summary>
         Transform transform { get; }
 
@@ -19,7 +22,7 @@ namespace redd096.v2.ComponentsSystem
         /// This function is called on Awake, Gizmos, or GetCharacterComponent
         /// </summary>
         /// <returns></returns>
-        ICharacterComponent[] SetComponents();
+        IObjectComponent[] SetComponents();
 
         /// <summary>
         /// If components is null, call SetComponents and initialize every component
@@ -46,7 +49,7 @@ namespace redd096.v2.ComponentsSystem
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        virtual T GetCharacterComponent<T>()
+        virtual T GetObjectComponent<T>()
         {
             InitializeComponentsIfNull();
 
@@ -63,7 +66,7 @@ namespace redd096.v2.ComponentsSystem
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        virtual bool TryGetCharacterComponent<T>(out T foundComponent)
+        virtual bool TryGetObjectComponent<T>(out T foundComponent)
         {
             InitializeComponentsIfNull();
 
@@ -142,13 +145,5 @@ namespace redd096.v2.ComponentsSystem
         }
 
         #endregion
-    }
-
-    public interface ICharacter<T> : ICharacter
-    {
-        /// <summary>
-        /// This is used to have a reference to the GameObject
-        /// </summary>
-        T Character { get; }
     }
 }

@@ -4,40 +4,40 @@ using redd096.v2.ComponentsSystem;
 namespace redd096.Examples.ComponentsSystem
 {
     /// <summary>
-    /// This is a PlayerPawn with every CharacterComponent
+    /// This is a PlayerPawn with every component
     /// </summary>
     [AddComponentMenu("redd096/Examples/ComponentsSystem/Player/Example Player")]
-    public class ExamplePlayer : PlayerPawn, ICharacter
+    public class ExamplePlayer : PlayerPawn, IObject
     {
         //declare every component, and add in SetComponents
         [SerializeField] InspectorStateMachineComponent stateMachineComponent;
         [SerializeField] MovementComponentRigidbody movementComponent;
         [SerializeField] InteractComponent2D interactComponent;
 
-        public ICharacterComponent[] Components { get; set; }
+        public IObjectComponent[] Components { get; set; }
 
-        public ICharacterComponent[] SetComponents()
+        public IObjectComponent[] SetComponents()
         {
-            return new ICharacterComponent[] { stateMachineComponent, movementComponent, interactComponent };
+            return new IObjectComponent[] { stateMachineComponent, movementComponent, interactComponent };
         }
 
         public void Awake()
         {
-            GetComponent<ICharacter>().AwakeFunction();
+            GetComponent<IObject>().AwakeFunction();
         }
 
 #if UNITY_EDITOR
 
     void OnDrawGizmosSelected()
     {
-        GetComponent<ICharacter>().OnDrawGizmosSelected();
+        GetComponent<IObject>().OnDrawGizmosSelected();
     }
 
 #endif
 
         public void Start()
         {
-            GetComponent<ICharacter>().StartFunction();
+            GetComponent<IObject>().StartFunction();
         }
 
         public void Update()

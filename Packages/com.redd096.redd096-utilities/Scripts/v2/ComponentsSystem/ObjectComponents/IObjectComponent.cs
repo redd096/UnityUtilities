@@ -1,15 +1,15 @@
 
 namespace redd096.v2.ComponentsSystem
 {
-    public interface ICharacterComponent
+    public interface IObjectComponent
     {
-        ICharacter Owner { get; set; }
+        IObject Owner { get; set; }
 
         /// <summary>
         /// Set owner of this component
         /// </summary>
         /// <param name="owner"></param>
-        virtual void Init(ICharacter owner)
+        virtual void Init(IObject owner)
         {
             Owner = owner;
         }

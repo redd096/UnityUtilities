@@ -6,9 +6,9 @@ namespace redd096.v2.ComponentsSystem
     /// <summary>
     /// Create a state machine from this class
     /// </summary>
-    public class BasicStateMachineComponent : ICharacterComponent, IBlackboard
+    public class BasicStateMachineComponent : IObjectComponent, IBlackboard
     {
-        public ICharacter Owner { get; set; }
+        public IObject Owner { get; set; }
 
         protected string currentStateDebug;
 

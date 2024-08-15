@@ -7,14 +7,14 @@ namespace redd096.v2.ComponentsSystem
     /// Find interactables in a radius around character. And call function to interact
     /// </summary>
     [System.Serializable]
-    public class InteractComponent2D : ICharacterComponent
+    public class InteractComponent2D : IObjectComponent
     {
         [Tooltip("Look for interactables every X seconds")][SerializeField] float updateTime = 0.2f;
         [Tooltip("Area to check for interactables")][SerializeField] float radiusInteract = 1f;
         [Tooltip("Hit only interacts with this layer")][SerializeField] LayerMask interactLayer = -1;
         [SerializeField] ShowDebugRedd096 showRadiusInteract = Color.cyan;
 
-        public ICharacter Owner { get; set; }
+        public IObject Owner { get; set; }
 
         //events
         public System.Action<IInteractable> onFoundInteractable;

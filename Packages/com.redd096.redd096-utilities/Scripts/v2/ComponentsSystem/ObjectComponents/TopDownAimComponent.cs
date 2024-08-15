@@ -6,14 +6,14 @@ namespace redd096.v2.ComponentsSystem
     /// Use mouse position or analog inclination to set aim direction. Use this for example to rotate player or shoot bullets
     /// </summary>
     [System.Serializable]
-    public class TopDownAimComponent : ICharacterComponent
+    public class TopDownAimComponent : IObjectComponent
     {
         [Header("When set at zero (e.g. release analog), keep last rotation")]
         [SerializeField] bool ignoreDirectionZero = true;
         [SerializeField] ShowDebugRedd096 showPositionNotNormalized = Color.red;
         [SerializeField] ShowDebugRedd096 showDirectionInput = Color.cyan;
 
-        public ICharacter Owner { get; set; }
+        public IObject Owner { get; set; }
 
         public bool IsAimingRight { get; set; } = true;                         //check if aiming to the right (this is used in 2d games where you can look only left or right)
         public Vector3 AimDirectionInput { get; set; } = Vector3.right;         //when aim, set it with only direction (used to know where this object is aiming)

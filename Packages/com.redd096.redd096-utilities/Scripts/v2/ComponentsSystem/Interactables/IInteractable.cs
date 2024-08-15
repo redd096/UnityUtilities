@@ -6,6 +6,6 @@ namespace redd096.v2.ComponentsSystem
     /// </summary>
     public interface IInteractable
     {
-        void Interact(ICharacter interactor);
+        void Interact(IObject interactor);
     }
 }

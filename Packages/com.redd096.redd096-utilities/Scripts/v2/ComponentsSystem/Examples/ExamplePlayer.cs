@@ -6,37 +6,37 @@ namespace redd096.v2.ComponentsSystem.Example
     /// An example of PlayerPawn and ICharacter to use in game
     /// </summary>
     [AddComponentMenu("redd096/v2/ComponentsSystem/Examples/Example Player")]
-    public class ExamplePlayer : PlayerPawn, ICharacter
+    public class ExamplePlayer : PlayerPawn, IObject
     {
         //declare every component, and add in SetComponents
         [SerializeField] InspectorStateMachineComponent stateMachineComponent;
         [SerializeField] MovementComponentRigidbody movementComponent;
         [SerializeField] InteractComponent2D interactComponent;
 
-        public ICharacterComponent[] Components { get; set; }
+        public IObjectComponent[] Components { get; set; }
 
-        public ICharacterComponent[] SetComponents()
+        public IObjectComponent[] SetComponents()
         {
-            return new ICharacterComponent[] { stateMachineComponent, movementComponent, interactComponent };
+            return new IObjectComponent[] { stateMachineComponent, movementComponent, interactComponent };
         }
 
         void Awake()
         {
-            GetComponent<ICharacter>().AwakeFunction();
+            GetComponent<IObject>().AwakeFunction();
         }
 
 #if UNITY_EDITOR
 
         void OnDrawGizmosSelected()
         {
-            GetComponent<ICharacter>().OnDrawGizmosSelected();
+            GetComponent<IObject>().OnDrawGizmosSelected();
         }
 
 #endif
 
         void Start()
         {
-            GetComponent<ICharacter>().StartFunction();
+            GetComponent<IObject>().StartFunction();
         }
 
         void Update()
