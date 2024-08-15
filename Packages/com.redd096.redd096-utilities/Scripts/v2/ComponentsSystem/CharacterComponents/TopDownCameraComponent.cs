@@ -31,9 +31,9 @@ namespace redd096.v2.ComponentsSystem
 
             //be sure to have components
             if (cam == null)
-                Debug.LogError("Miss Camera on " + GetType().Name);
+                Debug.LogError("Miss Camera on " + GetType().Name, Owner.transform.gameObject);
             if (objectToFollow == null)
-                Debug.LogError("Miss characterToFollow on " + GetType().Name);
+                Debug.LogError("Miss characterToFollow on " + GetType().Name, Owner.transform.gameObject);
 
             //create camera parent
             if (createCameraParentOnAwake)

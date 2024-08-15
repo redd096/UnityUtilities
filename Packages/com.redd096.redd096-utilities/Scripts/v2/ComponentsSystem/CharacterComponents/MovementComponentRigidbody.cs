@@ -5,16 +5,18 @@ namespace redd096.v2.ComponentsSystem
 {
     /// <summary>
     /// This component uses FixedUpdate to set rigidbody.velocity by InputSpeed + PushForce. 
-    /// It has also a check on Y axis, to keep rigidbody gravity and prevent sliding on a slope
+    /// It has also a check on Y axis, to keep rigidbody gravity and prevent sliding on a slope (tested only on 3d games)
     /// </summary>
     [System.Serializable]
-    public class MovementComponent3D : ICharacterComponent
+    public class MovementComponentRigidbody : ICharacterComponent
     {
         [Header("Necessary Components (by default get from this gameObject)")]
-        [SerializeField] protected Rigidbody rb = default;
+        [SerializeField] protected FRigidbodyWrapper rb;
         [Tooltip("Speed when call Move functions")][SerializeField] protected float inputSpeed = 5;
         [Tooltip("Max Speed, calculating velocity by input + push (-1 = no limit)")][SerializeField] protected float maxSpeed = 50;
-        [Tooltip("Prevent sliding on this angle slope")][SerializeField] protected float maxSlopeAngle = 45;
+        [Space]
+        [Tooltip("Add a check on Y axis to keep rigidbody gravity and prevent sliding on a slope (tested only on 3d games)")][SerializeField] protected bool keepGravityAndPreventSlide = true;
+        [EnableIf("keepGravityAndPreventSlide")][Tooltip("Prevent sliding on this angle slope")][SerializeField] protected float maxSlopeAngle = 45;
 
         [Header("When pushed")]
         [Tooltip("Drag based on velocity * drag or normalized velocity * drag?")][SerializeField] protected bool dragBasedOnVelocity = true;
@@ -27,8 +29,8 @@ namespace redd096.v2.ComponentsSystem
         public Vector3 MoveDirectionInput { get; set; }         //when moves, set it with only input direction (used to know last movement direction)
         public Vector3 LastDesiredVelocity { get; set; }        //when moves, set it as input direction * speed
         public Vector3 CurrentPushForce { get; set; }           //used to push this object (push by recoil, knockback, dash, etc...), will be decreased by drag in every frame
-        public Vector3 CurrentVelocity => rb ? rb.velocity : Vector3.zero;
-        public float CurrentSpeed => rb ? rb.velocity.magnitude : 0;
+        public Vector3 CurrentVelocity => rb.IsValid() ? rb.velocity : Vector3.zero;
+        public float CurrentSpeed => rb.IsValid() ? rb.velocity.magnitude : 0;
         public float InputSpeed { get => inputSpeed; set => inputSpeed = value; }
         public float MaxSpeed { get => maxSpeed; set => maxSpeed = value; }
         /// <summary>
@@ -36,8 +38,8 @@ namespace redd096.v2.ComponentsSystem
         /// </summary>
         public float Drag
         {
-            get => useCustomDrag ? customDrag : (rb ? rb.drag : 1);
-            set { if (useCustomDrag) customDrag = value; else if (rb) rb.drag = value; }
+            get => useCustomDrag ? customDrag : (rb.IsValid() ? rb.drag : 1);
+            set { if (useCustomDrag) customDrag = value; else if (rb.IsValid()) rb.drag = value; }
         }
         /// <summary>
         /// Return IsMovingRight as a direction. Can also set it passing a Vector3 with X greater or lower than 0
@@ -52,15 +54,15 @@ namespace redd096.v2.ComponentsSystem
         public System.Action<bool> onChangeMovementDirection;
 
         //private
-        protected Vector3 desiredVelocity;                //when moves, set it as input direction * speed (used to move this object, will be reset in every frame)
-        protected Vector3 calculatedVelocity;             //desiredVelocity + DesiredPushForce
-        protected Vector3 newPushForce;                   //new push force when Drag
+        protected Vector3 desiredVelocity;          //when moves, set it as input direction * speed (used to move this object, will be reset in every frame)
+        protected Vector3 calculatedVelocity;       //desiredVelocity + DesiredPushForce
+        protected Vector3 newPushForce;             //new push force when Drag
 
         public virtual void Awake()
         {
             //be sure to have components
-            if (rb == null && Owner.transform.TryGetComponent(out rb) == false)
-                Debug.LogError("Miss Rigidbody on " + GetType().Name);
+            if (rb.IsValid() == false && rb.TryGetComponent(Owner.transform) == false)
+                Debug.LogError("Miss Rigidbody on " + GetType().Name, Owner.transform.gameObject);
         }
 
         public virtual void FixedUpdate()
@@ -87,7 +89,8 @@ namespace redd096.v2.ComponentsSystem
             calculatedVelocity = desiredVelocity + CurrentPushForce;
 
             //add gravity to calculated velocity
-            ApplyGravity();
+            if (keepGravityAndPreventSlide)
+                ApplyGravity();
 
             //clamp at max speed
             if (maxSpeed >= 0)
@@ -97,7 +100,7 @@ namespace redd096.v2.ComponentsSystem
         protected virtual void ApplyGravity()
         {
             //if falling, keep Y (rigidbody gravity)
-            if (rb && rb.velocity.y < 0)
+            if (rb.IsValid() && rb.velocity.y < 0)
                 calculatedVelocity.y += rb.velocity.y;
         }
 
@@ -125,12 +128,13 @@ namespace redd096.v2.ComponentsSystem
         protected virtual void DoMovement()
         {
             //set velocity
-            if (rb)
+            if (rb.IsValid())
             {
                 rb.velocity = calculatedVelocity;
 
                 //prevent sliding on a slope
-                PreventSliding();
+                if (keepGravityAndPreventSlide)
+                    PreventSliding();
             }
         }
 
@@ -142,11 +146,11 @@ namespace redd096.v2.ComponentsSystem
                 Vector3 surfaceNormal = hit.normal;
                 float slopeAngle = Vector3.Angle(surfaceNormal, Vector3.up);
 
-                if (slopeAngle < maxSlopeAngle + 0.01f)
+                if (slopeAngle < maxSlopeAngle)
                 {
                     Vector3 gravity = Physics.gravity;
                     Vector3 slopeParallelGravity = Vector3.ProjectOnPlane(gravity, surfaceNormal);
-                    rb.AddForce(-slopeParallelGravity, ForceMode.Acceleration);
+                    rb.AddForce(-slopeParallelGravity, ForceMode.Acceleration, ForceMode2D.Force);
                 }
             }
         }
@@ -269,4 +273,118 @@ namespace redd096.v2.ComponentsSystem
 
         #endregion
     }
+
+    #region rigidbody wrapper
+
+    [System.Serializable]
+    public struct FRigidbodyWrapper
+    {
+        [Tooltip("Use rigidbody 3d or 2d")] public bool use3d;
+        public Rigidbody rb3d;
+        public Rigidbody2D rb2d;
+
+        /// <summary>
+        /// Is rigidbody != null 
+        /// </summary>
+        /// <returns></returns>
+        public bool IsValid()
+        {
+            if (use3d)
+                return rb3d != null;
+            else
+                return rb2d != null;
+        }
+
+        /// <summary>
+        /// Try get rigidbody on transform
+        /// </summary>
+        /// <param name="transform"></param>
+        /// <returns></returns>
+        public bool TryGetComponent(Transform transform)
+        {
+            if (use3d)
+                return transform.TryGetComponent(out rb3d);
+            else
+                return transform.TryGetComponent(out rb2d);
+        }
+
+        /// <summary>
+        /// Apply a force to the rigidbody
+        /// </summary>
+        /// <param name="force"></param>
+        /// <param name="mode3D"></param>
+        /// <param name="mode2D"></param>
+        public void AddForce(Vector3 force, ForceMode mode3D, ForceMode2D mode2D)
+        {
+            if (use3d)
+                rb3d.AddForce(force, mode3D);
+            else
+                rb2d.AddForce(force, mode2D);
+        }
+
+        /// <summary>
+        /// The velocity vector of the rigidbody. It represents the rate of change of Rigidbody position.
+        /// </summary>
+        public Vector3 velocity
+        {
+            get
+            {
+                if (use3d)
+                    return rb3d.velocity;
+                else
+                    return rb2d.velocity;
+            }
+            set
+            {
+                if (use3d)
+                    rb3d.velocity = value;
+                else
+                    rb2d.velocity = value;
+            }
+        }
+
+        /// <summary>
+        /// The drag of the rigidbody
+        /// </summary>
+        public float drag
+        {
+            get
+            {
+                if (use3d)
+                    return rb3d.drag;
+                else
+                    return rb2d.drag;
+            }
+            set
+            {
+                if (use3d)
+                    rb3d.drag = value;
+                else
+                    rb2d.drag = value;
+            }
+        }
+
+        /// <summary>
+        /// The position of the rigidbody
+        /// </summary>
+        public Vector3 position
+        {
+            get
+            {
+                if (use3d)
+                    return rb3d.position;
+                else 
+                    return rb2d.position;
+            }
+            set
+            {
+                if (use3d)
+                    rb3d.position = value;
+                else
+                    rb2d.position = value;
+            }
+        }
+    }
+
+    #endregion
 }

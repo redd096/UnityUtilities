@@ -10,7 +10,7 @@ namespace redd096.v2.ComponentsSystem.Example
     {
         //declare every component, and add in SetComponents
         [SerializeField] InspectorStateMachineComponent stateMachineComponent;
-        [SerializeField] MovementComponent2D movementComponent;
+        [SerializeField] MovementComponentRigidbody movementComponent;
         [SerializeField] InteractComponent2D interactComponent;
 
         public ICharacterComponent[] Components { get; set; }

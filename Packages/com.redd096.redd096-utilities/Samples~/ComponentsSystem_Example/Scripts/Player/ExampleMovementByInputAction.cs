@@ -10,7 +10,7 @@ namespace redd096.Examples.ComponentsSystem
     public class ExampleMovementByInputAction : ActionTask
     {
         PlayerPawn player;
-        MovementComponent2D movementComponent;
+        MovementComponentRigidbody movementComponent;
         ExampleInputManager inputManager;
 
         protected override void OnInitTask()
@@ -21,7 +21,7 @@ namespace redd096.Examples.ComponentsSystem
             if (player == null && TryGetStateMachineComponent(out player) == false)
                 Debug.LogError($"Missing PlayerPawn on {name}", gameObject);
             if (movementComponent == null && TryGetCharacterComponent(out movementComponent) == false)
-                Debug.LogError($"Missing MovementComponent2D on {name}", gameObject);
+                Debug.LogError($"Missing MovementComponent on {name}", gameObject);
         }
 
         protected override void OnEnterTask()

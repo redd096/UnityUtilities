@@ -31,6 +31,12 @@ namespace redd096.v2.ComponentsSystem
 
             foreach (var component in Components)
             {
+                if (component == null)
+                {
+                    Debug.LogError("Component is null, please update your SetComponents function. " +
+                        "Maybe your component doesn't have [System.Serializable] or it isn't declared as a [SerializeField]. " +
+                        "Or if you are creating it, be sure to call the constructor (new Component()) when you put it in your Components array");
+                }
                 component.Init(this);
             }
         }

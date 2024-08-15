@@ -9,7 +9,7 @@ namespace redd096.v2.ComponentsSystem.Example
     public class ExampleMoveByInputAction : ActionTask
     {
         PlayerPawn player;
-        MovementComponent2D movementComponent;
+        MovementComponentRigidbody movementComponent;
         ExampleInputManager inputManager;
 
         protected override void OnInitTask()
