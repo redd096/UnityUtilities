@@ -137,7 +137,7 @@ namespace redd096.v2.ComponentsSystem
             //remove push force (direction * drag * delta)
             newPushForce = CurrentPushForce - (
                 (dragBasedOnVelocity ? CurrentPushForce : CurrentPushForce.normalized) *
-                Drag * Time.fixedDeltaTime);
+                Drag * Time.deltaTime);
 
             //clamp it
             if (CurrentPushForce.x >= 0 && newPushForce.x < 0 || CurrentPushForce.x <= 0 && newPushForce.x > 0)
@@ -259,7 +259,7 @@ namespace redd096.v2.ComponentsSystem
         public Vector3 CalculateNextPosition()
         {
             CalculateVelocity();
-            return Owner.transform.position + calculatedVelocity * Time.fixedDeltaTime;
+            return Owner.transform.position + calculatedVelocity * Time.deltaTime;
         }
 
         #endregion
