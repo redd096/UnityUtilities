@@ -158,16 +158,16 @@ namespace redd096.v2.ComponentsSystem.Example
         {
             Quaternion rotation = Quaternion.LookRotation(attackDirection, Vector3.up);
 
-            //calculate accuracy (topdown randomize only on X axis)
-            float accuracy = data.NoiseAccuracy;
-            Vector3 rotatedAccuracy = rotation * new Vector3(Random.Range(-accuracy, accuracy), 0, 0);
-            Vector3 direction = attackDirection + rotatedAccuracy;
-
             //calculate origin (topdown randomize only on X axis)
             Vector3 attackOrigin = Owner.transform.position + rotation * data.OriginBulletsOffset;
-            float offset = data.NoiseOriginBulletOffset;
-            Vector3 rotatedOffset = rotation * new Vector3(Random.Range(-offset, offset), 0, 0);
-            Vector3 origin = attackOrigin + rotatedOffset;
+            float noiseOrigin = data.NoiseOriginBulletOffset;
+            Vector3 rotatedNoiseOrigin = rotation * new Vector3(Random.Range(-noiseOrigin, noiseOrigin), 0, 0);
+            Vector3 origin = attackOrigin + rotatedNoiseOrigin;
+
+            //calculate accuracy (topdown randomize only on X axis)
+            float noiseAccuracy = data.NoiseAccuracy;
+            Vector3 rotatedNoiseAccuracy = rotation * new Vector3(Random.Range(-noiseAccuracy, noiseAccuracy), 0, 0);
+            Vector3 direction = attackDirection + rotatedNoiseAccuracy;
 
             Debug.DrawLine(origin, origin + direction * bulletData.MaxDistance, Color.red, 2);
 
