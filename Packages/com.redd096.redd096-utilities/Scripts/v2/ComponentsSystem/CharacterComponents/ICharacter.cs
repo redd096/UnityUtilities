@@ -46,7 +46,7 @@ namespace redd096.v2.ComponentsSystem
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        virtual T GetCharacterComponent<T>() where T : ICharacterComponent
+        virtual T GetCharacterComponent<T>()
         {
             InitializeComponentsIfNull();
 
@@ -63,7 +63,7 @@ namespace redd096.v2.ComponentsSystem
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        virtual bool TryGetCharacterComponent<T>(out T foundComponent) where T : ICharacterComponent
+        virtual bool TryGetCharacterComponent<T>(out T foundComponent)
         {
             InitializeComponentsIfNull();
 
