@@ -161,13 +161,13 @@ namespace redd096.v2.ComponentsSystem.Example
             //calculate origin (topdown randomize only on X axis)
             Vector3 attackOrigin = Owner.transform.position + rotation * data.OriginBulletsOffset;
             float noiseOrigin = data.NoiseOriginBulletOffset;
-            Vector3 rotatedNoiseOrigin = rotation * new Vector3(Random.Range(-noiseOrigin, noiseOrigin), 0, 0);
-            Vector3 origin = attackOrigin + rotatedNoiseOrigin;
+            Vector3 originRandomOffset = rotation * new Vector3(Random.Range(-noiseOrigin, noiseOrigin), 0, 0);
+            Vector3 origin = attackOrigin + originRandomOffset;
 
             //calculate accuracy (topdown randomize only on X axis)
             float noiseAccuracy = data.NoiseAccuracy;
-            Vector3 rotatedNoiseAccuracy = rotation * new Vector3(Random.Range(-noiseAccuracy, noiseAccuracy), 0, 0);
-            Vector3 direction = attackDirection + rotatedNoiseAccuracy;
+            Vector3 directionRandomOffset = rotation * new Vector3(Random.Range(-noiseAccuracy, noiseAccuracy), 0, 0);
+            Vector3 direction = attackDirection + directionRandomOffset;
 
             Debug.DrawLine(origin, origin + direction * bulletData.MaxDistance, Color.red, 2);
 
