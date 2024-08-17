@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace redd096.v2.ComponentsSystem.Example
 {
@@ -11,13 +10,11 @@ namespace redd096.v2.ComponentsSystem.Example
     {
         [Header("Default cam is MainCamera")]
         [SerializeField] Camera cam = default;
-        [SerializeField] string mouseSchemeName = "MouseAndKeyboard";
         [SerializeField] bool resetWhenReleaseAnalogInput = false;
 
         PlayerPawn player;
         TopDownAimComponent aimComponent;
         ExampleInputManager inputManager;
-        PlayerInput playerInput;
 
         Vector2 lastAnalogSavedValue = Vector2.right;
 
@@ -41,8 +38,6 @@ namespace redd096.v2.ComponentsSystem.Example
             //get InputManager and PlayerInput
             if (player.CurrentController == null || player.CurrentController.TryGetComponent(out inputManager) == false)
                 Debug.LogError($"Missing inputManager on {name}", gameObject);
-            if (player.CurrentController == null || player.CurrentController.TryGetComponent(out playerInput) == false)
-                Debug.LogError($"Missing playerInput on {name}", gameObject);
         }
 
         public override void OnUpdateTask()
@@ -53,15 +48,15 @@ namespace redd096.v2.ComponentsSystem.Example
                 return;
 
             //set direction using mouse position
-            if (playerInput != null && playerInput.currentControlScheme == mouseSchemeName)
+            if (inputManager.IsUsingMouseScheme)
             {
                 if (cam)
                 {
                     //for 3d use CalculateAimPositionWithMouse
-                    aimComponent.AimAt(cam.ScreenToWorldPoint(inputManager.MousePosition));
+                    aimComponent.AimAt(cam.ScreenToWorldPoint(inputManager.Aim));
                 }
             }
-            //or using analog
+            //or using analog (or keyboard direction)
             else
             {
                 //check if moving analog or reset input when released
@@ -85,7 +80,7 @@ namespace redd096.v2.ComponentsSystem.Example
         //    //use raycast to find where is the mouse (if hit nothing, use direction)
         //    if (useRaycastForMouse)
         //    {
-        //        Ray ray = cam.ScreenPointToRay(inputManager.MousePosition);
+        //        Ray ray = cam.ScreenPointToRay(inputManager.Aim);
         //        if (Physics.Raycast(ray, out RaycastHit hit))
         //        {
         //            aimComponent.AimAt(hit.point);
@@ -101,7 +96,7 @@ namespace redd096.v2.ComponentsSystem.Example
         //{
         //    //from owner screen position to mouse position
         //    Vector3 ownerPos = cam.WorldToScreenPoint(transformTask.position);
-        //    return (inputManager.MousePosition - (Vector2)ownerPos).normalized;
+        //    return (inputManager.Aim - (Vector2)ownerPos).normalized;
         //}
     }
 }
