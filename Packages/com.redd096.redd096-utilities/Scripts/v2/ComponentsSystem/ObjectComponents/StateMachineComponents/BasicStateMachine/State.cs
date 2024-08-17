@@ -152,6 +152,14 @@ namespace redd096.v2.ComponentsSystem
             OnFixedUpdate();
         }
 
+        /// <summary>
+        /// Called by StateMachine, to call OnLateUpdate()
+        /// </summary>
+        public void LateUpdate()
+        {
+            OnLateUpdate();
+        }
+
         #endregion
 
         /// <summary>
@@ -171,8 +179,12 @@ namespace redd096.v2.ComponentsSystem
         /// </summary>
         protected virtual void OnUpdate() { }
         /// <summary>
-        /// Called every time fixed update this state
+        /// Called every fixed update in this state
         /// </summary>
         protected virtual void OnFixedUpdate() { }
+        /// <summary>
+        /// Called every late update in this state
+        /// </summary>
+        protected virtual void OnLateUpdate() { }
     }
 }

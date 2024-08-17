@@ -40,6 +40,15 @@ namespace redd096.v2.ComponentsSystem
             }
         }
 
+        public virtual void LateUpdate()
+        {
+            if (currentState != null)
+            {
+                //late update state
+                currentState.LateUpdate();
+            }
+        }
+
         #region public API
 
         /// <summary>

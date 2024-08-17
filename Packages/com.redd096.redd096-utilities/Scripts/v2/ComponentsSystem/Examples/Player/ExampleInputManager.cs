@@ -9,6 +9,9 @@ namespace redd096.v2.ComponentsSystem.Example
     /// Create a variable for every input and attach the component to your PlayerController. 
     /// Then your player will use probably a statemachine to know when read these inputs
     /// </summary>
+#if ENABLE_INPUT_SYSTEM
+    [RequireComponent(typeof(PlayerInput))]
+#endif
     [AddComponentMenu("redd096/v2/ComponentsSystem/Examples/Example Input Manager")]
     public class ExampleInputManager : MonoBehaviour
     {
@@ -50,14 +53,11 @@ namespace redd096.v2.ComponentsSystem.Example
             Move = FindAction("Move").ReadValue<Vector2>();
             //InteractWasPressedThisFrame = FindAction("Interact").WasPressedThisFrame();
             IsUsingMouseScheme = PlayerInput.currentControlScheme == mouseSchemeName;
-            if (IsUsingMouseScheme)
-                Aim = FindAction("MousePosition").ReadValue<Vector2>();
-            else
-                Aim = FindAction("Aim").ReadValue<Vector2>();
+            Aim = IsUsingMouseScheme ? FindAction("MousePosition").ReadValue<Vector2>() : FindAction("Aim").ReadValue<Vector2>();
 #else
             Move = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
             //InteractWasPressedThisFrame = Input.GetButtonDown("Fire1");
-            //MousePosition = Input.mousePosition;
+            //Aim = Input.mousePosition;
 #endif
         }
     }
