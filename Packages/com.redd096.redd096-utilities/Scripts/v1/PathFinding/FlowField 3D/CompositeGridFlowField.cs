@@ -108,6 +108,7 @@ namespace redd096.v1.PathFinding.FlowField3D
             //set world center of the grid
             gridWorldPosition =
                 Vector3.right * (rightCompositeGrid - (rightCompositeGrid - leftCompositeGrid) * 0.5f)              //x
+                + Vector3.up * transform.position.y                                                                 //y composite transform
                 + Vector3.forward * (forwardCompositeGrid - (forwardCompositeGrid - backCompositeGrid) * 0.5f);     //z
 
             //set grid world size
