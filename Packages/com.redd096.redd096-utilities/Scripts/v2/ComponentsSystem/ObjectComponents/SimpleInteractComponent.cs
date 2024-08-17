@@ -7,9 +7,9 @@ namespace redd096.v2.ComponentsSystem
     /// Find interactables in a radius around character. And call function to interact
     /// </summary>
     [System.Serializable]
-    public class InteractComponent2D : IObjectComponent
+    public class SimpleInteractComponent : IObjectComponent
     {
-        [Tooltip("Look for interactables every X seconds")][SerializeField] float updateTime = 0.2f;
+        [Tooltip("Use OverlapSphere to find interactables (3d) or OverlapCircle (2d)")][SerializeField] bool findInteractablesIn3D = false;
         [Tooltip("Area to check for interactables")][SerializeField] float radiusInteract = 1f;
         [Tooltip("Hit only interacts with this layer")][SerializeField] LayerMask interactLayer = -1;
         [SerializeField] ShowDebugRedd096 showRadiusInteract = Color.cyan;
@@ -20,8 +20,7 @@ namespace redd096.v2.ComponentsSystem
         public System.Action<IInteractable> onFoundInteractable;
         public System.Action<IInteractable> onLostInteractable;
 
-        private float time;
-        private IInteractable currentInteractable;
+        public IInteractable CurrentInteractable;
 
         public void OnDrawGizmosSelected()
         {
@@ -34,22 +33,17 @@ namespace redd096.v2.ComponentsSystem
             }
         }
 
-        public void Update()
+        public void ScanInteractables()
         {
-            //delay between updates
-            if (Time.time < time)
-                return;
-            time = Time.time + updateTime;
-
             //find nearest interactable
-            var possibleInteractables = GetPossibleInteractables();
+            var possibleInteractables = findInteractablesIn3D ? GetPossibleInteractables3D() : GetPossibleInteractables2D();
             IInteractable newInteractable = FindNearest(possibleInteractables);
 
             //if changed interactable, call events
-            if (newInteractable != currentInteractable)
+            if (newInteractable != CurrentInteractable)
             {
-                CallEvents(currentInteractable, newInteractable);
-                currentInteractable = newInteractable;
+                CallEvents(CurrentInteractable, newInteractable);
+                CurrentInteractable = newInteractable;
             }
         }
 
@@ -58,41 +52,57 @@ namespace redd096.v2.ComponentsSystem
         /// </summary>
         public void Interact()
         {
-            if (currentInteractable != null)
-                currentInteractable.Interact(Owner);
+            if (CurrentInteractable != null)
+                CurrentInteractable.Interact(Owner);
         }
 
         #region private API
 
-        Dictionary<Collider2D, IInteractable> GetPossibleInteractables()
+        Dictionary<Transform, IInteractable> GetPossibleInteractables3D()
         {
             //find interactables in area
-            Dictionary<Collider2D, IInteractable> possibleInteractables = new Dictionary<Collider2D, IInteractable>();
+            Dictionary<Transform, IInteractable> possibleInteractables = new Dictionary<Transform, IInteractable>();
+            foreach (Collider col in Physics.OverlapSphere(Owner.transform.position, radiusInteract, interactLayer))
+            {
+                IInteractable interactable = col.GetComponentInParent<IInteractable>();
+                if (interactable != null)
+                {
+                    //add to dictionary
+                    possibleInteractables.Add(col.transform, interactable);
+                }
+            }
+            return possibleInteractables;
+        }
+
+        Dictionary<Transform, IInteractable> GetPossibleInteractables2D()
+        {
+            //find interactables in area
+            Dictionary<Transform, IInteractable> possibleInteractables = new Dictionary<Transform, IInteractable>();
             foreach (Collider2D col in Physics2D.OverlapCircleAll(Owner.transform.position, radiusInteract, interactLayer))
             {
                 IInteractable interactable = col.GetComponentInParent<IInteractable>();
                 if (interactable != null)
                 {
                     //add to dictionary
-                    possibleInteractables.Add(col, interactable);
+                    possibleInteractables.Add(col.transform, interactable);
                 }
             }
             return possibleInteractables;
         }
 
-        IInteractable FindNearest(Dictionary<Collider2D, IInteractable> possibleInteractables)
+        IInteractable FindNearest(Dictionary<Transform, IInteractable> possibleInteractables)
         {
             IInteractable nearest = null;
             float distance = Mathf.Infinity;
 
-            //find nearest collider
-            foreach (Collider2D col in possibleInteractables.Keys)
+            //find nearest interactable
+            foreach (Transform t in possibleInteractables.Keys)
             {
-                float newDistance = Vector2.Distance(col.transform.position, Owner.transform.position);
+                float newDistance = (t.position - Owner.transform.position).sqrMagnitude;
                 if (newDistance < distance)
                 {
                     distance = newDistance;
-                    nearest = possibleInteractables[col];
+                    nearest = possibleInteractables[t];
                 }
             }
 

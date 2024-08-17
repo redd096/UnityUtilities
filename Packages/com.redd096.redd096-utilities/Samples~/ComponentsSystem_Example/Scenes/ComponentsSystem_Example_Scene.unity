@@ -2048,6 +2048,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stateMachineComponent:
+    setFirstStateOnStart: 1
     States:
     - StateName: NormalState
       Actions:
@@ -2055,14 +2056,19 @@ MonoBehaviour:
       - {fileID: 602099396}
       Transitions: []
   movementComponent:
-    rb: {fileID: 1853188972}
     inputSpeed: 5
     maxSpeed: 50
+    rb:
+      use3d: 0
+      rb3d: {fileID: 0}
+      rb2d: {fileID: 0}
+    useAlsoIn2dGravityAndPreventSlide: 0
+    maxSlopeAngle: 45
     dragBasedOnVelocity: 1
     useCustomDrag: 0
     customDrag: 5
   interactComponent:
-    updateTime: 0.2
+    findInteractablesIn3D: 0
     radiusInteract: 1
     interactLayer:
       serializedVersion: 2

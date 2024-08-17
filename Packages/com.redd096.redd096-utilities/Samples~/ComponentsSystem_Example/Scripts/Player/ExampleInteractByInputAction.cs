@@ -10,8 +10,11 @@ namespace redd096.Examples.ComponentsSystem
     public class ExampleInteractByInputAction : ActionTask
     {
         PlayerPawn player;
-        InteractComponent2D interactComponent;
+        SimpleInteractComponent interactComponent;
         ExampleInputManager inputManager;
+
+        const float updateDelay = 0.2f;
+        float updateTime;
 
         protected override void OnInitTask()
         {
@@ -37,10 +40,20 @@ namespace redd096.Examples.ComponentsSystem
         {
             base.OnUpdateTask();
 
+            if (interactComponent == null)
+                return;
+
+            //update scanned interactables
+            if (Time.time > updateTime)
+            {
+                updateTime = Time.time + updateDelay;
+                interactComponent.ScanInteractables();
+            }
+
+            //check if press to interact
             if (inputManager && inputManager.InteractWasPressedThisFrame)
             {
-                if (interactComponent != null)
-                    interactComponent.Interact();
+                interactComponent.Interact();
             }
         }
     }
