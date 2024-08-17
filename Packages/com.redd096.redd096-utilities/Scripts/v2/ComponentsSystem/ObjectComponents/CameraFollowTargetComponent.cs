@@ -4,10 +4,10 @@ using UnityEngine;
 namespace redd096.v2.ComponentsSystem
 {
     /// <summary>
-    /// Use this component to move a topdown camera
+    /// Use this component to let a camera follow an object
     /// </summary>
     [System.Serializable]
-    public class TopDownCameraComponent : IObjectComponent
+    public class CameraFollowTargetComponent : IObjectComponent
     {
         [Header("Necessary Components (by default use main camera and owner transform)")]
         [SerializeField] Transform cam;
@@ -89,13 +89,27 @@ namespace redd096.v2.ComponentsSystem
         }
 
         /// <summary>
-        /// Tell camera to moves and rotates by following object. 
+        /// Tell camera to moves and rotates by following object (rotate only on Y axis). 
         /// (NB we add the objectToFollow rotation, so the start rotation must be calculated with objectToFollow at rotation 0)
         /// </summary>
-        public void UpdateCameraPositionAndRotation()
+        public void UpdateCameraPositionAndRotationTopDown()
         {
             //rotate cam
             cam.localRotation = Quaternion.AngleAxis(objectToFollow.eulerAngles.y, Vector3.up) * startRotation;
+
+            //move cam
+            Vector3 cameraOffsetRotated = Quaternion.AngleAxis(cam.eulerAngles.y, Vector3.up) * cameraOffset;
+            cam.position = objectToFollow.position + cameraOffsetRotated;
+
+        }
+
+        /// <summary>
+        /// Tell camera to moves by following object and rotate to direction
+        /// </summary>
+        public void UpdateCameraPositionAndRotationInDirection(Vector3 camDirection)
+        {
+            //rotate cam
+            cam.localRotation = Quaternion.LookRotation(camDirection, Vector3.up);
 
             //move cam
             Vector3 cameraOffsetRotated = Quaternion.AngleAxis(cam.eulerAngles.y, Vector3.up) * cameraOffset;

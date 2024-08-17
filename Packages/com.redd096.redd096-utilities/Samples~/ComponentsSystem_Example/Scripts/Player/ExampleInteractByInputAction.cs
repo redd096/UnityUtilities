@@ -10,7 +10,7 @@ namespace redd096.Examples.ComponentsSystem
     public class ExampleInteractByInputAction : ActionTask
     {
         PlayerPawn player;
-        SimpleInteractComponent interactComponent;
+        InteractComponentRadius interactComponent;
         ExampleInputManager inputManager;
 
         const float updateDelay = 0.2f;

@@ -12,7 +12,7 @@ namespace redd096.Examples.ComponentsSystem
         //declare every component, and add in SetComponents
         [SerializeField] InspectorStateMachineComponent stateMachineComponent;
         [SerializeField] MovementComponentRigidbody movementComponent;
-        [SerializeField] SimpleInteractComponent interactComponent;
+        [SerializeField] InteractComponentRadius interactComponent;
 
         public IObjectComponent[] Components { get; set; }
 

@@ -7,7 +7,7 @@ namespace redd096.v2.ComponentsSystem
     /// Find interactables in a radius around character. And call function to interact
     /// </summary>
     [System.Serializable]
-    public class SimpleInteractComponent : IObjectComponent
+    public class InteractComponentRadius : IObjectComponent
     {
         [Tooltip("Use OverlapSphere to find interactables (3d) or OverlapCircle (2d)")][SerializeField] bool findInteractablesIn3D = false;
         [Tooltip("Area to check for interactables")][SerializeField] float radiusInteract = 1f;
@@ -19,6 +19,8 @@ namespace redd096.v2.ComponentsSystem
         //events
         public System.Action<IInteractable> onFoundInteractable;
         public System.Action<IInteractable> onLostInteractable;
+        public System.Action<IInteractable> onInteract;             //when user interact with CurrentInteractable
+        public System.Action onFailInteract;                        //when user try to interact but CurrentInteractable is null
 
         public IInteractable CurrentInteractable;
 
@@ -33,6 +35,9 @@ namespace redd096.v2.ComponentsSystem
             }
         }
 
+        /// <summary>
+        /// Find interactables in radius and set Current Interactable
+        /// </summary>
         public void ScanInteractables()
         {
             //find nearest interactable
@@ -48,12 +53,19 @@ namespace redd096.v2.ComponentsSystem
         }
 
         /// <summary>
-        /// Interact with nearest interactable
+        /// Interact with current interactable
         /// </summary>
         public void Interact()
         {
             if (CurrentInteractable != null)
+            {
                 CurrentInteractable.Interact(Owner);
+                onInteract?.Invoke(CurrentInteractable);
+            }
+            else
+            {
+                onFailInteract?.Invoke();
+            }
         }
 
         #region private API

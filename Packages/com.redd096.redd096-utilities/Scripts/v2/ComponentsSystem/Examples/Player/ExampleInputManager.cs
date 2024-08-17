@@ -52,7 +52,7 @@ namespace redd096.v2.ComponentsSystem.Example
             //read inputs
             Move = FindAction("Move").ReadValue<Vector2>();
             //InteractWasPressedThisFrame = FindAction("Interact").WasPressedThisFrame();
-            //IsUsingMouseScheme = PlayerInput.currentControlScheme == mouseSchemeName;
+            IsUsingMouseScheme = PlayerInput.currentControlScheme == mouseSchemeName;
             //Aim = IsUsingMouseScheme ? FindAction("MousePosition").ReadValue<Vector2>() : FindAction("Aim").ReadValue<Vector2>();
 #else
             Move = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
