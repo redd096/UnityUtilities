@@ -10,6 +10,7 @@ namespace redd096.v1.PathFinding.FlowField3D
 
         //public properties
         public virtual Vector3 GridWorldPosition => transform.position;
+        public Node[,] Grid => grid;
 
         #region create grid
 

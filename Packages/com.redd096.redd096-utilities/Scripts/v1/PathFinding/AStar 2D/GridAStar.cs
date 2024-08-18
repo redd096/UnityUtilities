@@ -54,6 +54,7 @@ namespace redd096.v1.PathFinding.AStar2D
         public virtual Vector2 GridWorldPosition => transform.position;
         public Vector2 GridWorldSize => gridWorldSize;
         public float NodeRadius => nodeRadius;
+        public Node[,] Grid => grid;
 
         #endregion
 

@@ -10,6 +10,7 @@ namespace redd096.v1.PathFinding.FlowField2D
 
         //public properties
         public virtual Vector2 GridWorldPosition => transform.position;
+        public Node[,] Grid => grid;
 
         #region create grid
 
