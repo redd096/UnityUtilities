@@ -29,10 +29,11 @@ namespace redd096
         /// <summary>
         /// Find nearest to position
         /// </summary>
-        public static T FindNearest<T>(this T[] collection, Vector3 position) where T : Object
+        public static T FindNearest<T>(this IEnumerable<T> collection, Vector3 position) where T : Object
         {
-            T nearest = default;
-            float distance = Mathf.Infinity;
+            T nearest = null;
+            float minDistance = Mathf.Infinity;
+            float newDistance;
 
             //foreach element in the collection
             foreach (T element in collection)
@@ -41,71 +42,15 @@ namespace redd096
                 if (element == null)
                     continue;
 
-                //check distance to find nearest
-                float newDistance = Vector3.Distance(element.GetTransform().position, position);
-                if (newDistance < distance)
+                newDistance = (element.GetTransform().position - position).sqrMagnitude;
+                if (newDistance < minDistance)
                 {
-                    distance = newDistance;
+                    minDistance = newDistance;
                     nearest = element;
                 }
             }
 
             return nearest;
-        }
-
-        /// <summary>
-        /// Find nearest to position
-        /// </summary>
-        public static T FindNearest<T>(this List<T> collection, Vector3 position) where T : Object
-        {
-            T nearest = default;
-            float distance = Mathf.Infinity;
-
-            //foreach element in the collection
-            foreach (T element in collection)
-            {
-                //only if there is element
-                if (element == null)
-                    continue;
-
-                //check distance to find nearest
-                float newDistance = Vector3.Distance(element.GetTransform().position, position);
-                if (newDistance < distance)
-                {
-                    distance = newDistance;
-                    nearest = element;
-                }
-            }
-
-            return nearest;
-        }
-
-        /// <summary>
-        /// Find nearest to position
-        /// </summary>
-        public static T FindNearest<K, T>(this Dictionary<K, T> collection, Vector3 position, out K key) where T : Object
-        {
-            K nearestKey = default;
-            float distance = Mathf.Infinity;
-
-            //foreach element in the collection
-            foreach (K elementKey in collection.Keys)
-            {
-                //only if there is element
-                if (collection[elementKey] == null)
-                    continue;
-
-                //check distance to find nearest
-                float newDistance = Vector3.Distance(collection[elementKey].GetTransform().position, position);
-                if (newDistance < distance)
-                {
-                    distance = newDistance;
-                    nearestKey = elementKey;
-                }
-            }
-
-            key = nearestKey;
-            return collection[nearestKey];
         }
 
         #endregion
