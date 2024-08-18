@@ -117,11 +117,19 @@ namespace redd096.v1.PathFinding.FlowField3D
         /// <summary>
         /// Get node at grid position
         /// </summary>
-        /// <param name="gridPosition"></param>
         /// <returns></returns>
         public Node GetNodeByCoordinates(int x, int y)
         {
             return grid[x, y];
+        }
+
+        /// <summary>
+        /// Get node at grid position
+        /// </summary>
+        /// <returns></returns>
+        public Node GetNodeByCoordinates(Vector2Int coordinates)
+        {
+            return grid[coordinates.x, coordinates.y];
         }
 
         /// <summary>
