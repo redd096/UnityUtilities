@@ -1,12 +1,11 @@
 ﻿using System.Collections;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 namespace redd096
 {
-    [AddComponentMenu("redd096/Main/MonoBehaviours/UI Manager")]
-    public class UIManager : SimpleInstance<UIManager>
+    [AddComponentMenu("redd096/Main/MonoBehaviours/UI Manager WithMenusInputDelay")]
+    public class UIManagerWithMenusInputDelay : SimpleInstance<UIManagerWithMenusInputDelay>
     {
         [Header("Debug Mode")]
         public bool ShowDebugLogs = false;
