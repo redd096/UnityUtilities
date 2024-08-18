@@ -6,6 +6,6 @@ namespace redd096.v2.ComponentsSystem.Example
     /// </summary>
     public interface IDamageableExample
     {
-        void ApplyDamage(float damage);
+        void ApplyDamage(FDamageInfoExample damageInfo);
     }
 }

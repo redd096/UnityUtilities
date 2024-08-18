@@ -179,7 +179,10 @@ namespace redd096.v2.ComponentsSystem.Example
                 if (hitObject != null)
                 {
                     if (hitObject.TryGetObjectComponent(out IDamageableExample damageable))
-                        damageable.ApplyDamage(bulletData.Damage);
+                    {
+                        FDamageInfoExample damageInfo = new FDamageInfoExample(hitObject, bulletData.Damage, Owner, this, origin, hit);
+                        damageable.ApplyDamage(damageInfo);
+                    }
 
                     if (hitObject.TryGetObjectComponent(out IPushableExample pushable))
                         pushable.Push(direction * bulletData.KnockBack);
