@@ -57,7 +57,11 @@ namespace redd096.v2.ComponentsSystem
             //find interactable by raycast
             IInteractable newInteractable = null;
             if (Raycast(out RaycastHit hit))
-                newInteractable = hit.transform.GetComponentInParent<IInteractable>();
+            {
+                IInteractable interactable = hit.transform.GetComponentInParent<IInteractable>();
+                if (interactable != null && interactable.CanInteract(Owner))
+                    newInteractable = interactable;
+            }
 
             //if changed interactable, call events
             if (newInteractable != CurrentInteractable)

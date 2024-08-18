@@ -77,7 +77,7 @@ namespace redd096.v2.ComponentsSystem
             foreach (Collider col in Physics.OverlapSphere(Owner.transform.position, radiusInteract, interactLayer))
             {
                 IInteractable interactable = col.GetComponentInParent<IInteractable>();
-                if (interactable != null)
+                if (interactable != null && interactable.CanInteract(Owner))
                 {
                     //add to dictionary
                     possibleInteractables.Add(col.transform, interactable);
@@ -93,7 +93,7 @@ namespace redd096.v2.ComponentsSystem
             foreach (Collider2D col in Physics2D.OverlapCircleAll(Owner.transform.position, radiusInteract, interactLayer))
             {
                 IInteractable interactable = col.GetComponentInParent<IInteractable>();
-                if (interactable != null)
+                if (interactable != null && interactable.CanInteract(Owner))
                 {
                     //add to dictionary
                     possibleInteractables.Add(col.transform, interactable);
