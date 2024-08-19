@@ -17,12 +17,12 @@ namespace redd096.v2.ComponentsSystem
         public IObject Owner { get; set; }
 
         //events
-        public System.Action<IInteractable> onFoundInteractable;
-        public System.Action<IInteractable> onLostInteractable;
-        public System.Action<IInteractable> onInteract;             //when user interact with CurrentInteractable
+        public System.Action<ISimpleInteractable> onFoundInteractable;
+        public System.Action<ISimpleInteractable> onLostInteractable;
+        public System.Action<ISimpleInteractable> onInteract;             //when user interact with CurrentInteractable
         public System.Action onFailInteract;                        //when user try to interact but CurrentInteractable is null
 
-        public IInteractable CurrentInteractable;
+        public ISimpleInteractable CurrentInteractable;
 
         public void OnDrawGizmosSelected()
         {
@@ -42,7 +42,7 @@ namespace redd096.v2.ComponentsSystem
         {
             //find nearest interactable
             var possibleInteractables = findInteractablesIn3D ? GetPossibleInteractables3D() : GetPossibleInteractables2D();
-            IInteractable newInteractable = FindNearest(possibleInteractables);
+            ISimpleInteractable newInteractable = FindNearest(possibleInteractables);
 
             //if changed interactable, call events
             if (newInteractable != CurrentInteractable)
@@ -70,13 +70,13 @@ namespace redd096.v2.ComponentsSystem
 
         #region private API
 
-        Dictionary<Transform, IInteractable> GetPossibleInteractables3D()
+        Dictionary<Transform, ISimpleInteractable> GetPossibleInteractables3D()
         {
             //find interactables in area
-            Dictionary<Transform, IInteractable> possibleInteractables = new Dictionary<Transform, IInteractable>();
+            Dictionary<Transform, ISimpleInteractable> possibleInteractables = new Dictionary<Transform, ISimpleInteractable>();
             foreach (Collider col in Physics.OverlapSphere(Owner.transform.position, radiusInteract, interactLayer))
             {
-                IInteractable interactable = col.GetComponentInParent<IInteractable>();
+                ISimpleInteractable interactable = col.GetComponentInParent<ISimpleInteractable>();
                 if (interactable != null && interactable.CanInteract(Owner))
                 {
                     //add to dictionary
@@ -86,13 +86,13 @@ namespace redd096.v2.ComponentsSystem
             return possibleInteractables;
         }
 
-        Dictionary<Transform, IInteractable> GetPossibleInteractables2D()
+        Dictionary<Transform, ISimpleInteractable> GetPossibleInteractables2D()
         {
             //find interactables in area
-            Dictionary<Transform, IInteractable> possibleInteractables = new Dictionary<Transform, IInteractable>();
+            Dictionary<Transform, ISimpleInteractable> possibleInteractables = new Dictionary<Transform, ISimpleInteractable>();
             foreach (Collider2D col in Physics2D.OverlapCircleAll(Owner.transform.position, radiusInteract, interactLayer))
             {
-                IInteractable interactable = col.GetComponentInParent<IInteractable>();
+                ISimpleInteractable interactable = col.GetComponentInParent<ISimpleInteractable>();
                 if (interactable != null && interactable.CanInteract(Owner))
                 {
                     //add to dictionary
@@ -102,9 +102,9 @@ namespace redd096.v2.ComponentsSystem
             return possibleInteractables;
         }
 
-        IInteractable FindNearest(Dictionary<Transform, IInteractable> possibleInteractables)
+        ISimpleInteractable FindNearest(Dictionary<Transform, ISimpleInteractable> possibleInteractables)
         {
-            IInteractable nearest = null;
+            ISimpleInteractable nearest = null;
             float distance = Mathf.Infinity;
 
             //find nearest interactable
@@ -122,7 +122,7 @@ namespace redd096.v2.ComponentsSystem
             return nearest;
         }
 
-        void CallEvents(IInteractable previousInteractable, IInteractable newInteractable)
+        void CallEvents(ISimpleInteractable previousInteractable, ISimpleInteractable newInteractable)
         {
             //lost previous interactable
             if (previousInteractable != null)

@@ -21,12 +21,12 @@ namespace redd096.v2.ComponentsSystem
         public IObject Owner { get; set; }
 
         //events
-        public System.Action<IInteractable> onFoundInteractable;
-        public System.Action<IInteractable> onLostInteractable;
-        public System.Action<IInteractable> onInteract;             //when user interact with CurrentInteractable
+        public System.Action<ISimpleInteractable> onFoundInteractable;
+        public System.Action<ISimpleInteractable> onLostInteractable;
+        public System.Action<ISimpleInteractable> onInteract;             //when user interact with CurrentInteractable
         public System.Action onFailInteract;                        //when user try to interact but CurrentInteractable is null
 
-        public IInteractable CurrentInteractable;
+        public ISimpleInteractable CurrentInteractable;
 
         public void OnDrawGizmosSelected()
         {
@@ -55,10 +55,10 @@ namespace redd096.v2.ComponentsSystem
         public void ScanInteractables()
         {
             //find interactable by raycast
-            IInteractable newInteractable = null;
+            ISimpleInteractable newInteractable = null;
             if (Raycast(out RaycastHit hit))
             {
-                IInteractable interactable = hit.transform.GetComponentInParent<IInteractable>();
+                ISimpleInteractable interactable = hit.transform.GetComponentInParent<ISimpleInteractable>();
                 if (interactable != null && interactable.CanInteract(Owner))
                     newInteractable = interactable;
             }
@@ -97,7 +97,7 @@ namespace redd096.v2.ComponentsSystem
                 return Physics.SphereCast(cam.transform.position, radiusSphereCast, cam.transform.forward, out hit, maxDistance, interactLayer, raycastHitTriggers);
         }
 
-        void CallEvents(IInteractable previousInteractable, IInteractable newInteractable)
+        void CallEvents(ISimpleInteractable previousInteractable, ISimpleInteractable newInteractable)
         {
             //lost previous interactable
             if (previousInteractable != null)

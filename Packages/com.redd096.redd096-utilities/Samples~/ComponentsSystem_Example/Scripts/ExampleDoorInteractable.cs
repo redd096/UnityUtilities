@@ -8,7 +8,7 @@ namespace redd096.Examples.ComponentsSystem
     /// On interact, open door. After few seconds, close it
     /// </summary>
     [AddComponentMenu("redd096/Examples/ComponentsSystem/Interactables/Example Door Interactable")]
-    public class ExampleDoorInteractable : MonoBehaviour, IInteractable
+    public class ExampleDoorInteractable : MonoBehaviour, ISimpleInteractable
     {
         [SerializeField] Transform objectToMove;
         [SerializeField] float movementSpeed = 2;
