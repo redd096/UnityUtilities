@@ -354,7 +354,7 @@ namespace redd096.UIControl
         /// <summary>
         /// Deactive current menu and active old one
         /// </summary>
-        bool BackToOldMenu()
+        protected virtual bool BackToOldMenu()
         {
             if (previousMenu != null && previousMenu.Count > 0 && currentMenu != null)
             {
@@ -377,7 +377,7 @@ namespace redd096.UIControl
         /// <summary>
         /// Active new menu and deactive old one
         /// </summary>
-        public void ChangeMenu(GameObject newMenu)
+        public virtual void ChangeMenu(GameObject newMenu)
         {
             //check if back to last previous menu
             if (previousMenu != null && previousMenu.Count > 0)
@@ -407,7 +407,7 @@ namespace redd096.UIControl
         /// <summary>
         /// Deactive current menu and active old one. This function is used by buttons in scene, because return void instead of bool
         /// </summary>
-        public void BackMenu()
+        public virtual void BackMenu()
         {
             BackToOldMenu();
         }
