@@ -129,7 +129,7 @@ namespace redd096.UIControl
             }
 
             //if using mouse, don't select anything
-            if (canSelect && deselectWhenUseMouse && CheckMouse())
+            if (deselectWhenUseMouse && CheckMouse())
             {
                 canSelect = false;
 
