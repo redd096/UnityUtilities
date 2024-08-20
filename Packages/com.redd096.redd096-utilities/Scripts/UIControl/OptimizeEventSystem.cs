@@ -36,6 +36,9 @@ namespace redd096.UIControl
         [Header("Can't navigate to these objects")]
         [SerializeField] List<GameObject> notNavigables = new List<GameObject>();
 
+        [Header("When move mouse, don't deselect if selecting these objects")]
+        [SerializeField] List<GameObject> notDeselectObjects = new List<GameObject>();
+
         EventSystem _eventSystem;
         EventSystem eventSystem
         {
@@ -126,12 +129,12 @@ namespace redd096.UIControl
             }
 
             //if using mouse, don't select anything
-            if (deselectWhenUseMouse && CheckMouse())
+            if (canSelect && deselectWhenUseMouse && CheckMouse())
             {
                 canSelect = false;
 
                 //if selecting something, deselect it
-                if (selected)
+                if (selected && notDeselectObjects.Contains(selected) == false)
                     SetSelectedGameObject(null);
 
                 return;
