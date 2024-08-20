@@ -83,7 +83,7 @@ namespace redd096.UIControl
             if (eventSystem == null)
                 return;
 
-            //if first time to update mouse position, set both lastMousePosition and mousePosition at same position
+            //if first time to update mouse position, call UpdateMousePosition() double time, so both lastMousePosition and mousePosition will have same value
             if (isFirstUpdateMousePosition)
             {
                 isFirstUpdateMousePosition = false;
@@ -92,30 +92,6 @@ namespace redd096.UIControl
 
             //keep updated mouse position
             UpdateMousePosition();
-
-            //if previous can't select objects, check if now received a keyboard or pad event
-            if (canSelect == false)
-            {
-                if (UsedKeyboardOrGamepad())
-                {
-                    canSelect = true;
-                    isUsingMouse = false;
-                }
-
-                return;
-            }
-
-            //if using mouse, don't select anything
-            if (deselectWhenUseMouse && CheckMouse())
-            {
-                canSelect = false;
-
-                //if selecting something, deselect it
-                if (selected)
-                    SetSelectedGameObject(null);
-
-                return;
-            }
 
             //set current selected and current override object active
             selected = eventSystem.currentSelectedGameObject;
@@ -136,6 +112,32 @@ namespace redd096.UIControl
                         return;
                 }
             }
+
+            //==============================================
+
+            //if previous can't select objects, check if now received a keyboard or pad event
+            if (canSelect == false)
+            {
+                if (UsedKeyboardOrGamepad())
+                {
+                    canSelect = true;
+                    isUsingMouse = false;
+                }
+            }
+
+            //if using mouse, don't select anything
+            if (deselectWhenUseMouse && CheckMouse())
+            {
+                canSelect = false;
+
+                //if selecting something, deselect it
+                if (selected)
+                    SetSelectedGameObject(null);
+
+                return;
+            }
+
+            //==============================================
 
             //if there is something selected and active
             if (selected && selected.activeInHierarchy)
@@ -215,7 +217,6 @@ namespace redd096.UIControl
                 return inputSystemUIInput.cancel.action.WasPressedThisFrame() ||
                     inputSystemUIInput.submit.action.WasPressedThisFrame() ||
                     inputSystemUIInput.move.action.WasPressedThisFrame();
-
             }
 #endif
             return false;
