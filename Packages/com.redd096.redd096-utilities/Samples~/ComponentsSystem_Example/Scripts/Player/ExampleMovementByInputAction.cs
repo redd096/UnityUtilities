@@ -37,11 +37,20 @@ namespace redd096.Examples.ComponentsSystem
         {
             base.OnUpdateTask();
 
-            //move
+            //set move direction
             if (movementComponent != null && inputManager)
             {
                 movementComponent.MoveInDirection(inputManager.Movement);
             }
+        }
+
+        public override void OnFixedUpdateTask()
+        {
+            base.OnFixedUpdateTask();
+
+            //move
+            if (movementComponent != null)
+                movementComponent.UpdatePosition();
         }
     }
 }

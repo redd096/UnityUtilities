@@ -7,7 +7,7 @@ namespace redd096.v2.ComponentsSystem
     /// </summary>
     public interface IWeapon
     {
-        void PickWeapon(IObject owner);
+        void PickWeapon(IGameObjectRD owner);
         void DropWeapon();
 
         void EquipWeapon();

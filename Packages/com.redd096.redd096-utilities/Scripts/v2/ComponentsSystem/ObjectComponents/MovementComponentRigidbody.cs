@@ -8,7 +8,7 @@ namespace redd096.v2.ComponentsSystem
     /// It has also a check on Y axis, to keep rigidbody gravity and prevent sliding on a slope (tested only on 3d games)
     /// </summary>
     [System.Serializable]
-    public class MovementComponentRigidbody : IObjectComponent
+    public class MovementComponentRigidbody : IComponentRD
     {
         [Header("Necessary Components (by default get from this gameObject)")]
         [Tooltip("Speed when call Move functions")][SerializeField] protected float inputSpeed = 5;
@@ -22,12 +22,12 @@ namespace redd096.v2.ComponentsSystem
         [Tooltip("Use rigidbody drag or custom drag?")][SerializeField] protected bool useCustomDrag = false;
         [EnableIf("useCustomDrag")][SerializeField] protected float customDrag = 5;
 
-        public IObject Owner { get; set; }
+        public IGameObjectRD Owner { get; set; }
 
-        public bool IsMovingRight { get; set; }                 //check if moving right (this is used in 2d games where you can look only left or right)
-        public Vector3 MoveDirectionInput { get; set; }         //when moves, set it with only input direction (used to know last movement direction)
-        public Vector3 LastDesiredVelocity { get; set; }        //when moves, set it as input direction * speed
-        public Vector3 CurrentPushForce { get; set; }           //used to push this object (push by recoil, knockback, dash, etc...), will be decreased by drag in every frame
+        public bool IsMovingRight { get; set; }                     //check if moving right (this is used in 2d games where you can look only left or right)
+        public Vector3 MoveDirectionInput { get; set; }             //when moves, set it with only input direction (used to know last movement direction)
+        public Vector3 LastDesiredVelocity { get; private set; }    //when moves, set it as input direction * speed
+        public Vector3 CurrentPushForce { get; set; }               //used to push this object (push by recoil, knockback, dash, etc...), will be decreased by drag in every frame
         public Vector3 CurrentVelocity => rb.IsValid() ? rb.velocity : Vector3.zero;
         public float CurrentSpeed => rb.IsValid() ? rb.velocity.magnitude : 0;
         public float InputSpeed { get => inputSpeed; set => inputSpeed = value; }
@@ -57,14 +57,17 @@ namespace redd096.v2.ComponentsSystem
         protected Vector3 calculatedVelocity;       //desiredVelocity + DesiredPushForce
         protected Vector3 newPushForce;             //new push force when Drag
 
-        public virtual void Awake()
+        public virtual void AwakeRD()
         {
             //be sure to have components
             if (rb.IsValid() == false && rb.TryGetComponent(Owner.transform) == false)
                 Debug.LogError("Miss Rigidbody on " + GetType().Name, Owner.transform.gameObject);
         }
 
-        public virtual void FixedUpdate()
+        /// <summary>
+        /// It's better to call this in FixedUpdate because rigidbody simulation happens in FixedUpdate
+        /// </summary>
+        public virtual void UpdatePosition()
         {
             //set velocity (input + push)
             CalculateVelocity();

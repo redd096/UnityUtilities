@@ -6,44 +6,44 @@ namespace redd096.v2.ComponentsSystem.Example
     /// An example of PlayerPawn and ICharacter to use in game
     /// </summary>
     [AddComponentMenu("redd096/v2/ComponentsSystem/Examples/Example Player")]
-    public class ExamplePlayer : PlayerPawn, IObject
+    public class ExamplePlayer : PlayerPawn, IGameObjectRD
     {
         //declare every component, and add in SetComponents
         [SerializeField] InspectorStateMachineComponent stateMachineComponent;
         [SerializeField] MovementComponentRigidbody movementComponent;
         [SerializeField] InteractComponentRadius interactComponent;
 
-        public IObjectComponent[] Components { get; set; }
+        public IComponentRD[] Components { get; set; }
 
-        public IObjectComponent[] SetComponents()
+        public IComponentRD[] SetComponents()
         {
-            return new IObjectComponent[] { stateMachineComponent, movementComponent, interactComponent };
+            return new IComponentRD[] { stateMachineComponent, movementComponent, interactComponent };
         }
 
 #if UNITY_EDITOR
 
         void OnDrawGizmosSelected()
         {
-            GetComponent<IObject>().OnDrawGizmosSelectedFunction();
+            GetComponent<IGameObjectRD>().OnDrawGizmosSelectedFunction();
         }
 
 #endif
 
         void Awake()
         {
-            GetComponent<IObject>().AwakeFunction();
+            GetComponent<IGameObjectRD>().AwakeFunction();
         }
 
         void Start()
         {
-            GetComponent<IObject>().StartFunction();
+            GetComponent<IGameObjectRD>().StartFunction();
         }
 
         void Update()
         {
             foreach (var component in Components)
             {
-                component.Update();
+                component.UpdateRD();
             }
         }
 
@@ -51,7 +51,7 @@ namespace redd096.v2.ComponentsSystem.Example
         {
             foreach (var component in Components)
             {
-                component.FixedUpdate();
+                component.FixedUpdateRD();
             }
         }
 
@@ -59,7 +59,7 @@ namespace redd096.v2.ComponentsSystem.Example
         {
             foreach (var component in Components)
             {
-                component.LateUpdate();
+                component.LateUpdateRD();
             }
         }
     }

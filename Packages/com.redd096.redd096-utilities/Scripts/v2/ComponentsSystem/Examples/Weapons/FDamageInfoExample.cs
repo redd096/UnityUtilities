@@ -10,7 +10,7 @@ namespace redd096.v2.ComponentsSystem.Example
         /// <summary>
         /// Who will be damaged
         /// </summary>
-        public IObject DamagedObject;
+        public IGameObjectRD DamagedObject;
 
         /// <summary>
         /// Base damage to apply
@@ -20,7 +20,7 @@ namespace redd096.v2.ComponentsSystem.Example
         /// <summary>
         /// Who was responsible for causing this damage (e.g. player who shoot)
         /// </summary>
-        public IObject Instigator;
+        public IGameObjectRD Instigator;
 
         /// <summary>
         /// Weapon used to do damage
@@ -46,7 +46,7 @@ namespace redd096.v2.ComponentsSystem.Example
         /// <param name="weapon">Weapon used to do damage</param>
         /// <param name="hitOrigin">The origin the hit came from</param>
         /// <param name="hitInfo">The info of the hit</param>
-        public FDamageInfoExample(IObject damagedObject, float damage, IObject instigator, IWeapon weapon, Vector3 hitOrigin, RaycastHit hitInfo)
+        public FDamageInfoExample(IGameObjectRD damagedObject, float damage, IGameObjectRD instigator, IWeapon weapon, Vector3 hitOrigin, RaycastHit hitInfo)
         {
             DamagedObject = damagedObject;
             Damage = damage;

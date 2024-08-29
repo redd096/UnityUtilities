@@ -11,7 +11,7 @@ namespace redd096.v2.ComponentsSystem.Example
     {
         public ExampleWeaponRangeData data;
         public ExampleBulletData bulletData;
-        public IObject Owner;
+        public IGameObjectRD Owner;
 
         //private
         bool isAttacking;
@@ -36,7 +36,7 @@ namespace redd096.v2.ComponentsSystem.Example
         /// Set owner
         /// </summary>
         /// <param name="owner"></param>
-        public void PickWeapon(IObject owner)
+        public void PickWeapon(IGameObjectRD owner)
         {
             Owner = owner;
             onPickWeapon?.Invoke();
@@ -136,7 +136,7 @@ namespace redd096.v2.ComponentsSystem.Example
                 ShootBullet();
 
             //recoil
-            if (Owner.TryGetObjectComponent(out IPushableExample ownerPushable))
+            if (Owner.TryGetComponentRD(out IPushableExample ownerPushable))
                 ownerPushable.Push(-attackDirection * data.Recoil);
 
             onShoot?.Invoke();
@@ -175,16 +175,16 @@ namespace redd096.v2.ComponentsSystem.Example
             if (Physics.Raycast(origin, direction, out RaycastHit hit, bulletData.MaxDistance))
             {
                 //apply damage and knockback
-                IObject hitObject = hit.transform.GetComponentInParent<IObject>();
+                IGameObjectRD hitObject = hit.transform.GetComponentInParent<IGameObjectRD>();
                 if (hitObject != null)
                 {
-                    if (hitObject.TryGetObjectComponent(out IDamageableExample damageable))
+                    if (hitObject.TryGetComponentRD(out IDamageableExample damageable))
                     {
                         FDamageInfoExample damageInfo = new FDamageInfoExample(hitObject, bulletData.Damage, Owner, this, origin, hit);
                         damageable.ApplyDamage(damageInfo);
                     }
 
-                    if (hitObject.TryGetObjectComponent(out IPushableExample pushable))
+                    if (hitObject.TryGetComponentRD(out IPushableExample pushable))
                         pushable.Push(direction * bulletData.KnockBack);
                 }
 

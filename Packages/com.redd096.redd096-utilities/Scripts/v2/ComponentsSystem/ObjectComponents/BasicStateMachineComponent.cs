@@ -6,9 +6,9 @@ namespace redd096.v2.ComponentsSystem
     /// <summary>
     /// Create a state machine from this class
     /// </summary>
-    public class BasicStateMachineComponent : IObjectComponent, IBlackboard
+    public class BasicStateMachineComponent : IComponentRD, IBlackboard
     {
-        public IObject Owner { get; set; }
+        public IGameObjectRD Owner { get; set; }
 
         protected string currentStateDebug;
 
@@ -22,7 +22,7 @@ namespace redd096.v2.ComponentsSystem
         public System.Action<State> onSetState { get; set; }
         public System.Action<string> onSetBlackboardValue { get; set; }
 
-        public virtual void Update()
+        public virtual void UpdateRD()
         {
             if (currentState != null)
             {
@@ -31,7 +31,7 @@ namespace redd096.v2.ComponentsSystem
             }
         }
 
-        public virtual void FixedUpdate()
+        public virtual void FixedUpdateRD()
         {
             if (currentState != null)
             {
@@ -40,7 +40,7 @@ namespace redd096.v2.ComponentsSystem
             }
         }
 
-        public virtual void LateUpdate()
+        public virtual void LateUpdateRD()
         {
             if (currentState != null)
             {

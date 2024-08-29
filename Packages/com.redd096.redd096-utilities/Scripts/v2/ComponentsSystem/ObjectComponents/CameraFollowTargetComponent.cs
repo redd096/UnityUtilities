@@ -7,7 +7,7 @@ namespace redd096.v2.ComponentsSystem
     /// Use this component to let a camera follow an object
     /// </summary>
     [System.Serializable]
-    public class CameraFollowTargetComponent : IObjectComponent
+    public class CameraFollowTargetComponent : IComponentRD
     {
         [Header("Necessary Components (by default use main camera and owner transform)")]
         [SerializeField] Transform cam;
@@ -16,14 +16,14 @@ namespace redd096.v2.ComponentsSystem
         [SerializeField] bool calculateOffsetInAwake = true;
         [DisableIf("calculateOffsetInAwake")][SerializeField] Vector3 cameraOffset = new Vector3(0, 0.4f, 0.4f);
 
-        public IObject Owner { get; set; }
+        public IGameObjectRD Owner { get; set; }
         public Transform Cam { get => cam; set => cam = value; }
         public Transform ObjectToFollow { get => objectToFollow; set => objectToFollow = value; }
         public Vector3 CameraOffset { get => cameraOffset; set => cameraOffset = value; }
 
         Quaternion startRotation;
 
-        public void Awake()
+        public void AwakeRD()
         {
             //get default values
             if (cam == null) cam = Camera.main.transform;

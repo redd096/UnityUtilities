@@ -6,7 +6,7 @@ namespace redd096.v2.ComponentsSystem
     /// This component uses Update to move CharacterController by InputSpeed + PushForce
     /// </summary>
     [System.Serializable]
-    public class MovementComponentCharacterController : IObjectComponent
+    public class MovementComponentCharacterController : IComponentRD
     {
         [Header("Necessary Components (by default get from this gameObject)")]
         [SerializeField] protected CharacterController ch;
@@ -17,12 +17,12 @@ namespace redd096.v2.ComponentsSystem
         [Tooltip("Drag based on velocity * drag or normalized velocity * drag?")][SerializeField] protected bool dragBasedOnVelocity = true;
         [SerializeField] protected float drag = 5;
 
-        public IObject Owner { get; set; }
+        public IGameObjectRD Owner { get; set; }
 
-        public bool IsMovingRight { get; set; }                 //check if moving right (this is used in 2d games where you can look only left or right)
-        public Vector3 MoveDirectionInput { get; set; }         //when moves, set it with only input direction (used to know last movement direction)
-        public Vector3 LastDesiredVelocity { get; set; }        //when moves, set it as input direction * speed
-        public Vector3 CurrentPushForce { get; set; }           //used to push this object (push by recoil, knockback, dash, etc...), will be decreased by drag in every frame
+        public bool IsMovingRight { get; set; }                     //check if moving right (this is used in 2d games where you can look only left or right)
+        public Vector3 MoveDirectionInput { get; set; }             //when moves, set it with only input direction (used to know last movement direction)
+        public Vector3 LastDesiredVelocity { get; private set; }    //when moves, set it as input direction * speed
+        public Vector3 CurrentPushForce { get; set; }               //used to push this object (push by recoil, knockback, dash, etc...), will be decreased by drag in every frame
         public Vector3 CurrentVelocity => ch != null ? ch.velocity : Vector3.zero;
         public float CurrentSpeed => ch != null ? ch.velocity.magnitude : 0;
         public float InputSpeed { get => inputSpeed; set => inputSpeed = value; }
@@ -53,14 +53,14 @@ namespace redd096.v2.ComponentsSystem
         protected Vector3 newPushForce;             //new push force when Drag
         protected float gravity;                    //applied gravity to this character
 
-        public virtual void Awake()
+        public virtual void AwakeRD()
         {
             //be sure to have components
             if (ch == null && Owner.transform.TryGetComponent(out ch) == false)
                 Debug.LogError("Miss Rigidbody on " + GetType().Name, Owner.transform.gameObject);
         }
 
-        public virtual void Update()
+        public virtual void UpdatePosition()
         {
             //set velocity (input + push)
             CalculateVelocity();

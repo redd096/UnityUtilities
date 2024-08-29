@@ -24,7 +24,7 @@ namespace redd096.v2.ComponentsSystem
             //if changed something
             if (previousValue != newValue)
             {
-                var stateMachine = ((IObject)property.serializedObject.targetObject).GetObjectComponent<InspectorStateMachineComponent>();
+                var stateMachine = ((IGameObjectRD)property.serializedObject.targetObject).GetComponentRD<InspectorStateMachineComponent>();
 
                 //update every destination state in every transition
                 foreach (InspectorState state in stateMachine.States)

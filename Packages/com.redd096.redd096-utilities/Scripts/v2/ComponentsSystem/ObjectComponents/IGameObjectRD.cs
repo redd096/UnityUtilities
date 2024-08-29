@@ -5,12 +5,12 @@ namespace redd096.v2.ComponentsSystem
     /// <summary>
     /// This is the object with its components. Use this interface if you want to use the ComponentsSystem
     /// </summary>
-    public interface IObject
+    public interface IGameObjectRD
     {
         /// <summary>
         /// Every component on this object
         /// </summary>
-        IObjectComponent[] Components { get; set; }
+        IComponentRD[] Components { get; set; }
 
         /// <summary>
         /// Get this object transform
@@ -19,18 +19,20 @@ namespace redd096.v2.ComponentsSystem
 
         /// <summary>
         /// If Components is null, it's called this function to get every Component and call Init on them. 
-        /// This function is called on Awake, Gizmos, or GetCharacterComponent
+        /// This function is called by InitializeComponentsIfNull, on Awake, Gizmos, or GetComponentRD
         /// </summary>
         /// <returns></returns>
-        IObjectComponent[] SetComponents();
+        IComponentRD[] SetComponents();
 
         /// <summary>
         /// If components is null, call SetComponents and initialize every component
         /// </summary>
         virtual void InitializeComponentsIfNull()
         {
-            if (Components == null)
-                Components = SetComponents();
+            if (Components != null)
+                return;
+
+            Components = SetComponents();
 
             foreach (var component in Components)
             {
@@ -39,8 +41,9 @@ namespace redd096.v2.ComponentsSystem
                     Debug.LogError("Component is null, please update your SetComponents function. " +
                         "Maybe your component doesn't have [System.Serializable] or it isn't declared as a [SerializeField]. " +
                         "Or if you are creating it, be sure to call the constructor (new Component()) when you put it in your Components array");
+                    continue;
                 }
-                component.Init(this);
+                component.InitRD(this);
             }
         }
 
@@ -49,7 +52,7 @@ namespace redd096.v2.ComponentsSystem
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        virtual T GetObjectComponent<T>()
+        virtual T GetComponentRD<T>()
         {
             InitializeComponentsIfNull();
 
@@ -66,7 +69,7 @@ namespace redd096.v2.ComponentsSystem
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        virtual bool TryGetObjectComponent<T>(out T foundComponent)
+        virtual bool TryGetComponentRD<T>(out T foundComponent)
         {
             InitializeComponentsIfNull();
 
@@ -90,7 +93,7 @@ namespace redd096.v2.ComponentsSystem
 
             foreach (var component in Components)
             {
-                component.OnDrawGizmosSelected();
+                component.OnDrawGizmosSelectedRD();
             }
         }
 
@@ -100,7 +103,7 @@ namespace redd096.v2.ComponentsSystem
 
             foreach (var component in Components)
             {
-                component.Awake();
+                component.AwakeRD();
             }
         }
 
@@ -110,7 +113,7 @@ namespace redd096.v2.ComponentsSystem
 
             foreach (var component in Components)
             {
-                component.Start();
+                component.StartRD();
             }
         }
 

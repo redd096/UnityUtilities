@@ -7,11 +7,11 @@ namespace redd096.v2.ComponentsSystem
     /// This component is used to equip and attack with weapons
     /// </summary>
     [System.Serializable]
-    public class SimpleWeaponsComponent : IObjectComponent
+    public class SimpleWeaponsComponent : IComponentRD
     {
         [Min(1)][SerializeField] int maxWeapons = 2;
 
-        public IObject Owner { get; set; }
+        public IGameObjectRD Owner { get; set; }
 
         public List<IWeapon> Weapons = new List<IWeapon>();
         public IWeapon CurrentWeapon;

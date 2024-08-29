@@ -36,12 +36,21 @@ namespace redd096.v2.ComponentsSystem.Example
         {
             base.OnUpdateTask();
 
-            //move
+            //set move direction
             if (movementComponent != null && inputManager)
             {
                 //for 3d just call MoveByInput3D
                 movementComponent.MoveInDirection(inputManager.Move);
             }
+        }
+
+        public override void OnFixedUpdateTask()
+        {
+            base.OnFixedUpdateTask();
+
+            //move
+            if (movementComponent != null)
+                movementComponent.UpdatePosition();
         }
     }
 }

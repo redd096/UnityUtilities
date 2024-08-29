@@ -6,14 +6,14 @@ namespace redd096.v2.ComponentsSystem
     /// Use mouse or analog to set aim direction. Use this for example to rotate player or shoot bullets
     /// </summary>
     [System.Serializable]
-    public class FirstPersonAimComponent : IObjectComponent
+    public class FirstPersonAimComponent : IComponentRD
     {
         [Tooltip("Used when call RotateByInput")][SerializeField] float horizontalSensitivity = 0.3f;
         [Tooltip("Used when call RotateByInput")][SerializeField] float verticalSensitivity = 0.3f;
         [Tooltip("Limit vertical rotation when look up")][Range(0f, 180f)][SerializeField] float verticalTopRotationLimit = 88f;
         [Tooltip("Limit vertical rotation when look down")][Range(-0f, -180f)][SerializeField] float verticalBottomRotationLimit = -88f;
 
-        public IObject Owner { get; set; }
+        public IGameObjectRD Owner { get; set; }
 
         public Vector3 AimDirectionInput { get; set; } = Vector3.forward;           //when aim, set it with only direction (used to know where this object is aiming)
 

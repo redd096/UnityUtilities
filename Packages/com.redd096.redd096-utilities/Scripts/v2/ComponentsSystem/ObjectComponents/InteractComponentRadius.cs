@@ -7,14 +7,14 @@ namespace redd096.v2.ComponentsSystem
     /// Find interactables in a radius around character. And call function to interact
     /// </summary>
     [System.Serializable]
-    public class InteractComponentRadius : IObjectComponent
+    public class InteractComponentRadius : IComponentRD
     {
         [Tooltip("Use OverlapSphere to find interactables (3d) or OverlapCircle (2d)")][SerializeField] bool findInteractablesIn3D = false;
         [Tooltip("Area to check for interactables")][SerializeField] float radiusInteract = 1f;
         [Tooltip("Hit only interacts with this layer")][SerializeField] LayerMask interactLayer = -1;
         [SerializeField] ShowDebugRedd096 showRadiusInteract = Color.cyan;
 
-        public IObject Owner { get; set; }
+        public IGameObjectRD Owner { get; set; }
 
         //events
         public System.Action<ISimpleInteractable> onFoundInteractable;
@@ -24,7 +24,7 @@ namespace redd096.v2.ComponentsSystem
 
         public ISimpleInteractable CurrentInteractable;
 
-        public void OnDrawGizmosSelected()
+        public void OnDrawGizmosSelectedRD()
         {
             //draw area interactable
             if (showRadiusInteract)

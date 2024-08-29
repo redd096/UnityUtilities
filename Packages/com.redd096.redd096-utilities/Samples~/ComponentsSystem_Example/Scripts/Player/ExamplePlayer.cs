@@ -7,44 +7,44 @@ namespace redd096.Examples.ComponentsSystem
     /// This is a PlayerPawn with every component
     /// </summary>
     [AddComponentMenu("redd096/Examples/ComponentsSystem/Player/Example Player")]
-    public class ExamplePlayer : PlayerPawn, IObject
+    public class ExamplePlayer : PlayerPawn, IGameObjectRD
     {
         //declare every component, and add in SetComponents
         [SerializeField] InspectorStateMachineComponent stateMachineComponent;
         [SerializeField] MovementComponentRigidbody movementComponent;
         [SerializeField] InteractComponentRadius interactComponent;
 
-        public IObjectComponent[] Components { get; set; }
+        public IComponentRD[] Components { get; set; }
 
-        public IObjectComponent[] SetComponents()
+        public IComponentRD[] SetComponents()
         {
-            return new IObjectComponent[] { stateMachineComponent, movementComponent, interactComponent };
+            return new IComponentRD[] { stateMachineComponent, movementComponent, interactComponent };
         }
 
         public void Awake()
         {
-            GetComponent<IObject>().AwakeFunction();
+            GetComponent<IGameObjectRD>().AwakeFunction();
         }
 
 #if UNITY_EDITOR
 
     void OnDrawGizmosSelected()
     {
-        GetComponent<IObject>().OnDrawGizmosSelectedFunction();
+        GetComponent<IGameObjectRD>().OnDrawGizmosSelectedFunction();
     }
 
 #endif
 
         public void Start()
         {
-            GetComponent<IObject>().StartFunction();
+            GetComponent<IGameObjectRD>().StartFunction();
         }
 
         public void Update()
         {
             foreach (var component in Components)
             {
-                component.Update();
+                component.UpdateRD();
             }
         }
 
@@ -52,7 +52,7 @@ namespace redd096.Examples.ComponentsSystem
         {
             foreach (var component in Components)
             {
-                component.FixedUpdate();
+                component.FixedUpdateRD();
             }
         }
     }

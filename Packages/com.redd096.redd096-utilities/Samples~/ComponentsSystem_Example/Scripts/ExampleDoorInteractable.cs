@@ -17,7 +17,7 @@ namespace redd096.Examples.ComponentsSystem
 
         bool isDoingAnimation;
 
-        public void Interact(IObject interactor)
+        public void Interact(IGameObjectRD interactor)
         {
             //do nothing if already open
             if (isDoingAnimation)

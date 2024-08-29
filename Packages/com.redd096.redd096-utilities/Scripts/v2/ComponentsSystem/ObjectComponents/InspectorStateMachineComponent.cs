@@ -8,12 +8,12 @@ namespace redd096.v2.ComponentsSystem
     /// If you think at this as the Animator: every box is a State, every StateMachineBehaviour is an Action to add to the State, every arrow is a Transition from the State to another State
     /// </summary>
     [System.Serializable]
-    public class InspectorStateMachineComponent : IObjectComponent, IBlackboard
+    public class InspectorStateMachineComponent : IComponentRD, IBlackboard
     {
         [SerializeField] bool setFirstStateOnStart = true;
         public InspectorState[] States = default;
 
-        public IObject Owner { get; set; }
+        public IGameObjectRD Owner { get; set; }
 
         protected InspectorState currentState = default;
 
@@ -27,7 +27,7 @@ namespace redd096.v2.ComponentsSystem
 
         enum EUpdateTask { Update, FixedUpdate, LateUpdate }
 
-        public virtual void Start()
+        public virtual void StartRD()
         {
             //start with first state
             //set in Start because in Awake normally we are still doing things like PlayerController.Possess(PlayerPawn)
@@ -35,7 +35,7 @@ namespace redd096.v2.ComponentsSystem
                 SetState(0);
         }
 
-        public virtual void Update()
+        public virtual void UpdateRD()
         {
             if (currentState != null)
             {
@@ -47,7 +47,7 @@ namespace redd096.v2.ComponentsSystem
             }
         }
 
-        public virtual void FixedUpdate()
+        public virtual void FixedUpdateRD()
         {
             if (currentState != null)
             {
@@ -56,7 +56,7 @@ namespace redd096.v2.ComponentsSystem
             }
         }
 
-        public virtual void LateUpdate()
+        public virtual void LateUpdateRD()
         {
             if (currentState != null)
             {

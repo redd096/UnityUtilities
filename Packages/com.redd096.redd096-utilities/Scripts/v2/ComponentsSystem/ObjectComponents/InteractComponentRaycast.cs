@@ -7,7 +7,7 @@ namespace redd096.v2.ComponentsSystem
     /// Find interactables in front of owner by using raycast, and call function to interact
     /// </summary>
     [System.Serializable]
-    public class InteractComponentRaycast : IObjectComponent
+    public class InteractComponentRaycast : IComponentRD
     {
         [Header("Necessary Components (by default use main camera and get from this gameObject)")]
         [SerializeField] Camera cam;
@@ -18,7 +18,7 @@ namespace redd096.v2.ComponentsSystem
         [SerializeField] QueryTriggerInteraction raycastHitTriggers = QueryTriggerInteraction.UseGlobal;
         [SerializeField] ShowDebugRedd096 gizmosRaycast = Color.cyan;
 
-        public IObject Owner { get; set; }
+        public IGameObjectRD Owner { get; set; }
 
         //events
         public System.Action<ISimpleInteractable> onFoundInteractable;
@@ -28,7 +28,7 @@ namespace redd096.v2.ComponentsSystem
 
         public ISimpleInteractable CurrentInteractable;
 
-        public void OnDrawGizmosSelected()
+        public void OnDrawGizmosSelectedRD()
         {
             if (gizmosRaycast)
             {
@@ -40,7 +40,7 @@ namespace redd096.v2.ComponentsSystem
             }
         }
 
-        public void Awake()
+        public void AwakeRD()
         {
             if (cam == null) cam = Camera.main;
 

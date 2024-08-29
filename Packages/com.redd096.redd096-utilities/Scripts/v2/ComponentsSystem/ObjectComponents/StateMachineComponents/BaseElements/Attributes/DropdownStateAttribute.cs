@@ -43,7 +43,7 @@ namespace redd096.v2.ComponentsSystem
         void GetStates(SerializedProperty property)
         {
             //get owner of the property
-            var stateMachine = ((IObject)property.serializedObject.targetObject).GetObjectComponent<InspectorStateMachineComponent>();
+            var stateMachine = ((IGameObjectRD)property.serializedObject.targetObject).GetComponentRD<InspectorStateMachineComponent>();
             if (stateMachine != null)
             {
                 //get states in statemachine

@@ -10,14 +10,14 @@ namespace redd096.v2.ComponentsSystem
         /// When user interact with this
         /// </summary>
         /// <param name="interactor"></param>
-        void Interact(IObject interactor);
+        void Interact(IGameObjectRD interactor);
 
         /// <summary>
         /// Can user interact with this object?
         /// </summary>
         /// <param name="interactor"></param>
         /// <returns></returns>
-        virtual bool CanInteract(IObject interactor)
+        virtual bool CanInteract(IGameObjectRD interactor)
         {
             return true;
         }

@@ -68,7 +68,7 @@ namespace redd096.v2.ComponentsSystem
         protected T GetOwnerComponent<T>(bool showWarningIfNotFound = true)
         {
             //get in owner
-            T component = _stateMachine != null ? _stateMachine.Owner.GetObjectComponent<T>() : default;
+            T component = _stateMachine != null ? _stateMachine.Owner.GetComponentRD<T>() : default;
 
             //show warning if not found
             if (showWarningIfNotFound && component == null)
@@ -86,7 +86,7 @@ namespace redd096.v2.ComponentsSystem
         protected bool TryGetOwnerComponent<T>(out T foundComponent)
         {
             //get in owner
-            foundComponent = _stateMachine != null ? _stateMachine.Owner.GetObjectComponent<T>() : default;
+            foundComponent = _stateMachine != null ? _stateMachine.Owner.GetComponentRD<T>() : default;
             return foundComponent != null;
         }
 
