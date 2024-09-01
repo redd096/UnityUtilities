@@ -14,7 +14,7 @@ namespace redd096.v2.ComponentsSystem.Example
 
         ExampleWeaponRange weapon;
 
-        public void Awake()
+        public void AwakeRD()
         {
             //add events
             weapon = Owner.transform.GetComponent<ExampleWeaponRange>();
@@ -29,7 +29,7 @@ namespace redd096.v2.ComponentsSystem.Example
             }
         }
 
-        public void OnDestroy()
+        public void OnDestroyRD()
         {
             //remove events
             if (weapon)

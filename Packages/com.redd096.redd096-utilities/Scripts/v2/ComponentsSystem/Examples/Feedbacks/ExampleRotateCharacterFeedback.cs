@@ -16,7 +16,7 @@ namespace redd096.v2.ComponentsSystem.Example
 
         TopDownAimComponent aimComponent;
 
-        public void Awake()
+        public void AwakeRD()
         {
             if (aimComponent == null && Owner.TryGetComponentRD(out aimComponent) == false)
                 Debug.LogError($"Missing aimComponent on {GetType().Name}", Owner.transform.gameObject);
@@ -24,7 +24,7 @@ namespace redd096.v2.ComponentsSystem.Example
                 Debug.LogError($"Missing objectToRotate on {GetType().Name}", Owner.transform.gameObject);
         }
 
-        public void Update()
+        public void UpdateRD()
         {
             //rotate only on Y axis, to look at aim direciton
             if (aimComponent != null && objectToRotate)

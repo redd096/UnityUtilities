@@ -21,7 +21,7 @@ namespace redd096.v2.ComponentsSystem.Example
         static Pooling<LineRenderer> pooling = new Pooling<LineRenderer>();
         static Transform lineRenderersParent;
 
-        public void Awake()
+        public void AwakeRD()
         {
             //be sure to have parent
             if (lineRenderersParent == null)
@@ -39,7 +39,7 @@ namespace redd096.v2.ComponentsSystem.Example
             }
         }
 
-        public void OnDestroy()
+        public void OnDestroyRD()
         {
             //remove events
             if (weapon)
