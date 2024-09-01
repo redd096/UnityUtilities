@@ -8,7 +8,7 @@ namespace redd096.v2.ComponentsSystem
     /// If you think at this as the Animator: every box is a State, every StateMachineBehaviour is an Action to add to the State, every arrow is a Transition from the State to another State
     /// </summary>
     [System.Serializable]
-    public class InspectorStateMachineComponent : IComponentRD, IBlackboard
+    public class InspectorStateMachineComponent : IStateMachine
     {
         [SerializeField] bool setFirstStateOnStart = true;
         public InspectorState[] States = default;

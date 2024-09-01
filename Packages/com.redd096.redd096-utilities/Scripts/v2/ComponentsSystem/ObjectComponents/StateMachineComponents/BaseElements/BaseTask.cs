@@ -9,8 +9,8 @@ namespace redd096.v2.ComponentsSystem
     {
         public string TaskName = "DefaultTask";
 
-        private InspectorStateMachineComponent _stateMachine;
-        public InspectorStateMachineComponent StateMachine { get => _stateMachine; set => _stateMachine = value; }
+        private IStateMachine _stateMachine;
+        public IStateMachine StateMachine { get => _stateMachine; set => _stateMachine = value; }
         private bool _isTaskActive;
         public bool IsTaskActive { get => _isTaskActive; set => _isTaskActive = value; }
 
@@ -28,9 +28,9 @@ namespace redd096.v2.ComponentsSystem
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        protected T GetStateMachine<T>() where T : InspectorStateMachineComponent
+        protected T GetStateMachine<T>() where T : IStateMachine
         {
-            return _stateMachine as T;
+            return (T)_stateMachine;
         }
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace redd096.v2.ComponentsSystem
         /// Called by StateMachine, to set owner and to be sure to call OnInitTask() only one time
         /// </summary>
         /// <param name="stateMachine"></param>
-        public void InitializeTask(InspectorStateMachineComponent stateMachine)
+        public void InitializeTask(IStateMachine stateMachine)
         {
             if (isInitialized)
                 return;

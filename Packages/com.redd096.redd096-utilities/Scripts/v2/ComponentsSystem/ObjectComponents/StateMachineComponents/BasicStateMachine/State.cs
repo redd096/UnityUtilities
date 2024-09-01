@@ -4,8 +4,8 @@ namespace redd096.v2.ComponentsSystem
 {
     public abstract class State
     {
-        private BasicStateMachineComponent _stateMachine;
-        public BasicStateMachineComponent StateMachine { get => _stateMachine; set => _stateMachine = value; }
+        private IStateMachine _stateMachine;
+        public IStateMachine StateMachine { get => _stateMachine; set => _stateMachine = value; }
         private bool _isActive;
         public bool IsActive { get => _isActive; set => _isActive = value; }
 
@@ -23,9 +23,9 @@ namespace redd096.v2.ComponentsSystem
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        protected T GetStateMachine<T>() where T : BasicStateMachineComponent
+        protected T GetStateMachine<T>() where T : IStateMachine
         {
-            return _stateMachine as T;
+            return (T)_stateMachine;
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace redd096.v2.ComponentsSystem
         /// Called by StateMachine, to set owner and to be sure to call OnInit() only one time
         /// </summary>
         /// <param name="stateMachine"></param>
-        public void Initialize(BasicStateMachineComponent stateMachine)
+        public void Initialize(IStateMachine stateMachine)
         {
             if (isInitialized)
                 return;

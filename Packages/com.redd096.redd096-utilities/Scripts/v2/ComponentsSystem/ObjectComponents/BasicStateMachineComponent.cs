@@ -6,7 +6,7 @@ namespace redd096.v2.ComponentsSystem
     /// <summary>
     /// Create a state machine from this class
     /// </summary>
-    public class BasicStateMachineComponent : IComponentRD, IBlackboard
+    public class BasicStateMachineComponent : IStateMachine
     {
         public IGameObjectRD Owner { get; set; }
 
