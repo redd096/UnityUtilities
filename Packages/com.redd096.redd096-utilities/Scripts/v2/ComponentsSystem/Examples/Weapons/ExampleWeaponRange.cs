@@ -7,7 +7,7 @@ namespace redd096.v2.ComponentsSystem.Example
     /// Attach this script to your weapon prefab, to have a weapon you can use with WeaponsComponent
     /// </summary>
     [AddComponentMenu("redd096/v2/ComponentsSystem/Examples/Example WeaponRange")]
-    public class WeaponRange : MonoBehaviour, IWeapon
+    public class ExampleWeaponRange : MonoBehaviour, IWeapon
     {
         public ExampleWeaponRangeData data;
         public ExampleBulletData bulletData;
