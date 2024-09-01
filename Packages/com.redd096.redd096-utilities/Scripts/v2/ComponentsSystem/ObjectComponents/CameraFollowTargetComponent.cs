@@ -114,7 +114,14 @@ namespace redd096.v2.ComponentsSystem
             //move cam
             Vector3 cameraOffsetRotated = Quaternion.AngleAxis(cam.eulerAngles.y, Vector3.up) * cameraOffset;
             cam.position = objectToFollow.position + cameraOffsetRotated;
+        }
 
+        /// <summary>
+        /// Tell camera to moves by following object and rotate to direction, but use X as right and Y as forward
+        /// </summary>
+        public void UpdateCameraPositionAndRotationInDirectionByInput3D(Vector2 camDirection)
+        {
+            UpdateCameraPositionAndRotationInDirection(new Vector3(camDirection.x, 0, camDirection.y));
         }
     }
 }
