@@ -9,7 +9,7 @@ namespace redd096.Examples.ComponentsSystem
     [AddComponentMenu("redd096/Examples/ComponentsSystem/Player/Example InteractByInput Action")]
     public class ExampleInteractByInputAction : ActionTask
     {
-        PlayerPawn player;
+        SimplePlayerPawn player;
         InteractComponentRadius interactComponent;
         ExampleInputManager inputManager;
 
