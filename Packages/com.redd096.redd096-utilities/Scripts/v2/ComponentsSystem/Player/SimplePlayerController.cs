@@ -6,11 +6,11 @@ namespace redd096.v2.ComponentsSystem
     /// Generally you want to calculate inputs inside InputManager attached to this same GameObject, because this is always instantiate for every player, even online. 
     /// Then your Pawn in scene will read the inputs. Or in a multiplayer online, your pawn on the server will read inputs and syncronize position, rotation, etc... with client
     /// </summary>
-    public abstract class PlayerController : MonoBehaviour
+    public abstract class SimplePlayerController : MonoBehaviour
     {
         //pawn
-        private PlayerPawn _currentPawn;
-        public PlayerPawn CurrentPawn => _currentPawn;
+        private SimplePlayerPawn _currentPawn;
+        public SimplePlayerPawn CurrentPawn => _currentPawn;
 
         protected virtual void Awake()
         {
@@ -23,7 +23,7 @@ namespace redd096.v2.ComponentsSystem
         /// Possess pawn - if already possessing a pawn, it will be unpossessed
         /// </summary>
         /// <param name="pawn"></param>
-        public virtual void Possess(PlayerPawn pawn)
+        public virtual void Possess(SimplePlayerPawn pawn)
         {
             //if this controller has already a pawn, unpossess it
             Unpossess();

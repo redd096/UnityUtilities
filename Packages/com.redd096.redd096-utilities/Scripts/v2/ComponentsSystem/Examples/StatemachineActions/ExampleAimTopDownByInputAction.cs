@@ -12,7 +12,7 @@ namespace redd096.v2.ComponentsSystem.Example
         [SerializeField] Camera cam = default;
         [SerializeField] bool resetWhenReleaseAnalogInput = false;
 
-        PlayerPawn player;
+        SimplePlayerPawn player;
         TopDownAimComponent aimComponent;
         ExampleInputManager inputManager;
 

@@ -11,8 +11,8 @@ namespace redd096.v2.ComponentsSystem.Example
         private void Awake()
         {
             //get player controllers and pawns in scene
-            PlayerController[] playerControllers = FindObjectsByType<PlayerController>(FindObjectsInactive.Include, FindObjectsSortMode.InstanceID);
-            PlayerPawn[] pawns = FindObjectsByType<PlayerPawn>(FindObjectsInactive.Include, FindObjectsSortMode.InstanceID);
+            SimplePlayerController[] playerControllers = FindObjectsByType<SimplePlayerController>(FindObjectsInactive.Include, FindObjectsSortMode.InstanceID);
+            SimplePlayerPawn[] pawns = FindObjectsByType<SimplePlayerPawn>(FindObjectsInactive.Include, FindObjectsSortMode.InstanceID);
 
             //foreach player controller
             foreach (var playerController in playerControllers)

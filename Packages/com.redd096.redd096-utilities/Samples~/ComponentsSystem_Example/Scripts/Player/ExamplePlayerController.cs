@@ -8,7 +8,7 @@ namespace redd096.Examples.ComponentsSystem
     /// Then your Pawn in scene will read the inputs. Or in a multiplayer online, your pawn on the server will read inputs and syncronize position, rotation, etc... with client
     /// </summary>
     [AddComponentMenu("redd096/Examples/ComponentsSystem/Player/Example Player Controller")]
-    public class ExamplePlayerController : PlayerController
+    public class ExamplePlayerController : SimplePlayerController
     {
     }
 }

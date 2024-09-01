@@ -7,7 +7,7 @@ namespace redd096.Examples.ComponentsSystem
     /// This is a PlayerPawn with every component
     /// </summary>
     [AddComponentMenu("redd096/Examples/ComponentsSystem/Player/Example Player")]
-    public class ExamplePlayer : PlayerPawn, IGameObjectRD
+    public class ExamplePlayer : SimplePlayerPawn, IGameObjectRD
     {
         //declare every component, and add in SetComponents
         [SerializeField] InspectorStateMachineComponent stateMachineComponent;
