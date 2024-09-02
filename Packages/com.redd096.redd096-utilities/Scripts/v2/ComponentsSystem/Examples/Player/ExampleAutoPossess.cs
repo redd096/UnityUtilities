@@ -45,6 +45,10 @@ namespace redd096.v2.ComponentsSystem.Example
 
         GameObject gameObject;
 
+        /// <summary>
+        /// Normally I call this function from a LevelManager with [DefaultExecutionOrder(-10)], so I'm sure it's called before everything in game but not before InputSystem that is at -100
+        /// </summary>
+        /// <param name="gameObject"></param>
         public void Init(GameObject gameObject)
         {
             this.gameObject = gameObject;
@@ -71,7 +75,7 @@ namespace redd096.v2.ComponentsSystem.Example
         void PossessPawns(SimplePlayerController[] controllers)
         {
             //be sure there are pawns to possess
-            if (pawnsInOrderByPlayerIndex == null)
+            if (pawnsInOrderByPlayerIndex == null || pawnsInOrderByPlayerIndex.Length == 0)
             {
                 Debug.LogError($"Pawns are null in {gameObject.name} - we use FindObjectsOfType to get them", gameObject);
                 pawnsInOrderByPlayerIndex = Object.FindObjectsByType<SimplePlayerPawn>(FindObjectsInactive.Include, FindObjectsSortMode.InstanceID);
