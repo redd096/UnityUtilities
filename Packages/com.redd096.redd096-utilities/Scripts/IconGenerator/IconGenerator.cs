@@ -20,7 +20,8 @@ namespace redd096.IconGenerator
         [Header("Selected Prefabs")]
         [Tooltip("IconGenerator will generate icons from these prefabs / objects")][SerializeField] GameObject[] prefabs;
         [Tooltip("Use these names instead of prefab name")][SerializeField] FPrefabName[] overwriteNames;
-        [Tooltip("These images will be applied to EVERY icon generated. Higher index = on top")][SerializeField] Sprite[] overlays;
+        [Tooltip("These images will be applied behind EVERY icon generated. Higher index = on top")][SerializeField] Sprite[] backgrounds;
+        [Tooltip("These images will be applied on top of EVERY icon generated. Higher index = on top")][SerializeField] Sprite[] overlays;
 
         [Header("Directory path inside this project Assets/ folder")]
         [SerializeField] string directoryPath = "Icons";
@@ -30,6 +31,7 @@ namespace redd096.IconGenerator
         [Tooltip("In the icon, replace every pixel with this color")][SerializeField] Color defaultBackgroundColor = new Color(0.3215686f, 0.3215686f, 0.3215686f, 1f);
         [Tooltip("This is the color to use for the icon background")][SerializeField] Color newColorForBackground;
 
+        private List<Texture2D> backgroundIcons = new List<Texture2D>();
         private List<Texture2D> overlayIcons = new List<Texture2D>();
         string path;
 
@@ -49,33 +51,32 @@ namespace redd096.IconGenerator
                 Directory.CreateDirectory(path);
 
             //get overlays and generate icons
-            await GetOverlayTextures();
+            await GetTexturesFromSprites(backgrounds, backgroundIcons);
+            await GetTexturesFromSprites(overlays, overlayIcons);
             await GeneratePrefabsIcons();
         }
 
-        private async Task GetOverlayTextures()
+        private async Task GetTexturesFromSprites(Sprite[] sprites, List<Texture2D> result)
         {
 #if UNITY_EDITOR
-            for (int i = 0; i < overlays.Length; i++)
+            if (result == null)
+                result = new List<Texture2D>();
+
+            for (int i = 0; i < sprites.Length; i++)
             {
-                if (overlays[i] == null)
+                if (sprites[i] == null)
                     continue;
 
-                string overlayPath = AssetDatabase.GetAssetPath(overlays[i]);
-                byte[] fileData = File.ReadAllBytes(overlayPath);
+                string filePath = AssetDatabase.GetAssetPath(sprites[i]);
+                byte[] fileData = File.ReadAllBytes(filePath);
                 Texture2D tex = new Texture2D(2, 2);
                 tex.LoadImage(fileData);
                 if (tex.height != 128)
                     TextureScale.Point(tex, 128, 128);
 
-                //Debug.Log("Processing overlay: " + overlayIcons.Count.ToString());
-                overlayIcons.Add(tex);
+                result.Add(tex);
 
-                //Only uncomment these lines, if you know what you are doing. All overlays will be exported to a folder.
-                //byte[] bytes = tex.EncodeToPNG();
-                //File.WriteAllBytes(Application.dataPath + "/" + "debug" + "/" + overlays[i].name + ".png", bytes);
-
-                EditorUtility.DisplayProgressBar("Read overlays", $"Reading... {i}/{overlays.Length}", (float)i / overlays.Length);
+                EditorUtility.DisplayProgressBar("Read sprites", $"Reading... {i}/{sprites.Length}", (float)i / sprites.Length);
                 if (i % 20 == 0)
                     await Task.Delay((int)(Time.deltaTime * 1000));
             }
@@ -112,7 +113,8 @@ namespace redd096.IconGenerator
                 if (replaceBackgroundColor)
                     IconHelper.ReplaceColor(icon, defaultBackgroundColor, newColorForBackground);
 
-                //apply overlays
+                //apply backgrounds and overlays
+                icon = IconHelper.ApplyBackgroundsToTexture(icon, backgroundIcons);
                 icon = IconHelper.ApplyOverlaysToTexture(icon, overlayIcons);
 
                 //create texture in project
