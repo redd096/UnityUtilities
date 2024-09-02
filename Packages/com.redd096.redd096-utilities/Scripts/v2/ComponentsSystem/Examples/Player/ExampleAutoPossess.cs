@@ -84,10 +84,24 @@ namespace redd096.v2.ComponentsSystem.Example
                 int index = controller.GetComponent<UnityEngine.InputSystem.PlayerInput>().playerIndex;
 #else
                 int index = 0;
+                for (int i = 0; i < pawnsInOrderByPlayerIndex.Length; i++)
+                {
+                    if (pawnsInOrderByPlayerIndex[i].CurrentController == null)
+                    {
+                        index = i;
+                        break;
+                    }
+
+                    if (controller.CurrentPawn == null)
+                    {
+                        Debug.LogError($"No more pawns to possess. {controller.name} is still without a pawn", gameObject);
+                        continue;
+                    }
+                }
 #endif
                 if (index >= 0 && index < pawnsInOrderByPlayerIndex.Length)
                 {
-                    SimplePlayerPawn pawn = pawnsInOrderByPlayerIndex[index];
+                    var pawn = pawnsInOrderByPlayerIndex[index];
                     if (pawn != null && pawn.CurrentController == null)
                     {
                         pawn.gameObject.SetActive(true);
