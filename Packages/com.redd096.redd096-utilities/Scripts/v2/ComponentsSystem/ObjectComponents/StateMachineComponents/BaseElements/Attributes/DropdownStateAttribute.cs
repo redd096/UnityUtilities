@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using redd096.Attributes.AttributesEditorUtility;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -12,6 +13,7 @@ namespace redd096.v2.ComponentsSystem
     [CustomPropertyDrawer(typeof(DropdownStateAttribute))]
     public class DropdownStateDrawer : PropertyDrawer
     {
+        const string StatesPropertyName = "States";
         string[] statesNames;
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
@@ -42,28 +44,30 @@ namespace redd096.v2.ComponentsSystem
 
         void GetStates(SerializedProperty property)
         {
-            //get owner of the property
-            var stateMachine = ((IGameObjectRD)property.serializedObject.targetObject).GetComponentRD<InspectorStateMachineComponent>();
+            //get statemachine from this target object, or from owner
+            IStateMachine stateMachine = (IStateMachine)property.serializedObject.targetObject;
+            if (stateMachine == null)
+                stateMachine = ((IGameObjectRD)property.serializedObject.targetObject).GetComponentRD<IStateMachine>();
+
+            //get states list
+            InspectorState[] states = null;
             if (stateMachine != null)
+                states = (InspectorState[])stateMachine.GetValue(StatesPropertyName);
+
+            //set arrays for dropdown
+            if (states != null && states.Length > 0)
             {
-                //get states in statemachine
-                InspectorState[] states = stateMachine.States;
+                statesNames = new string[states.Length + 1];
 
-                //set arrays for dropdown
-                if (states != null && states.Length > 0)
+                //set NONE as first state
+                statesNames[0] = "NONE";
+
+                for (int i = 0; i < states.Length; i++)
                 {
-                    statesNames = new string[states.Length + 1];
-
-                    //set NONE as first state
-                    statesNames[0] = "NONE";
-
-                    for (int i = 0; i < states.Length; i++)
-                    {
-                        statesNames[i + 1] = states[i].StateName;
-                    }
-
-                    return;
+                    statesNames[i + 1] = states[i].StateName;
                 }
+
+                return;
             }
 
             //if there are no states, set NONE as unique name

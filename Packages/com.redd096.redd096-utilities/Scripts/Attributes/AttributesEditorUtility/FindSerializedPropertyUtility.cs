@@ -28,9 +28,22 @@ namespace redd096.Attributes.AttributesEditorUtility
         /// </summary>
         /// <param name="property"></param>
         /// <returns></returns>
-        public static object GetTargetObjectOfProperty(SerializedProperty property)
+        public static object GetTargetObjectOfProperty(this SerializedProperty property)
         {
             return GetTargetObjectFromProperty_Internal(property, true);
+        }
+
+        /// <summary>
+        /// Gets the object that the property is a member of. Use the index if you want the object above the object, and so on... 
+        /// For example: the path is StateMachine.States[5].Transition[6].StateName. The property is StateName, the TargetObject with index 0 is Transition[6], with index 1 is States[5] and with index 2 is StateMachine
+        /// </summary>
+        /// <param name="property"></param>
+        /// <param name="indexFromProperty">Default is index 0</param>
+        /// <param name="returnArrayInsteadOfTheMemberInsideIt">In the example above, with index 0 instead of return the single element Transition[6], return the entire array Transition[]</param>
+        /// <returns></returns>
+        public static object GetTargetObjectWithProperty(this SerializedProperty property, int indexFromProperty, bool returnArrayInsteadOfTheMemberInsideIt)
+        {
+            return GetTargetObjectFromPropertyAdvanced_Internal(property, indexFromProperty, returnArrayInsteadOfTheMemberInsideIt);
         }
 
         private static object GetTargetObjectFromProperty_Internal(SerializedProperty property, bool getObjectPropertyRepresents)
@@ -42,11 +55,49 @@ namespace redd096.Attributes.AttributesEditorUtility
             object obj = property.serializedObject.targetObject;
             string[] elements = path.Split('.');
 
-            for (int i = 0; i < elements.Length - (getObjectPropertyRepresents ? 0 : 1); i++)
+            int count = elements.Length - (getObjectPropertyRepresents ? 0 : 1);
+            for (int i = 0; i < count; i++)
             {
                 string element = elements[i];
                 if (element.Contains("["))
                 {
+                    string elementName = element.Substring(0, element.IndexOf("["));
+                    int index = Convert.ToInt32(element.Substring(element.IndexOf("[")).Replace("[", "").Replace("]", ""));
+                    obj = GetValue_Imp(obj, elementName, index);
+                }
+                else
+                {
+                    obj = GetValue_Imp(obj, element);
+                }
+            }
+
+            return obj;
+        }
+
+        private static object GetTargetObjectFromPropertyAdvanced_Internal(SerializedProperty property, int indexFromProperty, bool returnArrayInsteadOfTheMemberInsideIt)
+        {
+            if (property == null)
+                return null;
+
+            string path = property.propertyPath.Replace(".Array.data[", "[");
+            object obj = property.serializedObject.targetObject;
+            string[] elements = path.Split('.');
+
+            int count = elements.Length - 1;
+            count -= indexFromProperty;
+            for (int i = 0; i < count; i++)
+            {
+                string element = elements[i];
+                if (element.Contains("["))
+                {
+                    //if this is the last element, return the entire array
+                    if (returnArrayInsteadOfTheMemberInsideIt && i == count - 1)
+                    {
+                        string s = element.Remove(element.IndexOf("["));
+                        obj = GetValue_Imp(obj, s);
+                        continue;
+                    }
+
                     string elementName = element.Substring(0, element.IndexOf("["));
                     int index = Convert.ToInt32(element.Substring(element.IndexOf("[")).Replace("[", "").Replace("]", ""));
                     obj = GetValue_Imp(obj, elementName, index);

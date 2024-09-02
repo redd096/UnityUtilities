@@ -1,4 +1,6 @@
 using UnityEngine;
+using System.Collections.Generic;
+using redd096.Attributes.AttributesEditorUtility;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -12,6 +14,8 @@ namespace redd096.v2.ComponentsSystem
     [CustomPropertyDrawer(typeof(OnStateNameChangedAttribute))]
     public class OnStateNameChangedDrawer : PropertyDrawer
     {
+        const string StatesPropertyName = "States";
+
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             //save previous value
@@ -24,13 +28,24 @@ namespace redd096.v2.ComponentsSystem
             //if changed something
             if (previousValue != newValue)
             {
-                var stateMachine = ((IGameObjectRD)property.serializedObject.targetObject).GetComponentRD<InspectorStateMachineComponent>();
+                //get statemachine from this target object, or from owner
+                IStateMachine stateMachine = (IStateMachine)property.serializedObject.targetObject;
+                if (stateMachine == null)
+                    stateMachine = ((IGameObjectRD)property.serializedObject.targetObject).GetComponentRD<IStateMachine>();
+
+                //get states list
+                IEnumerable<InspectorState> states = null;
+                if (stateMachine != null)
+                    states = (IEnumerable<InspectorState>)stateMachine.GetValue(StatesPropertyName);
 
                 //update every destination state in every transition
-                foreach (InspectorState state in stateMachine.States)
-                    foreach (Transition transition in state.Transitions)
-                        if (transition.DestinationState == previousValue)
-                            transition.DestinationState = newValue;
+                if (states != null)
+                {
+                    foreach (InspectorState state in states)
+                        foreach (Transition transition in state.Transitions)
+                            if (transition.DestinationState == previousValue)
+                                transition.DestinationState = newValue;
+                }
 
                 //update object (to update every destination state)
                 property.serializedObject.Update();
