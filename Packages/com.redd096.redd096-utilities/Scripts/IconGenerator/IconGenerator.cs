@@ -15,6 +15,8 @@ namespace redd096.IconGenerator
     [AddComponentMenu("redd096/IconGenerator/Icon Generator")]
     public class IconGenerator : MonoBehaviour
     {
+        [SerializeField] bool showLogWhenSaveIcon = true;
+
         [Header("Selected Prefabs")]
         [Tooltip("IconGenerator will generate icons from these prefabs / objects")][SerializeField] GameObject[] prefabs;
         [Tooltip("Use these names instead of prefab name")][SerializeField] FPrefabName[] overwriteNames;
@@ -118,7 +120,9 @@ namespace redd096.IconGenerator
                 byte[] bytes = icon.EncodeToPNG();
                 string iconPath = Path.Combine(path, iconName);
                 File.WriteAllBytes($"{iconPath}.png", bytes);
-                Debug.Log($"File saved in: {iconPath}.png");
+
+                if (showLogWhenSaveIcon)
+                    Debug.Log($"File saved in: {iconPath}.png");
 
                 EditorUtility.DisplayProgressBar("Generate icons", $"Generating... {i}/{prefabs.Length}", (float)i / prefabs.Length);
                 if (i % 20 == 0)
