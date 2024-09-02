@@ -235,6 +235,18 @@ namespace redd096.v2.ComponentsSystem
         }
 
         /// <summary>
+        /// Set movement in direction, but use X as right and Y as forward
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="rotation">Rotate input to use it from local to world space</param>
+        public void MoveByInput3D(Vector2 input, Quaternion rotation)
+        {
+            MoveDirectionInput = rotation * new Vector3(input.x, 0, input.y);
+            MoveDirectionInput = MoveDirectionInput.normalized;
+            desiredVelocity = MoveDirectionInput * inputSpeed;
+        }
+
+        /// <summary>
         /// Set movement in direction using custom speed
         /// </summary>
         /// <param name="direction"></param>
@@ -266,6 +278,18 @@ namespace redd096.v2.ComponentsSystem
         public void MoveByInput3D(Vector2 input, float customSpeed, bool castToLocal = true)
         {
             MoveDirectionInput = castToLocal ? Owner.transform.TransformDirection(input.x, 0, input.y) : new Vector3(input.x, 0, input.y);
+            MoveDirectionInput = MoveDirectionInput.normalized;
+            desiredVelocity = MoveDirectionInput * customSpeed;
+        }
+
+        /// <summary>
+        /// Set movement in direction, but use X as right and Y as forward
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="rotation">Rotate input to use it from local to world space</param>
+        public void MoveByInput3D(Vector2 input, float customSpeed, Quaternion rotation)
+        {
+            MoveDirectionInput = rotation * new Vector3(input.x, 0, input.y);
             MoveDirectionInput = MoveDirectionInput.normalized;
             desiredVelocity = MoveDirectionInput * customSpeed;
         }

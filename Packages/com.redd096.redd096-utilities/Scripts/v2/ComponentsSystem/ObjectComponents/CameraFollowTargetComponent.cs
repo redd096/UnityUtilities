@@ -57,7 +57,7 @@ namespace redd096.v2.ComponentsSystem
         {
             Transform cameraParent = new GameObject(cameraParentName).transform;
             cameraParent.SetParent(cam.parent);             //set same parent (if camera was child of something)
-            cameraParent.localPosition = Vector3.zero;      //set start local position
+            cameraParent.position = cam.position;           //set start position
             cam.SetParent(cameraParent);                    //set camera parent
 
             //move camera parent instead of camera
@@ -69,7 +69,7 @@ namespace redd096.v2.ComponentsSystem
         /// </summary>
         public void RecalculateOffset()
         {
-            cameraOffset = cam.position - objectToFollow.transform.position;
+        cameraOffset = cam.position - objectToFollow.position;
         }
 
         /// <summary>
