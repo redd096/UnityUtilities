@@ -15,24 +15,24 @@ namespace redd096.IconGenerator
     [AddComponentMenu("redd096/IconGenerator/Icon Generator")]
     public class IconGenerator : MonoBehaviour
     {
-        [Header("Prefabs")]
-        [Tooltip("IconGenerator will generate icons from these prefabs / objects")] [SerializeField] GameObject[] prefabs;
-        [Tooltip("Use these names instead of prefab name")] [SerializeField] FPrefabName[] overwriteNames;
-        [Tooltip("These images will be applied to EVERY icon generated. Higher index = on top")] [SerializeField] Sprite[] overlays;
+        [Header("Selected Prefabs")]
+        [Tooltip("IconGenerator will generate icons from these prefabs / objects")][SerializeField] GameObject[] prefabs;
+        [Tooltip("Use these names instead of prefab name")][SerializeField] FPrefabName[] overwriteNames;
+        [Tooltip("These images will be applied to EVERY icon generated. Higher index = on top")][SerializeField] Sprite[] overlays;
 
         [Header("Directory path inside this project Assets/ folder")]
         [SerializeField] string directoryPath = "Icons";
 
         [Header("Background")]
         [SerializeField] bool replaceBackgroundColor = false;
-        [Tooltip("In the icon, replace every pixel with this color")][SerializeField] Color defaultBackgroundColor;
+        [Tooltip("In the icon, replace every pixel with this color")][SerializeField] Color defaultBackgroundColor = new Color(0.3215686f, 0.3215686f, 0.3215686f, 1f);
         [Tooltip("This is the color to use for the icon background")][SerializeField] Color newColorForBackground;
 
         private List<Texture2D> overlayIcons = new List<Texture2D>();
         string path;
 
         [Button]
-        void GenerateIcons()
+        private async void GenerateIcons()
         {
             //be sure there are prefabs
             if (prefabs == null || prefabs.Length <= 0)
@@ -47,13 +47,13 @@ namespace redd096.IconGenerator
                 Directory.CreateDirectory(path);
 
             //get overlays and generate icons
-            GetOverlayTextures();
-            GeneratePrefabsIcons();
-
+            await GetOverlayTextures();
+            await GeneratePrefabsIcons();
         }
 
-        private async void GetOverlayTextures()
+        private async Task GetOverlayTextures()
         {
+#if UNITY_EDITOR
             for (int i = 0; i < overlays.Length; i++)
             {
                 if (overlays[i] == null)
@@ -79,10 +79,12 @@ namespace redd096.IconGenerator
             }
 
             EditorUtility.ClearProgressBar();
+#endif
         }
 
-        private async void GeneratePrefabsIcons()
+        private async Task GeneratePrefabsIcons()
         {
+#if UNITY_EDITOR
             for (int i = 0; i < prefabs.Length; i++)
             {
                 GameObject prefab = prefabs[i];
@@ -104,12 +106,12 @@ namespace redd096.IconGenerator
                     return;
                 }
 
-                //apply overlays
-                icon = IconHelper.ApplyOverlaysToTexture(icon, overlayIcons);
-
                 //replace background color
                 if (replaceBackgroundColor)
                     IconHelper.ReplaceColor(icon, defaultBackgroundColor, newColorForBackground);
+
+                //apply overlays
+                icon = IconHelper.ApplyOverlaysToTexture(icon, overlayIcons);
 
                 //create texture in project
                 //TextureScale.Point(icon, 512, 512); // Used for rescaling the final icon
@@ -125,6 +127,7 @@ namespace redd096.IconGenerator
 
             EditorUtility.ClearProgressBar();
             AssetDatabase.Refresh();
+#endif
         }
 
         string GetPrefabName(GameObject prefab, int prefabIndex)

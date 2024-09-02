@@ -56,7 +56,9 @@ namespace redd096.IconGenerator
             {
                 for (int y = 0; y < texture.height; y++)
                 {
-                    if (texture.GetPixel(x, y) == colorToReplace)
+                    Color pixelColor = texture.GetPixel(x, y);
+                    if (pixelColor == colorToReplace)
+                    //if (Mathf.Approximately(pixelColor.r, colorToReplace.r) && Mathf.Approximately(pixelColor.g, colorToReplace.g) && Mathf.Approximately(pixelColor.b, colorToReplace.b))
                     {
                         texture.SetPixel(x, y, newColor);
                     }
