@@ -2049,7 +2049,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stateMachineComponent:
     setFirstStateOnStart: 1
-    States:
+    states:
     - StateName: NormalState
       Actions:
       - {fileID: 602099394}
