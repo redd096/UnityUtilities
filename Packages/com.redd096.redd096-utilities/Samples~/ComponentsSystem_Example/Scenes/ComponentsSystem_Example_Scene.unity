@@ -2056,16 +2056,17 @@ MonoBehaviour:
       - {fileID: 602099396}
       Transitions: []
   movementComponent:
-    inputSpeed: 5
-    maxSpeed: 50
-    rb:
-      use3d: 0
+    wrap:
+      componentToWrap: 2
+      ch: {fileID: 0}
       rb3d: {fileID: 0}
       rb2d: {fileID: 0}
-    useAlsoIn2dGravityAndPreventSlide: 0
-    maxSlopeAngle: 45
+    inputSpeed: 5
+    maxSpeed: 50
+    rigidbodyUseGravityAndPreventSlide: 0
+    rigidbodyMaxSlopeAngle: 45
     dragBasedOnVelocity: 1
-    useCustomDrag: 0
+    rigidbodyUseCustomDrag: 0
     customDrag: 5
   interactComponent:
     findInteractablesIn3D: 0

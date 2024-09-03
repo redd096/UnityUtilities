@@ -19,7 +19,7 @@ namespace redd096.v2.ComponentsSystem.Example
             //get references
             if (player == null && TryGetStateMachineUnityComponent(out player) == false)
                 Debug.LogError($"Missing PlayerPawn on {name}", gameObject);
-            if (movementComponent == null && TryGetOwnerComponent(out movementComponent) == false)
+            if (movementComponent == null && TryGetStateMachineComponentRD(out movementComponent) == false)
                 Debug.LogError($"Missing MovementComponent2D on {name}", gameObject);
         }
 
