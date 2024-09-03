@@ -11,6 +11,37 @@ namespace redd096.v2.ComponentsSystem
         /// </summary>
         public System.Action onCompleteTask { get; set; }
 
+        #region statemachine functions
+
+        /// <summary>
+        /// Called by StateMachine, to be sure the task is active before call OnUpdateTask()
+        /// </summary>
+        public void UpdateTask()
+        {
+            if (IsTaskActive)
+                OnUpdateTask();
+        }
+
+        /// <summary>
+        /// Called by StateMachine, to be sure the task is active before call OnFixedUpdateTask()
+        /// </summary>
+        public void FixedUpdateTask()
+        {
+            if (IsTaskActive)
+                OnFixedUpdateTask();
+        }
+
+        /// <summary>
+        /// Called by StateMachine, to be sure the task is active before call OnLateUpdateTask()
+        /// </summary>
+        public void LateUpdateTask()
+        {
+            if (IsTaskActive)
+                OnLateUpdateTask();
+        }
+
+        #endregion
+
         /// <summary>
         /// Called every frame when inside this task
         /// </summary>

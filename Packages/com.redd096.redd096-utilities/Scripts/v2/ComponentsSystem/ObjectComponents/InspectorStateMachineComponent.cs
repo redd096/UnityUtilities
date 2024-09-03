@@ -232,11 +232,11 @@ namespace redd096.v2.ComponentsSystem
                 if (currentState.Actions[i] != null)
                 {
                     if (updateTask == EUpdateTask.Update)
-                        currentState.Actions[i].OnUpdateTask();
+                        currentState.Actions[i].UpdateTask();
                     else if (updateTask == EUpdateTask.FixedUpdate)
-                        currentState.Actions[i].OnFixedUpdateTask();
+                        currentState.Actions[i].FixedUpdateTask();
                     else if (updateTask == EUpdateTask.LateUpdate)
-                        currentState.Actions[i].OnLateUpdateTask();
+                        currentState.Actions[i].LateUpdateTask();
                 }
             }
         }
@@ -275,7 +275,7 @@ namespace redd096.v2.ComponentsSystem
                 if (transition.Conditions[i] != null)
                 {
                     //if anyone is false, return false
-                    if (transition.Conditions[i].OnCheckTask() == false)
+                    if (transition.Conditions[i].CheckTask() == false)
                         return false;
                 }
             }
@@ -294,7 +294,7 @@ namespace redd096.v2.ComponentsSystem
                 if (transition.Conditions[i] != null)
                 {
                     //if anyone is true, return true
-                    if (transition.Conditions[i].OnCheckTask())
+                    if (transition.Conditions[i].CheckTask())
                         return true;
                 }
             }
