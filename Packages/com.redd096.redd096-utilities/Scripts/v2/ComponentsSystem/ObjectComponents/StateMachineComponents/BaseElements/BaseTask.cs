@@ -35,7 +35,7 @@ namespace redd096.v2.ComponentsSystem
         }
 
         /// <summary>
-        /// Get unity component in stateMachine or its parent. If not found, show warning
+        /// Get unity component in stateMachine or its parents. If not found, show warning
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="showWarningIfNotFound"></param>
@@ -53,7 +53,7 @@ namespace redd096.v2.ComponentsSystem
         }
 
         /// <summary>
-        /// Try get unity component in stateMachine or its parent
+        /// Try get unity component in stateMachine or its parents
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="foundComponent"></param>
@@ -66,12 +66,12 @@ namespace redd096.v2.ComponentsSystem
         }
 
         /// <summary>
-        /// Get component in stateMachine's owner. If not found, show warning
+        /// Get IComponentRD in stateMachine's owner. If not found, show warning
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="showWarningIfNotFound"></param>
         /// <returns></returns>
-        protected T GetOwnerComponent<T>(bool showWarningIfNotFound = true)
+        protected T GetStateMachineComponentRD<T>(bool showWarningIfNotFound = true)
         {
             //get in owner
             T component = _stateMachineComponentRD != null ? _stateMachineComponentRD.Owner.GetComponentRD<T>() : default;
@@ -84,12 +84,12 @@ namespace redd096.v2.ComponentsSystem
         }
 
         /// <summary>
-        /// Try get component in stateMachine's owner
+        /// Try get IComponentRD in stateMachine's owner
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="foundComponent"></param>
         /// <returns></returns>
-        protected bool TryGetOwnerComponent<T>(out T foundComponent)
+        protected bool TryGetStateMachineComponentRD<T>(out T foundComponent)
         {
             //get in owner
             foundComponent = _stateMachineComponentRD != null ? _stateMachineComponentRD.Owner.GetComponentRD<T>() : default;
