@@ -6,16 +6,17 @@ namespace redd096.v2.ComponentsSystem
     /// <summary>
     /// Create a state machine from this class
     /// </summary>
-    public class BasicStateMachineComponent : IStateMachine, IComponentRD
+    public class BasicStateMachineComponent : IStateMachineBasic, IComponentRD
     {
+        //statemachine vars
         public IGameObjectRD Owner { get; set; }
         public Transform transform => Owner?.transform;
+        public State CurrentState { get; set; }
 
         protected string currentStateDebug;
 
-        protected State currentState = default;
 
-        //blackboard to save vars to use in differents states
+        //blackboard to save vars to use in differents states (key: variable name, value: variable value)
         public Dictionary<string, object> blackboard { get; set; } = new Dictionary<string, object>();
         public List<string> blackboardDebug { get; set; } = new List<string>();
 
@@ -25,57 +26,66 @@ namespace redd096.v2.ComponentsSystem
 
         public virtual void UpdateRD()
         {
-            if (currentState != null)
+            if (CurrentState != null)
             {
                 //update state
-                currentState.Update();
+                CurrentState.Update();
             }
         }
 
         public virtual void FixedUpdateRD()
         {
-            if (currentState != null)
+            if (CurrentState != null)
             {
                 //fixed update state
-                currentState.FixedUpdate();
+                CurrentState.FixedUpdate();
             }
         }
 
         public virtual void LateUpdateRD()
         {
-            if (currentState != null)
+            if (CurrentState != null)
             {
                 //late update state
-                currentState.LateUpdate();
+                CurrentState.LateUpdate();
             }
         }
 
         #region public API
 
         /// <summary>
-        /// Call it to change state
+        /// Exit from previous state and enter in new one
         /// </summary>
+        /// <param name="stateToSet"></param>
         public virtual void SetState(State stateToSet)
         {
             //exit from previous state
-            if (currentState != null)
+            if (CurrentState != null)
             {
-                currentState.Exit();
+                CurrentState.Exit();
             }
 
             //set new state
-            currentState = stateToSet;
-            if (Application.isEditor) currentStateDebug = currentState != null ? currentState.ToString() : "";
+            CurrentState = stateToSet;
+            if (Application.isEditor) currentStateDebug = CurrentState != null ? CurrentState.ToString() : "";
 
             //enter in new state
-            if (currentState != null)
+            if (CurrentState != null)
             {
-                currentState.Initialize(this);
-                currentState.Enter();
+                CurrentState.Initialize(this);
+                CurrentState.Enter();
             }
 
             //call event
-            onSetState?.Invoke(currentState);
+            onSetState?.Invoke(CurrentState);
+        }
+
+        /// <summary>
+        /// Set state as Null
+        /// </summary>
+        public void SetNullState()
+        {
+            SetState(null);
         }
 
         /// <summary>
@@ -85,7 +95,7 @@ namespace redd096.v2.ComponentsSystem
         /// <returns></returns>
         public T GetCurrentState<T>() where T : State
         {
-            return currentState as T;
+            return CurrentState as T;
         }
 
         #endregion

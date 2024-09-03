@@ -8,15 +8,16 @@ namespace redd096.v2.ComponentsSystem
     /// If you think at this as the Animator: every box is a State, every StateMachineBehaviour is an Action to add to the State, every arrow is a Transition from the State to another State
     /// </summary>
     [System.Serializable]
-    public class InspectorStateMachineComponent : IStateMachine, IComponentRD
+    public class InspectorStateMachineComponent : IStateMachineInspector, IComponentRD
     {
         [SerializeField] bool setFirstStateOnStart = true;
-        public InspectorState[] States = default;
+        [SerializeField] InspectorState[] states = default;
 
+        //statemachine vars
         public IGameObjectRD Owner { get; set; }
         public Transform transform => Owner?.transform;
-
-        protected InspectorState currentState = default;
+        public InspectorState[] States { get => states; set => states = value; }
+        public InspectorState CurrentState { get; set; }
 
         //blackboard to save vars to use in differents tasks (key: variable name, value: variable value)
         public Dictionary<string, object> blackboard { get; set; } = new Dictionary<string, object>();
@@ -38,7 +39,7 @@ namespace redd096.v2.ComponentsSystem
 
         public virtual void UpdateRD()
         {
-            if (currentState != null)
+            if (CurrentState != null)
             {
                 //do every action
                 DoActions(EUpdateTask.Update);
@@ -50,7 +51,7 @@ namespace redd096.v2.ComponentsSystem
 
         public virtual void FixedUpdateRD()
         {
-            if (currentState != null)
+            if (CurrentState != null)
             {
                 //do every action fixed update
                 DoActions(EUpdateTask.FixedUpdate);
@@ -59,7 +60,7 @@ namespace redd096.v2.ComponentsSystem
 
         public virtual void LateUpdateRD()
         {
-            if (currentState != null)
+            if (CurrentState != null)
             {
                 //do every action fixed update
                 DoActions(EUpdateTask.LateUpdate);
@@ -69,42 +70,42 @@ namespace redd096.v2.ComponentsSystem
         #region public API
 
         /// <summary>
-        /// Exit from previous state and enter in new one
+        /// Exit from previous state and enter in new one by state index in States array
         /// </summary>
         /// <param name="nextState"></param>
         public virtual void SetState(int nextState)
         {
             //exit from previous state
-            if (currentState != null)
+            if (CurrentState != null)
             {
                 ExitState();
             }
 
             //set new state
-            currentState = nextState >= 0 && States != null && States.Length > nextState ? States[nextState] : null;
+            CurrentState = nextState >= 0 && states != null && states.Length > nextState ? states[nextState] : null;
 
             //enter in new state
-            if (currentState != null)
+            if (CurrentState != null)
             {
                 EnterState();
             }
 
             //call event
-            onSetState?.Invoke(currentState);
+            onSetState?.Invoke(CurrentState);
         }
 
         /// <summary>
-        /// Exit from previous state and enter in new one
+        /// Exit from previous state and enter in new one by state name
         /// </summary>
         /// <param name="nextState"></param>
         public virtual void SetState(string nextState)
         {
-            if (States != null)
+            if (states != null)
             {
                 //find state name and set it
-                for (int i = 0; i < States.Length; i++)
+                for (int i = 0; i < states.Length; i++)
                 {
-                    if (nextState.Equals(States[i].StateName))//, System.StringComparison.CurrentCultureIgnoreCase)
+                    if (nextState.Equals(states[i].StateName))//, System.StringComparison.CurrentCultureIgnoreCase)
                     {
                         SetState(i);
                         return;
@@ -117,7 +118,7 @@ namespace redd096.v2.ComponentsSystem
         }
 
         /// <summary>
-        /// Set state at Null
+        /// Set state as Null
         /// </summary>
         public void SetNullState()
         {
@@ -139,7 +140,16 @@ namespace redd096.v2.ComponentsSystem
         /// <returns></returns>
         public T GetCurrentState<T>() where T : InspectorState
         {
-            return currentState as T;
+            return CurrentState as T;
+        }
+
+        /// <summary>
+        /// Return CurrentState name
+        /// </summary>
+        /// <returns></returns>
+        public string GetCurrentStateName()
+        {
+            return CurrentState != null ? CurrentState.StateName : null;
         }
 
         #endregion
@@ -223,39 +233,39 @@ namespace redd096.v2.ComponentsSystem
 
         void DoActions(EUpdateTask updateTask)
         {
-            if (currentState.Actions == null)
+            if (CurrentState.Actions == null)
                 return;
 
             //do every action
-            for (int i = 0; i < currentState.Actions.Length; i++)
+            for (int i = 0; i < CurrentState.Actions.Length; i++)
             {
-                if (currentState.Actions[i] != null)
+                if (CurrentState.Actions[i] != null)
                 {
                     if (updateTask == EUpdateTask.Update)
-                        currentState.Actions[i].UpdateTask();
+                        CurrentState.Actions[i].UpdateTask();
                     else if (updateTask == EUpdateTask.FixedUpdate)
-                        currentState.Actions[i].FixedUpdateTask();
+                        CurrentState.Actions[i].FixedUpdateTask();
                     else if (updateTask == EUpdateTask.LateUpdate)
-                        currentState.Actions[i].LateUpdateTask();
+                        CurrentState.Actions[i].LateUpdateTask();
                 }
             }
         }
 
         void CheckTransitions()
         {
-            if (currentState.Transitions == null)
+            if (CurrentState.Transitions == null)
                 return;
 
             //check every transition
-            for (int i = 0; i < currentState.Transitions.Length; i++)
+            for (int i = 0; i < CurrentState.Transitions.Length; i++)
             {
-                if (currentState.Transitions[i] != null)
+                if (CurrentState.Transitions[i] != null)
                 {
                     //if conditions return true, set new state
-                    if ((currentState.Transitions[i].TransitionCheck == ETransitionCheck.AllTrueRequired && CheckConditionsEVERY(currentState.Transitions[i]))
-                        || (currentState.Transitions[i].TransitionCheck == ETransitionCheck.AnyTrueSuffice && CheckConditionsANY(currentState.Transitions[i])))
+                    if ((CurrentState.Transitions[i].TransitionCheck == ETransitionCheck.AllTrueRequired && CheckConditionsEVERY(CurrentState.Transitions[i]))
+                        || (CurrentState.Transitions[i].TransitionCheck == ETransitionCheck.AnyTrueSuffice && CheckConditionsANY(CurrentState.Transitions[i])))
                     {
-                        SetState(currentState.Transitions[i].DestinationState);
+                        SetState(CurrentState.Transitions[i].DestinationState);
 
                         //break, because now is in another state
                         break;
@@ -305,16 +315,16 @@ namespace redd096.v2.ComponentsSystem
         void ExitState()
         {
             //exit from actions
-            if (currentState.Actions != null)
+            if (CurrentState.Actions != null)
             {
-                foreach (ActionTask action in currentState.Actions)
+                foreach (ActionTask action in CurrentState.Actions)
                     action.ExitTask();
             }
 
             //exit from previous conditions
-            if (currentState.Transitions != null)
+            if (CurrentState.Transitions != null)
             {
-                foreach (Transition transition in currentState.Transitions)
+                foreach (Transition transition in CurrentState.Transitions)
                     if (transition != null && transition.Conditions != null)
                         foreach (ConditionTask condition in transition.Conditions)
                             condition.ExitTask();
@@ -324,9 +334,9 @@ namespace redd096.v2.ComponentsSystem
         void EnterState()
         {
             //enter in new actions
-            if (currentState.Actions != null)
+            if (CurrentState.Actions != null)
             {
-                foreach (ActionTask action in currentState.Actions)
+                foreach (ActionTask action in CurrentState.Actions)
                 {
                     action.InitializeTask(this);
                     action.EnterTask();
@@ -334,9 +344,9 @@ namespace redd096.v2.ComponentsSystem
             }
 
             //enter in new conditions
-            if (currentState.Transitions != null)
+            if (CurrentState.Transitions != null)
             {
-                foreach (Transition transition in currentState.Transitions)
+                foreach (Transition transition in CurrentState.Transitions)
                 {
                     if (transition != null && transition.Conditions != null)
                     {

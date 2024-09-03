@@ -29,9 +29,9 @@ namespace redd096.v2.ComponentsSystem
             if (previousValue != newValue)
             {
                 //get statemachine from this target object, or from owner
-                IStateMachine stateMachine = (IStateMachine)property.serializedObject.targetObject;
+                var stateMachine = (IStateMachineInspector)property.serializedObject.targetObject;
                 if (stateMachine == null)
-                    stateMachine = ((IGameObjectRD)property.serializedObject.targetObject).GetComponentRD<IStateMachine>();
+                    stateMachine = ((IGameObjectRD)property.serializedObject.targetObject).GetComponentRD<IStateMachineInspector>();
 
                 //get states list
                 IEnumerable<InspectorState> states = null;

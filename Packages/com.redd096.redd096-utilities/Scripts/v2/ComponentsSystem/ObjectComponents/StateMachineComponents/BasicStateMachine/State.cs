@@ -2,10 +2,13 @@ using UnityEngine;
 
 namespace redd096.v2.ComponentsSystem
 {
+    /// <summary>
+    /// This is the base class from which inherit every state for BasicStateMachine
+    /// </summary>
     public abstract class State
     {
-        private IStateMachine _stateMachine;
-        public IStateMachine StateMachine { get => _stateMachine; set => _stateMachine = value; }
+        private IStateMachineBasic _stateMachine;
+        public IStateMachineBasic StateMachine { get => _stateMachine; set => _stateMachine = value; }
         private IComponentRD _stateMachineComponentRD;
         private bool _isActive;
         public bool IsActive { get => _isActive; set => _isActive = value; }
@@ -24,7 +27,7 @@ namespace redd096.v2.ComponentsSystem
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        protected T GetStateMachine<T>() where T : IStateMachine
+        protected T GetStateMachine<T>() where T : IStateMachineBasic
         {
             return (T)_stateMachine;
         }
@@ -107,7 +110,7 @@ namespace redd096.v2.ComponentsSystem
         /// Called by StateMachine, to set owner and to be sure to call OnInit() only one time
         /// </summary>
         /// <param name="stateMachine"></param>
-        public void Initialize(IStateMachine stateMachine)
+        public void Initialize(IStateMachineBasic stateMachine)
         {
             if (isInitialized)
                 return;
