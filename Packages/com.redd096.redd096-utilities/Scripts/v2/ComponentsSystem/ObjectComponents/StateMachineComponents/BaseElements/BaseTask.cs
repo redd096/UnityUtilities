@@ -11,6 +11,7 @@ namespace redd096.v2.ComponentsSystem
 
         private IStateMachine _stateMachine;
         public IStateMachine StateMachine { get => _stateMachine; set => _stateMachine = value; }
+        private IComponentRD _stateMachineComponentRD;
         private bool _isTaskActive;
         public bool IsTaskActive { get => _isTaskActive; set => _isTaskActive = value; }
 
@@ -21,7 +22,7 @@ namespace redd096.v2.ComponentsSystem
         /// <summary>
         /// Use statemachine's transform if possible, else use this task's transform
         /// </summary>
-        protected Transform transformTask => _stateMachine.Owner != null ? _stateMachine.Owner.transform : transform;
+        protected Transform transformTask => _stateMachine != null ? _stateMachine.transform : transform;
 
         /// <summary>
         /// Return StateMachine casted to inherited class
@@ -42,11 +43,11 @@ namespace redd096.v2.ComponentsSystem
         protected T GetStateMachineUnityComponent<T>(bool showWarningIfNotFound = true)
         {
             //get in parent
-            T component = _stateMachine != null ? _stateMachine.Owner.transform.GetComponentInParent<T>() : default;
+            T component = _stateMachine != null ? _stateMachine.transform.GetComponentInParent<T>() : default;
 
             //show warning if not found
             if (showWarningIfNotFound && component == null)
-                Debug.LogWarning($"Miss {typeof(T).Name} on {_stateMachine}", _stateMachine.Owner.transform);
+                Debug.LogWarning($"Miss {typeof(T).Name} on {_stateMachine}", _stateMachine.transform.gameObject);
 
             return component;
         }
@@ -60,7 +61,7 @@ namespace redd096.v2.ComponentsSystem
         protected bool TryGetStateMachineUnityComponent<T>(out T foundComponent)
         {
             //get in parent
-            foundComponent = _stateMachine != null ? _stateMachine.Owner.transform.GetComponentInParent<T>() : default;
+            foundComponent = _stateMachine != null ? _stateMachine.transform.GetComponentInParent<T>() : default;
             return foundComponent != null;
         }
 
@@ -73,11 +74,11 @@ namespace redd096.v2.ComponentsSystem
         protected T GetOwnerComponent<T>(bool showWarningIfNotFound = true)
         {
             //get in owner
-            T component = _stateMachine != null ? _stateMachine.Owner.GetComponentRD<T>() : default;
+            T component = _stateMachineComponentRD != null ? _stateMachineComponentRD.Owner.GetComponentRD<T>() : default;
 
             //show warning if not found
             if (showWarningIfNotFound && component == null)
-                Debug.LogWarning($"Miss {typeof(T).Name} on {_stateMachine}", _stateMachine.Owner.transform);
+                Debug.LogWarning($"Miss {typeof(T).Name} on {_stateMachine}", _stateMachine.transform.gameObject);
 
             return component;
         }
@@ -91,7 +92,7 @@ namespace redd096.v2.ComponentsSystem
         protected bool TryGetOwnerComponent<T>(out T foundComponent)
         {
             //get in owner
-            foundComponent = _stateMachine != null ? _stateMachine.Owner.GetComponentRD<T>() : default;
+            foundComponent = _stateMachineComponentRD != null ? _stateMachineComponentRD.Owner.GetComponentRD<T>() : default;
             return foundComponent != null;
         }
 
@@ -120,6 +121,7 @@ namespace redd096.v2.ComponentsSystem
 
             //set state machine and init
             _stateMachine = stateMachine;
+            _stateMachineComponentRD = _stateMachine as IComponentRD;
             OnInitTask();
         }
 

@@ -6,9 +6,10 @@ namespace redd096.v2.ComponentsSystem
     /// <summary>
     /// Create a state machine from this class
     /// </summary>
-    public class BasicStateMachineComponent : IStateMachine
+    public class BasicStateMachineComponent : IStateMachine, IComponentRD
     {
         public IGameObjectRD Owner { get; set; }
+        public Transform transform => Owner?.transform;
 
         protected string currentStateDebug;
 
