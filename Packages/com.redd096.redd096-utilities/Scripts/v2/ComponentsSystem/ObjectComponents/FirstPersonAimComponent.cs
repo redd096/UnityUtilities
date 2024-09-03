@@ -46,7 +46,7 @@ namespace redd096.v2.ComponentsSystem
             //calculate quaternions
             yaw = Quaternion.AngleAxis(currentEulerAngles.x, Vector3.up);
             pitch = Quaternion.AngleAxis(currentEulerAngles.y, Vector3.left);
-            currentRotation = Yaw * Pitch;
+            currentRotation = yaw * pitch;
 
             //set direction aim
             AimDirectionInput = currentRotation * Vector3.forward;
@@ -68,7 +68,7 @@ namespace redd096.v2.ComponentsSystem
             //calculate quaternions
             yaw = Quaternion.AngleAxis(currentEulerAngles.x, Vector3.up);
             pitch = Quaternion.AngleAxis(currentEulerAngles.y, Vector3.left);
-            currentRotation = Yaw * Pitch;
+            currentRotation = yaw * pitch;
 
             //set direction aim
             AimDirectionInput = currentRotation * Vector3.forward;
