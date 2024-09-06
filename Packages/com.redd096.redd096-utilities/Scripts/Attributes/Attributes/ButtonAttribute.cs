@@ -116,9 +116,12 @@ namespace redd096.Attributes
                             EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());     //normal scene
 
                         //save prefab overrides if this is a prefab
-                        foreach (var component in Selection.activeGameObject.GetComponentsInChildren<Component>())
+                        if (Selection.activeGameObject)
                         {
-                            PrefabUtility.RecordPrefabInstancePropertyModifications(component);
+                            foreach (var component in Selection.activeGameObject.GetComponentsInChildren<Component>())
+                            {
+                                PrefabUtility.RecordPrefabInstancePropertyModifications(component);
+                            }
                         }
 
                         //repaint scene and inspector
