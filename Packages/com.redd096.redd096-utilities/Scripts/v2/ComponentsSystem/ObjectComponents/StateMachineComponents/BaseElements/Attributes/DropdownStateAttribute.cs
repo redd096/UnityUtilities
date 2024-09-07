@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using redd096.Attributes.AttributesEditorUtility;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -13,7 +12,6 @@ namespace redd096.v2.ComponentsSystem
     [CustomPropertyDrawer(typeof(DropdownStateAttribute))]
     public class DropdownStateDrawer : PropertyDrawer
     {
-        const string StatesPropertyName = "States";
         string[] statesNames;
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
@@ -45,16 +43,20 @@ namespace redd096.v2.ComponentsSystem
         void GetStates(SerializedProperty property)
         {
             //get statemachine from this target object, or from owner
-            IStateMachineInspector stateMachine;
-            if (property.serializedObject.targetObject is IStateMachineInspector sm)
+            IStateMachineInspector stateMachine = null;
+            if (property.serializedObject.targetObject.GetTransform().TryGetComponent(out IStateMachineInspector sm))
                 stateMachine = sm;
-            else
-                stateMachine = ((IGameObjectRD)property.serializedObject.targetObject).GetComponentRD<IStateMachineInspector>();
+            else if (property.serializedObject.targetObject.GetTransform().TryGetComponent(out IGameObjectRD goRD))
+                stateMachine = goRD.GetComponentRD<IStateMachineInspector>();
+
+            if (stateMachine == null)
+            {
+                Debug.LogError("This attribute can be used only on IStateMachineInspector: " + GetType().Name, property.serializedObject.targetObject);
+                return;
+            }
 
             //get states list
-            InspectorState[] states = null;
-            if (stateMachine != null)
-                states = (InspectorState[])stateMachine.GetValue(StatesPropertyName);
+            InspectorState[] states = stateMachine.States;
 
             //set arrays for dropdown
             if (states != null && states.Length > 0)

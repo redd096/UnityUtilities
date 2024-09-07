@@ -1,6 +1,4 @@
 using UnityEngine;
-using System.Collections.Generic;
-using redd096.Attributes.AttributesEditorUtility;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -14,8 +12,6 @@ namespace redd096.v2.ComponentsSystem
     [CustomPropertyDrawer(typeof(OnStateNameChangedAttribute))]
     public class OnStateNameChangedDrawer : PropertyDrawer
     {
-        const string StatesPropertyName = "States";
-
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             //save previous value
@@ -29,16 +25,20 @@ namespace redd096.v2.ComponentsSystem
             if (previousValue != newValue)
             {
                 //get statemachine from this target object, or from owner
-                IStateMachineInspector stateMachine;
-                if (property.serializedObject.targetObject is IStateMachineInspector sm)
+                IStateMachineInspector stateMachine = null;
+                if (property.serializedObject.targetObject.GetTransform().TryGetComponent(out IStateMachineInspector sm))
                     stateMachine = sm;
-                else
-                    stateMachine = ((IGameObjectRD)property.serializedObject.targetObject).GetComponentRD<IStateMachineInspector>();
+                else if (property.serializedObject.targetObject.GetTransform().TryGetComponent(out IGameObjectRD goRD))
+                    stateMachine = goRD.GetComponentRD<IStateMachineInspector>();
+
+                if (stateMachine == null)
+                {
+                    Debug.LogError("This attribute can be used only on IStateMachineInspector: " + GetType().Name, property.serializedObject.targetObject);
+                    return;
+                }
 
                 //get states list
-                IEnumerable<InspectorState> states = null;
-                if (stateMachine != null)
-                    states = (IEnumerable<InspectorState>)stateMachine.GetValue(StatesPropertyName);
+                InspectorState[] states = stateMachine.States;
 
                 //update every destination state in every transition
                 if (states != null)
