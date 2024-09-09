@@ -151,3 +151,88 @@ public class BuildCustomPreprocessBuild : IPreprocessBuildWithReport
 */
 #endif
 #endregion
+
+#region override Build and Build And Run buttons
+/*
+/// <summary>
+/// When press Build or Build And Run, show a popup before start the build
+/// </summary>
+public class PopupBeforeBuild
+{
+    private enum EDevices { RealWear, Vuzix, Touch }
+
+    [InitializeOnLoadMethod]
+    private static void ShowPopupBeforeBuild()
+    {
+        //overwrite build button function
+        BuildPlayerWindow.RegisterBuildPlayerHandler(BuildPlayerHandler);
+    }
+
+    private static void BuildPlayerHandler(BuildPlayerOptions options)
+    {
+        //show dialogue -> return true if press Yes, return false if press No
+        //bool confirm = EditorUtility.DisplayDialog("What to do with managers", "Deactivate RealWearManager?", "Yes", "No");
+        //OnClickMenuItem(new FUserData(options, confirm ? 1 : 0));
+
+        string[] devices = System.Enum.GetNames(typeof(EDevices));
+
+        //show popup and set click event
+        GenericMenu menu = new GenericMenu();
+        for (int i = 0; i < devices.Length; i++)
+        {
+            bool isSelected = false;
+            object userData = new FUserData(options, i);
+            menu.AddItem(new GUIContent(devices[i]), isSelected, OnClickMenuItem, userData);
+        }
+        menu.ShowAsContext();
+    }
+
+    private static async void OnClickMenuItem(object userData)
+    {
+        FUserData data = (FUserData)userData;
+        EDevices selectedDevice = (EDevices)data.menuElementIndex;
+
+        //load start scene
+        var scene = UnityEditor.SceneManagement.EditorSceneManager.OpenScene(data.options.scenes[0], UnityEditor.SceneManagement.OpenSceneMode.Additive);
+        while (scene.isLoaded == false)
+        {
+            await System.Threading.Tasks.Task.Delay(1000);
+        }
+
+        //set managers
+        RealWearManager realWearManager = Object.FindObjectOfType<RealWearManager>(true);
+        VuzixManager vuzixManager = Object.FindObjectOfType<VuzixManager>(true);
+        if (selectedDevice == EDevices.RealWear)
+        {
+            realWearManager.gameObject.SetActive(true);
+            vuzixManager.gameObject.SetActive(false);
+        }
+        else if (selectedDevice == EDevices.Vuzix)
+        {
+            realWearManager.gameObject.SetActive(false);
+            vuzixManager.gameObject.SetActive(true);
+        }
+        else
+        {
+            realWearManager.gameObject.SetActive(false);
+            vuzixManager.gameObject.SetActive(false);
+        }
+
+        //start build
+        BuildPlayerWindow.DefaultBuildMethods.BuildPlayer(data.options);
+    }
+
+    private struct FUserData
+    {
+        public BuildPlayerOptions options;
+        public int menuElementIndex;
+
+        public FUserData(BuildPlayerOptions options, int menuElementIndex)
+        {
+            this.options = options;
+            this.menuElementIndex = menuElementIndex;
+        }
+    }
+}
+*/
+#endregion
