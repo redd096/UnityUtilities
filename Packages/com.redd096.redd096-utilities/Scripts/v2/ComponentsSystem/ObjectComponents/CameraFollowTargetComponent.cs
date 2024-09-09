@@ -147,16 +147,11 @@ namespace redd096.v2.ComponentsSystem
         {
             //calculate direction
             Vector3 direction = Vector3.zero;
+            Vector3 tempDir = objectToFollow.position - cam.position == Vector3.zero ? cam.forward : (objectToFollow.position - cam.position).normalized;
             if (zoomInput > 0.5f)
-                direction = Vector3.forward;
+                direction = tempDir;
             else if (zoomInput < -0.5f)
-                direction = Vector3.back;
-
-            //rotate it
-            Vector3 dir = objectToFollow.position - cam.position;
-            if (dir == Vector3.zero) dir = cam.forward;
-            Quaternion rotation = Quaternion.LookRotation(dir.normalized, Vector3.up);
-            direction = rotation * direction;
+                direction = -tempDir;
 
             Vector3 movement = direction * zoomSpeed;
 
@@ -170,18 +165,14 @@ namespace redd096.v2.ComponentsSystem
                     //if (movement.sqrMagnitude > currentDistance)
                     //    movement = Vector3.ClampMagnitude(movement, Vector3.Distance(cam.position, objectToFollow.position));
 
-                    //if exceed object to follow position, it's already too much
                     float currentDistance = (cam.position - objectToFollow.position).sqrMagnitude;
                     float distanceToNextPosition = (cam.position + movement - cam.position).sqrMagnitude;
-                    if (distanceToNextPosition > currentDistance)
+                    if (distanceToNextPosition > currentDistance                                                //if exceed object to follow position, it's already too much
+                        || Vector3.Distance(cam.position + movement, objectToFollow.position) < minDistance)    //else check normally distance
                     {
-                        movement = Vector3.ClampMagnitude(movement, Vector3.Distance(cam.position, objectToFollow.position) - minDistance);
-                    }
-                    else
-                    {
-                        float distance = Vector3.Distance(cam.position + movement, objectToFollow.position);
-                        if (distance < minDistance)
-                            movement = Vector3.ClampMagnitude(movement, Vector3.Distance(cam.position, objectToFollow.position) - minDistance);
+                        cam.position = objectToFollow.position + direction * minDistance;
+                        return;
+                        //movement = Vector3.ClampMagnitude(movement, Vector3.Distance(cam.position, objectToFollow.position) - minDistance);
                     }
                 }
             }
@@ -190,9 +181,12 @@ namespace redd096.v2.ComponentsSystem
             {
                 if (maxDistance >= 0)
                 {
-                    float distance = Vector3.Distance(cam.position + movement, objectToFollow.position);
-                    if (distance > maxDistance)
-                        movement = Vector3.ClampMagnitude(movement, maxDistance - Vector3.Distance(cam.position, objectToFollow.position));
+                    if (Vector3.Distance(cam.position + movement, objectToFollow.position) > maxDistance)
+                    {
+                        cam.position = objectToFollow.position + direction * maxDistance;
+                        return;
+                        //movement = Vector3.ClampMagnitude(movement, maxDistance - Vector3.Distance(cam.position, objectToFollow.position));
+                    }
                 }
             }
 
