@@ -115,5 +115,89 @@ namespace redd096.v2.ComponentsSystem
             Vector3 cameraOffsetRotated = Quaternion.AngleAxis(cam.eulerAngles.y, Vector3.up) * cameraOffset;
             cam.position = objectToFollow.position + cameraOffsetRotated;
         }
+
+        /// <summary>
+        /// Tell camera to rotate to look at direction, and move around the object to follow
+        /// </summary>
+        /// <param name="camDirection"></param>
+        public void RotateAroundPivot(Vector3 camDirection)
+        {
+            Quaternion previousRotation = cam.localRotation;
+
+            //rotate cam
+            cam.localRotation = Quaternion.LookRotation(camDirection, Vector3.up);
+
+            //calculate new position
+            Quaternion angleRotation = cam.localRotation * Quaternion.Inverse(previousRotation);
+            Vector3 offset = cam.position - objectToFollow.position;
+            offset = angleRotation * offset;
+
+            //move
+            cam.position = objectToFollow.position + offset;
+        }
+
+        /// <summary>
+        /// Move forward or back to object to follow position. Clamp if reach it
+        /// </summary>
+        /// <param name="zoomInput">move forward if > 0.5, move back if < 0.5f, else stay still</param>
+        /// <param name="zoomSpeed"></param>
+        /// <param name="minDistance">when zoom in, stop to this distance from the object to follow. -1 = no limit</param>
+        /// <param name="maxDistance">when zoom out, stop to this distance from the object to follow. -1 = no limit</param>
+        public void ZoomToPivot(float zoomInput, float zoomSpeed, float minDistance, float maxDistance)
+        {
+            //calculate direction
+            Vector3 direction = Vector3.zero;
+            if (zoomInput > 0.5f)
+                direction = Vector3.forward;
+            else if (zoomInput < -0.5f)
+                direction = Vector3.back;
+
+            //rotate it
+            Vector3 dir = objectToFollow.position - cam.position;
+            if (dir == Vector3.zero) dir = cam.forward;
+            Quaternion rotation = Quaternion.LookRotation(dir.normalized, Vector3.up);
+            direction = rotation * direction;
+
+            Vector3 movement = direction * zoomSpeed;
+
+            //clamp zoom in
+            if (zoomInput > 0.5f)
+            {
+                if (minDistance >= 0)
+                {
+                    ////clamp, can't exceed object to follow position
+                    //float currentDistance = (cam.position - objectToFollow.position).sqrMagnitude;
+                    //if (movement.sqrMagnitude > currentDistance)
+                    //    movement = Vector3.ClampMagnitude(movement, Vector3.Distance(cam.position, objectToFollow.position));
+
+                    //if exceed object to follow position, it's already too much
+                    float currentDistance = (cam.position - objectToFollow.position).sqrMagnitude;
+                    float distanceToNextPosition = (cam.position + movement - cam.position).sqrMagnitude;
+                    if (distanceToNextPosition > currentDistance)
+                    {
+                        movement = Vector3.ClampMagnitude(movement, Vector3.Distance(cam.position, objectToFollow.position) - minDistance);
+                    }
+                    else
+                    {
+                        float distance = Vector3.Distance(cam.position + movement, objectToFollow.position);
+                        if (distance < minDistance)
+                            movement = Vector3.ClampMagnitude(movement, Vector3.Distance(cam.position, objectToFollow.position) - minDistance);
+                    }
+                }
+            }
+            //clamp zoom out
+            else if (zoomInput < -0.5f)
+            {
+                if (maxDistance >= 0)
+                {
+                    float distance = Vector3.Distance(cam.position + movement, objectToFollow.position);
+                    if (distance > maxDistance)
+                        movement = Vector3.ClampMagnitude(movement, maxDistance - Vector3.Distance(cam.position, objectToFollow.position));
+                }
+            }
+
+            //move
+            cam.position += movement;
+        }
     }
 }
