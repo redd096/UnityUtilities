@@ -50,7 +50,7 @@ namespace redd096.v2.ComponentsSystem
         }
 
         /// <summary>
-        /// Use this convertor to make for example VarOrBlackboard<int> varName = 5;
+        /// Use this converter to make for example VarOrBlackboard<int> varName = 5;
         /// </summary>
         /// <param name="v"></param>
         public static implicit operator VarOrBlackboard<T>(T value)

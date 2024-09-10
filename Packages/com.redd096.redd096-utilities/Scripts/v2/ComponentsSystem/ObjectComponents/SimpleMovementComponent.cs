@@ -3,8 +3,8 @@ using UnityEngine;
 namespace redd096.v2.ComponentsSystem
 {
     /// <summary>
-    /// Call UpdatePosition() in Update to move CharacterController by InputSpeed + PushForce. 
-    /// Or call it in FixedUpdate to set rigidbody.velocity by InputSpeed + PushForce. 
+    /// Call UpdatePosition() in Update to move CharacterController by InputSpeed + PushForce, 
+    /// or call it in FixedUpdate to set rigidbody.velocity by InputSpeed + PushForce. 
     /// With rigidbody it has also a check on Y axis, to keep rigidbody gravity and prevent sliding on a slope (tested only on 3d games)
     /// </summary>
     [System.Serializable]
@@ -18,9 +18,8 @@ namespace redd096.v2.ComponentsSystem
         [Tooltip("With rigidbody, prevent sliding on this angle slope - with CharacterController is setted on CharacterControlelr component")][SerializeField] protected float rigidbodyMaxSlopeAngle = 45;
 
         [Header("When pushed")]
-        [Tooltip("Drag based on velocity * drag or normalized velocity * drag?")][SerializeField] protected bool dragBasedOnVelocity = true;
-        [Tooltip("Use rigidbody drag or custom drag? CharacterController use always custom drag")][SerializeField] protected bool rigidbodyUseCustomDrag = false;
-        [Tooltip("CharacterController use this drag. You can use it also on Rigidbody instead of Rigidbody.drag")][SerializeField] protected float customDrag = 5;
+        [Tooltip("If true use (velocity * drag), false use (normalized velocity * drag)")][SerializeField] protected bool dragBasedOnVelocity = true;
+        [Tooltip("This is used to drag when pushed by call Push functions. This doesn't affect AddForce by unity")][SerializeField] protected float customDrag = 5;
 
         public IGameObjectRD Owner { get; set; }
 
@@ -32,22 +31,7 @@ namespace redd096.v2.ComponentsSystem
         public float CurrentSpeed => wrap.IsValid() ? wrap.velocity.magnitude : 0;
         public float InputSpeed { get => inputSpeed; set => inputSpeed = value; }
         public float MaxSpeed { get => maxSpeed; set => maxSpeed = value; }
-        /// <summary>
-        /// If using CharacterController or is enabled custom drag, get and set customDrag. Else get and set rigidbody.drag
-        /// </summary>
-        public float Drag
-        {
-            get
-            {
-                return wrap.componentToWrap == FComponentWrapper.EComponentToWrap.CharacterController ? customDrag
-                : (rigidbodyUseCustomDrag ? customDrag : (wrap.IsValid() ? wrap.drag : 1));
-            }
-            set
-            {
-                if (wrap.componentToWrap == FComponentWrapper.EComponentToWrap.CharacterController) { customDrag = value; }
-                else { if (rigidbodyUseCustomDrag) customDrag = value; else if (wrap.IsValid()) wrap.drag = value; }
-            }
-        }
+        public float CustomDrag { get => customDrag; set => customDrag = value; }
         /// <summary>
         /// Return IsMovingRight as a direction. Can also set it passing a Vector3 with X greater or lower than 0
         /// </summary>
@@ -182,10 +166,10 @@ namespace redd096.v2.ComponentsSystem
 
         protected virtual void RemovePushForce()
         {
-            //remove push force (direction * drag * deltaTime)
+            //remove push force (direction * customDrag * deltaTime)
             newPushForce = CurrentPushForce - (
                 (dragBasedOnVelocity ? CurrentPushForce : CurrentPushForce.normalized) *
-                Drag * wrap.deltaTime);
+                customDrag * wrap.deltaTime);
 
             //clamp it
             if (CurrentPushForce.x >= 0 && newPushForce.x < 0 || CurrentPushForce.x <= 0 && newPushForce.x > 0)
@@ -421,31 +405,6 @@ namespace redd096.v2.ComponentsSystem
                     return rb3d.velocity;
                 else
                     return rb2d.velocity;
-            }
-        }
-
-        /// <summary>
-        /// The drag of the rigidbody
-        /// </summary>
-        public float drag
-        {
-            get
-            {
-                if (componentToWrap == EComponentToWrap.CharacterController)
-                    return default;
-                else if (componentToWrap == EComponentToWrap.Rigidbody3D)
-                    return rb3d.drag;
-                else
-                    return rb2d.drag;
-            }
-            set
-            {
-                if (componentToWrap == EComponentToWrap.CharacterController)
-                    return;
-                else if (componentToWrap == EComponentToWrap.Rigidbody3D)
-                    rb3d.drag = value;
-                else
-                    rb2d.drag = value;
             }
         }
 

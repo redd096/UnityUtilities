@@ -20,7 +20,7 @@ namespace redd096.v2.ComponentsSystem.Example
             if (player == null && TryGetStateMachineUnityComponent(out player) == false)
                 Debug.LogError($"Missing PlayerPawn on {name}", gameObject);
             if (movementComponent == null && TryGetStateMachineComponentRD(out movementComponent) == false)
-                Debug.LogError($"Missing MovementComponent2D on {name}", gameObject);
+                Debug.LogError($"Missing MovementComponent on {name}", gameObject);
         }
 
         protected override void OnEnterTask()

@@ -3,8 +3,8 @@ using UnityEngine;
 namespace redd096.v2.ComponentsSystem
 {
     /// <summary>
-    /// Generally you want to calculate inputs inside InputManager attached to this same GameObject, because this is always instantiate for every player, even online. 
-    /// Then your Pawn in scene will read the inputs. Or in a multiplayer online, your pawn on the server will read inputs and syncronize position, rotation, etc... with client
+    /// This is instantiated for every player, even online. 
+    /// Generally you want to calculate inputs inside InputManager attached to this same GameObject, then your pawn in scene will read those inputs
     /// </summary>
     public abstract class SimplePlayerController : MonoBehaviour
     {

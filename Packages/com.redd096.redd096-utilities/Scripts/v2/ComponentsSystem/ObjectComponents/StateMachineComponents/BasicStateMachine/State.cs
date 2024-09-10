@@ -146,7 +146,8 @@ namespace redd096.v2.ComponentsSystem
         /// </summary>
         public void Update()
         {
-            OnUpdate();
+            if (_isActive)
+                OnUpdate();
         }
 
         /// <summary>
@@ -154,7 +155,8 @@ namespace redd096.v2.ComponentsSystem
         /// </summary>
         public void FixedUpdate()
         {
-            OnFixedUpdate();
+            if (_isActive)
+                OnFixedUpdate();
         }
 
         /// <summary>
@@ -162,7 +164,8 @@ namespace redd096.v2.ComponentsSystem
         /// </summary>
         public void LateUpdate()
         {
-            OnLateUpdate();
+            if (_isActive)
+                OnLateUpdate();
         }
 
         #endregion
