@@ -19,8 +19,8 @@ namespace redd096.v2.ComponentsSystem
         //events
         public System.Action<ISimpleInteractable> onFoundInteractable;
         public System.Action<ISimpleInteractable> onLostInteractable;
-        public System.Action<ISimpleInteractable> onInteract;             //when user interact with CurrentInteractable
-        public System.Action onFailInteract;                        //when user try to interact but CurrentInteractable is null
+        public System.Action<ISimpleInteractable> onInteract;           //when user interact with Interactable
+        public System.Action onFailInteract;                            //when user try to interact but Interactable is null or CanInteract return false
 
         public ISimpleInteractable CurrentInteractable;
 
@@ -45,11 +45,7 @@ namespace redd096.v2.ComponentsSystem
             ISimpleInteractable newInteractable = FindNearest(possibleInteractables);
 
             //if changed interactable, call events
-            if (newInteractable != CurrentInteractable)
-            {
-                CallEvents(CurrentInteractable, newInteractable);
-                CurrentInteractable = newInteractable;
-            }
+            CheckChangeInteractable(newInteractable);
         }
 
         /// <summary>
@@ -57,7 +53,7 @@ namespace redd096.v2.ComponentsSystem
         /// </summary>
         public void Interact()
         {
-            if (CurrentInteractable != null)
+            if (CurrentInteractable != null && CurrentInteractable.CanInteract(Owner))
             {
                 CurrentInteractable.Interact(Owner);
                 onInteract?.Invoke(CurrentInteractable);
@@ -68,6 +64,19 @@ namespace redd096.v2.ComponentsSystem
             }
         }
 
+        /// <summary>
+        /// Set this as current interactable and try to interact with it
+        /// </summary>
+        /// <param name="interactable"></param>
+        public void Interact(ISimpleInteractable interactable)
+        {
+            //if changed interactable, call events
+            CheckChangeInteractable(interactable);
+
+            //interact
+            Interact();
+        }
+
         #region private API
 
         Dictionary<Transform, ISimpleInteractable> GetPossibleInteractables3D()
@@ -76,10 +85,10 @@ namespace redd096.v2.ComponentsSystem
             Dictionary<Transform, ISimpleInteractable> possibleInteractables = new Dictionary<Transform, ISimpleInteractable>();
             foreach (Collider col in Physics.OverlapSphere(Owner.transform.position, radiusInteract, interactLayer))
             {
+                //add to dictionary if CanInteract is true
                 ISimpleInteractable interactable = col.GetComponentInParent<ISimpleInteractable>();
                 if (interactable != null && interactable.CanInteract(Owner))
                 {
-                    //add to dictionary
                     possibleInteractables.Add(col.transform, interactable);
                 }
             }
@@ -92,10 +101,10 @@ namespace redd096.v2.ComponentsSystem
             Dictionary<Transform, ISimpleInteractable> possibleInteractables = new Dictionary<Transform, ISimpleInteractable>();
             foreach (Collider2D col in Physics2D.OverlapCircleAll(Owner.transform.position, radiusInteract, interactLayer))
             {
+                //add to dictionary if CanInteract is true
                 ISimpleInteractable interactable = col.GetComponentInParent<ISimpleInteractable>();
                 if (interactable != null && interactable.CanInteract(Owner))
                 {
-                    //add to dictionary
                     possibleInteractables.Add(col.transform, interactable);
                 }
             }
@@ -118,19 +127,24 @@ namespace redd096.v2.ComponentsSystem
                 }
             }
 
-            //return its interactable
+            //return interactable
             return nearest;
         }
 
-        void CallEvents(ISimpleInteractable previousInteractable, ISimpleInteractable newInteractable)
+        void CheckChangeInteractable(ISimpleInteractable newInteractable)
         {
-            //lost previous interactable
-            if (previousInteractable != null)
-                onLostInteractable?.Invoke(previousInteractable);
+            //if changed interactable, call events
+            if (newInteractable != CurrentInteractable)
+            {
+                if (CurrentInteractable != null)
+                    onLostInteractable?.Invoke(CurrentInteractable);
 
-            //found new interactable
-            if (newInteractable != null)
-                onFoundInteractable?.Invoke(newInteractable);
+                if (newInteractable != null)
+                    onFoundInteractable?.Invoke(newInteractable);
+
+                //and set current interactable
+                CurrentInteractable = newInteractable;
+            }
         }
 
         #endregion
