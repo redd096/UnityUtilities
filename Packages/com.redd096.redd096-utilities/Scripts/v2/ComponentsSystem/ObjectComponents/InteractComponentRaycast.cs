@@ -23,8 +23,8 @@ namespace redd096.v2.ComponentsSystem
         //events
         public System.Action<ISimpleInteractable> onFoundInteractable;
         public System.Action<ISimpleInteractable> onLostInteractable;
-        public System.Action<ISimpleInteractable> onInteract;             //when user interact with CurrentInteractable
-        public System.Action onFailInteract;                        //when user try to interact but CurrentInteractable is null
+        public System.Action<ISimpleInteractable> onInteract;           //when user interact with Interactable
+        public System.Action onFailInteract;                            //when user try to interact but Interactable is null or CanInteract return
 
         public ISimpleInteractable CurrentInteractable;
 
@@ -64,19 +64,15 @@ namespace redd096.v2.ComponentsSystem
             }
 
             //if changed interactable, call events
-            if (newInteractable != CurrentInteractable)
-            {
-                CallEvents(CurrentInteractable, newInteractable);
-                CurrentInteractable = newInteractable;
-            }
+            CheckChangeInteractable(newInteractable);
         }
 
         /// <summary>
-        /// Interact with current interactable
+        /// Try interact with current interactable
         /// </summary>
-        public void Interact()
+        public void TryInteract()
         {
-            if (CurrentInteractable != null)
+            if (CurrentInteractable != null && CurrentInteractable.CanInteract(Owner))
             {
                 CurrentInteractable.Interact(Owner);
                 onInteract?.Invoke(CurrentInteractable);
@@ -85,6 +81,19 @@ namespace redd096.v2.ComponentsSystem
             {
                 onFailInteract?.Invoke();
             }
+        }
+
+        /// <summary>
+        /// Set this as current interactable and try to interact with it
+        /// </summary>
+        /// <param name="interactable"></param>
+        public void TryInteract(ISimpleInteractable interactable)
+        {
+            //if changed interactable, call events
+            CheckChangeInteractable(interactable);
+
+            //interact
+            TryInteract();
         }
 
         #region private API
@@ -97,15 +106,20 @@ namespace redd096.v2.ComponentsSystem
                 return Physics.SphereCast(cam.transform.position, radiusSphereCast, cam.transform.forward, out hit, maxDistance, interactLayer, raycastHitTriggers);
         }
 
-        void CallEvents(ISimpleInteractable previousInteractable, ISimpleInteractable newInteractable)
+        void CheckChangeInteractable(ISimpleInteractable newInteractable)
         {
-            //lost previous interactable
-            if (previousInteractable != null)
-                onLostInteractable?.Invoke(previousInteractable);
+            //if changed interactable, call events
+            if (newInteractable != CurrentInteractable)
+            {
+                if (CurrentInteractable != null)
+                    onLostInteractable?.Invoke(CurrentInteractable);
 
-            //found new interactable
-            if (newInteractable != null)
-                onFoundInteractable?.Invoke(newInteractable);
+                if (newInteractable != null)
+                    onFoundInteractable?.Invoke(newInteractable);
+
+                //and set current interactable
+                CurrentInteractable = newInteractable;
+            }
         }
 
         #endregion

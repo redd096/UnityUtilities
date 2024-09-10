@@ -49,9 +49,9 @@ namespace redd096.v2.ComponentsSystem
         }
 
         /// <summary>
-        /// Interact with current interactable
+        /// Try interact with current interactable
         /// </summary>
-        public void Interact()
+        public void TryInteract()
         {
             if (CurrentInteractable != null && CurrentInteractable.CanInteract(Owner))
             {
@@ -68,13 +68,13 @@ namespace redd096.v2.ComponentsSystem
         /// Set this as current interactable and try to interact with it
         /// </summary>
         /// <param name="interactable"></param>
-        public void Interact(ISimpleInteractable interactable)
+        public void TryInteract(ISimpleInteractable interactable)
         {
             //if changed interactable, call events
             CheckChangeInteractable(interactable);
 
             //interact
-            Interact();
+            TryInteract();
         }
 
         #region private API
