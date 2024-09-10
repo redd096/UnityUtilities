@@ -12,6 +12,7 @@ namespace redd096.v2.ComponentsSystem
         [Tooltip("Use OverlapSphere to find interactables (3d) or OverlapCircle (2d)")][SerializeField] bool findInteractablesIn3D = false;
         [Tooltip("Area to check for interactables")][SerializeField] float radiusInteract = 1f;
         [Tooltip("Hit only interacts with this layer")][SerializeField] LayerMask interactLayer = -1;
+        [Tooltip("This is used if you call ScanInteractablesInDirection")][SerializeField] float maxAngle = 45f;
         [SerializeField] ShowDebugRedd096 showRadiusInteract = Color.cyan;
 
         public IGameObjectRD Owner { get; set; }
@@ -31,6 +32,14 @@ namespace redd096.v2.ComponentsSystem
             {
                 Gizmos.color = showRadiusInteract.ColorDebug;
                 Gizmos.DrawWireSphere(Owner.transform.position, radiusInteract);
+
+                //draw max angle
+                Gizmos.color = Color.red;
+                Vector3 dir = (findInteractablesIn3D ? Owner.transform.forward : Owner.transform.right) * radiusInteract;
+                Vector3 axis = findInteractablesIn3D ? Vector3.up : Vector3.forward;
+                Gizmos.DrawLine(Owner.transform.position, Owner.transform.position + Quaternion.AngleAxis(maxAngle, axis) * dir);
+                Gizmos.DrawLine(Owner.transform.position, Owner.transform.position + Quaternion.AngleAxis(-maxAngle, axis) * dir);
+
                 Gizmos.color = Color.white;
             }
         }
@@ -42,6 +51,30 @@ namespace redd096.v2.ComponentsSystem
         {
             //find nearest interactable
             var possibleInteractables = findInteractablesIn3D ? GetPossibleInteractables3D() : GetPossibleInteractables2D();
+            ISimpleInteractable newInteractable = FindNearest(possibleInteractables);
+
+            //if changed interactable, call events
+            CheckChangeInteractable(newInteractable);
+        }
+
+        /// <summary>
+        /// Find interactables in radius, but only if inside max angle
+        /// </summary>
+        /// <param name="direction"></param>
+        public void ScanInteractablesInDirection(Vector3 direction)
+        {
+            var possibleInteractables = findInteractablesIn3D ? GetPossibleInteractables3D() : GetPossibleInteractables2D();
+
+            //remove interactables not in angle
+            direction = direction.normalized;
+            foreach (Transform collider in new List<Transform>(possibleInteractables.Keys))
+            {
+                Vector3 dir = (collider.position - Owner.transform.position).normalized;
+                if (Vector3.Angle(dir, direction) > maxAngle)
+                    possibleInteractables.Remove(collider);
+            }
+
+            //find nearest interactable
             ISimpleInteractable newInteractable = FindNearest(possibleInteractables);
 
             //if changed interactable, call events
