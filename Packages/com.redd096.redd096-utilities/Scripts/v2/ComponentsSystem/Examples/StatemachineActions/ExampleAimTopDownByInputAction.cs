@@ -59,19 +59,14 @@ namespace redd096.v2.ComponentsSystem.Example
             //or using analog (or keyboard direction)
             else
             {
-                //check if moving analog or reset input when released
+                //update only if moving analog, or if can read also vector2.zero (reset when release analog)
                 if (inputManager.Aim != Vector2.zero || resetWhenReleaseAnalogInput)
                 {
-                    //for 3d just call AimInDirectionByInput3D
-                    aimComponent.AimInDirection(inputManager.Aim);
-                    lastAnalogSavedValue = inputManager.Aim;    //save input
+                    lastAnalogSavedValue = inputManager.Aim;
                 }
-                //else show last saved input
-                else
-                {
-                    //for 3d just call AimInDirectionByInput3D
-                    aimComponent.AimInDirection(lastAnalogSavedValue);
-                }
+
+                //for 3d just call AimInDirectionByInput3D
+                aimComponent.AimInDirection(lastAnalogSavedValue);
             }
         }
 
