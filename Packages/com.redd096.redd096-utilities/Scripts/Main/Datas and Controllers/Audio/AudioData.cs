@@ -22,15 +22,14 @@ namespace redd096
             }
         }
 
+        /// <summary>
+        /// Get element in array by name
+        /// </summary>
+        /// <param name="elementName"></param>
+        /// <param name="showErrors"></param>
+        /// <returns></returns>
         public Element GetElement(string elementName, bool showErrors = true)
         {
-            if (this == null)
-            {
-                if (showErrors) Debug.LogError("Missing Data!");
-                return null;
-            }
-
-            //find element in array by name
             if (Elements != null)
             {
                 foreach (var element in Elements)
@@ -41,8 +40,6 @@ namespace redd096
             if (showErrors) Debug.LogError("Impossible to find: " + elementName);
             return null;
         }
-
-        //element ----------------------------------------------------------------------------------------
 
         #region element classes
 
@@ -111,58 +108,4 @@ namespace redd096
 
         #endregion
     }
-
-    #region audio class
-
-    /// <summary>
-    /// Class used to manage AudioData and SoundManager
-    /// </summary>
-    [System.Serializable]
-    public class AudioClass
-    {
-        //inspector
-        [SerializeField] AudioData data;
-        [Dropdown("GetNames")][SerializeField] string elementName;
-
-        //get from data
-        private AudioData.Element _element;
-        private AudioData.Element GetElement(bool showErrors) { if (_element == null || string.IsNullOrEmpty(_element.Name)) _element = data.GetElement(elementName, showErrors); return _element; }
-        public AudioData.Element Element => GetElement(true);
-        public void RefreshElement() => _element = data.GetElement(elementName);    //force refresh also if _element is already != null
-
-        //check if valid this class and element
-        public bool IsValid() => this != null && GetElement(false) != null;
-        public static implicit operator bool(AudioClass a) => a.IsValid();
-
-        //public API
-        public string Name => Element.Name;
-        public float Volume => Element.Volume;
-        public AudioData.PresetAudio Preset => Element.Preset;
-        public AudioClip Clip => Element.RandomClip;
-
-        /// <summary>
-        /// This constructor is used to create the class without set data and element name, in case you need it in code but you don't need to set it in inspector
-        /// </summary>
-        /// <param name="element"></param>
-        public AudioClass(AudioData.Element element)
-        {
-            _element = element;
-        }
-
-#if UNITY_EDITOR
-        string[] GetNames()
-        {
-            if (data == null)
-                return new string[0];
-
-            string[] s = new string[data.Elements.Length];
-            for (int i = 0; i < s.Length; i++)
-                s[i] = data.Elements[i].Name;
-
-            return s;
-        }
-#endif
-    }
-
-    #endregion
 }

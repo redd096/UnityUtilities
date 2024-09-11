@@ -2,6 +2,9 @@ using UnityEngine;
 
 namespace redd096
 {
+    /// <summary>
+    /// Used to manage Feedbacks
+    /// </summary>
     public abstract class FeedbackController : MonoBehaviour
     {
         protected virtual void OnEnable()

@@ -39,13 +39,13 @@ namespace redd096
             //update sort order
             if (details.canvas != null)
             {
-                details.canvas.sortingLayerID = sortOrderClass.Element.SortingLayer;
-                details.canvas.sortingOrder = sortOrderClass.Element.OrderInLayer;
+                details.canvas.sortingLayerID = sortOrderClass.SortingLayer;
+                details.canvas.sortingOrder = sortOrderClass.SortOrder;
             }
             if (details.rend != null)
             {
-                details.rend.sortingLayerID = sortOrderClass.Element.SortingLayer;
-                details.rend.sortingOrder = sortOrderClass.Element.OrderInLayer;
+                details.rend.sortingLayerID = sortOrderClass.SortingLayer;
+                details.rend.sortingOrder = sortOrderClass.SortOrder;
             }
 
         }
