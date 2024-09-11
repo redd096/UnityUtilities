@@ -6,7 +6,7 @@ namespace redd096.v2.ComponentsSystem
     /// <summary>
     /// Create a state machine from this class
     /// </summary>
-    public class BasicStateMachineComponent : IStateMachineBasic, IComponentRD
+    public class BasicStateMachineComponent : IStateMachineBasic, IBlackboard, IComponentRD
     {
         //statemachine vars
         public IGameObjectRD Owner { get; set; }
@@ -72,7 +72,7 @@ namespace redd096.v2.ComponentsSystem
             //enter in new state
             if (CurrentState != null)
             {
-                CurrentState.Initialize(this);
+                CurrentState.Initialize(this, this);
                 CurrentState.Enter();
             }
 

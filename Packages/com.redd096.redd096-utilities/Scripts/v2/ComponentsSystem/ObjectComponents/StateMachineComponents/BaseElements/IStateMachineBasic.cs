@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace redd096.v2.ComponentsSystem
 {
-    public interface IStateMachineBasic : IBlackboard
+    public interface IStateMachineBasic
     {
         Transform transform { get; }
         State CurrentState { get; set; }

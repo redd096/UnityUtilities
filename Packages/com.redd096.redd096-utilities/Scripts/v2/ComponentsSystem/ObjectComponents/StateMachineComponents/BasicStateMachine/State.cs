@@ -9,6 +9,8 @@ namespace redd096.v2.ComponentsSystem
     {
         private IStateMachineBasic _stateMachine;
         public IStateMachineBasic StateMachine { get => _stateMachine; set => _stateMachine = value; }
+        private IBlackboard _blackBoard;
+        public IBlackboard BlackBoard { get => _blackBoard; set => _blackBoard = value; }
         private IComponentRD _stateMachineComponentRD;
         private bool _isActive;
         public bool IsActive { get => _isActive; set => _isActive = value; }
@@ -100,7 +102,7 @@ namespace redd096.v2.ComponentsSystem
         /// <typeparam name="T"></typeparam>
         /// <param name="v"></param>
         /// <returns></returns>
-        protected T GetValue<T>(VarOrBlackboard<T> v) => v != null ? v.GetValue(_stateMachine) : default;
+        protected T GetValue<T>(VarOrBlackboard<T> v) => v != null ? v.GetValue(_blackBoard) : default;
 
         #endregion
 
@@ -110,7 +112,7 @@ namespace redd096.v2.ComponentsSystem
         /// Called by StateMachine, to set owner and to be sure to call OnInit() only one time
         /// </summary>
         /// <param name="stateMachine"></param>
-        public void Initialize(IStateMachineBasic stateMachine)
+        public void Initialize(IStateMachineBasic stateMachine, IBlackboard blackboard)
         {
             if (isInitialized)
                 return;
@@ -120,6 +122,7 @@ namespace redd096.v2.ComponentsSystem
             //set state machine and init
             _stateMachine = stateMachine;
             _stateMachineComponentRD = _stateMachine as IComponentRD;
+            _blackBoard = blackboard;
             OnInit();
         }
 
