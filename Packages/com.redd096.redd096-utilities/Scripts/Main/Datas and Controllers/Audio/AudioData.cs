@@ -48,7 +48,7 @@ namespace redd096
         {
             public string Name;
             [Range(0, 1)] public float Volume;
-            [Rename("Preset ", nameof(_presetDetails))]public PresetAudio Preset;
+            [Rename("Preset ", nameof(_presetDetails))] public PresetAudio Preset;
 
             [Space]
             public AudioClip[] AudioClips;
@@ -77,6 +77,7 @@ namespace redd096
             [EnableIf("AudioType", EAudioType.Music)][Tooltip("If call to play this audio but it's already playing, continue play or restart it?")] public bool ForceReplay;
             public AudioMixerGroup AudioMixer;
             [Rename("", nameof(_enabled3D))] public SoundSettings3D SoundSettings3D;
+            public OtherSettings OtherSettings;
 
             //editor
             private string _enabled3D => $"[{(SoundSettings3D.Enable3D ? "Enabled" : "Disabled")}] Sound Settings 3D";
@@ -104,6 +105,18 @@ namespace redd096
             public AudioRolloffMode RolloffMode;
             public float MinDistance;
             public float MaxDistance;
+        }
+
+        [System.Serializable]
+        public class OtherSettings
+        {
+            public bool BypassEffects;
+            public bool BypassListenerEffects;
+            public bool BypassReverbZones;
+            [Range(0, 256)] public int Priority = 128;
+            [Range(-3f, 3f)] public float Pitch = 1;
+            [Range(-1f, 1f)] public float StereoPan = 0;
+            [Range(0f, 1.1f)] public float ReverbZoneMix = 1;
         }
 
         #endregion

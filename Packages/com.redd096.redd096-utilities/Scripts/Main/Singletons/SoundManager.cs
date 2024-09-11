@@ -92,7 +92,8 @@ namespace redd096
         /// <returns></returns>
         public AudioSource Play(AudioClip[] audioClips, Vector3 position, float volume = 1f, AudioSource audioSource = null,
             AudioData.EAudioType audioType = AudioData.EAudioType.Sfx, bool loop = false, bool fade = false, bool forceReplay = false, AudioMixerGroup audioMixer = null,
-            bool enable3D = false, float dopplerLevel = 1f, int spread = 0, AudioRolloffMode rolloffMode = AudioRolloffMode.Logarithmic, float minDistance = 1f, float maxDistance = 500f)
+            bool enable3D = false, float dopplerLevel = 1f, int spread = 0, AudioRolloffMode rolloffMode = AudioRolloffMode.Logarithmic, float minDistance = 1f, float maxDistance = 500f,
+            bool bypassEffects = false, bool bypassListenerEffects = false, bool bypassReverbZones = false, int priority = 128, float pitch = 1, float stereoPan = 0, float reverbZoneMix = 1)
         {
             //create audio class and element
             AudioClass audio = new AudioClass(new AudioData.Element()
@@ -115,6 +116,16 @@ namespace redd096
                         RolloffMode = rolloffMode,
                         MinDistance = minDistance,
                         MaxDistance = maxDistance
+                    },
+                    OtherSettings = new AudioData.OtherSettings()
+                    {
+                        BypassEffects = bypassEffects,
+                        BypassListenerEffects = bypassListenerEffects,
+                        BypassReverbZones = bypassReverbZones,
+                        Priority = priority,
+                        Pitch = pitch,
+                        StereoPan = stereoPan,
+                        ReverbZoneMix = reverbZoneMix
                     }
                 }
             });
@@ -423,6 +434,15 @@ namespace redd096
             audioSource.rolloffMode = audio.Preset.RolloffMode;
             audioSource.minDistance = audio.Preset.MinDistance;
             audioSource.maxDistance = audio.Preset.MaxDistance;
+
+            //other settings
+            audioSource.bypassEffects = audio.Preset.OtherSettings.BypassEffects;
+            audioSource.bypassListenerEffects = audio.Preset.OtherSettings.BypassListenerEffects;
+            audioSource.bypassReverbZones = audio.Preset.OtherSettings.BypassReverbZones;
+            audioSource.priority = audio.Preset.OtherSettings.Priority;
+            audioSource.pitch = audio.Preset.OtherSettings.Pitch;
+            audioSource.panStereo = audio.Preset.OtherSettings.StereoPan;
+            audioSource.reverbZoneMix = audio.Preset.OtherSettings.ReverbZoneMix;
 
             //volume
             if (fade)
