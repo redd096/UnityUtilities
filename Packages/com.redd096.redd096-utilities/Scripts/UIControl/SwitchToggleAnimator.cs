@@ -49,7 +49,8 @@ namespace redd096.UIControl
 
             //change state
             isToggled = value;
-            animator.Play(isToggled ? onToggleAnimation : onUntoggleAnimation);
+            if (gameObject.activeInHierarchy)
+                animator.Play(isToggled ? onToggleAnimation : onUntoggleAnimation);
 
             //and call event
             if (triggerEvent)

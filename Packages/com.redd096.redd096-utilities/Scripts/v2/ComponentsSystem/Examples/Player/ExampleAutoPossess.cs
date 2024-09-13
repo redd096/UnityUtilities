@@ -38,10 +38,12 @@ namespace redd096.v2.ComponentsSystem.Example
 
     #region advanced example
 
+    [System.Serializable]
     public class PossessPawnsClass
     {
-        [SerializeField] SimplePlayerController playerControllerPrefabForEditorTest;
-        [SerializeField] SimplePlayerPawn[] pawnsInOrderByPlayerIndex;
+        [Tooltip("When there aren't players in scene (we started from gameplay scene in editor), instantiate a prefab")][SerializeField] bool autoInstantiateIfThereArentPlayers;
+        [Tooltip("Prefab to instantiate when there aren't players in scene")][SerializeField] SimplePlayerController playerControllerPrefabForEditorTest;
+        [Tooltip("Set pawns in order to possess correct pawn by every player controller")][SerializeField] SimplePlayerPawn[] pawnsInOrderByPlayerIndex;
 
         GameObject gameObject;
 
@@ -63,7 +65,7 @@ namespace redd096.v2.ComponentsSystem.Example
             var controllers = Object.FindObjectsByType<SimplePlayerController>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
 
             //if there aren't, instantiate player controller (started directly from this scene in editor, or single player without a transition scene where instantiate player controller)
-            if (controllers.Length == 0)
+            if (controllers.Length == 0 && autoInstantiateIfThereArentPlayers)
             {
                 var controller = Object.Instantiate(playerControllerPrefabForEditorTest);
                 controllers = new SimplePlayerController[] { controller };
