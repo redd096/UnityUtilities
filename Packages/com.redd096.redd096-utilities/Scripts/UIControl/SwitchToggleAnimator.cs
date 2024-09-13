@@ -12,10 +12,11 @@ namespace redd096.UIControl
         [SerializeField] Animator animator;
         [SerializeField] string onToggleAnimation;
         [SerializeField] string onUntoggleAnimation;
-        [SerializeField] bool isToggled;
-
+        [Space]
+        [Tooltip("Set in inspector to set default value")][SerializeField] bool isToggled;
         [Space]
         public UnityEvent<bool> onValueChanged;
+
         public bool IsToggled => isToggled;
 
         private void Awake()
