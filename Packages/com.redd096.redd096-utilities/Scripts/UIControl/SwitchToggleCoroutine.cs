@@ -6,8 +6,8 @@ using UnityEngine.UI;
 
 namespace redd096.UIControl
 {
-    [AddComponentMenu("redd096/UIControl/Switch Toggle")]
-    public class SwitchToggle : MonoBehaviour
+    [AddComponentMenu("redd096/UIControl/Switch Toggle Coroutine")]
+    public class SwitchToggleCoroutine : MonoBehaviour
     {
         [Tooltip("Used only if button. Else use Toggle.isOn")][SerializeField] bool defaultValue;
         [SerializeField] RectTransform backgroundRectTransform;
