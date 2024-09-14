@@ -75,7 +75,6 @@ namespace redd096
 
         #region editor
 
-#if UNITY_EDITOR
         string[] GetNames()
         {
             if (data == null)
@@ -87,7 +86,6 @@ namespace redd096
 
             return s;
         }
-#endif
 
         #endregion
     }
