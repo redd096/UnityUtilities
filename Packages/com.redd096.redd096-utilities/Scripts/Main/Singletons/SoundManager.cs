@@ -35,7 +35,7 @@ namespace redd096
             get
             {
                 if (soundsParentPersistent == null) { soundsParentPersistent = new GameObject("Sounds Parent Persistent").transform; DontDestroyOnLoad(soundsParentPersistent); }
-                return soundsParent;
+                return soundsParentPersistent;
             }
         }
 
