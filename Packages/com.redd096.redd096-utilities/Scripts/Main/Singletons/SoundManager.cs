@@ -408,7 +408,7 @@ namespace redd096
             //if audio source is null, get from pooling
             if (audioSource == null)
             {
-                GenerateAudioSource(persistent);
+                audioSource = GenerateAudioSource(persistent);
             }
 
             //set position
