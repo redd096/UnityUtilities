@@ -49,6 +49,9 @@ namespace redd096.v2.ComponentsSystem
         protected Vector3 calculatedVelocity;       //desiredVelocity + DesiredPushForce
         protected Vector3 newPushForce;             //new push force when Drag
         protected float gravity;                    //applied gravity to characterController
+        //calculate floor movement
+        protected Collider previousFloor;
+        protected Vector3 previousFloorPosition;
 
         public virtual void AwakeRD()
         {
@@ -63,6 +66,8 @@ namespace redd096.v2.ComponentsSystem
         /// </summary>
         public virtual void UpdatePosition()
         {
+            CalculateFloorMovement();
+
             //set velocity (input + push)
             CalculateVelocity();
             CheckIsMovingRight();
@@ -78,6 +83,27 @@ namespace redd096.v2.ComponentsSystem
         }
 
         #region protected API
+
+        protected virtual void CalculateFloorMovement()
+        {
+            //if hit floor
+            if (Physics.Raycast(Owner.transform.position, Vector3.down, out RaycastHit hit, 5))
+            {
+                //if hit new floor, update it
+                if (hit.collider != previousFloor)
+                {
+                    previousFloor = hit.collider;
+                    previousFloorPosition = previousFloor.transform.position;
+                }
+                //if hit same floor, but the floor moved, move also player
+                else if (hit.collider.transform.position != previousFloorPosition)
+                {
+                    Vector3 movement = hit.collider.transform.position - previousFloorPosition;
+                    previousFloorPosition = hit.collider.transform.position;
+                    wrap.SetPosition(wrap.position + movement);
+                }
+            }
+        }
 
         protected virtual void CalculateVelocity()
         {
@@ -326,7 +352,7 @@ namespace redd096.v2.ComponentsSystem
     [System.Serializable]
     public struct FComponentWrapper
     {
-        public enum EComponentToWrap { CharacterController, Rigidbody3D, Rigidbody2D }
+        public enum EComponentToWrap { Automatic, CharacterController, Rigidbody3D, Rigidbody2D }
 
         [Tooltip("Use CharacterController, Rigidbody 3d or Rigidbody 2d")] public EComponentToWrap componentToWrap;
         public CharacterController ch;
@@ -343,8 +369,10 @@ namespace redd096.v2.ComponentsSystem
                 return ch != null;
             else if (componentToWrap == EComponentToWrap.Rigidbody3D)
                 return rb3d != null;
-            else
+            else if (componentToWrap == EComponentToWrap.Rigidbody2D)
                 return rb2d != null;
+            else
+                return false;
         }
 
         /// <summary>
@@ -354,6 +382,25 @@ namespace redd096.v2.ComponentsSystem
         /// <returns></returns>
         public bool TryGetComponent(Transform transform)
         {
+            //if automatic, check if there is already a component setted in inspector and use it
+            if (componentToWrap == EComponentToWrap.Automatic)
+            {
+                if (ch) componentToWrap = EComponentToWrap.CharacterController;
+                else if (rb3d) componentToWrap = EComponentToWrap.Rigidbody3D;
+                else if (rb2d) componentToWrap = EComponentToWrap.Rigidbody2D;
+                                
+                if (componentToWrap != EComponentToWrap.Automatic)
+                    return true;
+
+                //if there isn't, check if there is a component on this transform
+                if (transform.TryGetComponent(out ch))
+                    componentToWrap = EComponentToWrap.CharacterController;
+                else if (transform.TryGetComponent(out rb3d))
+                    componentToWrap = EComponentToWrap.Rigidbody3D;
+                else if (transform.TryGetComponent(out rb2d))
+                    componentToWrap = EComponentToWrap.Rigidbody2D;
+            }
+
             if (componentToWrap == EComponentToWrap.CharacterController)
                 return transform.TryGetComponent(out ch);
             else if (componentToWrap == EComponentToWrap.Rigidbody3D)
@@ -374,7 +421,7 @@ namespace redd096.v2.ComponentsSystem
                 return;
             else if (componentToWrap == EComponentToWrap.Rigidbody3D)
                 rb3d.AddForce(force, mode3D);
-            else
+            else if (componentToWrap == EComponentToWrap.Rigidbody2D)
                 rb2d.AddForce(force, mode2D);
         }
 
@@ -388,8 +435,22 @@ namespace redd096.v2.ComponentsSystem
                 ch.Move(velocity * Time.deltaTime);
             else if (componentToWrap == EComponentToWrap.Rigidbody3D)
                 rb3d.velocity = velocity;
-            else
+            else if (componentToWrap == EComponentToWrap.Rigidbody2D)
                 rb2d.velocity = velocity;
+        }
+
+        /// <summary>
+        /// Set transform position for CharacterController or call Rigidbody.MovePosition
+        /// </summary>
+        /// <param name="position"></param>
+        public void SetPosition(Vector3 position)
+        {
+            if (componentToWrap == EComponentToWrap.CharacterController)
+                ch.transform.position = position;
+            else if (componentToWrap == EComponentToWrap.Rigidbody3D)
+                rb3d.MovePosition(position);
+            else if (componentToWrap == EComponentToWrap.Rigidbody2D)
+                rb2d.MovePosition(position);
         }
 
         /// <summary>
@@ -403,8 +464,10 @@ namespace redd096.v2.ComponentsSystem
                     return ch.velocity;
                 else if (componentToWrap == EComponentToWrap.Rigidbody3D)
                     return rb3d.velocity;
-                else
+                else if (componentToWrap == EComponentToWrap.Rigidbody2D)
                     return rb2d.velocity;
+                else
+                    return Vector3.zero;
             }
         }
 
@@ -419,8 +482,10 @@ namespace redd096.v2.ComponentsSystem
                     return default;
                 else if (componentToWrap == EComponentToWrap.Rigidbody3D)
                     return rb3d.position;
-                else 
+                else if (componentToWrap == EComponentToWrap.Rigidbody2D)
                     return rb2d.position;
+                else
+                    return Vector3.zero;
             }
         }
 
@@ -434,6 +499,8 @@ namespace redd096.v2.ComponentsSystem
                 if (componentToWrap == EComponentToWrap.CharacterController)
                     return ch.isGrounded;
                 else if (componentToWrap == EComponentToWrap.Rigidbody3D)
+                    return false;
+                else if (componentToWrap == EComponentToWrap.Rigidbody2D)
                     return false;
                 else
                     return false;
@@ -451,8 +518,10 @@ namespace redd096.v2.ComponentsSystem
                     return Time.deltaTime;
                 else if (componentToWrap == EComponentToWrap.Rigidbody3D)
                     return Time.fixedDeltaTime;
-                else
+                else if (componentToWrap == EComponentToWrap.Rigidbody2D)
                     return Time.fixedDeltaTime;
+                else
+                    return 0f;
             }
         }
     }
