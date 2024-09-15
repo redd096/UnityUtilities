@@ -376,6 +376,9 @@ namespace redd096
             if (fadeOutMusic == null || fadeOutMusic.keys == null || fadeOutMusic.keys.Length <= 0)
                 fadeOutMusic = new AnimationCurve(new Keyframe(0, 1), new Keyframe(1, 0));
 
+            if (musicAudioSource == null)
+                musicAudioSource = GenerateAudioSource(persistent: true);
+
             //else, play music
             StartCoroutine_SoundManagerInternal(fadeCoroutines, musicAudioSource, PlayMusicCoroutine(music));
         }
@@ -405,16 +408,7 @@ namespace redd096
             //if audio source is null, get from pooling
             if (audioSource == null)
             {
-                //if pooling prefab is null, create it
-                if (prefabAudioSource == null)
-                {
-                    prefabAudioSource = new GameObject("AudioSource Prefab", typeof(AudioSource)).GetComponent<AudioSource>();
-                    prefabAudioSource.transform.SetParent(transform);   //set child to not destroy when change scene
-                }
-                audioSource = pooling.Instantiate(prefabAudioSource);
-
-                //set parent when audio source is null (if user gives an audioSource as parameter, we don't touch its parent)
-                audioSource.transform.SetParent(persistent ? SoundsParentPersistent : SoundsParent);    //persistent for music, else normal SoundsParent
+                GenerateAudioSource(persistent);
             }
 
             //set position
@@ -474,7 +468,7 @@ namespace redd096
             StopCoroutine_SoundManagerInternal(coroutines, audioSource);
 
             //start new coroutine
-            coroutines.Add(audioSource, StartCoroutine(coroutine));
+            coroutines[audioSource] = StartCoroutine(coroutine);
         }
 
         private void StopCoroutine_SoundManagerInternal(Dictionary<AudioSource, Coroutine> coroutines, AudioSource audioSource)
@@ -485,6 +479,22 @@ namespace redd096
                 if (coroutines[audioSource] != null) StopCoroutine(coroutines[audioSource]);
                 coroutines.Remove(audioSource);
             }
+        }
+
+        private AudioSource GenerateAudioSource(bool persistent)
+        {
+            //if pooling prefab is null, create it
+            if (prefabAudioSource == null)
+            {
+                prefabAudioSource = new GameObject("AudioSource Prefab", typeof(AudioSource)).GetComponent<AudioSource>();
+                prefabAudioSource.transform.SetParent(transform);   //set child to not destroy when change scene
+            }
+            AudioSource audioSource = pooling.Instantiate(prefabAudioSource);
+
+            //set parent when audio source is null (if user gives an audioSource as parameter, we don't touch its parent)
+            audioSource.transform.SetParent(persistent ? SoundsParentPersistent : SoundsParent);    //persistent for music, else normal SoundsParent
+
+            return audioSource;
         }
 
         #endregion
