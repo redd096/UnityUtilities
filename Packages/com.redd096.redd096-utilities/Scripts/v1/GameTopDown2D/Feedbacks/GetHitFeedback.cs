@@ -19,7 +19,7 @@ namespace redd096.v1.GameTopDown2D
         [Header("Blink On Get Damage - Default get component in children")]
         [SerializeField] bool blinkOnGetDamage = true;
         [EnableIf("blinkOnGetDamage")][SerializeField] SpriteRenderer[] spritesToUse = default;
-        [EnableIf("blinkOnGetDamage")][SerializeField] Material blinkMaterial = default;
+        [EnableIf("blinkOnGetDamage")][SerializeField] Material blinkMaterial = default;    //material with shader -> GUI/Text Shader
         [EnableIf("blinkOnGetDamage")][SerializeField] float blinkDuration = 0.2f;
 
         [Header("Stop Time On Get Damage")]
