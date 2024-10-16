@@ -45,17 +45,17 @@ namespace redd096.v2.ComponentsSystem
         /// <summary>
         /// Called every frame when inside this task
         /// </summary>
-        public virtual void OnUpdateTask() { }
+        protected virtual void OnUpdateTask() { }
 
         /// <summary>
         /// Called every FixedUpdate when inside this task
         /// </summary>
-        public virtual void OnFixedUpdateTask() { }
+        protected virtual void OnFixedUpdateTask() { }
 
         /// <summary>
         /// Called every LateUpdate when inside this task
         /// </summary>
-        public virtual void OnLateUpdateTask() { }
+        protected virtual void OnLateUpdateTask() { }
 
         /// <summary>
         /// Call onCompleteTask delegate

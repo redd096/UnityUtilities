@@ -6,7 +6,6 @@ namespace redd096.v2.ComponentsSystem
     /// </summary>
     public abstract class ConditionTask : BaseTask
     {
-
         /// <summary>
         /// Called by StateMachine, to be sure the task is active before call OnCheckTask()
         /// </summary>
@@ -22,6 +21,6 @@ namespace redd096.v2.ComponentsSystem
         /// Called every frame when inside this task. Return true to tell statemachine to change state (check Transition inside State class)
         /// </summary>
         /// <returns></returns>
-        public virtual bool OnCheckTask() { return true; }
+        protected virtual bool OnCheckTask() { return true; }
     }
 }

@@ -44,9 +44,9 @@ namespace redd096.v2.ComponentsSystem
         {
             //get statemachine from this target object, or from owner
             IStateMachineInspector stateMachine = null;
-            if (property.serializedObject.targetObject.GetTransform().TryGetComponent(out IStateMachineInspector sm))
+            if (GetTransform(property.serializedObject.targetObject).TryGetComponent(out IStateMachineInspector sm))
                 stateMachine = sm;
-            else if (property.serializedObject.targetObject.GetTransform().TryGetComponent(out IGameObjectRD goRD))
+            else if (GetTransform(property.serializedObject.targetObject).TryGetComponent(out IGameObjectRD goRD))
                 stateMachine = goRD.GetComponentRD<IStateMachineInspector>();
 
             if (stateMachine == null)
@@ -88,6 +88,17 @@ namespace redd096.v2.ComponentsSystem
             }
 
             return 0;
+        }
+
+        /// <summary>
+        /// Return Transform (cast obj as GameObject or Component)
+        /// </summary>
+        private Transform GetTransform(Object obj)
+        {
+            if (obj is GameObject)
+                return (obj as GameObject).transform;
+            else
+                return (obj as Component).transform;
         }
     }
 
