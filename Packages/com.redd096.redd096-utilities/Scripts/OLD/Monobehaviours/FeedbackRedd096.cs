@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace redd096
+namespace redd096.OLD
 {
     public abstract class FeedbackRedd096<T> : FeedbackRedd096
     {
