@@ -19,10 +19,10 @@ namespace redd096.UIControl
         #region vars
 
         [Header("Percentage (from 0 to 1)")]
-        [SerializeField] bool m_usePercentageWidth = true;
-        [SerializeField] float m_widthPercentage;
-        [SerializeField] bool m_usePercentageHeight = true;
-        [SerializeField] float m_heightPercentage;
+        [SerializeField] bool m_usePercentageWidth;
+        [SerializeField] float m_widthPercentage = 1;
+        [SerializeField] bool m_usePercentageHeight;
+        [SerializeField] float m_heightPercentage = 1;
 
         /// <summary>
         /// Set width as percentage for this content?

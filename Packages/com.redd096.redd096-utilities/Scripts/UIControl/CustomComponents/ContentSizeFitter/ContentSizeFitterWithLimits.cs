@@ -14,10 +14,10 @@ namespace redd096.UIControl
     public class ContentSizeFitterWithLimits : ContentSizeFitter
     {
         [Header("Content max limits")]
-        [SerializeField] bool m_limitWidth = true;
-        [SerializeField] float m_maxWidth;
-        [SerializeField] bool m_limitHeight = true;
-        [SerializeField] float m_maxHeight;
+        [SerializeField] bool m_limitWidth;
+        [SerializeField] float m_maxWidth = 100;
+        [SerializeField] bool m_limitHeight;
+        [SerializeField] float m_maxHeight = 100;
 
         /// <summary>
         /// Set max width for this content?
