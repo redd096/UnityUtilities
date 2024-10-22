@@ -36,7 +36,7 @@ namespace redd096.Examples.ComponentsSystem
             if (inputManager == null) Debug.LogError($"Missing inputManager on {name}", gameObject);
         }
 
-        public override void OnUpdateTask()
+        protected override void OnUpdateTask()
         {
             base.OnUpdateTask();
 
@@ -53,7 +53,7 @@ namespace redd096.Examples.ComponentsSystem
             //check if press to interact
             if (inputManager && inputManager.InteractWasPressedThisFrame)
             {
-                interactComponent.Interact();
+                interactComponent.TryInteract();
             }
         }
     }

@@ -33,7 +33,7 @@ namespace redd096.Examples.ComponentsSystem
             if (inputManager == null) Debug.LogError($"Missing inputManager on {name}", gameObject);
         }
 
-        public override void OnUpdateTask()
+        protected override void OnUpdateTask()
         {
             base.OnUpdateTask();
 
@@ -44,7 +44,7 @@ namespace redd096.Examples.ComponentsSystem
             }
         }
 
-        public override void OnFixedUpdateTask()
+        protected override void OnFixedUpdateTask()
         {
             base.OnFixedUpdateTask();
 
