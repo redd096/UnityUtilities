@@ -7,10 +7,14 @@ using UnityEditor.UI;
 
 namespace redd096.UIControl
 {
+    /// <summary>
+    /// Content Size Fitter but instead of control only child preferred or min size, it has various fit mode (e.g. FollowAlwaysRect is the same but instead of check the child, check a specific rect)
+    /// </summary>
     [AddComponentMenu("redd096/UIControl/Custom Components/Content Size Fitter/Dynamic Content Size Fitter")]
     public class DynamicContentSizeFitter : ContentSizeFitter
     {
         #region vars
+
         /// <summary>
         /// The dynamic size fit modes avaliable to use.
         /// </summary>
@@ -59,14 +63,17 @@ namespace redd096.UIControl
         /// The dynamic fit mode to use to determine the size.
         /// </summary>
         public EDynamicFitMode dynamicFitMode { get { return m_dynamicFitMode; } set { m_dynamicFitMode = value; SetDirty(); } }
+
         /// <summary>
         /// How to calculate the content default size
         /// </summary>
         public EDefaultSizeMode defaultSizeMode { get { return m_defaultSizeMode; } set { m_defaultSizeMode = value; SetDirty(); } }
+
         /// <summary>
         /// The normal size delta to use when we aren't using rects size
         /// </summary>
         public Vector2 sizeDelta { get { return m_sizeDelta; } set { m_sizeDelta = value; SetDirty(); } }
+
         /// <summary>
         /// The rects we are checking to set the content size
         /// </summary>
@@ -96,11 +103,24 @@ namespace redd096.UIControl
                 return m_parentRect;
             }
         }
+
+        // field is never assigned warning
+#pragma warning disable 649
+        private DrivenRectTransformTracker m_Tracker;   //this is used to set not editable Width and Height in inspector for this RectTransform
+#pragma warning restore 649
+
         #endregion
+
+        protected override void OnDisable()
+        {
+            m_Tracker.Clear();
+            base.OnDisable();
+        }
 
         public override void SetLayoutHorizontal()
         {
             //base.SetLayoutHorizontal();
+            m_Tracker.Clear();
             HandleSelfFittingAlongAxis(0);
         }
 
@@ -116,8 +136,12 @@ namespace redd096.UIControl
             FitMode fitting = (axis == 0 ? horizontalFit : verticalFit);
             if (fitting == FitMode.Unconstrained)
             {
+                // Keep a reference to the tracked transform, but don't control its properties:
+                m_Tracker.Add(this, rectTransform, DrivenTransformProperties.None);
                 return;
             }
+
+            m_Tracker.Add(this, rectTransform, (axis == 0 ? DrivenTransformProperties.SizeDeltaX : DrivenTransformProperties.SizeDeltaY));
 
             Vector2 previousSize = rectTransform.sizeDelta;
 
@@ -131,6 +155,7 @@ namespace redd096.UIControl
                 else
                     rectsSize += LayoutUtility.GetPreferredSize(rectStruct.rect, axis);
 
+                //and every default size
                 defaultSize += rectStruct.defaultSize;
             }
 
@@ -140,10 +165,11 @@ namespace redd096.UIControl
             //Debug.Log($"<color=green>AFTER - delta: {sizeDelta} - parent rect width: {parentRectTransform.rect.width} - otherRect width: {rectToCheck.rect.width} - " +
             //    $"current rect width: {rectTransform.rect.width} -  found size: {foundSize} - current sizeDelta: {rectTransform.sizeDelta}</color>");
 
-#if UNITY_EDITOR
-            if (Application.isPlaying == false && previousSize != rectTransform.sizeDelta)
-                EditorUtility.SetDirty(gameObject);
-#endif
+//#if UNITY_EDITOR
+//            //be sure to update also in editor
+//            if (Application.isPlaying == false && previousSize != rectTransform.sizeDelta)
+//                EditorUtility.SetDirty(gameObject);
+//#endif
         }
 
         protected virtual float DynamicSize(float size, int axis, Vector2 defaultSize)
@@ -240,6 +266,7 @@ namespace redd096.UIControl
             serializedObject.ApplyModifiedProperties();
         }
     }
+
 #endif
     #endregion
 }

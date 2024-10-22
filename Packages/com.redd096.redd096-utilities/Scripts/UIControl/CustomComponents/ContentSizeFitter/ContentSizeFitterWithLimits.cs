@@ -7,6 +7,9 @@ using UnityEditor.UI;
 
 namespace redd096.UIControl
 {
+    /// <summary>
+    /// Content Size Fitter, but with max size
+    /// </summary>
     [AddComponentMenu("redd096/UIControl/Custom Components/Content Size Fitter/Content Size Fitter With Limits")]
     public class ContentSizeFitterWithLimits : ContentSizeFitter
     {
@@ -48,9 +51,21 @@ namespace redd096.UIControl
             }
         }
 
+        // field is never assigned warning
+#pragma warning disable 649
+        private DrivenRectTransformTracker m_Tracker;   //this is used to set not editable Width and Height in inspector for this RectTransform
+#pragma warning restore 649
+
+        protected override void OnDisable()
+        {
+            m_Tracker.Clear();
+            base.OnDisable();
+        }
+
         public override void SetLayoutHorizontal()
         {
             //base.SetLayoutHorizontal();
+            m_Tracker.Clear();
             HandleSelfFittingAlongAxis(0);
         }
 
@@ -62,11 +77,16 @@ namespace redd096.UIControl
 
         private void HandleSelfFittingAlongAxis(int axis)
         {
+            //Unconstrained, do nothing
             FitMode fitting = (axis == 0 ? horizontalFit : verticalFit);
             if (fitting == FitMode.Unconstrained)
             {
+                // Keep a reference to the tracked transform, but don't control its properties:
+                m_Tracker.Add(this, rectTransform, DrivenTransformProperties.None);
                 return;
             }
+
+            m_Tracker.Add(this, rectTransform, (axis == 0 ? DrivenTransformProperties.SizeDeltaX : DrivenTransformProperties.SizeDeltaY));
 
             // Set size to min or preferred size
             float size;
@@ -133,6 +153,7 @@ namespace redd096.UIControl
             serializedObject.ApplyModifiedProperties();
         }
     }
+
 #endif
     #endregion
 }

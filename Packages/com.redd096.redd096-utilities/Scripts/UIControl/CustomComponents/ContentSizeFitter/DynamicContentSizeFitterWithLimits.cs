@@ -5,6 +5,9 @@ using UnityEditor;
 
 namespace redd096.UIControl
 {
+    /// <summary>
+    /// Same as DynamicContentSizeFitter but with max size
+    /// </summary>
     [AddComponentMenu("redd096/UIControl/Custom Components/Content Size Fitter/Dynamic Content Size Fitter With Limits")]
     public class DynamicContentSizeFitterWithLimits : DynamicContentSizeFitter
     {
@@ -95,6 +98,7 @@ namespace redd096.UIControl
             serializedObject.ApplyModifiedProperties();
         }
     }
+
 #endif
     #endregion
 }
