@@ -14,6 +14,7 @@ namespace redd096.Attributes
     {
         public readonly string vector2IntArrayProperty;
         [Tooltip("Draw only the grid and hide this property? Or draw this property and below the grid")] public bool hideThisProperty;
+        [Tooltip("If this property is Integer or Vector2Int, use this property as size for the grid instead of sizeX and sizeY declared in the constructor")] public bool useThisPropertyAsGridSize;
         [Tooltip("Show coordinates (x, y) on the button?")] public bool showButtonName;
         [Tooltip("use center as zero, left down button will be negative (in grid 3x3, left down is -1,-1). If false, use left down button as zero")] public bool useCenterAsZero;
         public int sizeX { get; private set; }
@@ -73,15 +74,12 @@ namespace redd096.Attributes
             Vector2Int[] arrayValues = property.GetValue(at.vector2IntArrayProperty) as Vector2Int[];
 
             //get grid size (number of rows and columns)
-            if (property.propertyType == SerializedPropertyType.Integer)
+            if (at.useThisPropertyAsGridSize)
             {
-                property.intValue = Mathf.Max(1, property.intValue);
-                at.SetSize(property.intValue, property.intValue);
-            }
-            else if (property.propertyType == SerializedPropertyType.Vector2Int)
-            {
-                property.vector2IntValue = new Vector2Int(Mathf.Max(1, property.vector2IntValue.x), Mathf.Max(1, property.vector2IntValue.y));
-                at.SetSize(property.vector2IntValue.x, property.vector2IntValue.y);
+                if (property.propertyType == SerializedPropertyType.Integer)
+                    at.SetSize(property.intValue, property.intValue);
+                else if (property.propertyType == SerializedPropertyType.Vector2Int)
+                    at.SetSize(property.vector2IntValue.x, property.vector2IntValue.y);
             }
 
             //show property to set grid size
