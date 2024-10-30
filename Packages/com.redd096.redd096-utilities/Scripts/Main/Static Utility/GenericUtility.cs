@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace redd096
 {
-    public static class Utility
+    public static class GenericUtility
     {
         #region general
 
@@ -56,7 +56,7 @@ namespace redd096
         #endregion
     }
 
-    public static class Collections
+    public static class CollectionsUtility
     {
         #region set parent
 
@@ -99,7 +99,7 @@ namespace redd096
         #endregion
     }
 
-    public static class Extensions
+    public static class ExtensionsUtility
     {
         #region object
 

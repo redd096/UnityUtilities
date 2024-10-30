@@ -2,7 +2,7 @@
 
 namespace redd096
 {
-    public static class Angle
+    public static class AngleUtility
     {
         /// <summary>
         /// Clamp from min to max
@@ -33,7 +33,7 @@ namespace redd096
         }
     }
 
-    public static class MathQuaternion
+    public static class MathQuaternionUtility
     {
         /// <summary>
         /// originalQuat + addedQuat
@@ -52,7 +52,7 @@ namespace redd096
         }
     }
 
-    public static class Direction
+    public static class DirectionUtility
     {
         /// <summary>
         /// Return the local direction
@@ -79,7 +79,7 @@ namespace redd096
         }
     }
 
-    public static class TransformRot
+    public static class TransformRotUtility
     {
         /// <summary>
         /// Transforms rotation from local space to world space. newUp is the up vector of the transform
@@ -103,7 +103,7 @@ namespace redd096
         public static Quaternion InverseTransformRotation(Quaternion rotation)
         {
             //get local up
-            Vector3 rotationUp = Direction.WorldToLocalDirection(Vector3.up, rotation);
+            Vector3 rotationUp = DirectionUtility.WorldToLocalDirection(Vector3.up, rotation);
 
             return Quaternion.FromToRotation(rotationUp, Vector3.up) * rotation;
         }
@@ -114,7 +114,7 @@ namespace redd096
         public static Quaternion InverseTransformRotation(Vector3 rotation)
         {
             //get local up
-            Vector3 rotationUp = Direction.WorldToLocalDirection(Vector3.up, Quaternion.Euler(rotation));
+            Vector3 rotationUp = DirectionUtility.WorldToLocalDirection(Vector3.up, Quaternion.Euler(rotation));
 
             return Quaternion.FromToRotation(rotationUp, Vector3.up) * Quaternion.Euler(rotation);
         }
@@ -126,7 +126,7 @@ namespace redd096
         public static Quaternion TransformToTransformRotation(Quaternion rotation, Vector3 newUp)
         {
             //get local up
-            Vector3 rotationUp = Direction.WorldToLocalDirection(Vector3.up, rotation);
+            Vector3 rotationUp = DirectionUtility.WorldToLocalDirection(Vector3.up, rotation);
 
             return Quaternion.FromToRotation(rotationUp, newUp) * rotation;
         }
@@ -138,7 +138,7 @@ namespace redd096
         public static Quaternion TransformToTransformRotation(Vector3 rotation, Vector3 newUp)
         {
             //get local up
-            Vector3 rotationUp = Direction.WorldToLocalDirection(Vector3.up, Quaternion.Euler(rotation));
+            Vector3 rotationUp = DirectionUtility.WorldToLocalDirection(Vector3.up, Quaternion.Euler(rotation));
 
             return Quaternion.FromToRotation(rotationUp, newUp) * Quaternion.Euler(rotation);
         }
@@ -164,7 +164,7 @@ namespace redd096
         }
     }
 
-    public static class RotatedIdentity
+    public static class RotatedIdentityUtility
     {
         /// <summary>
         /// Rotate the quaternion.identity to a newUp. Then return new quaternion.identity
@@ -175,13 +175,13 @@ namespace redd096
             //to walk on a planet your newUp is player.position - planet.position, or normal using raycast
 
             //get default quaternion.identity rotated to the new up
-            Quaternion defaultIdentityRotated = TransformRot.TransformRotation(Quaternion.identity, newUp);
+            Quaternion defaultIdentityRotated = TransformRotUtility.TransformRotation(Quaternion.identity, newUp);
 
             //return new Quaternion.identity
-            newIdentity = TransformRot.TransformToTransformRotation(currentIdentity, newUp);
+            newIdentity = TransformRotUtility.TransformToTransformRotation(currentIdentity, newUp);
 
             //return difference of rotation on Y axis (MouseX), from Quaternion.identity to new identity
-            differenceYAxisFromDefaultIdentity = MathQuaternion.SubtractQuaternion(newIdentity, defaultIdentityRotated);
+            differenceYAxisFromDefaultIdentity = MathQuaternionUtility.SubtractQuaternion(newIdentity, defaultIdentityRotated);
         }
 
         /// <summary>
@@ -192,10 +192,10 @@ namespace redd096
         public static Quaternion RotationWithNewIdentity(Vector3 rotation, Vector3 upVector, Quaternion differenceYAxis)
         {
             //calculate the rotation with new quaternion.identity (so if our Up vector is not Vector3.up, it works anyway)
-            Quaternion newRotation = TransformRot.TransformRotation(rotation, upVector);
+            Quaternion newRotation = TransformRotUtility.TransformRotation(rotation, upVector);
 
             //there is a problem: Vector3.up has Z as forward, but rotation can have forward rotated, so we must add Y axis (MouseX)
-            return MathQuaternion.AddQuaternion(differenceYAxis, newRotation);
+            return MathQuaternionUtility.AddQuaternion(differenceYAxis, newRotation);
         }
 
         /// <summary>
@@ -205,10 +205,10 @@ namespace redd096
         public static Quaternion InverseRotationWithNewIdentity(Quaternion rotation, Quaternion differenceYAxis)
         {
             //calculate the rotation in world space (so with up vector == Vector3.up)
-            Quaternion newRotation = TransformRot.InverseTransformRotation(rotation);
+            Quaternion newRotation = TransformRotUtility.InverseTransformRotation(rotation);
 
             //there is a problem: Vector3.up has Z as forward, but rotation can have forward rotated, so we must subtract Y axis (MouseX)
-            return MathQuaternion.SubtractQuaternion(newRotation, differenceYAxis);
+            return MathQuaternionUtility.SubtractQuaternion(newRotation, differenceYAxis);
         }
     }
 }
