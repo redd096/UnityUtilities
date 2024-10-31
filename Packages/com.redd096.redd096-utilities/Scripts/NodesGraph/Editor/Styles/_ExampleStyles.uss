@@ -1,0 +1,60 @@
+/* WILDCARD -> this affect everything that use this styleSheet */
+*
+{
+    justify-content: center;
+    background-color: #282C34;
+}
+
+/* this is the root, where we declare variable to use also on other styleSheet inside the same visualElement where this is loaded */
+/* the -- is to declare a variable */
+/* to use a variable just call var(--nameVariable) */
+:root
+{
+    --yellow-color: #FDD052;
+    --margin-8: 8px;
+}
+
+/* this affect every Label where this styleSheet is loaded */
+Label
+{
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;    
+    font-size: 20px;
+    margin: var(--margin-8);
+}
+
+/* . is used to create a custom class, add objects to this with visualElement.AddToClassList("dark-button"); */
+.dark-button
+{
+    background-color: #1C2025;
+    color: #E0E0E0;
+    border-color: transparent;
+    min-height: 50px;
+}
+
+/* edit hover event for this custom class */
+.dark-button:hover
+{
+    background-color: #181B1F;
+    color: var(--yellow-color);
+}
+
+/* press event */
+.dark-button:active
+{
+    border-color: var(--yellow-color);
+}
+
+.horizontal-container
+{
+    flex-direction: row;
+    align-content: center;
+    flex-wrap: wrap;
+    margin: var(--margin-8);
+}
+
+/* # is used to affect every visual element with this name (in the script I created a ColorField and changed ColorField.name to color-picker) */
+#color-picker
+{
+    margin: var(--margin-8);
+}

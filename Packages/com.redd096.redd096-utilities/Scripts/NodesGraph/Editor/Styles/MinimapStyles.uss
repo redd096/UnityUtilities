@@ -1,0 +1,5 @@
+Minimap
+{	
+	background-color: var(--ds-colors-minimap-light-grey);
+	border-color: var(--ds-colors-minimap-dark-grey);
+}
