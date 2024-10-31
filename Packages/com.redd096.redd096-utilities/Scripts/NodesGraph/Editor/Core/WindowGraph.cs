@@ -21,7 +21,7 @@ namespace redd096.NodesGraph.Editor
         protected VisualElement toolbar;
 
         [MenuItem("Tools/redd096/Nodes Graph")]
-        public static void ShowWindow()
+        public static void ShowNodesGraphWindow()
         {
             //open window (and set title)
             GetWindow<WindowGraph>("Nodes Graph");
