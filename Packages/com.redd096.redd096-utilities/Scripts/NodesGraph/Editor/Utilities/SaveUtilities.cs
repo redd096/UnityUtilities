@@ -65,7 +65,6 @@ namespace redd096.NodesGraph.Editor
             }
 
             //get elements from asset
-            string fileName = asset.FileName;
             nodes = asset.Nodes;
             groups = asset.Groups;
 
