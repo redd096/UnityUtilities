@@ -2,7 +2,6 @@
 using System.IO;
 using UnityEditor;
 using UnityEditor.UIElements;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace redd096.NodesGraph.Editor
@@ -13,6 +12,7 @@ namespace redd096.NodesGraph.Editor
     public class NodesGraphToolbar : VisualElement
     {
         protected NodesGraphView graph;
+        protected SaveLoadGraph saveLoad;
         protected Toolbar toolbar;
 
         protected TextField fileNameTextfield;
@@ -24,9 +24,10 @@ namespace redd096.NodesGraph.Editor
         public const string SAVE_FOLDER_NAME = "SavedGraphs";
         public static string SavedFolderPath => Path.Combine("Assets", SAVE_FOLDER_NAME);
 
-        public NodesGraphToolbar(NodesGraphView graph) : base()
+        public NodesGraphToolbar(NodesGraphView graph, SaveLoadGraph saveLoad) : base()
         {
             this.graph = graph;
+            this.saveLoad = saveLoad;
 
             //for now we use a VisualElement with inside a Toolbar, to not lose graphic styles. In the future I have to edit styles for Toolbar too
             toolbar = new Toolbar();
@@ -34,13 +35,13 @@ namespace redd096.NodesGraph.Editor
 
             //add label
             fileName = DEFAULT_FILE_NAME;
-            fileNameTextfield = CreateElementsUtilities.CreatetextField(fileName, "File Name:", callback => fileName = callback.newValue);
+            fileNameTextfield = CreateElementsUtilities.CreateTextField("File Name:", fileName, callback => fileName = callback.newValue);
 
             //add buttons
-            Button saveButton = CreateElementsUtilities.CreateButton("Save", () => ClickSave());
-            Button loadButton = CreateElementsUtilities.CreateButton("Load", () => ClickLoad());
-            Button clearButton = CreateElementsUtilities.CreateButton("Clear", () => ClickClear());
-            minimapButton = CreateElementsUtilities.CreateButton("Minimap", () => ClickToggleMinimap());
+            Button saveButton = CreateElementsUtilities.CreateButton("Save", ClickSave);
+            Button loadButton = CreateElementsUtilities.CreateButton("Load", ClickLoad);
+            Button clearButton = CreateElementsUtilities.CreateButton("Clear", ClickClear);
+            minimapButton = CreateElementsUtilities.CreateButton("Minimap", ClickToggleMinimap);
 
             //check if minimapButton is toggled or not (minimap visible or not)
             if (this.graph.IsMinimapVisible())
@@ -53,7 +54,8 @@ namespace redd096.NodesGraph.Editor
             AddInToolbar(clearButton);
             AddInToolbar(minimapButton);
         }
-        private void AddInToolbar(VisualElement element)
+
+        protected virtual void AddInToolbar(VisualElement element)
         {
             toolbar.Add(element);
         }
@@ -63,7 +65,7 @@ namespace redd096.NodesGraph.Editor
         /// <summary>
         /// Save all assets
         /// </summary>
-        void ClickSave()
+        protected virtual void ClickSave()
         {
             //be sure there is a file name
             if (string.IsNullOrEmpty(fileName))
@@ -79,13 +81,13 @@ namespace redd096.NodesGraph.Editor
             //save file
             string filePathInProject = EditorUtility.SaveFilePanelInProject("Save file", fileName, "asset", "Select folder where save file");
             if (string.IsNullOrEmpty(filePathInProject) == false)
-                SaveUtilities.Save(graph, filePathInProject);
+                saveLoad.Save(graph, filePathInProject);
         }
 
         /// <summary>
         /// Load from asset
         /// </summary>
-        void ClickLoad()
+        protected virtual void ClickLoad()
         {
             //find file in project
             string filePath = EditorUtility.OpenFilePanel("Load Graph", SavedFolderPath, "asset");
@@ -103,14 +105,14 @@ namespace redd096.NodesGraph.Editor
 
                 //remove path until "Assets", because we need path relative to project folder
                 string filePathInProject = filePath.Substring(filePath.LastIndexOf("Assets"));
-                SaveUtilities.Load(graph, filePathInProject);
+                saveLoad.Load(graph, filePathInProject);
             }
         }
 
         /// <summary>
         /// Clear graph view
         /// </summary>
-        void ClickClear()
+        protected virtual void ClickClear()
         {
             graph.ClearGraph();
         }
@@ -118,7 +120,7 @@ namespace redd096.NodesGraph.Editor
         /// <summary>
         /// Toggle minimap
         /// </summary>
-        void ClickToggleMinimap()
+        protected virtual void ClickToggleMinimap()
         {
             graph.ToggleMinimap();
 

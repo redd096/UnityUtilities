@@ -18,6 +18,7 @@ namespace redd096.NodesGraph.Editor
         [SerializeField] protected StyleSheet toolbarStyles;
 
         protected VisualElement graph;
+        protected SaveLoadGraph saveLoad;
         protected VisualElement toolbar;
 
         [MenuItem("Tools/redd096/Nodes Graph")]
@@ -31,6 +32,7 @@ namespace redd096.NodesGraph.Editor
         {
             //create elements
             CreateGraph();
+            CreateSaveLoad();
             CreateToolbar();
             AddElementsToRoot();
 
@@ -48,11 +50,19 @@ namespace redd096.NodesGraph.Editor
         }
 
         /// <summary>
+        /// Create system to save and load, managed by Toolbar when press Save or Load button
+        /// </summary>
+        protected virtual void CreateSaveLoad()
+        {
+            saveLoad = new SaveLoadGraph();
+        }
+
+        /// <summary>
         /// Create toolbar
         /// </summary>
         protected virtual void CreateToolbar()
         {
-            toolbar = new NodesGraphToolbar(graph as NodesGraphView);
+            toolbar = new NodesGraphToolbar(graph as NodesGraphView, saveLoad);
         }
 
         /// <summary>

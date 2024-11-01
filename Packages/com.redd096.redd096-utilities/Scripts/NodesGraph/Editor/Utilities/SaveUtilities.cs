@@ -13,8 +13,10 @@ namespace redd096.NodesGraph.Editor
     /// <summary>
     /// Example of utilities to save graph in a scriptable object and load from scriptable object to graph
     /// </summary>
-    public class SaveUtilities : MonoBehaviour
+    public static class SaveUtilities
     {
+        private static NodesGraphView graph;
+
         private static List<NodeData> nodes;
         private static List<GroupData> groups;
 
@@ -28,11 +30,13 @@ namespace redd096.NodesGraph.Editor
         /// <param name="assetPathRelativeToProject">The path to the file, but the path must starts with Assets</param>
         public static void Save(NodesGraphView graph, string assetPathRelativeToProject)
         {
+            SaveUtilities.graph = graph;
+
             //initialize lists
             nodes = new List<NodeData>();
             groups = new List<GroupData>();
 
-            GetElementsFromGraphView(graph);
+            GetElementsFromGraphView();
             SaveAsset(assetPathRelativeToProject);
         }
 
@@ -42,6 +46,8 @@ namespace redd096.NodesGraph.Editor
         /// <param name="assetPathRelativeToProject">The path to the file, but the path must starts with Assets</param>
         public static void Load(NodesGraphView graph, string assetPathRelativeToProject)
         {
+            SaveUtilities.graph = graph;
+
             //try load
             FileData asset = AssetDatabase.LoadAssetAtPath<FileData>(assetPathRelativeToProject);
 
@@ -67,9 +73,9 @@ namespace redd096.NodesGraph.Editor
             loadedGroups = new Dictionary<string, GraphGroup>();
             loadedNodes = new Dictionary<string, GraphNode>();
 
-            LoadGroups(graph);
-            LoadNodes(graph);
-            LoadNodesConnections(graph);
+            LoadGroups();
+            LoadNodes();
+            LoadNodesConnections();
         }
 
         private static void SaveAsset(string assetPathRelativeToProject)
@@ -109,7 +115,7 @@ namespace redd096.NodesGraph.Editor
                 Directory.CreateDirectory(path);
         }
 
-        private static void GetElementsFromGraphView(NodesGraphView graph)
+        private static void GetElementsFromGraphView()
         {
             //add starting node as first node
             if (graph.StartingNode != null)
@@ -201,7 +207,7 @@ namespace redd096.NodesGraph.Editor
 
         #region load API
 
-        private static void LoadGroups(NodesGraphView graph)
+        private static void LoadGroups()
         {
             if (groups == null)
                 return;
@@ -217,7 +223,7 @@ namespace redd096.NodesGraph.Editor
             }
         }
 
-        private static void LoadNodes(NodesGraphView graph)
+        private static void LoadNodes()
         {
             if (nodes == null)
                 return;
@@ -250,7 +256,7 @@ namespace redd096.NodesGraph.Editor
             }
         }
 
-        private static void LoadNodesConnections(NodesGraphView graph)
+        private static void LoadNodesConnections()
         {
             if (nodes == null || loadedNodes == null)
                 return;

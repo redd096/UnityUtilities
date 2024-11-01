@@ -52,7 +52,7 @@ namespace redd096.NodesGraph.Editor.Example
 
             //foldout and text field
             Foldout textFoldout = CreateElementsUtilities.CreateFoldout("Content");
-            TextField contentTextField = CreateElementsUtilities.CreateTextArea(ContentText, null, callback => ContentText = callback.newValue);
+            TextField contentTextField = CreateElementsUtilities.CreateTextArea(null, ContentText, callback => ContentText = callback.newValue);
             textFoldout.Add(contentTextField);                      //text inside foldout (so we can open and close it)
             customDataContainer.Add(textFoldout);                   //foldout inside custom container (so we can give it a custom style)
             extensionContainer.Add(customDataContainer);            //container inside extension container (so under input and output)
@@ -78,7 +78,7 @@ namespace redd096.NodesGraph.Editor.Example
 
             //create a TextField to change portName
             DeletablePortsNames.Add(outputPort, "Output");
-            TextField portTextField = CreateElementsUtilities.CreatetextField(DeletablePortsNames[outputPort], null, callback => DeletablePortsNames[outputPort] = callback.newValue);
+            TextField portTextField = CreateElementsUtilities.CreateTextField(null, DeletablePortsNames[outputPort], callback => DeletablePortsNames[outputPort] = callback.newValue);
 
             //create a ObjectField to change data
             outputPort.userData = null;

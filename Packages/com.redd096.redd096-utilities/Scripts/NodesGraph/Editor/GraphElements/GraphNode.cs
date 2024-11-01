@@ -77,7 +77,7 @@ namespace redd096.NodesGraph.Editor
             //the body of the node is in ExtensionContainer (it wants RefreshExpandedState() to show everything you added inside)       (index 2 inside main container)
             
             //set name textfield, and add to title container
-            nameTextField = CreateElementsUtilities.CreatetextField(NodeName, null, callback => NodeName = callback.newValue);
+            nameTextField = CreateElementsUtilities.CreateTextField(null, NodeName, callback => NodeName = callback.newValue);
             titleContainer.Insert(0, nameTextField);
         }
 
