@@ -49,7 +49,7 @@ namespace redd096
 
         private GameObject GetGameObjectFromValue(int instanceID)
         {
-            GameObject[] gameObjectsInScene = FindObjectsOfType<GameObject>();
+            GameObject[] gameObjectsInScene = FindObjectsOfType<GameObject>(true);
 
             //find file
             foreach (GameObject go in gameObjectsInScene)
