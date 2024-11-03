@@ -323,15 +323,17 @@ namespace redd096.NodesGraph.Editor
         /// <param name="nodeName"></param>
         /// <param name="type"></param>
         /// <param name="position"></param>
+        /// <param name="shouldDraw">Call node.DrawNode()? By default is true, but you could set it false for example when load a node to set values before call Draw</param>
         /// <returns></returns>
-        public virtual GraphNode CreateNode(string nodeName, System.Type type, Vector2 position)
+        public virtual GraphNode CreateNode(string nodeName, System.Type type, Vector2 position, bool shouldDraw = true)
         {
             //create node and use AddElement instead of Add, to add to the GraphView
             GraphNode node = System.Activator.CreateInstance(type) as GraphNode;
             node.Initialize(nodeName, this, position);
 
             //draw
-            node.DrawNode();
+            if (shouldDraw)
+                node.DrawNode();
 
             //add to graph view
             AddElement(node);
@@ -412,6 +414,8 @@ namespace redd096.NodesGraph.Editor
         {
             DeleteElements(graphElements);
             //graphElements.ForEach(graphElement => RemoveElement(graphElement));
+
+            StartingNode = null;
         }
 
         /// <summary>

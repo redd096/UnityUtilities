@@ -82,7 +82,7 @@ namespace redd096.NodesGraph.Editor.Example
 
             //create a ObjectField to change data
             outputPort.userData = null;
-            ObjectField portObjectField = CreateElementsUtilities.CreateObjectField("", typeof(Object), callback => outputPort.userData = callback.newValue);
+            ObjectField portObjectField = CreateElementsUtilities.CreateObjectField("", null, typeof(Object), callback => outputPort.userData = callback.newValue);
 
             //create an X button to delete the port
             Button deletePortButton = CreateElementsUtilities.CreateButton("X", () => DeleteOutputPort(outputPort));

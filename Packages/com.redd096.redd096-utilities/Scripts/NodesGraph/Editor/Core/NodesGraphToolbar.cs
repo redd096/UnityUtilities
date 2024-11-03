@@ -72,7 +72,7 @@ namespace redd096.NodesGraph.Editor
             {
                 EditorUtility.DisplayDialog(
                     "Invalid file name",
-                    "Please ensure the file name you have typed in is valid.",
+                    "Please ensure the file name you have typed is valid.",
                     "OK");
 
                 return;

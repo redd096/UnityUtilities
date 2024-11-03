@@ -13,5 +13,10 @@ namespace redd096.NodesGraph.Runtime
         public string ID;
         public Vector2 Position;
         public List<string> ContainedNodesID;
+
+        /// <summary>
+        /// Instead of create a GroupData for every new group, you can save values inside this
+        /// </summary>
+        public object UserData;
     }
 }
