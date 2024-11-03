@@ -67,25 +67,27 @@ namespace redd096
             // Test every gameobjects
             foreach (var go in gameObjects)
             {
-                PropertyInfo inspectorModeInfo = typeof(SerializedObject).GetProperty("inspectorMode", BindingFlags.NonPublic | BindingFlags.Instance);
-                SerializedObject serializedObject = new SerializedObject(go);
-                inspectorModeInfo.SetValue(serializedObject, InspectorMode.Debug, null);
-                SerializedProperty localIdProp = serializedObject.FindProperty("m_LocalIdentfierInFile");
-                if (localIdProp.longValue == fileID)
+                if (GetFileID(go) == fileID)
                     return go;
             }
             // Test every gameobjects transforms
             foreach (var go in gameObjects)
             {
-                PropertyInfo inspectorModeInfo = typeof(SerializedObject).GetProperty("inspectorMode", BindingFlags.NonPublic | BindingFlags.Instance);
-                SerializedObject serializedObject = new SerializedObject(go.transform);
-                inspectorModeInfo.SetValue(serializedObject, InspectorMode.Debug, null);
-                SerializedProperty localIdProp = serializedObject.FindProperty("m_LocalIdentfierInFile");
-                if (localIdProp.longValue == fileID)
+                if (GetFileID(go.transform) == fileID)
                     return go;
             }
 
             return null;
+        }
+
+        long GetFileID(Object obj)
+        {
+            PropertyInfo inspectorModeInfo = typeof(SerializedObject).GetProperty("inspectorMode", BindingFlags.NonPublic | BindingFlags.Instance);
+            SerializedObject serializedObject = new SerializedObject(obj);
+            inspectorModeInfo.SetValue(serializedObject, InspectorMode.Debug, null);
+            SerializedProperty localIdProp = serializedObject.FindProperty("m_LocalIdentfierInFile");
+
+            return localIdProp.longValue;
         }
     }
 }
