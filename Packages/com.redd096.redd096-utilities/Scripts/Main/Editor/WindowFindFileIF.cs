@@ -2,24 +2,25 @@
 using System.Reflection;
 using UnityEngine;
 using UnityEditor;
+using System.Collections.Generic;
 
 namespace redd096
 {
-    public class WindowFindFileId : EditorWindow
+    public class WindowFindFileID : EditorWindow
     {
         string fileIDString;
 
-        [MenuItem("Tools/redd096/Find Files/Find by fileID")]
+        [MenuItem("Tools/redd096/Find Files/Find by fileID (Local Identifier)")]
         static void FindByFileId()
         {
             //open window (and set title)
-            GetWindow<WindowFindFileId>("Window Find File ID");
+            GetWindow<WindowFindFileID>("Window Find File ID");
         }
 
         private void OnGUI()
         {
             //text field
-            fileIDString = EditorGUILayout.TextField("File ID: ", fileIDString);
+            fileIDString = EditorGUILayout.TextField("File ID (Local identifier): ", fileIDString);
 
             //button
             if (GUILayout.Button("Find file"))
@@ -31,28 +32,31 @@ namespace redd096
             }
         }
 
-        private void FindFile(long fileID)
+        private void FindFile(long value)
         {
-            //find file ID
-            GameObject resultGo = GetGameObjectFromFileID(fileID);
-            if (resultGo == null)
+            //find file
+            Object result = GetGameObjectFromValue(value);
+            if (result == null)
             {
-                Debug.LogError("FileID not found for fileID = " + fileID);
+                Debug.LogError("Not found object with value: " + value);
                 return;
             }
 
             //select it
-            Debug.Log("GameObject for fileID " + fileID + " is " + resultGo, resultGo);
-            GameObject[] newSelection = new GameObject[] { resultGo };
-            Selection.objects = newSelection;
+            Debug.Log($"With value [{value}] the result is: {result}", result);
+            GUI.FocusControl(null);
+            Selection.activeObject = result;
+            EditorGUIUtility.PingObject(result);
         }
 
-        private GameObject GetGameObjectFromFileID(long fileID) // also called local identifier
+        private GameObject GetGameObjectFromValue(long fileID)
         {
             GameObject resultGo = null;
-            var gameObjects = Resources.FindObjectsOfTypeAll<GameObject>();
-            //List<GameObject> gameObjects = new List<GameObject>(FindObjectsByType<GameObject>(FindObjectsInactive.Include, FindObjectsSortMode.InstanceID));
-            //gameObjects.AddRange(Resources.FindObjectsOfTypeAll<GameObject>());
+
+            //get objects in resources and in scene
+            List<GameObject> gameObjects = new List<GameObject>(Resources.FindObjectsOfTypeAll<GameObject>());
+            GameObject[] gameObjectsInScene = FindObjectsByType<GameObject>(FindObjectsInactive.Include, FindObjectsSortMode.InstanceID);
+            gameObjects.AddRange(gameObjectsInScene);
 
             // Test every gameobjects
             foreach (var go in gameObjects)
@@ -76,23 +80,5 @@ namespace redd096
             return resultGo;
         }
     }
-
-    //public static class FindFileId
-    //{
-    //    [MenuItem("redd096/Select in scene by fileID")]
-    //    public static void SelectInSceneByFileId()
-    //    {
-    //        long fileID = 804738792;
-    //        GameObject resultGo = GetGameObjectFromFileID(fileID);
-    //        if (resultGo == null)
-    //        {
-    //            Debug.LogError("FileID not found for fileID = " + fileID);
-    //            return;
-    //        }
-    //        Debug.Log("GameObject for fileID " + fileID + " is " + resultGo, resultGo);
-    //        GameObject[] newSelection = new GameObject[] { resultGo };
-    //        Selection.objects = newSelection;
-    //    }
-    //}
 }
 #endif

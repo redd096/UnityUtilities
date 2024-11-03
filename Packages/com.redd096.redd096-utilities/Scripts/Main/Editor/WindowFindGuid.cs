@@ -27,39 +27,33 @@ namespace redd096
             }
         }
 
-        private void FindFile(string guid)
+        private void FindFile(string value)
         {
-            //find file ID
-            Object resultGo = GetGameObjectFromGuid(guid);
-            if (resultGo == null)
+            //find file
+            Object result = GetGameObjectFromValue(value);
+            if (result == null)
             {
-                Debug.LogError("Guid not found for guid = " + guid);
+                Debug.LogError("Not found object with value: " + value);
                 return;
             }
 
             //select it
-            Debug.Log("GameObject for guid " + guid + " is " + resultGo, resultGo);
-            Object[] newSelection = new Object[] { resultGo };
-            Selection.objects = newSelection;
+            Debug.Log($"With value [{value}] the result is: {result}", result);
+            GUI.FocusControl(null);
+            Selection.activeObject = result;
+            EditorGUIUtility.PingObject(result);
         }
 
-        private Object GetGameObjectFromGuid(string guid)
+        private Object GetGameObjectFromValue(string guid)
         {
-            Object resultGo = null;
             string path = AssetDatabase.GUIDToAssetPath(guid);
 
+            //find file
+            if (string.IsNullOrEmpty(path) == false)
+                return AssetDatabase.LoadMainAssetAtPath(path);
+
             //file not found
-            if (string.IsNullOrEmpty(path))
-                return null;
-
-            GUI.FocusControl(null);
-            var asset = AssetDatabase.LoadMainAssetAtPath(path);
-            EditorGUIUtility.PingObject(asset);
-            Selection.activeObject = asset;
-
-            resultGo = asset;
-
-            return resultGo;
+            return null;
         }
     }
 }
