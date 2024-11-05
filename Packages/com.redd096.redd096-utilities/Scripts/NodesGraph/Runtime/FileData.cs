@@ -8,14 +8,11 @@ namespace redd096.NodesGraph.Runtime
     /// </summary>
     public class FileData : ScriptableObject
     {
-        public string FileName;
-        [Space]
         public List<NodeData> Nodes;
         public List<GroupData> Groups;
 
-        public void Initialize(string fileName, List<NodeData> nodes, List<GroupData> groups)
+        public void Initialize(List<NodeData> nodes, List<GroupData> groups)
         {
-            FileName = fileName;
             Nodes = nodes;
             Groups = groups;
         }

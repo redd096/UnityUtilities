@@ -11,14 +11,23 @@ namespace redd096.NodesGraph.Editor
     /// </summary>
     public class NodesGraphToolbar : VisualElement
     {
+        //automatic save
+        protected AutomaticSaveTask automaticSaveTask;
+        protected virtual bool automaticSaveEnabled => true;
+        protected virtual int automaticSaveTimer => 300;
+
+        //init
         protected NodesGraphView graph;
         protected SaveLoadGraph saveLoad;
         protected Toolbar toolbar;
 
+        //ui elements
         protected TextField fileNameTextfield;
         protected Button minimapButton;
 
+        //file
         protected string fileName;
+        protected string filePathInProject;
 
         public const string DEFAULT_FILE_NAME = "New File";
         public const string SAVE_FOLDER_NAME = "SavedGraphs";
@@ -60,6 +69,40 @@ namespace redd096.NodesGraph.Editor
             toolbar.Add(element);
         }
 
+        #region Save API
+
+        protected virtual void Save()
+        {
+            //if fileName and filePath are setted
+            if (string.IsNullOrEmpty(fileName) == false && string.IsNullOrEmpty(filePathInProject) == false)
+            {
+                //save
+                saveLoad.Save(graph, filePathInProject);
+
+                //and start save automatically
+                if (automaticSaveEnabled)
+                {
+                    if (automaticSaveTask != null)
+                        automaticSaveTask.Stop();
+                    automaticSaveTask = new AutomaticSaveTask(automaticSaveTimer, fileName, filePathInProject, AutomaticSave);
+                }
+            }
+        }
+
+        protected virtual void AutomaticSave(string prevFileName, string prevFilePathInProject)
+        {
+            //check if file name and path are still the same
+            if (fileName == prevFileName && filePathInProject == prevFilePathInProject)
+            {
+                UnityEngine.Debug.Log("AUTOMATIC SAVE: " + System.DateTime.Now.ToString());
+
+                //and save
+                Save();
+            }
+        }
+
+        #endregion
+
         #region on click buttons
 
         /// <summary>
@@ -79,9 +122,8 @@ namespace redd096.NodesGraph.Editor
             }
 
             //save file
-            string filePathInProject = EditorUtility.SaveFilePanelInProject("Save file", fileName, "asset", "Select folder where save file");
-            if (string.IsNullOrEmpty(filePathInProject) == false)
-                saveLoad.Save(graph, filePathInProject);
+            filePathInProject = EditorUtility.SaveFilePanelInProject("Save file", fileName, "asset", "Select folder where save file");
+            Save();
         }
 
         /// <summary>
@@ -104,8 +146,16 @@ namespace redd096.NodesGraph.Editor
                 fileNameTextfield.SetValueWithoutNotify(fileName);
 
                 //remove path until "Assets", because we need path relative to project folder
-                string filePathInProject = filePath.Substring(filePath.LastIndexOf("Assets"));
+                filePathInProject = filePath.Substring(filePath.LastIndexOf("Assets"));
                 saveLoad.Load(graph, filePathInProject);
+
+                //and start save automatically
+                if (automaticSaveEnabled)
+                {
+                    if (automaticSaveTask != null)
+                        automaticSaveTask.Stop();
+                    automaticSaveTask = new AutomaticSaveTask(automaticSaveTimer, fileName, filePathInProject, AutomaticSave);
+                }
             }
         }
 

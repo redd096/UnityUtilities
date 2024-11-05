@@ -237,7 +237,7 @@ namespace redd096.NodesGraph.Editor
             }
 
             //set values
-            asset.Initialize(fileName, nodes, groups);
+            asset.Initialize(nodes, groups);
 
             //set dirty in editor
             EditorUtility.SetDirty(asset);
@@ -407,9 +407,9 @@ namespace redd096.NodesGraph.Editor
             List<Port> inputPorts = connectedNode.inputContainer.Query<Port>().ToList();
 
             //be sure port index is correct and the port is correct type
-            Port connectedPort = inputPorts.Count > connectedPortIndex 
+            Port connectedPort = inputPorts.Count > connectedPortIndex
                 && inputPorts[connectedPortIndex].portType.IsAssignableFrom(outputPort.portType) ? inputPorts[connectedPortIndex] : null;
-            
+
             //else, try find first input port still not connected to other nodes and with correct Port Type
             if (connectedPort == null)
             {
