@@ -214,7 +214,7 @@ namespace redd096.NodesGraph.Editor
         {
             //add drag manipulator when click middle mouse button, and zoom when move the wheel
             this.AddManipulator(new ContentDragger());
-            this.AddManipulator(new ContentZoomer());
+            this.AddManipulator(new ContentZoomer() { maxScale = 2 });
             //another method to add content zoomer
             //SetupZoom(ContentZoomer.DefaultMinScale, ContentZoomer.DefaultMaxScale);
 
