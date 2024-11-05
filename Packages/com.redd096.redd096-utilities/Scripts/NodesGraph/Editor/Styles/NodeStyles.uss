@@ -146,6 +146,21 @@ TextField
 	margin-left: var(--ds-metrics-window-pixels-0);
 }
 
+IntegerField
+{
+	margin-left: var(--ds-metrics-window-pixels-0);
+}
+
+FloatField
+{
+	margin-left: var(--ds-metrics-window-pixels-0);
+}
+
+Toggle
+{
+	margin-left: var(--ds-metrics-window-pixels-0);
+}
+
 .ds-node__custom-data-container > Foldout
 {
 	margin-left: var(--ds-metrics-window-pixels-negative-4);
