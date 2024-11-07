@@ -29,8 +29,8 @@ namespace redd096.NodesGraph.Editor
         protected string fileName;
         protected string filePathInProject;
 
-        public const string DEFAULT_FILE_NAME = "New File";
-        public const string FILE_PANEL_START_FOLDER = "Assets";
+        protected const string DEFAULT_FILE_NAME = "New File";
+        protected virtual string filePanelStartFolder => "Assets";
 
         public NodesGraphToolbar(NodesGraphView graph, SaveLoadGraph saveLoad) : base()
         {
@@ -121,7 +121,7 @@ namespace redd096.NodesGraph.Editor
             }
 
             //save file
-            filePathInProject = EditorUtility.SaveFilePanelInProject("Save file", fileName, "asset", "Select folder where save file", FILE_PANEL_START_FOLDER);
+            filePathInProject = EditorUtility.SaveFilePanelInProject("Save file", fileName, "asset", "Select folder where save file", filePanelStartFolder);
             Save();
         }
 
@@ -131,7 +131,7 @@ namespace redd096.NodesGraph.Editor
         protected virtual void ClickLoad()
         {
             //find file in project
-            string filePath = EditorUtility.OpenFilePanel("Load Graph", FILE_PANEL_START_FOLDER, "asset");
+            string filePath = EditorUtility.OpenFilePanel("Load Graph", filePanelStartFolder, "asset");
 
             if (string.IsNullOrEmpty(filePath) == false)
             {
