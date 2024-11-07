@@ -32,6 +32,7 @@ namespace redd096.NodesGraph.Editor
             //set default values
             NodeName = nodeName;
             ID = System.Guid.NewGuid().ToString();
+            //int fileID = System.Guid.NewGuid().GetHashCode();
 
             //set position
             SetPosition(new Rect(position, Vector2.zero));
