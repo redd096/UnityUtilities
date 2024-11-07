@@ -43,7 +43,7 @@ namespace redd096.NodesGraph.Editor
 
             //add label
             fileName = DEFAULT_FILE_NAME;
-            fileNameTextfield = CreateElementsUtilities.CreateTextField("File Name:", fileName, callback => fileName = callback.newValue.Trim());
+            fileNameTextfield = CreateElementsUtilities.CreateTextField("File Name:", fileName, callback => fileName = callback.newValue);
 
             //add buttons
             Button saveButton = CreateElementsUtilities.CreateButton("Save", ClickSave);
