@@ -9,6 +9,9 @@ using UnityEditor;
 
 namespace redd096.UIControl
 {
+    /// <summary>
+    /// Use this to generate a grid without know the size of every cell, different from GridLayoutGroup where every cell must have the same size
+    /// </summary>
     [AddComponentMenu("redd096/UIControl/Custom Components/Dynamic Grid Layout Group")]
     public class DynamicGridLayoutGroup : LayoutGroup
     {
@@ -683,7 +686,7 @@ namespace redd096.UIControl
     {
         SerializedProperty m_Padding;
         SerializedProperty m_Spacing;
-        SerializedProperty m_StartCorner;
+        //SerializedProperty m_StartCorner;
         SerializedProperty m_StartAxis;
         SerializedProperty m_ChildAlignment;
         SerializedProperty m_ChildControlWidth;
@@ -699,7 +702,7 @@ namespace redd096.UIControl
         {
             m_Padding = serializedObject.FindProperty("m_Padding");
             m_Spacing = serializedObject.FindProperty("m_Spacing");
-            m_StartCorner = serializedObject.FindProperty("m_StartCorner");
+            //m_StartCorner = serializedObject.FindProperty("m_StartCorner");
             m_StartAxis = serializedObject.FindProperty("m_StartAxis");
             m_ChildAlignment = serializedObject.FindProperty("m_ChildAlignment");
             m_ChildControlWidth = serializedObject.FindProperty("m_ChildControlWidth");
@@ -717,7 +720,7 @@ namespace redd096.UIControl
             serializedObject.Update();
             EditorGUILayout.PropertyField(m_Padding, true);
             EditorGUILayout.PropertyField(m_Spacing, true);
-            EditorGUILayout.PropertyField(m_StartCorner, true);
+            //EditorGUILayout.PropertyField(m_StartCorner, true);
             EditorGUILayout.PropertyField(m_StartAxis, true);
             EditorGUILayout.PropertyField(m_ChildAlignment, true);
             EditorGUILayout.PropertyField(m_WrappingMode, true);
