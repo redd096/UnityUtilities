@@ -8,9 +8,36 @@ namespace redd096
 {
     public class FindEveryReferenceInProject
     {
+        //use GameObject to put in context menu when press right click in the Project
         private const string MenuItemText = "Assets/Find EVERY Reference In Project";
 
-        [MenuItem(MenuItemText, false, 25)]
+        //use GameObject to put in context menu when press right click in the Scene
+        //private const string HierarchyMenu = "GameObject/Find EVERY Reference In Project";
+
+        //there are other custom words. If you don't use these custom words, your path will be in the top bar of the editor (like Tools)
+
+        /// <summary>
+        /// This is the function to enable the button in context menu (same path, but "isValidateFunction" is true)
+        /// </summary>
+        /// <returns></returns>
+        [MenuItem(MenuItemText, true)]
+        //[MenuItem(HierarchyMenu, true)]
+        public static bool Validate()
+        {
+            if (Selection.activeObject)
+            {
+                string path = AssetDatabase.GetAssetPath(Selection.activeObject);
+                return !AssetDatabase.IsValidFolder(path);
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// This is the real function to call, with "isValidateFunction" at false.
+        /// </summary>
+        [MenuItem(MenuItemText, false)]
+        //[MenuItem(HierarchyMenu, false)]
         public static async void Find()
         {
             var sw = new System.Diagnostics.Stopwatch();
@@ -75,18 +102,6 @@ namespace redd096
             }
 
             referenceCache.Clear();
-        }
-
-        [MenuItem(MenuItemText, true)]
-        public static bool Validate()
-        {
-            if (Selection.activeObject)
-            {
-                string path = AssetDatabase.GetAssetPath(Selection.activeObject);
-                return !AssetDatabase.IsValidFolder(path);
-            }
-
-            return false;
         }
     }
 }
