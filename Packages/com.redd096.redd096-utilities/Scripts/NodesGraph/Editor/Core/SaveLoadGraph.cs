@@ -381,7 +381,7 @@ namespace redd096.NodesGraph.Editor
                 for (int i = 0; i < data.OutputsData.Count; i++)
                 {
                     Port outputPort = list[i];
-                    //outputPort.portType = System.Type.GetType(data.OutputsData[i].OutputType);
+                    outputPort.portType = System.Type.GetType(data.OutputsData[i].OutputType);
                     string connectedNodeID = data.OutputsData[i].ConnectedNodeID;
                     int connectedPortIndex = data.OutputsData[i].ConnectedPortIndex;
 
