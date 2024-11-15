@@ -18,11 +18,20 @@ namespace redd096.Attributes
 
         public readonly float height;
         public readonly AttributesUtility.EColor color;
+        public readonly float lineHeight;
 
         public HorizontalLineAttribute(float height = DefaultHeight, AttributesUtility.EColor color = DefaultColor)
         {
             this.height = height;
             this.color = color;
+            lineHeight = EditorGUIUtility.singleLineHeight;
+        }
+
+        public HorizontalLineAttribute(float lineHeight, float height, AttributesUtility.EColor color = DefaultColor)
+        {
+            this.height = height;
+            this.color = color;
+            this.lineHeight = lineHeight;
         }
     }
 
@@ -36,7 +45,7 @@ namespace redd096.Attributes
         public override float GetHeight()
         {
             HorizontalLineAttribute at = attribute as HorizontalLineAttribute;
-            return EditorGUIUtility.singleLineHeight + at.height;
+            return at.lineHeight + at.height;
         }
 
         public override void OnGUI(Rect position)
@@ -44,7 +53,7 @@ namespace redd096.Attributes
             HorizontalLineAttribute at = attribute as HorizontalLineAttribute;
 
             Rect rect = EditorGUI.IndentedRect(position);
-            rect.y += EditorGUIUtility.singleLineHeight / 3.0f;
+            rect.y += at.lineHeight / 3.0f;
             rect.height = at.height;
 
             EditorGUI.DrawRect(rect, AttributesUtility.GetColor(at.color));
