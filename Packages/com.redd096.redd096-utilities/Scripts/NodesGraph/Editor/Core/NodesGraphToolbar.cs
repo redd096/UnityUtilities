@@ -30,7 +30,7 @@ namespace redd096.NodesGraph.Editor
         protected string filePathInProject;
 
         protected const string DEFAULT_FILE_NAME = "New File";
-        protected virtual string filePanelStartFolder => "Assets";
+        protected virtual string filePanelStartFolder => string.IsNullOrEmpty(filePathInProject) ? "Assets" : filePathInProject;
 
         public NodesGraphToolbar(NodesGraphView graph, SaveLoadGraph saveLoad) : base()
         {
