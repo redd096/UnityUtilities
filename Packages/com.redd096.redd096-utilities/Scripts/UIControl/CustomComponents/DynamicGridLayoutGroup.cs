@@ -42,6 +42,23 @@ namespace redd096.UIControl
         /// </summary>
         public Vector2 spacing { get { return m_Spacing; } set { SetProperty(ref m_Spacing, value); } }
 
+        [SerializeField] protected Constraint m_Constraint = Constraint.Flexible;
+
+        /// <summary>
+        /// Which constraint to use for the GridLayoutGroup.
+        /// </summary>
+        /// <remarks>
+        /// Specifying a constraint can make the GridLayoutGroup work better in conjunction with a [[ContentSizeFitter]] component. When GridLayoutGroup is used on a RectTransform with a manually specified size, there's no need to specify a constraint.
+        /// </remarks>
+        public Constraint constraint { get { return m_Constraint; } set { SetProperty(ref m_Constraint, value); } }
+
+        [SerializeField] protected int m_ConstraintCount = 2;
+
+        /// <summary>
+        /// How many cells there should be along the constrained axis.
+        /// </summary>
+        public int constraintCount { get { return m_ConstraintCount; } set { SetProperty(ref m_ConstraintCount, Mathf.Max(1, value)); } }
+
         #endregion
 
         #region HorizontalOrVerticalLayoutGroup variables
@@ -145,6 +162,15 @@ namespace redd096.UIControl
 
         protected DynamicGridLayoutGroup()
         { }
+
+#if UNITY_EDITOR
+        protected override void OnValidate()
+        {
+            base.OnValidate();
+            constraintCount = constraintCount;
+        }
+
+#endif
 
         /// <summary>
         /// Called by the layout system. Also see ILayoutElement
@@ -273,9 +299,30 @@ namespace redd096.UIControl
                 }
 
                 //check if reach limit and create another row/column
-                float checkLineTotalMin = (startHorizontal ? horizontalLineTotalMin + horizontalMin : verticalLineTotalMin + verticalMin);
-                float checkLineTotalPreferred = (startHorizontal ? horizontalLineTotalPreferred + horizontalPreferred : verticalLineTotalPreferred + verticalPreferred);
-                if ((wrappingMode == WrappingMode.MinSize && checkLineTotalMin > limit) || (wrappingMode == WrappingMode.PreferredSize && checkLineTotalPreferred > limit))
+                bool createNewLine = false;
+                if (m_Constraint == Constraint.FixedColumnCount)
+                {
+                    int columns = m_ConstraintCount;
+                    if (m_CellsPerLine[m_LineCount - 1] >= columns)
+                        createNewLine = true;
+                }
+                else if (m_Constraint == Constraint.FixedRowCount)
+                {
+                    int columns = Mathf.CeilToInt(rectChildren.Count / (float)m_ConstraintCount - 0.001f);
+                    if (m_CellsPerLine[m_LineCount - 1] >= columns)
+                        createNewLine = true;
+                }
+                else
+                {
+                    float checkLineTotalMin = (startHorizontal ? horizontalLineTotalMin + horizontalMin : verticalLineTotalMin + verticalMin);
+                    float checkLineTotalPreferred = (startHorizontal ? horizontalLineTotalPreferred + horizontalPreferred : verticalLineTotalPreferred + verticalPreferred);
+                    if ((wrappingMode == WrappingMode.MinSize && checkLineTotalMin > limit) || (wrappingMode == WrappingMode.PreferredSize && checkLineTotalPreferred > limit))
+                    {
+                        createNewLine = true;
+                    }
+                }
+
+                if (createNewLine)
                 {
                     //only if this isn't the first element in the line (this to have at least one element in every line)
                     if (m_CellsPerLine[m_LineCount - 1] > 0)
@@ -689,6 +736,9 @@ namespace redd096.UIControl
         //SerializedProperty m_StartCorner;
         SerializedProperty m_StartAxis;
         SerializedProperty m_ChildAlignment;
+        SerializedProperty m_Constraint;
+        SerializedProperty m_ConstraintCount;
+
         SerializedProperty m_ChildControlWidth;
         SerializedProperty m_ChildControlHeight;
         SerializedProperty m_ChildScaleWidth;
@@ -696,6 +746,7 @@ namespace redd096.UIControl
         SerializedProperty m_ChildForceExpandWidth;
         SerializedProperty m_ChildForceExpandHeight;
         SerializedProperty m_ReverseArrangement;
+
         SerializedProperty m_WrappingMode;
 
         protected virtual void OnEnable()
@@ -705,6 +756,9 @@ namespace redd096.UIControl
             //m_StartCorner = serializedObject.FindProperty("m_StartCorner");
             m_StartAxis = serializedObject.FindProperty("m_StartAxis");
             m_ChildAlignment = serializedObject.FindProperty("m_ChildAlignment");
+            m_Constraint = serializedObject.FindProperty("m_Constraint");
+            m_ConstraintCount = serializedObject.FindProperty("m_ConstraintCount");
+
             m_ChildControlWidth = serializedObject.FindProperty("m_ChildControlWidth");
             m_ChildControlHeight = serializedObject.FindProperty("m_ChildControlHeight");
             m_ChildScaleWidth = serializedObject.FindProperty("m_ChildScaleWidth");
@@ -712,6 +766,7 @@ namespace redd096.UIControl
             m_ChildForceExpandWidth = serializedObject.FindProperty("m_ChildForceExpandWidth");
             m_ChildForceExpandHeight = serializedObject.FindProperty("m_ChildForceExpandHeight");
             m_ReverseArrangement = serializedObject.FindProperty("m_ReverseArrangement");
+
             m_WrappingMode = serializedObject.FindProperty("m_WrappingMode");
         }
 
@@ -723,6 +778,13 @@ namespace redd096.UIControl
             //EditorGUILayout.PropertyField(m_StartCorner, true);
             EditorGUILayout.PropertyField(m_StartAxis, true);
             EditorGUILayout.PropertyField(m_ChildAlignment, true);
+            EditorGUILayout.PropertyField(m_Constraint, true);
+            if (m_Constraint.enumValueIndex > 0)
+            {
+                EditorGUI.indentLevel++;
+                EditorGUILayout.PropertyField(m_ConstraintCount, true);
+                EditorGUI.indentLevel--;
+            }
             EditorGUILayout.PropertyField(m_WrappingMode, true);
             EditorGUILayout.PropertyField(m_ReverseArrangement, true);
 
