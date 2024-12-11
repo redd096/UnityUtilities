@@ -7,7 +7,7 @@ namespace redd096.UIControl
     /// Add this component to a GameObject to make it into a layout element or override values on an existing layout element. 
     /// Every value will be used as a percentage from 0f to 1f
     /// </summary>
-    [AddComponentMenu("redd096/UIControl/Custom Components/Layout Element Percentage")]
+    [AddComponentMenu("redd096/UIControl/Custom Components/Layout Element/Layout Element Percentage")]
     public class LayoutElementPercentage : LayoutElement
     {
         //parent rect transform
