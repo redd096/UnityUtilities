@@ -170,6 +170,7 @@ namespace redd096
             {
                 //by default Unity Object.Instantiate(T, transform) set worldPositionsStays at false
                 GetTransform(obj).SetParent(parent, worldPositionStays: false);
+                GetTransform(obj).SetAsLastSibling();
             }
 
             return obj;
@@ -188,6 +189,7 @@ namespace redd096
             if (obj != null)
             {
                 GetTransform(obj).SetParent(parent, worldPositionStays);
+                GetTransform(obj).SetAsLastSibling();
             }
 
             return obj;
