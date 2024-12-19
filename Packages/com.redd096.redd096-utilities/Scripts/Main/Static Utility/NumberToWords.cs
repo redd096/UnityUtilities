@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 
 namespace redd096
 {
@@ -128,6 +129,31 @@ namespace redd096
 
             //every other number just add "th" add the end (four, fourth - six, sixth...)
             return s + "th";
+        }
+
+        /// <summary>
+        /// From 2 to "II" and 13 to "XIII"
+        /// </summary>
+        /// <param name="number"></param>
+        /// <returns></returns>
+        public static string ToRomanNumberInWords(int number)
+        {
+            List<int> cardinals = new List<int>() { 1, 4, 5, 9, 10, 40, 50, 90, 100, 400, 500, 900, 1000 };
+            string[] romans = new string[] { "I", "IV", "V", "IX", "X", "XL", "L", "XC", "C", "CD", "D", "CM", "M" }; 
+
+            string romanNumber = string.Empty;
+            while (number > 0)
+            {
+                //find biggest cardinal (last in the list) that is less or equal to number
+                int index = cardinals.FindLastIndex(x => x <= number);
+
+                //subtract its value
+                number -= cardinals[index];
+
+                //and find its equal in roman to add to string
+                romanNumber += romans[index];
+            }
+            return romanNumber;
         }
     }
 }
