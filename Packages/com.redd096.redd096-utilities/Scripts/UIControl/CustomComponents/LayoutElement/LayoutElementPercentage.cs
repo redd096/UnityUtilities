@@ -27,14 +27,14 @@ namespace redd096.UIControl
 
         private float GetParentWidth()
         {
-            Rect parentRect = parentRectTransform ? parentRectTransform.rect : Rect.zero;
-            return parentRect.width;
+            float value = parentRectTransform ? parentRectTransform.rect.width : 1;
+            return value;
         }
 
         private float GetParentHeight()
         {
-            Rect parentRect = parentRectTransform ? parentRectTransform.rect : Rect.zero;
-            return parentRect.height;
+            float value = parentRectTransform ? parentRectTransform.rect.height : 1;
+            return value;
         }
 
         public override float minWidth { get => GetParentWidth() * base.minWidth; set => base.minWidth = value; }
