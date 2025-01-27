@@ -126,20 +126,23 @@ namespace redd096.UIControl
                 property.floatValue = (enabled ? defaultValue((target as LayoutElement).transform as RectTransform) : -1);
             }
 
-            //REMOVED FLOAT FIELD BECAUSE THIS COMPONENT TAKE VALUE FROM OtherObject ==================================
-            //if (!property.hasMultipleDifferentValues && property.floatValue >= 0)
-            //{
-            //    // Float field
-            //    EditorGUIUtility.labelWidth = 4; // Small invisible label area for drag zone functionality
-            //    EditorGUI.BeginChangeCheck();
-            //    float newValue = EditorGUI.FloatField(floatFieldRect, new GUIContent(" "), property.floatValue);
-            //    if (EditorGUI.EndChangeCheck())
-            //    {
-            //        property.floatValue = Mathf.Max(0, newValue);
-            //    }
-            //    EditorGUIUtility.labelWidth = 0;
-            //}
-            //=========================================================================================================
+            if (!property.hasMultipleDifferentValues && property.floatValue >= 0)
+            {
+                //REMOVED FLOAT FIELD BECAUSE THIS COMPONENT TAKE VALUE FROM OtherObject ==================================
+                string s = otherObject.objectReferenceValue != null ? otherObject.objectReferenceValue.name : "Null";
+                floatFieldRect.x += 4;  //small space
+                EditorGUI.LabelField(floatFieldRect, new GUIContent($"Get from [{s}]"));
+                //// Float field
+                //EditorGUIUtility.labelWidth = 4; // Small invisible label area for drag zone functionality
+                //EditorGUI.BeginChangeCheck();
+                //float newValue = EditorGUI.FloatField(floatFieldRect, new GUIContent(" "), property.floatValue);
+                //if (EditorGUI.EndChangeCheck())
+                //{
+                //    property.floatValue = Mathf.Max(0, newValue);
+                //}
+                //EditorGUIUtility.labelWidth = 0;
+                //=========================================================================================================
+            }
 
             EditorGUI.EndProperty();
         }
