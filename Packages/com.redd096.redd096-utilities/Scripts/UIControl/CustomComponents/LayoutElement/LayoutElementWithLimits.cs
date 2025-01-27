@@ -36,9 +36,9 @@ namespace redd096.UIControl
             return true;
         }
 
-        public override float preferredWidth { get => GetMinValue(base.preferredWidth, maxWidth, 0); set => base.preferredWidth = Mathf.Min(value, maxWidth); }
+        public override float preferredWidth { get => GetMinValue(base.preferredWidth, maxWidth, axis: 0); set => base.preferredWidth = Mathf.Min(value, maxWidth); }
 
-        public override float preferredHeight { get => GetMinValue(base.preferredHeight, maxHeight, 1); set => base.preferredHeight = Mathf.Min(value, maxHeight); }
+        public override float preferredHeight { get => GetMinValue(base.preferredHeight, maxHeight, axis: 1); set => base.preferredHeight = Mathf.Min(value, maxHeight); }
 
         #region fix MaxValue enabled and PreferredValue not
 
@@ -77,9 +77,10 @@ namespace redd096.UIControl
                 if (layoutComp is Behaviour && !((Behaviour)layoutComp).isActiveAndEnabled)
                     continue;
 
-                //THIS - IGNORE THIS COMPONENT
+                //THIS - IGNORE THIS COMPONENT ================
                 if (layoutComp is LayoutElementWithLimits compToIgnore && compToIgnore == this)
                     continue;
+                //==============================================
 
                 int priority = layoutComp.layoutPriority;
                 // If this layout components has lower priority than a previously used, ignore it.
