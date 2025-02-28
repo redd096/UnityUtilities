@@ -12,14 +12,14 @@ namespace redd096
         /// Remap a value min and max
         /// </summary>
         /// <param name="value">Value to remap</param>
-        /// <param name="from_prev">Previous minimum value</param>
-        /// <param name="to_prev">Previous maximum value</param>
-        /// <param name="from_new">New minimum value</param>
-        /// <param name="to_new">New max value</param>
+        /// <param name="oldMin">Previous minimum value</param>
+        /// <param name="oldMax">Previous maximum value</param>
+        /// <param name="newMin">New minimum value</param>
+        /// <param name="newMax">New max value</param>
         /// <returns></returns>
-        public static float Remap(this float value, float from_prev, float to_prev, float from_new, float to_new)
+        public static float Remap(this float value, float oldMin, float oldMax, float newMin, float newMax)
         {
-            return (value - from_prev) / (to_prev - from_prev) * (to_new - from_new) + from_new;
+            return (value - oldMin) / (oldMax - oldMin) * (newMax - newMin) + newMin;
         }
 
         #endregion
