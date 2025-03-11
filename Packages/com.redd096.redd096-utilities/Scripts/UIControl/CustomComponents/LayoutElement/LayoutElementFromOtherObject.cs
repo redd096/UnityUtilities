@@ -44,7 +44,7 @@ namespace redd096.UIControl
     ///   Custom editor for the LayoutElement component
     ///   Extend this class to write a custom editor for a component derived from LayoutElement.
     /// </summary>
-    public class LayoutElementWithLimitsEditor : Editor
+    public class LayoutElementFromOtherObjectEditor : Editor
     {
         SerializedProperty m_IgnoreLayout;
         SerializedProperty new_MinWidth;
@@ -106,7 +106,8 @@ namespace redd096.UIControl
             Rect position = EditorGUILayout.GetControlRect();
 
             // Label
-            GUIContent label = EditorGUI.BeginProperty(position, null, property);
+            GUIContent propertyName = new GUIContent(property.displayName.Replace("New_", ""));     //remove New_ from properties in inspector
+            GUIContent label = EditorGUI.BeginProperty(position, propertyName, property);
 
             // Rects
             Rect fieldPosition = EditorGUI.PrefixLabel(position, label);
