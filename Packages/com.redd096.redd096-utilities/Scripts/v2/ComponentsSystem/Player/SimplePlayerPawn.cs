@@ -28,7 +28,7 @@ namespace redd096.v2.ComponentsSystem
         {
             if (_currentController)
             {
-                //if for some reason CurrentController doesn't have this setted as pawn, force unpossess on this pawn
+                //if CurrentController for some reason doesn't have this setted as pawn, force unpossess on this pawn (copy-paste from controller unpossess)
                 if (_currentController.CurrentPawn != this)
                 {
                     SimplePlayerController previousController = _currentController;

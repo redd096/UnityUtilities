@@ -30,7 +30,7 @@ namespace redd096.v2.ComponentsSystem
 
             if (pawn)
             {
-                //if the new pawn ahs already a controller, call unpossess on it
+                //if the new pawn for some reason has already a controller, call unpossess on it
                 pawn.Unpossess();
 
                 //then set pawn and controller 
