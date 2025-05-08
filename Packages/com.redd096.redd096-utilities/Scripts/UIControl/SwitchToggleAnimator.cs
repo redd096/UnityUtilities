@@ -21,6 +21,9 @@ namespace redd096.UIControl
 
         private void Awake()
         {
+            //also when turn on and off this object, keep animator state
+            animator.keepAnimatorStateOnDisable = true;
+
             //set animation
             SetToggle(isToggled, false);
         }
