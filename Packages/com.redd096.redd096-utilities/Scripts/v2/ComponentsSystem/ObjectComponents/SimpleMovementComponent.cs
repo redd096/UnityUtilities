@@ -479,7 +479,7 @@ namespace redd096.v2.ComponentsSystem
             get
             {
                 if (componentToWrap == EComponentToWrap.CharacterController)
-                    return default;
+                    return ch.transform.position;
                 else if (componentToWrap == EComponentToWrap.Rigidbody3D)
                     return rb3d.position;
                 else if (componentToWrap == EComponentToWrap.Rigidbody2D)
