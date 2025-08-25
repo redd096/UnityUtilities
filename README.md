@@ -1,77 +1,96 @@
-# UnityUtilities
-a collections of utilities I created from various projects I worked on
+# Unity Utilities
 
-This project is a package, so you can find it in:
-Packages/com.redd096.redd096-utilities
+A collection of useful utilities created from various projects, designed to be used as a Unity package.
 
-It's possible to download by unity PackageManager:
-https://github.com/redd096/UnityUtilities.git?path=/Packages/com.redd096.redd096-utilities
+### Installation
+This project is available as a Unity Package, which can be installed via the Unity Package Manager.
 
-Inside the package folder we can find:
-- ExamplePrefabs: just a folder to easily drag-and-drop prefabs in your scene
-- Scripts: the main folder for this package
-- Shaders: few shaders I made
-- TODO.txt: a list of TODO (mainly PathFinding and SaveManager) 
+1. In Unity, go to **Window > Package Manager**.
+2. Click the `+` button in the top-left corner.
+3. Select **Add package from git URL...**.
+4. Paste the following URL:
+   `https://github.com/redd096/UnityUtilities.git?path=/Packages/com.redd096.redd096-utilities`
 
-# The package is splitted like this:
+The package will be installed in your project's `Packages/com.redd096.redd096-utilities` directory.
 
-Attributes:
-- various unity PropertyAttribute and helpers I made to customize the editor
+---
 
-CsvImporter:
-- the main script is the CsvImporter.cs that user can use to download and read csv
-- inside Helpers and Parse folders is possible to find and edit the logic of the CsvImporter
-- WindowEditor contains two windows I made to download a generic Csv and read it
-    - User can access it from Tools > redd096 > CSV Importer
-    - Download CSV open a window where user can put a CSV link and a folder where to download it
-        - DataPath and PersistentDataPath are buttons to automatically set the a folder path
-        - DownloadCsv is the button to download it
-        - Is possible to keep in memory more files at time with the Add Element button and the dropdown to the left
-    - CSV Reader open a window where user can parse and read a downloaded CSV
-- Example contains ExampleSimpleCsvImporterAndReader, a script where user can read how to use CSVimporter.cs
-    - User can access it from Tools > redd096 > CSV Importer > Examples
-    - Inside the script there are 3 functions: just download a CSV, Create an example ScriptableObject from a downloaded csv, Download and Create ScriptableObject in one call
-    - In "example scriptable object with helper" region, there is a way to use helpers to create ScriptableObjects instead of create a for cycle every time
-    - In "example update (not create) prefabs with helper" region, there is a way to update prefabs with helpers
+## Package Contents
 
-DialogueSystem:
-- for now just some helpers I made for PixelCrushers DialogueSystem
-- Note: this use a ScriptDefineSymbol PIXELCRUSHER_DIALOGUESYSTEM created by me
+The package is organized into several main folders:
 
-IconGenerator:
-- an icon generator I made, this is not so usefull
+* **ExamplePrefabs**: Ready-to-use prefabs that can be dragged and dropped directly into your scene.
+* **Scripts**: The core C# scripts for the package's functionalities.
+* **Shaders**: A small collection of custom shaders.
+* **TODO.txt**: A list of planned features and improvements, primarily for the **Pathfinding** and **SaveManager** systems.
 
-Main:
-- contains various miscellaneous scripts I used in my projects (from ScriptableObject and controllers to keep track of every file or layer used in the project, to CameraShake scripts, SaveManager, SoundManager, and various other singletons)
+---
 
-Network:
-- An interface I made to move fast between various Network frameworks (Fishnet, Mirror, Photon, etc...) and transports (Steam, EOS, etc...)
-- Note: they use vary ScriptDefineSymbol
-    - some are auto-generated when import the packages, like STEAMWORKS_NET for Steamworks or FISHNET for fishnet
-    - others are used globally, like DISABLESTEAMWORKS for Steamworks
-    - others are created by me, like PURRNET for Purrnet
+## Modules
 
-NodesGraph:
-- A GraphNode with UnityEditor's GraphView
-- Is possible to see a way to implement it in [https://github.com/redd096/HorrorGame](https://github.com/redd096/HorrorGame/tree/main/Assets/_Project/Scripts/GraphsEditor)
+The package's main functionalities are split into several modules.
 
-OLD:
-- obsolete scripts
+### Attributes
+Custom Unity `PropertyAttribute` and helper scripts to extend and customize the Unity editor.
 
-StateMachine:
-- a generic statemachine
-- user can create Serializable IState to show states in inspector, or add IState to a MonoBehaviour to have states as MonoBehaviour
+### CsvImporter
+This module provides a system for downloading and parsing CSV files.
 
-UIControl:
-- various scripts for unity UI (for example CustomButton with more than one image to change color to, ContentSizeFitter and LayoutElement in percentages, Dynamic GridLayoutGroup instead of fixed cell size)
-- this contains also OptimizeEventSystem, the script to make menus work with Gamepad too
-- PredictionSlider, the script used to make the HealthBar red when get hit and green when healed
+* **Core Script**: The main script is `CsvImporter.cs`, which handles all core functionality.
+* **Editor Windows**:
+    * Access the windows from the Unity menu: **Tools > redd096 > CSV Importer**.
+    * **Download CSV**: Allows you to enter a URL to download a CSV file to a specified folder.
+        * Buttons for `DataPath` and `PersistentDataPath` are provided for quick path selection.
+        * The **Add Element** button lets you keep multiple urls and paths in memory.
+    * **CSV Reader**: A window for parsing and reading a downloaded CSV file.
+* **Examples**:
+    * An example script, `ExampleSimpleCsvImporterAndReader.cs`, demonstrates how to use `CsvImporter.cs`.
+    * You can see the results under **Tools > redd096 > CSV Importer > Examples**.
+    * The script contains three main functions: downloading a CSV, creating a `ScriptableObject` from a CSV, and a combined download and creation method.
+    * **Helper Functions**: The `helpers` are demonstrated for creating and updating `ScriptableObject` and `Prefabs` with data from a CSV, eliminating the need for manual loops.
 
-v1:
-- various components I used in my games, like StateMachine, Pathfinding, and various Game Components for 3D and TopDown 2D games
-- this contains also PlayerController and PlayerPawn
+### DialogueSystem
+For now just a collection of helpers for the **PixelCrushers Dialogue System** asset. 
 
-v2:
-- a version of v1 components, where instead of be everything a MonoBehaviour, everything is a pure C# script. And Update and unity events are only on the Player and it call the linked function on every component
-- there is the conception of IGameObjectRD (our Player) and IComponentRD (our game components)
-- in the Examples folder we can see an ExamplePlayer with various IComponentRD in inspector as Serializable scripts
+* **Note**: This module requires the `PIXELCRUSHER_DIALOGUESYSTEM` Scripting Define Symbol to be created.
+
+### IconGenerator
+A simple utility for generating icons.
+
+### Main
+A miscellaneous collection of scripts used in various projects, including:
+* `ScriptableObject` and `Controller` scripts for easily use and keep track of project files and layers.
+* **Camera Shake**.
+* **Save Manager**.
+* **Sound Manager**.
+* Other singleton scripts.
+
+### Network
+An interface designed to provide a framework for working with various networking solutions (e.g., **Fishnet**, **Mirror**, **Photon**) and transports (e.g., **Steam**, **EOS**).
+
+* **Note**: This module relies on several **Scripting Define Symbols**. Some are **auto-generated** when you import a specific package (e.g., `STEAMWORKS_NET` for Steamworks or `FISHNET` for Fishnet), while others are **globally defined** (e.g., `DISABLESTEAMWORKS` for disabling the Steamworks integration) or are **custom ones** you must create yourself (e.g., `PURRNET` for Purrnet).
+
+### NodesGraph
+An implementation of a `GraphNode` using the Unity Editor's `GraphView` API.
+* An example of its implementation can be found in a separate project: [HorrorGame on GitHub](https://github.com/redd096/HorrorGame/tree/main/Assets/_Project/Scripts/GraphsEditor)
+
+### StateMachine
+A generic state machine system.
+* You can create serializable `IState` objects to view states directly in the Inspector or attach `IState` to a `MonoBehaviour` to use them as `MonoBehaviour` states.
+
+### UIControl
+A set of scripts for controlling and optimizing Unity UI.
+* **Custom Button**: A button with multiple target graphics (e.g. for color changes).
+* **Dynamic Layout**: Scripts for using `ContentSizeFitter` and `LayoutElement` with percentages and for creating dynamic `GridLayoutGroup` layouts instead of fixed cell sizes.
+* **OptimizeEventSystem**: A script that optimizes menu navigation for gamepads.
+* **PredictionSlider**: A script for creating health bars that show predicted damage (turning red on hit) or healing (turning green).
+
+### v1
+This folder contains various components used in my previous games, including a **StateMachine**, **Pathfinding**, and various game components for both 3D and 2D top-down games.
+* This also includes `PlayerController` and `PlayerPawn` scripts.
+
+### v2
+An updated version of the `v1` components, where `MonoBehaviour` is replaced with a pure C# script approach.
+* Only the `Player` script is a `MonoBehaviour`; all other components are pure C# scripts called by the player.
+* This version introduces the concept of `IGameObjectRD` (the player) and `IComponentRD` (the game components).
+* The `Examples` folder shows an `ExamplePlayer` with various serializable `IComponentRD` scripts visible in the Inspector.
