@@ -1,3 +1,6 @@
+Vocals folder
+- create it inside our package and create an interface to use vocal commands like https://github.com/redd096/ProvaVocal 
+
 Pathfinding AStar v1
 - Create a waypoint version similar to what I did for Hitman (3D) and Rogueball (2D)
     - In the 2D version of the flowfield, I was creating an extension to incorporate waypoints and use them to generate nodes when creating the grid
