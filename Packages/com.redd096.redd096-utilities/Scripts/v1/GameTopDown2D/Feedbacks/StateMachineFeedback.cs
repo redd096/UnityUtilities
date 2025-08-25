@@ -9,7 +9,7 @@ namespace redd096.v1.GameTopDown2D
     {
         [Header("Necessary Components - default get in child and parent")]
         [SerializeField] Animator anim = default;
-        [SerializeField] StateMachine stateMachine = default;
+        [SerializeField] InspectorStateMachine.StateMachine stateMachine = default;
 
         [Header("When enter in these states, call trigger in animator")]
         [SerializeField] AnimTriggerStateStruct[] animTriggers = default;
@@ -24,7 +24,7 @@ namespace redd096.v1.GameTopDown2D
             if (stateMachine == null)
             {
                 Redd096Main main = GetComponentInParent<Redd096Main>();
-                if (main) stateMachine = main.GetComponentInChildren<StateMachine>();
+                if (main) stateMachine = main.GetComponentInChildren<InspectorStateMachine.StateMachine>();
             }
 
             base.OnEnable();
