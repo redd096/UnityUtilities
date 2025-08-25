@@ -25,14 +25,14 @@ CsvImporter:
     - User can access it from Tools > redd096 > CSV Importer
     - Download CSV open a window where user can put a CSV link and a folder where to download it
         - DataPath and PersistentDataPath are buttons to automatically set the a folder path
-    b.2. DownloadCsv is the button to download it
-    b.3. Is possible to keep in memory more files at time with the Add Element button and the dropdown to the left
-  c. CSV Reader open a window where user can parse and read a downloaded CSV
+        - DownloadCsv is the button to download it
+        - Is possible to keep in memory more files at time with the Add Element button and the dropdown to the left
+    - CSV Reader open a window where user can parse and read a downloaded CSV
 - Example contains ExampleSimpleCsvImporterAndReader, a script where user can read how to use CSVimporter.cs
-  a. User can access it from Tools > redd096 > CSV Importer > Examples
-  b. Inside the script there are 3 functions: just download a CSV, Create an example ScriptableObject from a downloaded csv, Download and Create ScriptableObject in one call
-  c. In "example scriptable object with helper" region, there is a way to use helpers to create ScriptableObjects instead of create a for cycle every time
-  d. In "example update (not create) prefabs with helper" region, there is a way to update prefabs with helpers
+    - User can access it from Tools > redd096 > CSV Importer > Examples
+    - Inside the script there are 3 functions: just download a CSV, Create an example ScriptableObject from a downloaded csv, Download and Create ScriptableObject in one call
+    - In "example scriptable object with helper" region, there is a way to use helpers to create ScriptableObjects instead of create a for cycle every time
+    - In "example update (not create) prefabs with helper" region, there is a way to update prefabs with helpers
 
 DialogueSystem:
 - for now just some helpers I made for PixelCrushers DialogueSystem
@@ -47,13 +47,13 @@ Main:
 Network:
 - An interface I made to move fast between various Network frameworks (Fishnet, Mirror, Photon, etc...) and transports (Steam, EOS, etc...)
 - Note: they use vary ScriptDefineSymbol
-  a. some are auto-generated when improt the packages, like STEAMWORKS_NET for Steamworks or FISHNET for fishnet
-  b. others are used globally, like DISABLESTEAMWORKS for Steamworks
-  c. others are created by me, like PURRNET for Purrnet
+    - some are auto-generated when import the packages, like STEAMWORKS_NET for Steamworks or FISHNET for fishnet
+    - others are used globally, like DISABLESTEAMWORKS for Steamworks
+    - others are created by me, like PURRNET for Purrnet
 
 NodesGraph:
 - A GraphNode with UnityEditor's GraphView
-  a. Is possible to see a way to implement it in [https://github.com/redd096/HorrorGame](https://github.com/redd096/HorrorGame/tree/main/Assets/_Project/Scripts/GraphsEditor)
+- Is possible to see a way to implement it in [https://github.com/redd096/HorrorGame](https://github.com/redd096/HorrorGame/tree/main/Assets/_Project/Scripts/GraphsEditor)
 
 OLD:
 - obsolete scripts
