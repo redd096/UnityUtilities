@@ -1,0 +1,45 @@
+Pathfinding AStar v1
+- Create a waypoint version similar to what I did for Hitman (3D) and Rogueball (2D)
+    - In the 2D version of the flowfield, I was creating an extension to incorporate waypoints and use them to generate nodes when creating the grid
+    - The Hitman version had an interesting feature: instead of allowing movement between all nodes, waypoints had an array of "reachable waypoints." So, when calculating neighbors for pathfinding, it only checked those in the array. We could recreate this by setting a minimum distance between nodes to determine if they're reachable. To disable individual nodes, we can simply treat them as obstacles
+- The AStar pathfinding needs to be updated with several changes I've made to the FlowField, most notably using async instead of coroutines
+    - Note: Even with async, it still calculates only one path at a time. So we could need a multithread version, but it doesn't work on webgl
+    - A couple of changes have already been pushed to the 3D version that need to be implemented in the 2D version
+
+Pathfinding v2
+- Instead of return the full path when request for it, user should interact with the Agent and get the nextTarget from the current node
+- Use Transform instead of Vector3 to request path (tuple?)
+- Targets need to support different weights
+- Add a boolean to the pathfinding function to decide whether diagonal movement is allowed. To implement this, when calculating the best directions, check only the cardinal neighbors instead of all neighbors
+- Should allow the system to move to the nearest walkable node from an unwalkable starting position and then follow the path to the target
+    - Maybe with a bool to decide what to do, maybe user prefer the ai to stay still if the node is unwalkable
+- Review the obstacle system. The UpdateObstaclesPositions function in the grid should be removed as it's not efficient. Updating them one by one in the Update loop doesn't seem like the best solution. We could instead update all of them every so often, a certain number per frame, or all at once asynchronously
+- Modify the gizmos to display the best direction in GridFlowField3D
+
+Optimization PathFinding v2 (Note these optimizations are calculated with FlowField in mind but could work also for AStar)
+- If the passed targets remain on the same nodes, there shouldn't be a need to recreate the entire grid
+    - If only one of the targets moves, you can simply recalculate the path from that node, leaving the others unchanged
+- Instead of returning a Path, the system can return a unique ID. This would allow the grid to be saved in a grid array, which can then be accessed by its index
+    - This way, if multiple AIs request a path to the same targets, the calculation is performed only once and the result is returned to all of them
+- Allow for sending Center and WorldSize to the agent and, consequently, to the pathfinding system. This will allow for the generation of a grid using these variables
+    - So if we have a big scene with a big grid, but our AI can move only in one room, it can scan only that room
+    - Create a sample scene where this feature is used for patrolling a small area without scanning the entire map
+- If a node's position is modified (which can happen with waypoints), the grid will trigger an event. The PathFinder should be subscribed to this event to clear any previously generated "grids" that contain the modified node, as its pathfinding may now be different
+    - This also applies if a node's isWalkable or other properties change
+    - The Composite object will subscribe to the events of all the individual grids and then trigger its own event, to which the PathFinder is subscribed
+
+Optimization PathFinding v2 AStar
+- If you're searching for a path to the same target as someone else and you land on a node that's part of their calculated path, you can continue the search from their pre-calculated path
+    - Therefore, when searching for a path, if you reach an already-saved node, conclude the search by using the saved path
+
+
+
+
+Savemanager
+- In the editor, the SaveManager is essentially bypassed. The Save method returns true without actually doing anything.
+    - Should we keep it this way, or should it function the same as it does on a PC?
+- I want to remove all !UNITY_EDITOR preprocessor directives from the code. I don't like not being able to verify if the code is correct, even when switching platforms
+
+Bullet
+- A bullet should be destroyed after traveling a certain distance instead of after a set time. The coroutine would become a while loop that continues as long as the distance from the starting point to the current position doesn't exceed the set distance. (If the bullet remains stationary, the timer should still be used)
+    - Gizmos: Distance-based destruction will be [direction * distance], while time-based destruction is [direction * (speed * time)]
