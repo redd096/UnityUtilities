@@ -22,7 +22,7 @@ CsvImporter:
 - the main script is the CsvImporter.cs that user can use to download and read csv
 - inside Helpers and Parse folders is possible to find and edit the logic of the CsvImporter
 - WindowEditor contains two windows I made to download a generic Csv and read it
-  a. User can access it from Tools > redd096 > CSV Importer
+    - User can access it from Tools > redd096 > CSV Importer
   b. Download CSV open a window where user can put a CSV link and a folder where to download it
     b.1. DataPath and PersistentDataPath are buttons to automatically set the a folder path
     b.2. DownloadCsv is the button to download it
