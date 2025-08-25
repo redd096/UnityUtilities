@@ -23,9 +23,8 @@ CsvImporter:
 - inside Helpers and Parse folders is possible to find and edit the logic of the CsvImporter
 - WindowEditor contains two windows I made to download a generic Csv and read it
     - User can access it from Tools > redd096 > CSV Importer
-    a. prova
-  b. Download CSV open a window where user can put a CSV link and a folder where to download it
-    b.1. DataPath and PersistentDataPath are buttons to automatically set the a folder path
+    - Download CSV open a window where user can put a CSV link and a folder where to download it
+        - DataPath and PersistentDataPath are buttons to automatically set the a folder path
     b.2. DownloadCsv is the button to download it
     b.3. Is possible to keep in memory more files at time with the Add Element button and the dropdown to the left
   c. CSV Reader open a window where user can parse and read a downloaded CSV
