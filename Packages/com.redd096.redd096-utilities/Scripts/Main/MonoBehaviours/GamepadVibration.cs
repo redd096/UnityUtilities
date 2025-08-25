@@ -24,7 +24,7 @@ namespace redd096
 
 		void Awake()
 		{
-			//set instance to call it without use FindObjectOfType
+			//set instance to call it without use FindFirstObjectByType
 			instance = this;
 		}
 

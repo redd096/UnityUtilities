@@ -45,7 +45,7 @@ namespace redd096
                 return;
             }
 
-            eventSystem = FindObjectOfType<EventSystem>();
+            eventSystem = FindFirstObjectByType<EventSystem>();
             if (eventSystem == null && pressToContinue)
             {
                 Debug.LogError("Can't press to continue without an EventSystem in scene");

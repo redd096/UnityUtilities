@@ -15,7 +15,7 @@ namespace redd096
             {
                 //if null, try find it
                 if (_instance == null)
-                    _instance = FindObjectOfType<T>();
+                    _instance = FindFirstObjectByType<T>();
 
                 return _instance;
             }
@@ -36,7 +36,7 @@ namespace redd096
 
         void CheckInstance()
         {
-            if (_instance && _instance != this && onlyOneInstance) //check also != this, if someone set instance with FindObjectOfType
+            if (_instance && _instance != this && onlyOneInstance) //check also != this, if someone set instance with FindFirstObjectByType
             {
                 //if there is already an instance, destroy this one (if must be only one instance)
                 Destroy(gameObject);

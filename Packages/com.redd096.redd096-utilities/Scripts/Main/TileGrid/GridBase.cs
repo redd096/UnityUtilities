@@ -73,7 +73,7 @@ namespace redd096
         {
             //create dictionary
             grid.Clear();
-            foreach (TileBase tile in FindObjectsOfType<TileBase>())
+            foreach (TileBase tile in FindObjectsByType<TileBase>(FindObjectsSortMode.None))
             {
                 //if not already inside grid, add it
                 if (grid.ContainsKey(tile.PositionInGrid) == false)

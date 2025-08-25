@@ -55,7 +55,7 @@ namespace redd096.v1.PathFinding.AStar2D
             gridWorldSize = Vector2.zero;
 
             //find every grid in scene
-            foreach (GridAStar gridAStar in FindObjectsOfType<GridAStar>())
+            foreach (GridAStar gridAStar in FindObjectsByType<GridAStar>(FindObjectsSortMode.None))
             {
                 //remove self
                 if (gridAStar == this)

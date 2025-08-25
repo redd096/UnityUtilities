@@ -3,7 +3,7 @@
 namespace redd096
 {
     /// <summary>
-    /// Singleton with FindObjectOfType instance if null and automatically unparent
+    /// Singleton with FindFirstObjectByType instance if null and automatically unparent
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class Singleton<T> : MonoBehaviour where T : Singleton<T>
@@ -15,7 +15,7 @@ namespace redd096
             {
                 //if null, try find it
                 if (_instance == null)
-                    _instance = FindObjectOfType<T>();
+                    _instance = FindFirstObjectByType<T>();
 
                 return _instance;
             }
@@ -42,7 +42,7 @@ namespace redd096
 
         void CheckInstance()
         {
-            if (_instance && _instance != this) //check also != this, if someone set instance with FindObjectOfType
+            if (_instance && _instance != this) //check also != this, if someone set instance with FindFirstObjectByType
             {
                 //if there is already an instance, destroy this one
                 Destroy(gameObject);

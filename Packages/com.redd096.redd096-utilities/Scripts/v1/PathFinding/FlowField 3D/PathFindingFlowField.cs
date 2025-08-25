@@ -20,7 +20,7 @@ namespace redd096.v1.PathFinding.FlowField3D
             instance = this;
 
             if (Grid == null)
-                Grid = FindObjectOfType<GridFlowField>();
+                Grid = FindFirstObjectByType<GridFlowField>();
         }
 
         #region public API

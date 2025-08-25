@@ -44,7 +44,7 @@ namespace redd096.v1.PathFinding.FlowField3D
                 { Vector3 worldPosition = worldBottomLeft + Vector3.right * (x * spaceBetweenWaypoints.x + halfSpace.x) + Vector3.forward * (y * spaceBetweenWaypoints.y + halfSpace.y);
                     WaypointFlowField waypoint = Instantiate(prefab, transform); waypoint.transform.position = worldPosition; } } }
         //find waypoints in scene and set in array
-        [Button] void FindWaypointsInScene() => waypoints = FindObjectsOfType<WaypointFlowField>();
+        [Button] void FindWaypointsInScene() => waypoints = FindObjectsByType<WaypointFlowField>(FindObjectsSortMode.None);
         //build grid
 #if UNITY_EDITOR
         [Button] void UpdateNodes() { Undo.RecordObject(gameObject, "Update Nodes"); BuildGrid(); SceneView.RepaintAll(); }
@@ -121,7 +121,7 @@ namespace redd096.v1.PathFinding.FlowField3D
         {
             //find waypoints in scene
             if (findWaypointsInScene)
-                waypoints = FindObjectsOfType<WaypointFlowField>();
+                waypoints = FindObjectsByType<WaypointFlowField>(FindObjectsSortMode.None);
         }
 
         protected override void CreateGrid()

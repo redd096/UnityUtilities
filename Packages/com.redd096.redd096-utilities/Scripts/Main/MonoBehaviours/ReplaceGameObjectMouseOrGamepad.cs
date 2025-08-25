@@ -23,7 +23,7 @@ namespace redd096
         {
             //get references
             if (playerInput == null)
-                playerInput = FindObjectOfType<PlayerInput>();
+                playerInput = FindFirstObjectByType<PlayerInput>();
 
             //set gameObject
             ReplaceGameObjects();

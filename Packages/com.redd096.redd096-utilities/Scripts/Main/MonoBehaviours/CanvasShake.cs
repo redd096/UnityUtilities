@@ -26,7 +26,7 @@ namespace redd096
 
 		void Start()
 		{
-			//set instance to call it without use FindObjectOfType
+			//set instance to call it without use FindFirstObjectByType
 			instance = this;
 
 			//save start positions

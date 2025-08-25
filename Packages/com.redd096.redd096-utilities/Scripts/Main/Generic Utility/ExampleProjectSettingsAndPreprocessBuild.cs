@@ -200,8 +200,8 @@ public class PopupBeforeBuild
         }
 
         //set managers
-        RealWearManager realWearManager = Object.FindObjectOfType<RealWearManager>(true);
-        VuzixManager vuzixManager = Object.FindObjectOfType<VuzixManager>(true);
+        RealWearManager realWearManager = Object.FindFirstObjectByType<RealWearManager>(FindObjectsInactive.Include);
+        VuzixManager vuzixManager = Object.FindFirstObjectByType<VuzixManager>(FindObjectsInactive.Include);
         if (selectedDevice == EDevices.RealWear)
         {
             realWearManager.gameObject.SetActive(true);

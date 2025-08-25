@@ -48,7 +48,7 @@ namespace redd096.v1.GameTopDown2D
         /// </summary>
         public void ActiveExit()
         {
-            Character[] charactersInScene = FindObjectsOfType<Character>();
+            Character[] charactersInScene = FindObjectsByType<Character>(FindObjectsSortMode.None);
 
             //register to every enemy death
             SpawnableObject spawnableObject;

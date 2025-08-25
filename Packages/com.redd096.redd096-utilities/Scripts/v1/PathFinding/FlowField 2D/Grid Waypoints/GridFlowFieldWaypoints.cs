@@ -44,7 +44,7 @@ namespace redd096.v1.PathFinding.FlowField2D
                 { Vector2 worldPosition = worldBottomLeft + Vector2.right * (x * spaceBetweenWaypoints.x + halfSpace.x) + Vector2.up * (y * spaceBetweenWaypoints.y + halfSpace.y);
                     WaypointFlowField waypoint = Instantiate(prefab, transform); waypoint.transform.position = worldPosition; } } }
         //find waypoints in scene and set in array
-        [Button] void FindWaypointsInScene() => waypoints = FindObjectsOfType<WaypointFlowField>();
+        [Button] void FindWaypointsInScene() => waypoints = FindObjectsByType<WaypointFlowField>(FindObjectsSortMode.None);
         //build grid
 #if UNITY_EDITOR
         [Button] void UpdateNodes() { Undo.RecordObject(gameObject, "Update Nodes"); BuildGrid(); SceneView.RepaintAll(); }
@@ -121,7 +121,7 @@ namespace redd096.v1.PathFinding.FlowField2D
         {
             //find waypoints in scene
             if (findWaypointsInScene)
-                waypoints = FindObjectsOfType<WaypointFlowField>();
+                waypoints = FindObjectsByType<WaypointFlowField>(FindObjectsSortMode.None);
         }
 
         protected override void CreateGrid()

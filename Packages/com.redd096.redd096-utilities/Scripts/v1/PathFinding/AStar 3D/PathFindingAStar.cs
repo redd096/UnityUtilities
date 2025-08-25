@@ -26,7 +26,7 @@ namespace redd096.v1.PathFinding.AStar3D
             instance = this;
 
             if (Grid == null)
-                Grid = FindObjectOfType<GridAStar>();
+                Grid = FindFirstObjectByType<GridAStar>();
         }
 
         #region public API

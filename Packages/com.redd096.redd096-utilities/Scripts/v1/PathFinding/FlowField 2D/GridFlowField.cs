@@ -430,7 +430,7 @@ namespace redd096.v1.PathFinding.FlowField2D
             if (GUILayout.Button("Update Nodes"))
             {
                 //set undo
-                obstacles = FindObjectsOfType<ObstacleFlowField>();
+                obstacles = FindObjectsByType<ObstacleFlowField>(FindObjectsSortMode.None);
                 System.Collections.Generic.List<Object> objs = new System.Collections.Generic.List<Object>(obstacles);  //obstacles
                 objs.Add(target);                                                                                       //grid
                 Undo.RecordObjects(objs.ToArray(), "Update Nodes");

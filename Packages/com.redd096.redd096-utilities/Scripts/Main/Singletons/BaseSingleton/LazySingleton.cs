@@ -16,7 +16,7 @@ namespace redd096
                 //if null, try find it
                 if (_instance == null)
                 {
-                    _instance = FindObjectOfType<T>();
+                    _instance = FindFirstObjectByType<T>();
 
                     //if not in scene, auto instantiate
                     if (_instance == null)
@@ -48,7 +48,7 @@ namespace redd096
 
         void CheckInstance()
         {
-            if (_instance && _instance != this) //check also != this, if someone set instance with FindObjectOfType or instantiate it
+            if (_instance && _instance != this) //check also != this, if someone set instance with FindFirstObjectByType or instantiate it
             {
                 //if there is already an instance, destroy this one
                 Destroy(gameObject);

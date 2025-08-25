@@ -79,7 +79,7 @@ namespace redd096.v2.ComponentsSystem.Example
             //be sure there are pawns to possess
             if (pawnsInOrderByPlayerIndex == null || pawnsInOrderByPlayerIndex.Length == 0)
             {
-                Debug.LogError($"Pawns are null in {gameObject.name} - we use FindObjectsOfType to get them", gameObject);
+                Debug.LogError($"Pawns are null in {gameObject.name} - we use FindObjectsByType to get them", gameObject);
                 pawnsInOrderByPlayerIndex = Object.FindObjectsByType<SimplePlayerPawn>(FindObjectsInactive.Include, FindObjectsSortMode.InstanceID);
             }
 

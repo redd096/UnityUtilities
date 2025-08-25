@@ -55,7 +55,7 @@ namespace redd096.v1.PathFinding.FlowField3D
             gridWorldSize = Vector2.zero;
 
             //find every grid in scene
-            foreach (GridFlowField grid in FindObjectsOfType<GridFlowField>())
+            foreach (GridFlowField grid in FindObjectsByType<GridFlowField>(FindObjectsSortMode.None))
             {
                 //remove self and grids not used by composite
                 if (grid == this || grid.UsedByComposite == false)
