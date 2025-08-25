@@ -22,8 +22,8 @@ namespace redd096.v1.Game3D
         public Vector3 MoveDirectionInput { get; set; }         //when moves, set it with only input direction (used to know last movement direction)
         public Vector3 LastDesiredVelocity { get; set; }        //when moves, set it as input direction * speed
         public Vector3 CurrentPushForce { get; set; }           //used to push this object (push by recoil, knockback, dash, etc...), will be decreased by drag in every frame
-        public Vector3 CurrentVelocity => rb ? rb.velocity : Vector3.zero;
-        public float CurrentSpeed => rb ? rb.velocity.magnitude : 0;
+        public Vector3 CurrentVelocity => rb ? rb.linearVelocity : Vector3.zero;
+        public float CurrentSpeed => rb ? rb.linearVelocity.magnitude : 0;
         public float InputSpeed { get => inputSpeed; set => inputSpeed = value; }
         public float MaxSpeed { get => maxSpeed; set => maxSpeed = value; }
         /// <summary>
@@ -31,8 +31,8 @@ namespace redd096.v1.Game3D
         /// </summary>
         public float Drag
         {
-            get => useCustomDrag ? customDrag : (rb ? rb.drag : 1);
-            set { if (useCustomDrag) customDrag = value; else if (rb) rb.drag = value; }
+            get => useCustomDrag ? customDrag : (rb ? rb.linearDamping : 1);
+            set { if (useCustomDrag) customDrag = value; else if (rb) rb.linearDamping = value; }
         }
 
         //private
@@ -77,7 +77,7 @@ namespace redd096.v1.Game3D
         protected virtual void DoMovement()
         {
             if (rb)
-                rb.velocity = calculatedVelocity;
+                rb.linearVelocity = calculatedVelocity;
         }
 
         protected virtual void RemovePushForce()

@@ -222,7 +222,7 @@ namespace redd096.v1.Game3D
             handRb = null;
 
             //clamp velocity to not throw items too distant
-            rb.velocity = Vector3.ClampMagnitude(rb.velocity, clampVelocityOnRelease);
+            rb.linearVelocity = Vector3.ClampMagnitude(rb.linearVelocity, clampVelocityOnRelease);
         }
 
         /// <summary>

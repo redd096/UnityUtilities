@@ -88,7 +88,7 @@ namespace redd096.v1.Game3D
             //update force when open 
             if (previousWasClosed == false && nowIsClosed == false)
             {
-                previousVelocity = draggable.Rb.velocity.magnitude;
+                previousVelocity = draggable.Rb.linearVelocity.magnitude;
                 previousAngularVelocity = draggable.Rb.angularVelocity.magnitude;
             }
 
@@ -109,7 +109,7 @@ namespace redd096.v1.Game3D
         private void OnDismiss()
         {
             //sound on throw or release
-            SoundManager.instance.Play(draggable.Rb.velocity.magnitude > velocityThrow ? onThrowAudio : onReleaseAudio, draggable.Rb.position);
+            SoundManager.instance.Play(draggable.Rb.linearVelocity.magnitude > velocityThrow ? onThrowAudio : onReleaseAudio, draggable.Rb.position);
         }
 
         private void OnTooMuchDistance()
@@ -125,7 +125,7 @@ namespace redd096.v1.Game3D
             //set loop volume
             float volume;
             if (draggableDelta.Type == GetDeltaPosition.EType.Position)
-                volume = draggable.Rb.velocity.magnitude;
+                volume = draggable.Rb.linearVelocity.magnitude;
             else
                 volume = draggable.Rb.angularVelocity.magnitude / 3f;
 

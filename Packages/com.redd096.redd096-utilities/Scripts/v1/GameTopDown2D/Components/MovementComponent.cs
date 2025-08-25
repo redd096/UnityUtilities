@@ -37,8 +37,8 @@ namespace redd096.v1.GameTopDown2D
         /// </summary>
         public float Drag
         {
-            get => useCustomDrag ? customDrag : (rb ? rb.drag : 1);
-            set { if (useCustomDrag) customDrag = value; else if (rb) rb.drag = value; }
+            get => useCustomDrag ? customDrag : (rb ? rb.linearDamping : 1);
+            set { if (useCustomDrag) customDrag = value; else if (rb) rb.linearDamping = value; }
         }
         /// <summary>
         /// Return IsMovingRight as a direction. Can also set it passing a Vector2 with X greater or lower than 0
@@ -79,7 +79,7 @@ namespace redd096.v1.GameTopDown2D
 
             //set velocity (input + push)
             CalculateVelocity();
-            CurrentVelocity = movementMode == EMovementModes.Transform ? (calculatedVelocity != Vector2.zero ? calculatedVelocity : Vector2.zero) : (rb ? rb.velocity : Vector2.zero);
+            CurrentVelocity = movementMode == EMovementModes.Transform ? (calculatedVelocity != Vector2.zero ? calculatedVelocity : Vector2.zero) : (rb ? rb.linearVelocity : Vector2.zero);
             CurrentSpeed = CurrentVelocity != Vector2.zero ? CurrentVelocity.magnitude : 0.0f;
 
             //set if change movement direction
@@ -148,7 +148,7 @@ namespace redd096.v1.GameTopDown2D
             //do movement with rigidbody (let unity calculate reachable position)
             if (movementMode == EMovementModes.Rigidbody)
             {
-                rb.velocity = calculatedVelocity;
+                rb.linearVelocity = calculatedVelocity;
             }
             //or move with transform
             else if (movementMode == EMovementModes.Transform)
@@ -163,7 +163,7 @@ namespace redd096.v1.GameTopDown2D
             //remove push force (direction * drag * delta)
             newPushForce = CurrentPushForce - (
                 (dragBasedOnVelocity ? CurrentPushForce : CurrentPushForce.normalized) *
-                (useCustomDrag ? customDrag : (rb ? rb.drag : 1)) *
+                (useCustomDrag ? customDrag : (rb ? rb.linearDamping : 1)) *
                 (updateMode == EUpdateModes.Update ? Time.deltaTime : Time.fixedDeltaTime));
 
             //clamp it

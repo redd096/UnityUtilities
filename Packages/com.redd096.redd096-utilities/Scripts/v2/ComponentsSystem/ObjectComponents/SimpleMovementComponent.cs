@@ -434,9 +434,9 @@ namespace redd096.v2.ComponentsSystem
             if (componentToWrap == EComponentToWrap.CharacterController)
                 ch.Move(velocity * Time.deltaTime);
             else if (componentToWrap == EComponentToWrap.Rigidbody3D)
-                rb3d.velocity = velocity;
+                rb3d.linearVelocity = velocity;
             else if (componentToWrap == EComponentToWrap.Rigidbody2D)
-                rb2d.velocity = velocity;
+                rb2d.linearVelocity = velocity;
         }
 
         /// <summary>
@@ -463,9 +463,9 @@ namespace redd096.v2.ComponentsSystem
                 if (componentToWrap == EComponentToWrap.CharacterController)
                     return ch.velocity;
                 else if (componentToWrap == EComponentToWrap.Rigidbody3D)
-                    return rb3d.velocity;
+                    return rb3d.linearVelocity;
                 else if (componentToWrap == EComponentToWrap.Rigidbody2D)
-                    return rb2d.velocity;
+                    return rb2d.linearVelocity;
                 else
                     return Vector3.zero;
             }
