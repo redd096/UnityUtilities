@@ -39,7 +39,14 @@ namespace redd096.Attributes
         public override float GetHeight()
         {
             HelpBoxAttribute at = attribute as HelpBoxAttribute;
-            return base.GetHeight() + EditorStyles.helpBox.CalcSize(new GUIContent(at != null ? at.message : "")).y;
+
+            //get the width of the property drawing area
+            float width = EditorGUIUtility.currentViewWidth - 38f; // 38f is a constant for the horizontal margins/padding
+
+            //calculate the height of the HelpBox with the correct width
+            float height = EditorStyles.helpBox.CalcHeight(new GUIContent(at != null ? at.message : ""), width);
+
+            return base.GetHeight() + height;
         }
 
         public override void OnGUI(Rect position)
