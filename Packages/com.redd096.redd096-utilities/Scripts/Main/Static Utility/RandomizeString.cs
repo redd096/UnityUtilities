@@ -1,9 +1,9 @@
 using System.Linq;
 using UnityEngine;
 
-namespace mm
+namespace redd096
 {
-    public class RandomizeString : MonoBehaviour
+    public static class RandomizeString
     {
         private static string[] FANTASY_NAMES = new string[50] {"Tharion", "Eryndor", "Arintha", "Kaelin", "Eldrid",
                       "Draven", "Ryker", "Torin", "Lirien", "Galadrielle",
@@ -18,11 +18,20 @@ namespace mm
 
         private const string POSSIBLE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
+        /// <summary>
+        /// Return a random name from <see cref="FANTASY_NAMES"/>
+        /// </summary>
+        /// <returns></returns>
         public static string GetRandomFantasyName()
         {
             return FANTASY_NAMES[Random.Range(0, FANTASY_NAMES.Length)];
         }
 
+        /// <summary>
+        /// Use <see cref="POSSIBLE_CHARS"/> to generate a string with random chars
+        /// </summary>
+        /// <param name="length"></param>
+        /// <returns></returns>
         public static string GetRandomString(int length)
         {
             System.Random rand = new System.Random();
