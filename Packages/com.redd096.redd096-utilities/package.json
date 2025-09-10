@@ -42,6 +42,11 @@
       "path": "Samples~/InspectorStateMachine_And_Game3D_Example"
     },
     {
+      "displayName": "NetworkLobby_Example",
+      "description": "Example of scene to use NetworkManager and NetworkTransport. You should to add some plugin like Fishnet or Purrnet and attach scripts to NetworkManager in scene",
+      "path": "Samples~/NetworkLobby_Example"
+    },
+    {
       "displayName": "OptimizeEventSystem_Example",
       "description": "Example of Optimize Event System",
       "path": "Samples~/OptimizeEventSystem_Example"

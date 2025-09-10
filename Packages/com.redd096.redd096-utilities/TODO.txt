@@ -1,6 +1,15 @@
 Vocals folder
 - create it inside our package and create an interface to use vocal commands like https://github.com/redd096/ProvaVocal 
 
+Network
+- create NetworkManager for Mirror and Photon
+- create NetworkTransport for various transports, for now there are only SteamWorks for fishnet and purrnet
+- NetworkTransport_PurrTransport for now is only a copy of steamWorks
+- NetworkTransport_SteamWorks has some TODO (one to get room datas, and one to avoid have a custom JoinLobby(object) and use only JoinLobby(string))
+
+
+
+
 Pathfinding AStar v1
 - Create a waypoint version similar to what I did for Hitman (3D) and Rogueball (2D)
     - In the 2D version of the flowfield, I was creating an extension to incorporate waypoints and use them to generate nodes when creating the grid

@@ -181,6 +181,9 @@ namespace redd096.Network
         {
             //call event
             OnTryJoinFromExternalSource?.Invoke(param);
+
+            // //TODO instead of use a custom function to join, just change it to a string and use normal JoinLobby(string)
+            // OnTryJoinFromExternalSource?.Invoke(param.m_steamIDLobby.ToString());
         }
 
         private void OnJoinedLobby(LobbyEnter_t param)
@@ -196,12 +199,14 @@ namespace redd096.Network
 
         private void OnFoundLobbiesList(LobbyMatchList_t param)
         {
-            // SteamMatchmaking.RequestLobbyData()
             //get every room data
             INetworkTransport.FRoomData[] roomDatas = new INetworkTransport.FRoomData[param.m_nLobbiesMatching];
             for (int i = 0; i < roomDatas.Length; i++)
             {
                 CSteamID room = SteamMatchmaking.GetLobbyByIndex(i);
+                // //TODO after found the rooms, should call this function to return their values (e.g. current players)
+                // SteamMatchmaking.RequestLobbyData(room);
+
                 roomDatas[i] = new INetworkTransport.FRoomData()
                 {
                     currentPlayersCount = 0,
