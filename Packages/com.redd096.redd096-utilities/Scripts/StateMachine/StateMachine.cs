@@ -34,7 +34,8 @@ namespace redd096.StateMachine
 
             //set new state and set its statemachine
             currentState = state;
-            currentState.StateMachine = stateMachine;
+            if (currentState != null)
+                currentState.StateMachine = stateMachine;
 
             currentState?.Enter();
 
