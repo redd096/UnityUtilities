@@ -20,6 +20,7 @@ The package will be installed in your project's `Packages/com.redd096.redd096-ut
 The package is organized into several main folders:
 
 * **ExamplePrefabs**: Ready-to-use prefabs that can be dragged and dropped directly into your scene.
+* **Samples~**: Samples scenes to download from package manager
 * **Scripts**: The core C# scripts for the package's functionalities.
 * **Shaders**: A small collection of custom shaders.
 * **TODO.txt**: A list of planned features and improvements, primarily for the **Pathfinding** and **SaveManager** systems.
