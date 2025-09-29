@@ -6,6 +6,8 @@ Network
 - create NetworkTransport for various transports, for now there are only SteamWorks for fishnet and purrnet (Epic Online Services, PurrTransport, AWS, Unity Relay, etc...)
 - NetworkTransport_PurrTransport for now is only a copy of steamWorks
 - NetworkTransport_SteamWorks has some TODO (one to get room datas, and one to avoid have a custom JoinLobby(object) and use only JoinLobby(string))
+- tutorial with AWS https://mirror-networking.gitbook.io/docs/hosting/server-hosting/aws
+- tutorial with Unity Relay https://docs.unity.com/ugs/en-us/manual/relay/manual/mirror
 
 
 
