@@ -31,31 +31,42 @@ namespace redd096.UIControl
         {
             if (EqualityComparer<T>.Default.Equals(currentValue, newValue))
                 return false;
-            
+
             currentValue = newValue;
             return true;
         }
 
-        public override float preferredWidth { get => GetMinValue(base.preferredWidth, maxWidth, axis: 0); set => base.preferredWidth = Mathf.Min(value, maxWidth); }
+        public override float minWidth { get => GetMinValue(base.minWidth, maxWidth, axis: 0, isPreferred: false); set => base.minWidth = Mathf.Min(value, maxWidth); }
 
-        public override float preferredHeight { get => GetMinValue(base.preferredHeight, maxHeight, axis: 1); set => base.preferredHeight = Mathf.Min(value, maxHeight); }
+        public override float minHeight { get => GetMinValue(base.minHeight, maxHeight, axis: 1, isPreferred: false); set => base.minHeight = Mathf.Min(value, maxHeight); }
+
+        public override float preferredWidth { get => GetMinValue(base.preferredWidth, maxWidth, axis: 0, isPreferred: true); set => base.preferredWidth = Mathf.Min(value, maxWidth); }
+
+        public override float preferredHeight { get => GetMinValue(base.preferredHeight, maxHeight, axis: 1, isPreferred: true); set => base.preferredHeight = Mathf.Min(value, maxHeight); }
 
         #region fix MaxValue enabled and PreferredValue not
 
-        private float GetMinValue(float preferredValue, float maxValue, int axis)
+        private float GetMinValue(float value, float maxValue, int axis, bool isPreferred)
         {
             //if preferred isn't enabled but max is
-            if (preferredValue < 0 && maxValue >= 0)
+            if (value < 0 && maxValue >= 0)
             {
                 //calculate preferred without this layout element
-                ILayoutElement dummy;
                 if (axis == 0)
-                    preferredValue = Mathf.Max(GetLayoutProperty(rect, e => e.minWidth, 0, out dummy), GetLayoutProperty(rect, e => e.preferredWidth, 0, out dummy));
+                {
+                    float min = GetLayoutProperty(rect, e => e.minWidth, 0, out _);
+                    float preferred = GetLayoutProperty(rect, e => e.preferredWidth, 0, out _);
+                    value = isPreferred ? Mathf.Max(min, preferred) : Mathf.Min(min, preferred);
+                }
                 else
-                    preferredValue = Mathf.Max(GetLayoutProperty(rect, e => e.minHeight, 0, out dummy), GetLayoutProperty(rect, e => e.preferredHeight, 0, out dummy));
+                {
+                    float min = GetLayoutProperty(rect, e => e.minHeight, 0, out _);
+                    float preferred = GetLayoutProperty(rect, e => e.preferredHeight, 0, out _);
+                    value = isPreferred ? Mathf.Max(min, preferred) : Mathf.Min(min, preferred);
+                }
             }
 
-            return Mathf.Min(preferredValue, maxValue);
+            return Mathf.Min(value, maxValue);
         }
 
         //copy-paste from LayoutUtility.GetLayoutProperty in UnityEngine.UI.
