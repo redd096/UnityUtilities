@@ -23,7 +23,7 @@ namespace redd096.UIControl
 
             //begin drag
             EventTrigger.Entry beginDrag = new EventTrigger.Entry { eventID = EventTriggerType.BeginDrag };
-            beginDrag.callback.AddListener(eventData => OnBeginDrag(scrollRect, delayBeforeSnap, snapSpeed));
+            beginDrag.callback.AddListener(eventData => OnBeginDrag(scrollRect));
             eventTrigger.triggers.Add(beginDrag);
 
             //end drag
@@ -32,7 +32,7 @@ namespace redd096.UIControl
             eventTrigger.triggers.Add(endDrag);
         }
 
-        private static void OnBeginDrag(ScrollRect scrollRect, float delayBeforeSnap, float snapSpeed)
+        private static void OnBeginDrag(ScrollRect scrollRect)
         {
             //stop coroutine OnBegin Drag
             if (snapCoroutines.ContainsKey(scrollRect))
