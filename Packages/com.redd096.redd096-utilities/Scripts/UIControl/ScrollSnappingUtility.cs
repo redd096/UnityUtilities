@@ -91,65 +91,73 @@ namespace redd096.UIControl
             System.Action<ScrollRect, Transform> onCompleteSnap = null)
         {
             //to be sure, stop coroutine
-            if (snapCoroutines.ContainsKey(scrollRect))
-            {
-                scrollRect.StopCoroutine(snapCoroutines[scrollRect]);
-                snapCoroutines.Remove(scrollRect);
-            }
+            StopScrollCoroutine(scrollRect);
 
             //start coroutine
             snapCoroutines.Add(scrollRect, scrollRect.StartCoroutine(SnapToChildCoroutine(scrollRect, child, snapSpeed, onUpdateSnap, onCompleteSnap)));
         }
 
-        #region private API
-
-        private static void OnBeginDrag(
+        /// <summary>
+        /// This will start the snapping coroutine to the closest child
+        /// </summary>
+        /// <param name="scrollRect"></param>
+        /// <param name="snapSpeed"></param>
+        /// <param name="onUpdateSnap">While snapping (it is called only if child is NOT null)</param>
+        /// <param name="onCompleteSnap">When the snapping coroutine is completed</param>
+        public static void SnapToClosestChild(
             ScrollRect scrollRect,
-            System.Action<ScrollRect> onBeginDrag)
+            float snapSpeed = 10f,
+            System.Action<ScrollRect, Transform> onUpdateSnap = null,
+            System.Action<ScrollRect, Transform> onCompleteSnap = null)
         {
-            //stop coroutine OnBegin Drag
-            if (snapCoroutines.ContainsKey(scrollRect))
-            {
-                scrollRect.StopCoroutine(snapCoroutines[scrollRect]);
-                snapCoroutines.Remove(scrollRect);
-            }
+            //to be sure, stop coroutine
+            StopScrollCoroutine(scrollRect);
 
-            onBeginDrag?.Invoke(scrollRect);
+            //start coroutine
+            Transform closestChild = GetClosestChild(scrollRect);
+            snapCoroutines.Add(scrollRect, scrollRect.StartCoroutine(SnapToChildCoroutine(scrollRect, closestChild, snapSpeed, onUpdateSnap, onCompleteSnap)));
         }
 
-        private static void OnEndDrag(
-            ScrollRect scrollRect,
-            float delayBeforeSnap,
-            float snapSpeed,
-            System.Action<ScrollRect> onEndDrag,
-            System.Action<ScrollRect, Transform> onStartSnap,
-            System.Action<ScrollRect, Transform> onUpdateSnap,
-            System.Action<ScrollRect, Transform> onCompleteSnap)
+        /// <summary>
+        /// Instantly snap to child
+        /// </summary>
+        /// <param name="scrollRect"></param>
+        /// <param name="child">child to snap to</param>
+        public static void InstantSnapToChild(ScrollRect scrollRect, Transform child)
         {
-            //just to be sure, stop coroutine
-            if (snapCoroutines.ContainsKey(scrollRect))
+            //to be sure, stop coroutine
+            StopScrollCoroutine(scrollRect);
+
+            //snap instantly to child
+            if (GetSnapPosition(scrollRect, child, out Vector3 targetPosition))
             {
-                scrollRect.StopCoroutine(snapCoroutines[scrollRect]);
-                snapCoroutines.Remove(scrollRect);
+                Transform container = scrollRect.content;
+                container.localPosition = targetPosition;
             }
-
-            onEndDrag?.Invoke(scrollRect);
-
-            //start coroutine OnEnd Drag
-            snapCoroutines.Add(scrollRect, scrollRect.StartCoroutine(SnapCoroutine(scrollRect, delayBeforeSnap, snapSpeed, onStartSnap, onUpdateSnap, onCompleteSnap)));
         }
 
-        private static IEnumerator SnapCoroutine(
-            ScrollRect scrollRect,
-            float delayBeforeSnap,
-            float snapSpeed,
-            System.Action<ScrollRect, Transform> onStartSnap,
-            System.Action<ScrollRect, Transform> onUpdateSnap,
-            System.Action<ScrollRect, Transform> onCompleteSnap)
+        /// <summary>
+        /// Instantly snap to closest child
+        /// </summary>
+        /// <param name="scrollRect"></param>
+        public static void InstantSnapToClosestChild(ScrollRect scrollRect)
         {
-            //if user doesn't scroll for few seconds, start snapping
-            yield return new WaitForSeconds(delayBeforeSnap);
+            //to be sure, stop coroutine
+            StopScrollCoroutine(scrollRect);
 
+            //snap instantly to closest child
+            Transform closestChild = GetClosestChild(scrollRect);
+            InstantSnapToChild(scrollRect, closestChild);
+        }
+
+        /// <summary>
+        /// Find child nearest to the center of the scroll
+        /// </summary>
+        /// <param name="scrollRect"></param>
+        /// <returns></returns>
+        public static Transform GetClosestChild(ScrollRect scrollRect)
+        {
+            //get center
             Transform container = scrollRect.content;
             RectTransform scrollRt = scrollRect.GetComponent<RectTransform>();
             Vector3 center = scrollRt.TransformPoint(scrollRt.rect.center);
@@ -169,6 +177,65 @@ namespace redd096.UIControl
                 }
             }
 
+            return closestChild;
+        }
+
+        #region private API
+
+        private static void StopScrollCoroutine(ScrollRect scrollRect)
+        {
+            if (snapCoroutines.ContainsKey(scrollRect))
+            {
+                Coroutine coroutine = snapCoroutines[scrollRect];
+                if (coroutine != null)
+                    scrollRect.StopCoroutine(coroutine);
+
+                snapCoroutines.Remove(scrollRect);
+            }
+        }
+
+        private static void OnBeginDrag(
+            ScrollRect scrollRect,
+            System.Action<ScrollRect> onBeginDrag)
+        {
+            //stop coroutine OnBegin Drag
+            StopScrollCoroutine(scrollRect);
+
+            onBeginDrag?.Invoke(scrollRect);
+        }
+
+        private static void OnEndDrag(
+            ScrollRect scrollRect,
+            float delayBeforeSnap,
+            float snapSpeed,
+            System.Action<ScrollRect> onEndDrag,
+            System.Action<ScrollRect, Transform> onStartSnap,
+            System.Action<ScrollRect, Transform> onUpdateSnap,
+            System.Action<ScrollRect, Transform> onCompleteSnap)
+        {
+            //just to be sure, stop coroutine
+            StopScrollCoroutine(scrollRect);
+
+            onEndDrag?.Invoke(scrollRect);
+
+            //start coroutine OnEnd Drag
+            snapCoroutines.Add(scrollRect, scrollRect.StartCoroutine(SnapCoroutine(scrollRect, delayBeforeSnap, snapSpeed, onStartSnap, onUpdateSnap, onCompleteSnap)));
+        }
+
+        private static IEnumerator SnapCoroutine(
+            ScrollRect scrollRect,
+            float delayBeforeSnap,
+            float snapSpeed,
+            System.Action<ScrollRect, Transform> onStartSnap,
+            System.Action<ScrollRect, Transform> onUpdateSnap,
+            System.Action<ScrollRect, Transform> onCompleteSnap)
+        {
+            //if user doesn't scroll for few seconds, start snapping
+            yield return new WaitForSeconds(delayBeforeSnap);
+
+            //find nearest child
+            Transform closestChild = GetClosestChild(scrollRect);
+
             //and snap to it
             onStartSnap?.Invoke(scrollRect, closestChild);
             yield return SnapToChildCoroutine(scrollRect, closestChild, snapSpeed, onUpdateSnap, onCompleteSnap);
@@ -181,17 +248,9 @@ namespace redd096.UIControl
             System.Action<ScrollRect, Transform> onUpdateSnap,
             System.Action<ScrollRect, Transform> onCompleteSnap)
         {
-            //calculate center
-            Transform container = scrollRect.content;
-            RectTransform scrollRt = scrollRect.GetComponent<RectTransform>();
-            Vector3 center = scrollRt.TransformPoint(scrollRt.rect.center);
-
-            if (child)
+            if (GetSnapPosition(scrollRect, child, out Vector3 targetPosition))
             {
-                //calculate distance
-                Vector3 targetPosition = container.localPosition;
-                Vector3 difference = container.InverseTransformPoint(child.position) - container.InverseTransformPoint(center);
-                targetPosition.x -= difference.x;
+                Transform container = scrollRect.content;
 
                 //do snapping
                 while (Vector3.Distance(container.localPosition, targetPosition) > 0.1f)
@@ -205,6 +264,26 @@ namespace redd096.UIControl
             }
 
             onCompleteSnap?.Invoke(scrollRect, child);
+        }
+
+        private static bool GetSnapPosition(ScrollRect scrollRect, Transform child, out Vector3 targetPosition)
+        {
+            //calculate center
+            Transform container = scrollRect.content;
+            RectTransform scrollRt = scrollRect.GetComponent<RectTransform>();
+            Vector3 center = scrollRt.TransformPoint(scrollRt.rect.center);
+
+            //calculate distance
+            if (child)
+            {
+                targetPosition = container.localPosition;
+                Vector3 difference = container.InverseTransformPoint(child.position) - container.InverseTransformPoint(center);
+                targetPosition.x -= difference.x;
+                return true;
+            }
+
+            targetPosition = default;
+            return false;
         }
 
         #endregion
