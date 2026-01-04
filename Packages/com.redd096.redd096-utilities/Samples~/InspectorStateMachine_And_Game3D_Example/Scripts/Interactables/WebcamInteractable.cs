@@ -1,5 +1,4 @@
 using redd096.v1.Game3D;
-using redd096.v1.InspectorStateMachine;
 using UnityEngine;
 
 namespace redd096.Examples.InspectorStateMachine_And_Game3D
@@ -12,12 +11,12 @@ namespace redd096.Examples.InspectorStateMachine_And_Game3D
     {
         public RenderTexture renderTexture;
 
-        StateMachine interactorStateMachine;
+        redd096.v1.InspectorStateMachine.StateMachine interactorStateMachine;
 
         public bool OnInteract(InteractComponent interactor, RaycastHit hit, params object[] args)
         {
             //set interactor to be in WebcamState
-            interactorStateMachine = interactor.GetComponent<StateMachine>();
+            interactorStateMachine = interactor.GetComponent<redd096.v1.InspectorStateMachine.StateMachine>();
             if (interactorStateMachine != null)
             {
                 interactorStateMachine.SetBlackboardElement("Webcam", this);    //set reference to this webcam

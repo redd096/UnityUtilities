@@ -103,7 +103,7 @@ namespace redd096.Examples.FlowField
                 AgentFlowField agentFlowField = agent.GetComponent<AgentFlowField>();
 
                 if (rb && agentFlowField)
-                    rb.velocity = agentFlowField.nextDirection * speed;
+                    rb.linearVelocity = agentFlowField.nextDirection * speed;
             }
         }
     }

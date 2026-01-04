@@ -1,5 +1,4 @@
 using redd096.v1.Game3D;
-using redd096.v1.InspectorStateMachine;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -19,7 +18,7 @@ namespace redd096.Examples.InspectorStateMachine_And_Game3D
         [SerializeField] float vacuumSpeed = 10;
         [SerializeField] LayerMask layerToVacuum = -1;
 
-        StateMachine interactorStateMachine;
+        redd096.v1.InspectorStateMachine.StateMachine interactorStateMachine;
         float timeNextCast;
         bool isVacuumActive;
         List<Rigidbody> vacuumedRigidbodies = new List<Rigidbody>();
@@ -39,7 +38,7 @@ namespace redd096.Examples.InspectorStateMachine_And_Game3D
             bool b = base.OnInteract(interactor, hit, args);
 
             //set vacuum in blackboard
-            interactorStateMachine = interactor.GetComponent<StateMachine>();
+            interactorStateMachine = interactor.GetComponent<redd096.v1.InspectorStateMachine.StateMachine>();
             if (interactorStateMachine != null)
             {
                 interactorStateMachine.SetBlackboardElement("Vacuum", this);    //set reference to this vacuum
