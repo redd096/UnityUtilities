@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.IO;
 using System.Collections.Generic;
+using redd096.Singletons;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif

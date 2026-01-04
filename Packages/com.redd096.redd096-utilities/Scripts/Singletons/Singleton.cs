@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace redd096
+namespace redd096.Singletons
 {
     /// <summary>
     /// Singleton with FindFirstObjectByType instance if null

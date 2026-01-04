@@ -4,6 +4,7 @@ using System.Collections;
 using redd096.Attributes;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using redd096.Singletons;
 
 //Create a material with unity shader UI/Default and set:
 //- Stencil Comparison      6

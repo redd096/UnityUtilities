@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace redd096
+namespace redd096.Singletons
 {
     /// <summary>
     /// Instead of inerhiting from Singleton, call StaticSingleton.instance<T> to get any object as it has a static instance variable

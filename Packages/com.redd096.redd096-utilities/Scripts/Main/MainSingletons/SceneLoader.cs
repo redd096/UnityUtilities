@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using redd096.Attributes;
+using redd096.Singletons;
 
 namespace redd096
 {

@@ -1,5 +1,5 @@
 
-namespace redd096
+namespace redd096.Singletons
 {
     /// <summary>
     /// This is useful to have the instance static variable, but can't be DontDestroyOnLoad and can have multiple instances

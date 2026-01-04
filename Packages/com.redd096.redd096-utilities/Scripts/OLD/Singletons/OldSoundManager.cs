@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using redd096.Singletons;
 
 namespace redd096.OLD
 {

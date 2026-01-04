@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using redd096.Attributes;   //help box when input system isn't enabled
+using redd096.Singletons;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace redd096
+namespace redd096.Singletons
 {
     /// <summary>
     /// This is the same as Singleton (literally copy-paste). 
