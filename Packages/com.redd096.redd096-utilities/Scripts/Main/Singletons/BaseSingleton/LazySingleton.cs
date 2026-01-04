@@ -3,7 +3,8 @@
 namespace redd096
 {
     /// <summary>
-    /// This is the same as Singleton. The only difference is this auto instantiate the instance if it's not in scene
+    /// This is the same as Singleton (literally copy-paste). 
+    /// The only difference is this auto instantiate the instance if it's not in scene (instance get)
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class LazySingleton<T> : MonoBehaviour where T : LazySingleton<T>
@@ -28,17 +29,21 @@ namespace redd096
             private set => _instance = value;
         }
 
+        /// <summary>
+        /// Set DontDeestroyOnLoad when set this element as Instance
+        /// </summary>
         protected virtual bool isDontDestroyOnLoad => true;
-        protected virtual bool automaticallyUnparentOnAwake => true;
+        /// <summary>
+        /// Unparent this element when set DontDestroyOnLoad (NB DontDestroyOnLoad works only when there aren't parents)
+        /// </summary>
+        protected virtual bool automaticallyUnparentOnSetDontDestroyOnLoad => true;
+        /// <summary>
+        /// If there is already an instance, but there are other objects with this class, destroy them
+        /// </summary>
+        protected virtual bool destroyCopies => true;
 
         protected virtual void Awake()
         {
-            //unparent
-            if (automaticallyUnparentOnAwake)
-            {
-                transform.SetParent(null);
-            }
-
             //set instance and initialize it
             CheckInstance();
 
@@ -46,18 +51,25 @@ namespace redd096
                 InitializeInstance();
         }
 
-        void CheckInstance()
+        protected void CheckInstance()
         {
-            if (_instance && _instance != this) //check also != this, if someone set instance with FindFirstObjectByType or instantiate it
+            if (_instance && _instance != this && destroyCopies) //check also != this, if someone set instance with FindFirstObjectByType
             {
-                //if there is already an instance, destroy this one
+                //if there is already an instance, destroy this one (if destroyCopies is true)
                 Destroy(gameObject);
             }
             else
             {
                 //else, set this as unique instance and set don't destroy on load
                 _instance = (T)this;
-                if (isDontDestroyOnLoad) DontDestroyOnLoad(this);
+                if (isDontDestroyOnLoad)
+                {
+                    //unparent
+                    if (automaticallyUnparentOnSetDontDestroyOnLoad)
+                        transform.SetParent(null);
+                    
+                    DontDestroyOnLoad(this);
+                }
             }
         }
 
