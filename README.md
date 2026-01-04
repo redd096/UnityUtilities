@@ -75,6 +75,22 @@ An interface designed to provide a framework for working with various networking
 An implementation of a `GraphNode` using the Unity Editor's `GraphView` API.
 * An example of its implementation can be found in a separate project: [HorrorGame on GitHub](https://github.com/redd096/HorrorGame/tree/main/Assets/_Project/Scripts/GraphsEditor)
 
+## OLD
+This section contains legacy scripts that are **no longer actively used or maintained**, but are kept in the package for reference or backward compatibility.
+This folder mainly exists as an archive and as a source of ideas or code snippets that may still be useful in specific cases.
+
+## Singletons
+A collection of different **Singleton patterns** commonly used in Unity projects.
+
+This module provides multiple implementations to cover different use cases and preferences, including:
+
+* **Singleton** – Basic class with `.instance` static variable. Uses `FindObjectOfType` to locate an existing instance in the scene if still not set, otherwise it is set in `Awake`.
+* **SimpleInstance** – A minimal version, providing only the `.instance` static variable, without `DontDestroyOnLoad` and without destroying other copies in the scene.
+* **LazySingleton** – Automatically creates the singleton instance if it does not exist.
+* **StaticSingleton** – Instead of inheriting from `Singleton`, you can set an element as a singleton (`.instance` static variable and `DontDestroyOnLoad`) by calling a static function.
+
+These scripts are meant to be used as base classes or helpers for creating manager-type objects (e.g. AudioManager, GameManager, SaveManager) that must exist only once in a scene or across scenes.
+
 ### StateMachine
 A generic state machine system.
 * You can create serializable `IState` objects to view states directly in the Inspector or attach `IState` to a `MonoBehaviour` to use them as `MonoBehaviour` states.

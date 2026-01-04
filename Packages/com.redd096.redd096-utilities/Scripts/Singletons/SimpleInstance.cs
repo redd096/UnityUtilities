@@ -6,9 +6,9 @@ namespace redd096
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class SimpleInstance<T> : Singleton<T> where T : SimpleInstance<T>
-    {
-		protected override bool isDontDestroyOnLoad => false;
-        protected override bool automaticallyUnparentOnSetDontDestroyOnLoad => false;
-		protected override bool destroyCopies => false;
-    }
+  {
+      protected override bool isDontDestroyOnLoad => false;
+      protected override bool automaticallyUnparentOnSetDontDestroyOnLoad => false;
+      protected override bool destroyCopies => false;
+  }
 }
