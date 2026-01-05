@@ -43,7 +43,7 @@
     },
     {
       "displayName": "NetworkLobby_Example",
-      "description": "Example of scene to use NetworkManager and NetworkTransport. You should to add some plugin like Fishnet or Purrnet and attach scripts to NetworkManager in scene",
+      "description": "Example of scene to use NetworkManager and NetworkTransport. You should add some plugin like Fishnet or Purrnet and attach scripts to NetworkManager in scene",
       "path": "Samples~/NetworkLobby_Example"
     },
     {
