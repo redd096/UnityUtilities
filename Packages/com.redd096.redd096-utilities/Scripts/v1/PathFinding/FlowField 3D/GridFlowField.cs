@@ -402,9 +402,7 @@ namespace redd096.v1.PathFinding.FlowField3D
             if (usedByComposite.boolValue)
             {
                 //show script on top (as base.OnInspectorGUI())
-                GUI.enabled = false;
-                EditorGUILayout.ObjectField("Script", MonoScript.FromMonoBehaviour(grid), serializedObject.GetType(), false);
-                GUI.enabled = true;
+                EditorHelperUtility.ShowScript(grid);
 
                 //show only few variables
                 EditorGUILayout.PropertyField(usedByComposite);
